@@ -1,5 +1,6 @@
 import { fetchNousModels } from './nous.js'
 import { fetchOllamaModels } from './ollama.js'
+import { fetchOpenRouterModels } from './openrouter.js'
 import type { ModelRecord, ProviderConfig } from '../types.js'
 
 type ProviderFetcher = (config: ProviderConfig) => Promise<ModelRecord[]>
@@ -7,6 +8,7 @@ type ProviderFetcher = (config: ProviderConfig) => Promise<ModelRecord[]>
 const providerFetchers: ReadonlyMap<string, ProviderFetcher> = new Map([
   ['nous', fetchNousModels],
   ['ollama', fetchOllamaModels],
+  ['openrouter', fetchOpenRouterModels],
 ])
 
 const fetchProviders = async (

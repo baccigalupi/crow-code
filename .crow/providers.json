@@ -8,6 +8,11 @@
       "name": "ollama",
       "baseUrl": "http://pile-driver.local:11434",
       "modelsUrl": "http://pile-driver.local:11434/api/tags"
+    },
+    {
+      "name": "openrouter",
+      "baseUrl": "https://openrouter.ai",
+      "modelsUrl": "https://openrouter.ai/api/v1/models"
     }
   ]
 }
