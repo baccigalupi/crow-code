@@ -35,14 +35,14 @@ class GatherModelData {
   private dedupRecords() {
     const byId = new Map<string, ModelRecord>()
 
-    this.records.forEach((record) => {
+    for (const record of this.records) {
       const existing = byId.get(record.id)
       if (existing === undefined) {
         byId.set(record.id, record)
-        return
+      } else {
+        byId.set(record.id, this.mergeRecords(existing, record))
       }
-      byId.set(record.id, this.mergeRecords(existing, record))
-    })
+    }
 
     this.records = Array.from(byId.values())
   }
