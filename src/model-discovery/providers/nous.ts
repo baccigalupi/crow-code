@@ -1,4 +1,4 @@
-import { fetchCatalog } from '../fetch-catalog.js'
+import { fetchCatalog } from './fetch-catalog.js'
 import { ModelRecord } from '../types.js'
 
 type ReasoningMeta = {
@@ -99,14 +99,19 @@ const buildNousRecord = (model: NousModel): ModelRecord => {
   }
 }
 
-export const parseNousResponse = (raw: unknown): ModelRecord[] => {
-  const body = raw as { data?: NousModel[] }
-  if (body.data === undefined) {
+type NousApiRecord = { data?: NousModel[] }
+
+export const parseNousResponse = (raw: NousApiRecord): ModelRecord[] => {
+  if (raw.data === undefined) {
     return []
   }
-  return body.data.map(buildNousRecord)
+  return raw.data.map(buildNousRecord)
 }
 
 export const fetchNousModels = (): Promise<ModelRecord[]> => {
-  return fetchCatalog(nousUrl, parseNousResponse, nousTimeoutMs)
+  return fetchCatalog<NousApiRecord, ModelRecord>(
+    nousUrl,
+    parseNousResponse,
+    nousTimeoutMs,
+  )
 }

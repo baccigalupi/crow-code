@@ -1,6 +1,6 @@
-export const fetchCatalog = async <T>(
+export const fetchCatalog = async <ApiRecord, T>(
   url: string,
-  parse: (raw: unknown) => T[],
+  parse: (raw: ApiRecord) => T[],
   timeoutMs: number,
 ): Promise<T[]> => {
   try {
@@ -13,7 +13,7 @@ export const fetchCatalog = async <T>(
       )
       return []
     }
-    return parse(await response.json())
+    return parse((await response.json()) as ApiRecord)
   } catch {
     console.error(`Catalog request failed: ${url}`)
     return []

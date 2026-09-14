@@ -1,4 +1,4 @@
-import { fetchCatalog } from '../fetch-catalog.js'
+import { fetchCatalog } from './fetch-catalog.js'
 import { ModelRecord } from '../types.js'
 
 type OllamaModel = {
@@ -45,14 +45,19 @@ const buildOllamaRecord = (model: OllamaModel): ModelRecord => {
   }
 }
 
-export const parseOllamaResponse = (raw: unknown): ModelRecord[] => {
-  const body = raw as { models?: OllamaModel[] }
-  if (body.models === undefined) {
+type OllamaApiRecord = { models?: OllamaModel[] }
+
+export const parseOllamaResponse = (raw: OllamaApiRecord): ModelRecord[] => {
+  if (raw.models === undefined) {
     return []
   }
-  return body.models.map(buildOllamaRecord)
+  return raw.models.map(buildOllamaRecord)
 }
 
 export const fetchOllamaModels = (): Promise<ModelRecord[]> => {
-  return fetchCatalog(ollamaUrl, parseOllamaResponse, ollamaTimeoutMs)
+  return fetchCatalog<OllamaApiRecord, ModelRecord>(
+    ollamaUrl,
+    parseOllamaResponse,
+    ollamaTimeoutMs,
+  )
 }
