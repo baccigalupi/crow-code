@@ -1,3 +1,4 @@
+import { fetchCatalog } from '../fetch-catalog.js'
 import { ModelRecord } from '../types.js'
 import { nullableNumber } from '../record-helpers.js'
 
@@ -6,9 +7,9 @@ type OllamaModel = {
   details?: { parameter_size?: string; context_length?: number }
 }
 
-export const ollamaUrl = 'http://pile-driver.local:11434/api/tags'
+const ollamaUrl = 'http://pile-driver.local:11434/api/tags'
 
-export const ollamaTimeoutMs = 5000
+const ollamaTimeoutMs = 5000
 
 const ollamaContextLength = (
   details: OllamaModel['details'],
@@ -51,4 +52,8 @@ export const parseOllamaResponse = (raw: unknown): ModelRecord[] => {
     return []
   }
   return body.models.map(buildOllamaRecord)
+}
+
+export const fetchOllamaModels = (): Promise<ModelRecord[]> => {
+  return fetchCatalog(ollamaUrl, parseOllamaResponse, ollamaTimeoutMs)
 }

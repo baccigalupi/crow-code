@@ -1,5 +1,12 @@
-import { describe, it, expect } from 'vitest'
-import { parseOllamaResponse } from '../../../src/model-discovery/providers/ollama'
+import { describe, it, expect, vi, afterEach } from 'vitest'
+import {
+  fetchOllamaModels,
+  parseOllamaResponse,
+} from '../../../src/model-discovery/providers/ollama'
+
+afterEach(() => {
+  vi.unstubAllGlobals()
+})
 
 describe('ollama', () => {
   it('when the body has no models key, returns an empty list', () => {
@@ -36,5 +43,29 @@ describe('ollama', () => {
 
     expect(result[0].size).toBe('')
     expect(result[0].contextLength).toBeNull()
+  })
+
+  it('when fetched, returns normalized records', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ models: [{ name: 'qwen3-coder:30b' }] }),
+      }),
+    )
+
+    const result = await fetchOllamaModels()
+
+    expect(result[0].id).toBe('qwen3-coder:30b')
+    expect(result[0].providers).toEqual(['ollama'])
+  })
+
+  it('when the network request fails, returns an empty list', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')))
+
+    const result = await fetchOllamaModels()
+
+    expect(result).toEqual([])
   })
 })

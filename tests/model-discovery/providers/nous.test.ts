@@ -1,5 +1,12 @@
-import { describe, it, expect } from 'vitest'
-import { parseNousResponse } from '../../../src/model-discovery/providers/nous'
+import { describe, it, expect, vi, afterEach } from 'vitest'
+import {
+  fetchNousModels,
+  parseNousResponse,
+} from '../../../src/model-discovery/providers/nous'
+
+afterEach(() => {
+  vi.unstubAllGlobals()
+})
 
 describe('nous', () => {
   it('when the body has no data key, returns an empty list', () => {
@@ -77,5 +84,29 @@ describe('nous', () => {
     const result = parseNousResponse(body)
 
     expect(result[0].reasoningMode).toBe('off')
+  })
+
+  it('when fetched, returns normalized records', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ data: [{ id: 'deepseek/deepseek-chat' }] }),
+      }),
+    )
+
+    const result = await fetchNousModels()
+
+    expect(result[0].id).toBe('deepseek/deepseek-chat')
+    expect(result[0].providers).toEqual(['nous'])
+  })
+
+  it('when the network request fails, returns an empty list', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')))
+
+    const result = await fetchNousModels()
+
+    expect(result).toEqual([])
   })
 })

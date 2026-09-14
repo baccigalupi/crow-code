@@ -11,13 +11,13 @@ afterEach(() => {
 })
 
 describe('run', () => {
-  it('when imported, calls main with the refresh flag', async () => {
+  it('when imported, calls main', async () => {
     vi.mocked(main).mockResolvedValue(undefined)
     vi.resetModules()
 
     await import('../../src/model-discovery/run')
 
-    expect(main).toHaveBeenCalledWith(process.argv.includes('--refresh'))
+    expect(main).toHaveBeenCalled()
   })
 
   it('when main rejects, logs the error and sets the exit code', async () => {

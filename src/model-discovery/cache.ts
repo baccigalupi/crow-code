@@ -1,20 +1,9 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { CacheFile, ModelRecord } from './types.js'
 
 export const defaultCachePath = (): string => {
   return join(process.cwd(), '.crow', 'models.json')
-}
-
-export const readCache = (path: string): CacheFile | null => {
-  if (!existsSync(path)) {
-    return null
-  }
-  try {
-    return JSON.parse(readFileSync(path, 'utf8')) as CacheFile
-  } catch {
-    return null
-  }
 }
 
 export const writeCache = (path: string, models: ModelRecord[]): void => {

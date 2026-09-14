@@ -1,3 +1,4 @@
+import { fetchCatalog } from '../fetch-catalog.js'
 import { ModelRecord } from '../types.js'
 import { nullableNumber, nullableString } from '../record-helpers.js'
 
@@ -17,9 +18,9 @@ type NousModel = {
   architecture?: { modality?: string }
 }
 
-export const nousUrl = 'https://inference-api.nousresearch.com/v1/models'
+const nousUrl = 'https://inference-api.nousresearch.com/v1/models'
 
-export const nousTimeoutMs = 20000
+const nousTimeoutMs = 20000
 
 const modelName = (model: NousModel): string => {
   if (model.name === undefined) {
@@ -105,4 +106,8 @@ export const parseNousResponse = (raw: unknown): ModelRecord[] => {
     return []
   }
   return body.data.map(buildNousRecord)
+}
+
+export const fetchNousModels = (): Promise<ModelRecord[]> => {
+  return fetchCatalog(nousUrl, parseNousResponse, nousTimeoutMs)
 }
