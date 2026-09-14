@@ -3,9 +3,9 @@
  * Fetch model data and write .crow/models.json.
  */
 
-import { main } from './app.js'
+import { gatherModelData } from './gather-model-data.js'
 
-main().catch((error) => {
+gatherModelData().catch((error) => {
   console.error(error)
   process.exitCode = 1
 })

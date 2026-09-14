@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import { readFileSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
-import { main } from '../../src/model-discovery/app'
+import { gatherModelData } from '../../src/model-discovery/gather-model-data'
 
 const crowDirectory = join('tests', 'support', 'fixtures')
 
@@ -12,7 +12,7 @@ afterEach(() => {
   rmSync(join(crowDirectory, '.crow'), { recursive: true, force: true })
 })
 
-describe('main', () => {
+describe('gatherModelData', () => {
   it('when run, writes a models.json in the injected crow directory', async () => {
     process.env.AA_API_KEY = 'test-key'
     vi.stubGlobal(
@@ -65,7 +65,7 @@ describe('main', () => {
     )
     const log = vi.spyOn(console, 'log').mockImplementation(() => {})
 
-    await main(crowDirectory)
+    await gatherModelData(crowDirectory)
 
     const saved = JSON.parse(
       readFileSync(join(crowDirectory, '.crow', 'models.json'), 'utf8'),

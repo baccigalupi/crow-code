@@ -1,27 +1,27 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
 
-vi.mock('../../src/model-discovery/app', () => ({
-  main: vi.fn(),
+vi.mock('../../src/model-discovery/gather-model-data', () => ({
+  gatherModelData: vi.fn(),
 }))
 
-import { main } from '../../src/model-discovery/app'
+import { gatherModelData } from '../../src/model-discovery/gather-model-data'
 
 afterEach(() => {
   vi.restoreAllMocks()
 })
 
 describe('run', () => {
-  it('when imported, calls main', async () => {
-    vi.mocked(main).mockResolvedValue(undefined)
+  it('when imported, calls gatherModelData', async () => {
+    vi.mocked(gatherModelData).mockResolvedValue(undefined)
     vi.resetModules()
 
     await import('../../src/model-discovery/run')
 
-    expect(main).toHaveBeenCalled()
+    expect(gatherModelData).toHaveBeenCalled()
   })
 
-  it('when main rejects, logs the error and sets the exit code', async () => {
-    vi.mocked(main).mockRejectedValue(new Error('boom'))
+  it('when gatherModelData rejects, logs the error and sets the exit code', async () => {
+    vi.mocked(gatherModelData).mockRejectedValue(new Error('boom'))
     vi.resetModules()
     const originalExitCode = process.exitCode
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})

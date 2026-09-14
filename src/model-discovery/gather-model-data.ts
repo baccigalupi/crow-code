@@ -4,7 +4,7 @@ import { defaultCachePath, writeCache } from './cache.js'
 import { fetchNousModels } from './providers/nous.js'
 import { fetchOllamaModels } from './providers/ollama.js'
 
-export const main = async (crowDirectory = process.cwd()) => {
+export const gatherModelData = async (crowDirectory = process.cwd()) => {
   console.log('Fetching model data and building cache...')
   const nousRecords = await fetchNousModels()
   const ollamaRecords = await fetchOllamaModels()
