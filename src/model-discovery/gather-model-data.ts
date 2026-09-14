@@ -1,5 +1,4 @@
-import { fetchAABenchmarks } from './ratings/aa-benchmarks.js'
-import { buildRecords } from './build-records.js'
+import { appendRatings } from './ratings/append-ratings.js'
 import { defaultCachePath, writeCache } from './cache.js'
 import { fetchNousModels } from './providers/nous.js'
 import { fetchOllamaModels } from './providers/ollama.js'
@@ -56,10 +55,7 @@ class GatherModelData {
   }
 
   private async appendRatings() {
-    const catalogIds = new Set(this.records.map((r) => r.id))
-    const benchmarks = await fetchAABenchmarks(catalogIds)
-
-    this.records = buildRecords(this.records, benchmarks)
+    this.records = await appendRatings(this.records)
   }
 
   private writeModelRecordsToCache() {
