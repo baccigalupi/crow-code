@@ -2,5 +2,7 @@ node_modules/
 dist/
 *.tsbuildinfo
 coverage/
+.cache/
+.crow/models.json
 .env
 .env.local

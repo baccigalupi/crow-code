@@ -19,12 +19,20 @@
   "author": "Kane Baccigalupi",
   "type": "module",
   "main": "index.ts",
+  "bin": {
+    "crow-code-models": "dist/run.js"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "vitest",
     "typecheck": "tsc --noEmit",
     "build": "tsc",
+    "prepare": "npm run build",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "models": "tsx src/run.ts"
   },
   "devDependencies": {
     "@types/node": "^26.5.1",
