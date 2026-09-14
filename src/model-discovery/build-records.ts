@@ -3,7 +3,7 @@ import {
   benchmarkAgentic,
   benchmarkIntelligence,
   resolveCoding,
-} from './record-helpers.js'
+} from './ratings/record-scores.js'
 import { AABenchmarks, ModelRecord } from './types.js'
 
 const skipPattern =

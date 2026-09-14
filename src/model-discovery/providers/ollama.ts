@@ -1,6 +1,5 @@
 import { fetchCatalog } from '../fetch-catalog.js'
 import { ModelRecord } from '../types.js'
-import { nullableNumber } from '../record-helpers.js'
 
 type OllamaModel = {
   name: string
@@ -17,7 +16,7 @@ const ollamaContextLength = (
   if (details === undefined) {
     return null
   }
-  return nullableNumber(details.context_length)
+  return details.context_length || null
 }
 
 const ollamaSize = (details: OllamaModel['details']): string => {

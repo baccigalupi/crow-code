@@ -1,6 +1,5 @@
 import { fetchCatalog } from '../fetch-catalog.js'
 import { ModelRecord } from '../types.js'
-import { nullableNumber, nullableString } from '../record-helpers.js'
 
 type ReasoningMeta = {
   mandatory?: boolean
@@ -92,10 +91,10 @@ const buildNousRecord = (model: NousModel): ModelRecord => {
     agentic: null,
     costInput: toMillionPrice(promptPrice(model.pricing)),
     costOutput: toMillionPrice(completionPrice(model.pricing)),
-    contextLength: nullableNumber(model.context_length),
+    contextLength: model.context_length || null,
     modality: modality(model),
     reasoningMode: reasoningMode(model.reasoning),
-    knowledgeCutoff: nullableString(model.knowledge_cutoff),
+    knowledgeCutoff: model.knowledge_cutoff || null,
     size: '',
   }
 }
