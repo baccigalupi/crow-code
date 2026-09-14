@@ -33,4 +33,25 @@ describe('fetchNousModels', () => {
 
     expect(result).toEqual([])
   })
+
+  it('when the network request fails, returns an empty list', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')))
+
+    const result = await fetchNousModels()
+
+    expect(result).toEqual([])
+  })
+
+  it('when the API response has no data key, returns an empty list', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockResolvedValue({ ok: true, status: 200, json: async () => ({}) }),
+    )
+
+    const result = await fetchNousModels()
+
+    expect(result).toEqual([])
+  })
 })

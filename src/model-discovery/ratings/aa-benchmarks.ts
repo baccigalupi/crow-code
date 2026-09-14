@@ -23,15 +23,18 @@ const loadApiKeyFromFile = (envPath: string): string | null => {
   return keyLine.slice('AA_API_KEY='.length).trim()
 }
 
-const loadApiKey = (): string | null => {
+export const loadApiKey = (envPath?: string): string | null => {
   if (process.env.AA_API_KEY !== undefined) {
     return process.env.AA_API_KEY
   }
-  const envPath = join(process.cwd(), '.env')
-  if (!existsSync(envPath)) {
+  let path = join(process.cwd(), '.env')
+  if (envPath !== undefined) {
+    path = envPath
+  }
+  if (!existsSync(path)) {
     return null
   }
-  return loadApiKeyFromFile(envPath)
+  return loadApiKeyFromFile(path)
 }
 
 const fetchAAModelsPage = async (
@@ -73,8 +76,9 @@ const collectAllAAModels = async (key: string): Promise<AAModel[]> => {
 
 export const fetchAABenchmarks = async (
   catalogIds: Set<string>,
+  envPath?: string,
 ): Promise<Record<string, AABenchmarks>> => {
-  const key = loadApiKey()
+  const key = loadApiKey(envPath)
   if (key === null) {
     console.error(aaKeyMissingMessage)
     return {}

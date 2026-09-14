@@ -60,4 +60,77 @@ describe('sortRecords', () => {
 
     expect(models).toEqual([{ ...baseModel, id: 'one', coding: 10 }])
   })
+
+  it('when sorting by reasoning, orders highest first', () => {
+    const models = [
+      { ...baseModel, id: 'low', reasoning: 10 },
+      { ...baseModel, id: 'high', reasoning: 90 },
+    ]
+
+    const result = sortRecords(models, 'reasoning')
+
+    expect(result.map((model) => model.id)).toEqual(['high', 'low'])
+  })
+
+  it('when sorting by agentic, orders highest first', () => {
+    const models = [
+      { ...baseModel, id: 'low', agentic: 10 },
+      { ...baseModel, id: 'high', agentic: 90 },
+    ]
+
+    const result = sortRecords(models, 'agentic')
+
+    expect(result.map((model) => model.id)).toEqual(['high', 'low'])
+  })
+
+  it('when sorting by context, orders largest first', () => {
+    const models = [
+      { ...baseModel, id: 'small', contextLength: 1000 },
+      { ...baseModel, id: 'large', contextLength: 1000000 },
+    ]
+
+    const result = sortRecords(models, 'context')
+
+    expect(result.map((model) => model.id)).toEqual(['large', 'small'])
+  })
+
+  it('when a reasoning value is missing, places it last', () => {
+    const models = [
+      { ...baseModel, id: 'unscored', reasoning: null },
+      { ...baseModel, id: 'scored', reasoning: 50 },
+    ]
+
+    const result = sortRecords(models, 'reasoning')
+
+    expect(result.map((model) => model.id)).toEqual(['scored', 'unscored'])
+  })
+
+  it('when all values are missing, orders by id', () => {
+    const models = [
+      { ...baseModel, id: 'b', coding: null },
+      { ...baseModel, id: 'a', coding: null },
+    ]
+
+    const result = sortRecords(models, 'coding')
+
+    expect(result.map((model) => model.id)).toEqual(['a', 'b'])
+  })
+
+  it('when missing values are interspersed, keeps scored first then ids', () => {
+    const models = [
+      { ...baseModel, id: 'unscored-b', coding: null },
+      { ...baseModel, id: 'scored-mid', coding: 30 },
+      { ...baseModel, id: 'unscored-a', coding: null },
+      { ...baseModel, id: 'scored-top', coding: 70 },
+    ]
+
+    const result = sortRecords(models, 'coding')
+
+    expect(result.map((model) => model.id)).toEqual([
+      'scored-top',
+      'scored-mid',
+      'unscored-a',
+      'unscored-b',
+    ])
+  })
 })

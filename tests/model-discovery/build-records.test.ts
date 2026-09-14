@@ -82,4 +82,12 @@ describe('buildRecords', () => {
     expect(result[0].contextLength).toBe(32768)
     expect(result[0].costInput).toBe(0)
   })
+
+  it('when a model id starts with openrouter/, skips it', () => {
+    const models: NousModel[] = [{ id: 'openrouter/foo' }]
+
+    const result = buildRecords(models, [], {})
+
+    expect(result).toEqual([])
+  })
 })

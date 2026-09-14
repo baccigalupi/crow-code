@@ -25,10 +25,7 @@ const isSortKey = (value: string | undefined): boolean => {
   return sortKeys.includes(value as SortKey)
 }
 
-const parseTop = (value: string | undefined): number => {
-  if (value === undefined) {
-    return 40
-  }
+const parseTop = (value: string): number => {
   const parsed = parseInt(value, 10)
   if (Number.isNaN(parsed)) {
     return 40

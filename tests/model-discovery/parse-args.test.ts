@@ -61,4 +61,35 @@ describe('parseArguments', () => {
 
     expect(result.json).toBe(true)
   })
+
+  it('when --sort has no value, keeps the default', () => {
+    const result = parseArguments(['--sort'])
+
+    expect(result.sort).toBe('coding')
+  })
+
+  it('when --top has a non-number, keeps the default', () => {
+    const result = parseArguments(['--top', 'nonsense'])
+
+    expect(result.top).toBe(40)
+  })
+
+  it('when an unknown argument is given, ignores it', () => {
+    const result = parseArguments(['--bogus'])
+
+    expect(result.refresh).toBe(false)
+    expect(result.sort).toBe('coding')
+  })
+
+  it('when --filter has no value, leaves filter unset', () => {
+    const result = parseArguments(['--filter'])
+
+    expect(result.filter).toBeUndefined()
+  })
+
+  it('when --top has no value, keeps the default', () => {
+    const result = parseArguments(['--top'])
+
+    expect(result.top).toBe(40)
+  })
 })

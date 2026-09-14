@@ -1,7 +1,11 @@
 import { describe, it, expect, afterEach } from 'vitest'
-import { readCache, writeCache } from '../../src/model-discovery/cache'
+import {
+  defaultCachePath,
+  readCache,
+  writeCache,
+} from '../../src/model-discovery/cache'
 import { ModelRecord } from '../../src/model-discovery/types'
-import { mkdtempSync, rmSync } from 'node:fs'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -48,5 +52,22 @@ describe('cache', () => {
 
     expect(result).not.toBeNull()
     expect(result?.models).toEqual([model])
+  })
+
+  it('when asking for the default path, returns the .crow cache location', () => {
+    const result = defaultCachePath()
+
+    expect(result.endsWith('.crow/models.json')).toBe(true)
+  })
+
+  it('when the file is not valid JSON, returns null', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'crow-code-cache-'))
+    tempDirs.push(dir)
+    const path = join(dir, 'models.json')
+    writeFileSync(path, 'not json')
+
+    const result = readCache(path)
+
+    expect(result).toBeNull()
   })
 })

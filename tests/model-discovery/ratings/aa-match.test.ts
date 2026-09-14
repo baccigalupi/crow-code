@@ -19,4 +19,16 @@ describe('candidateIds', () => {
 
     expect(result).toContain('openai/gpt-5')
   })
+
+  it('when the slug has a date suffix, also emits the stripped id', () => {
+    const result = candidateIds('model-2025', 'Xiaomi')
+
+    expect(result).toContain('xiaomi/model')
+  })
+
+  it('when the slug has a mode suffix, also emits the stripped id', () => {
+    const result = candidateIds('gpt-5-reasoning', 'OpenAI')
+
+    expect(result).toContain('openai/gpt-5')
+  })
 })

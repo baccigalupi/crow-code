@@ -1,10 +1,41 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import {
+  formatContext,
   formatCost,
   formatScore,
   padLeft,
   padRight,
+  renderJson,
+  renderTable,
 } from '../../src/model-discovery/render'
+import { CacheFile, ModelRecord } from '../../src/model-discovery/types'
+
+const model: ModelRecord = {
+  id: 'deepseek/deepseek-chat',
+  name: 'DeepSeek Chat',
+  providers: ['nous'],
+  reasoning: 40,
+  coding: 60,
+  codingSource: 'AA',
+  agentic: 30,
+  costInput: 0.5,
+  costOutput: 1.5,
+  contextLength: 1000,
+  modality: 'text->text',
+  reasoningMode: 'off',
+  knowledgeCutoff: null,
+  size: '',
+}
+
+const cache: CacheFile = {
+  fetchedAt: '2026-01-01T00:00:00.000Z',
+  sources: ['test'],
+  models: [model],
+}
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 describe('render', () => {
   it('when a score is null, shows n/a', () => {
@@ -41,5 +72,33 @@ describe('render', () => {
     const result = padLeft('1', 4)
 
     expect(result).toBe('   1')
+  })
+
+  it('when a context length is null, shows n/a', () => {
+    const result = formatContext(null)
+
+    expect(result).toBe('n/a')
+  })
+
+  it('when a context length is a number, formats with separators', () => {
+    const result = formatContext(1000000)
+
+    expect(result).toBe('1,000,000')
+  })
+
+  it('when rendering the table, prints rows', () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
+
+    renderTable([model], cache)
+
+    expect(log).toHaveBeenCalled()
+  })
+
+  it('when rendering json, prints the models as JSON', () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
+
+    renderJson([model])
+
+    expect(log).toHaveBeenCalledWith(JSON.stringify([model], null, 2))
   })
 })
