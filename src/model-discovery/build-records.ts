@@ -34,19 +34,17 @@ const applyScores = (
 }
 
 export const buildRecords = (
-  nousRecords: ModelRecord[],
-  ollamaRecords: ModelRecord[],
+  records: ModelRecord[],
   benchmarks: Record<string, AABenchmarks>,
 ): ModelRecord[] => {
-  const records: ModelRecord[] = []
-  nousRecords.forEach((record) => {
+  const out: ModelRecord[] = []
+
+  records.forEach((record) => {
     if (shouldSkip(record.id)) {
       return
     }
-    records.push(applyScores(record, benchmarks[record.id]))
+    out.push(applyScores(record, benchmarks[record.id]))
   })
-  ollamaRecords.forEach((record) => {
-    records.push(applyScores(record, undefined))
-  })
-  return records
+
+  return out
 }

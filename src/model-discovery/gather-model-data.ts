@@ -3,10 +3,11 @@ import { buildRecords } from './build-records.js'
 import { defaultCachePath, writeCache } from './cache.js'
 import { fetchNousModels } from './providers/nous.js'
 import { fetchOllamaModels } from './providers/ollama.js'
-import type { ModelRecord, AABenchmarks } from './types.js'
+import type { ModelRecord } from './types.js'
 
 class GatherModelData {
   private crowDirectory: string
+  private records: ModelRecord[] = []
 
   constructor(crowDirectory: string = process.cwd()) {
     this.crowDirectory = crowDirectory
@@ -14,56 +15,61 @@ class GatherModelData {
 
   async run() {
     this.logStart()
-    const records = await this.fetchNousAndOllamaRecords()
-    const modelRecords = await this.buildRecordsWithBenchmarks(records)
-    this.writeModelRecordsToCache(modelRecords)
-    this.logCompletion(modelRecords)
+    await this.fetchProviderRecords()
+    this.dedupRecords()
+    await this.appendRatings()
+    this.writeModelRecordsToCache()
+    this.logCompletion()
   }
 
   private logStart() {
     console.log('Fetching model data and building cache...')
   }
 
-  private async fetchNousAndOllamaRecords() {
+  private async fetchProviderRecords() {
     const nousRecords = await fetchNousModels()
     const ollamaRecords = await fetchOllamaModels()
 
-    return { nousRecords, ollamaRecords }
+    this.records = [...nousRecords, ...ollamaRecords]
   }
 
-  private async buildRecordsWithBenchmarks(
-    records: { nousRecords: ModelRecord[]; ollamaRecords: ModelRecord[] },
-  ) {
-    const catalogIds = this.buildCatalogIdSet(records.nousRecords, records.ollamaRecords)
+  private dedupRecords() {
+    const byId = new Map<string, ModelRecord>()
+
+    this.records.forEach((record) => {
+      const existing = byId.get(record.id)
+      if (existing === undefined) {
+        byId.set(record.id, record)
+        return
+      }
+      byId.set(record.id, this.mergeRecords(existing, record))
+    })
+
+    this.records = Array.from(byId.values())
+  }
+
+  private mergeRecords(a: ModelRecord, b: ModelRecord): ModelRecord {
+    return {
+      ...a,
+      providers: [...new Set([...a.providers, ...b.providers])],
+    }
+  }
+
+  private async appendRatings() {
+    const catalogIds = new Set(this.records.map((r) => r.id))
     const benchmarks = await fetchAABenchmarks(catalogIds)
 
-    return buildRecords(records.nousRecords, records.ollamaRecords, benchmarks)
+    this.records = buildRecords(this.records, benchmarks)
   }
 
-  private writeModelRecordsToCache(modelRecords: ModelRecord[]) {
-    writeCache(defaultCachePath(this.crowDirectory), modelRecords)
+  private writeModelRecordsToCache() {
+    writeCache(defaultCachePath(this.crowDirectory), this.records)
   }
 
-  private logCompletion(modelRecords: ModelRecord[]) {
+  private logCompletion() {
     console.log(
-      `Wrote ${modelRecords.length} models to ${defaultCachePath(this.crowDirectory)}`,
+      `Wrote ${this.records.length} models to ${defaultCachePath(this.crowDirectory)}`,
     )
-  }
-
-  private buildCatalogIdSet(
-    nousRecords: ModelRecord[],
-    ollamaRecords: ModelRecord[],
-  ) {
-    const ids = new Set<string>()
-
-    for (const record of nousRecords) {
-      ids.add(record.id)
-    }
-    for (const record of ollamaRecords) {
-      ids.add(record.id)
-    }
-
-    return ids
   }
 }
 
