@@ -15,7 +15,7 @@ afterEach(() => {
 const model: ModelRecord = {
   id: 'deepseek/deepseek-chat',
   name: 'deepseek-chat',
-  providers: ['nous'],
+  providers: ['nous', 'ollama'],
   reasoning: 70,
   coding: 60,
   codingSource: 'AA',

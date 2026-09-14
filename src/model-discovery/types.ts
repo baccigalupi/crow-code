@@ -1,5 +1,11 @@
 export type CodingSource = 'AA' | 'Aider'
 
+export type ProviderConfig = {
+  name: string
+  baseUrl: string
+  modelsUrl?: string
+}
+
 export type ModelRecord = {
   id: string
   name: string

@@ -3,14 +3,20 @@ import {
   fetchNousModels,
   parseNousResponse,
 } from '../../../src/model-discovery/providers/nous'
+import type { ProviderConfig } from '../../../src/model-discovery/types'
 
 afterEach(() => {
   vi.unstubAllGlobals()
 })
 
+const nousConfig: ProviderConfig = {
+  name: 'nous',
+  baseUrl: 'https://inference-api.nousresearch.com',
+}
+
 describe('nous', () => {
   it('when the body has no data key, returns an empty list', () => {
-    const result = parseNousResponse({})
+    const result = parseNousResponse({}, nousConfig)
 
     expect(result).toEqual([])
   })
@@ -34,7 +40,7 @@ describe('nous', () => {
       ],
     }
 
-    const result = parseNousResponse(body)
+    const result = parseNousResponse(body, nousConfig)
 
     expect(result).toHaveLength(1)
     expect(result[0].id).toBe('deepseek/deepseek-v4')
@@ -50,26 +56,29 @@ describe('nous', () => {
   })
 
   it('when the name is missing, uses the id as the name', () => {
-    const result = parseNousResponse({
-      data: [{ id: 'deepseek/deepseek-chat' }],
-    })
+    const result = parseNousResponse(
+      { data: [{ id: 'deepseek/deepseek-chat' }] },
+      nousConfig,
+    )
 
     expect(result[0].name).toBe('deepseek/deepseek-chat')
   })
 
   it('when pricing is missing, costs are zero', () => {
-    const result = parseNousResponse({
-      data: [{ id: 'deepseek/deepseek-chat' }],
-    })
+    const result = parseNousResponse(
+      { data: [{ id: 'deepseek/deepseek-chat' }] },
+      nousConfig,
+    )
 
     expect(result[0].costInput).toBe(0)
     expect(result[0].costOutput).toBe(0)
   })
 
   it('when reasoning metadata is missing, mode is a dash', () => {
-    const result = parseNousResponse({
-      data: [{ id: 'deepseek/deepseek-chat' }],
-    })
+    const result = parseNousResponse(
+      { data: [{ id: 'deepseek/deepseek-chat' }] },
+      nousConfig,
+    )
 
     expect(result[0].reasoningMode).toBe('-')
   })
@@ -81,7 +90,7 @@ describe('nous', () => {
       ],
     }
 
-    const result = parseNousResponse(body)
+    const result = parseNousResponse(body, nousConfig)
 
     expect(result[0].reasoningMode).toBe('off')
   })
@@ -96,7 +105,7 @@ describe('nous', () => {
       }),
     )
 
-    const result = await fetchNousModels()
+    const result = await fetchNousModels(nousConfig)
 
     expect(result[0].id).toBe('deepseek/deepseek-chat')
     expect(result[0].providers).toEqual(['nous'])
@@ -105,7 +114,7 @@ describe('nous', () => {
   it('when the network request fails, returns an empty list', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')))
 
-    const result = await fetchNousModels()
+    const result = await fetchNousModels(nousConfig)
 
     expect(result).toEqual([])
   })

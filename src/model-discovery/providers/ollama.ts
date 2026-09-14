@@ -1,12 +1,10 @@
-import { fetchCatalog } from './fetch-catalog.js'
-import { ModelRecord } from '../types.js'
+import { fetchProvider } from './fetch-provider.js'
+import { ModelRecord, ProviderConfig } from '../types.js'
 
 type OllamaModel = {
   name: string
   details?: { parameter_size?: string; context_length?: number }
 }
-
-const ollamaUrl = 'http://pile-driver.local:11434/api/tags'
 
 const ollamaTimeoutMs = 5000
 
@@ -26,11 +24,14 @@ const ollamaSize = (details: OllamaModel['details']): string => {
   return details.parameter_size
 }
 
-const buildOllamaRecord = (model: OllamaModel): ModelRecord => {
+const buildOllamaRecord = (
+  model: OllamaModel,
+  config: ProviderConfig,
+): ModelRecord => {
   return {
     id: model.name,
     name: model.name,
-    providers: ['ollama'],
+    providers: [config.name],
     reasoning: null,
     coding: null,
     codingSource: null,
@@ -47,17 +48,22 @@ const buildOllamaRecord = (model: OllamaModel): ModelRecord => {
 
 type OllamaApiRecord = { models?: OllamaModel[] }
 
-export const parseOllamaResponse = (raw: OllamaApiRecord): ModelRecord[] => {
+export const parseOllamaResponse = (
+  raw: OllamaApiRecord,
+  config: ProviderConfig,
+): ModelRecord[] => {
   if (raw.models === undefined) {
     return []
   }
-  return raw.models.map(buildOllamaRecord)
+  return raw.models.map((model) => buildOllamaRecord(model, config))
 }
 
-export const fetchOllamaModels = (): Promise<ModelRecord[]> => {
-  return fetchCatalog<OllamaApiRecord, ModelRecord>(
-    ollamaUrl,
-    parseOllamaResponse,
+export const fetchOllamaModels = (
+  config: ProviderConfig,
+): Promise<ModelRecord[]> => {
+  return fetchProvider<OllamaApiRecord, ModelRecord>(
+    config.modelsUrl ?? config.baseUrl,
+    (raw) => parseOllamaResponse(raw, config),
     ollamaTimeoutMs,
   )
 }

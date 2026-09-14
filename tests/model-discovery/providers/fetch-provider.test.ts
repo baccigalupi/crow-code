@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { fetchCatalog } from '../../../src/model-discovery/providers/fetch-catalog.js'
+import { fetchProvider } from '../../../src/model-discovery/providers/fetch-provider.js'
 
-describe('fetchCatalog', () => {
+describe('fetchProvider', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
   })
@@ -18,7 +18,7 @@ describe('fetchCatalog', () => {
       }),
     )
 
-    const result = await fetchCatalog<ApiRecord, string>(
+    const result = await fetchProvider<ApiRecord, string>(
       'http://example.com',
       (raw: ApiRecord): string[] => raw.items,
       1000,
@@ -37,7 +37,7 @@ describe('fetchCatalog', () => {
         .mockResolvedValue({ ok: false, status: 500, json: async () => ({}) }),
     )
 
-    const result = await fetchCatalog<ApiRecord, string>(
+    const result = await fetchProvider<ApiRecord, string>(
       'http://example.com',
       (): string[] => [],
       1000,
@@ -51,7 +51,7 @@ describe('fetchCatalog', () => {
 
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')))
 
-    const result = await fetchCatalog<ApiRecord, string>(
+    const result = await fetchProvider<ApiRecord, string>(
       'http://example.com',
       (): string[] => [],
       1000,

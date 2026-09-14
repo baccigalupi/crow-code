@@ -1,5 +1,5 @@
-import { fetchCatalog } from './fetch-catalog.js'
-import { ModelRecord } from '../types.js'
+import { fetchProvider } from './fetch-provider.js'
+import { ModelRecord, ProviderConfig } from '../types.js'
 
 type ReasoningMeta = {
   mandatory?: boolean
@@ -16,8 +16,6 @@ type NousModel = {
   reasoning?: ReasoningMeta | null
   architecture?: { modality?: string }
 }
-
-const nousUrl = 'https://inference-api.nousresearch.com/v1/models'
 
 const nousTimeoutMs = 20000
 
@@ -80,11 +78,14 @@ const reasoningMode = (meta: ReasoningMeta | null | undefined): string => {
   return `${mode}/${meta.default_effort}`
 }
 
-const buildNousRecord = (model: NousModel): ModelRecord => {
+const buildNousRecord = (
+  model: NousModel,
+  config: ProviderConfig,
+): ModelRecord => {
   return {
     id: model.id,
     name: modelName(model),
-    providers: ['nous'],
+    providers: [config.name],
     reasoning: null,
     coding: null,
     codingSource: null,
@@ -101,17 +102,22 @@ const buildNousRecord = (model: NousModel): ModelRecord => {
 
 type NousApiRecord = { data?: NousModel[] }
 
-export const parseNousResponse = (raw: NousApiRecord): ModelRecord[] => {
+export const parseNousResponse = (
+  raw: NousApiRecord,
+  config: ProviderConfig,
+): ModelRecord[] => {
   if (raw.data === undefined) {
     return []
   }
-  return raw.data.map(buildNousRecord)
+  return raw.data.map((model) => buildNousRecord(model, config))
 }
 
-export const fetchNousModels = (): Promise<ModelRecord[]> => {
-  return fetchCatalog<NousApiRecord, ModelRecord>(
-    nousUrl,
-    parseNousResponse,
+export const fetchNousModels = (
+  config: ProviderConfig,
+): Promise<ModelRecord[]> => {
+  return fetchProvider<NousApiRecord, ModelRecord>(
+    config.baseUrl + '/v1/models',
+    (raw) => parseNousResponse(raw, config),
     nousTimeoutMs,
   )
 }

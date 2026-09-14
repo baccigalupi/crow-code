@@ -1,4 +1,4 @@
-export const fetchCatalog = async <ApiRecord, T>(
+export const fetchProvider = async <ApiRecord, T>(
   url: string,
   parse: (raw: ApiRecord) => T[],
   timeoutMs: number,

@@ -3,14 +3,21 @@ import {
   fetchOllamaModels,
   parseOllamaResponse,
 } from '../../../src/model-discovery/providers/ollama'
+import type { ProviderConfig } from '../../../src/model-discovery/types'
 
 afterEach(() => {
   vi.unstubAllGlobals()
 })
 
+const ollamaConfig: ProviderConfig = {
+  name: 'ollama',
+  baseUrl: 'http://pile-driver.local:11434',
+  modelsUrl: 'http://pile-driver.local:11434/api/tags',
+}
+
 describe('ollama', () => {
   it('when the body has no models key, returns an empty list', () => {
-    const result = parseOllamaResponse({})
+    const result = parseOllamaResponse({}, ollamaConfig)
 
     expect(result).toEqual([])
   })
@@ -25,7 +32,7 @@ describe('ollama', () => {
       ],
     }
 
-    const result = parseOllamaResponse(body)
+    const result = parseOllamaResponse(body, ollamaConfig)
 
     expect(result).toHaveLength(1)
     expect(result[0].id).toBe('qwen3-coder:30b')
@@ -37,12 +44,46 @@ describe('ollama', () => {
   })
 
   it('when details are missing, size is empty and context is null', () => {
-    const result = parseOllamaResponse({
-      models: [{ name: 'qwen3-coder:30b' }],
-    })
+    const result = parseOllamaResponse(
+      {
+        models: [{ name: 'qwen3-coder:30b' }],
+      },
+      ollamaConfig,
+    )
 
     expect(result[0].size).toBe('')
     expect(result[0].contextLength).toBeNull()
+  })
+
+  it('when details have context_length of zero, context is null', () => {
+    const result = parseOllamaResponse(
+      {
+        models: [{ name: 'x', details: { context_length: 0 } }],
+      },
+      ollamaConfig,
+    )
+
+    expect(result[0].contextLength).toBeNull()
+  })
+
+  it('when fetched with modelsUrl omitted, falls back to baseUrl', async () => {
+    const config: ProviderConfig = {
+      name: 'ollama',
+      baseUrl: 'http://pile-driver.local:11434',
+    }
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ models: [{ name: 'qwen3-coder:30b' }] }),
+      }),
+    )
+
+    const result = await fetchOllamaModels(config)
+
+    expect(result[0].id).toBe('qwen3-coder:30b')
   })
 
   it('when fetched, returns normalized records', async () => {
@@ -55,7 +96,7 @@ describe('ollama', () => {
       }),
     )
 
-    const result = await fetchOllamaModels()
+    const result = await fetchOllamaModels(ollamaConfig)
 
     expect(result[0].id).toBe('qwen3-coder:30b')
     expect(result[0].providers).toEqual(['ollama'])
@@ -64,7 +105,7 @@ describe('ollama', () => {
   it('when the network request fails, returns an empty list', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')))
 
-    const result = await fetchOllamaModels()
+    const result = await fetchOllamaModels(ollamaConfig)
 
     expect(result).toEqual([])
   })

@@ -7,3 +7,5 @@ coverage/
 tests/support/fixtures/.crow/
 .env
 .env.local
+
+.vitest/

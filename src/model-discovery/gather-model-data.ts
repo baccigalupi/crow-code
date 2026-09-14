@@ -1,7 +1,7 @@
+import { loadProviderConfig } from './providers/load-provider-config.js'
+import { fetchProviders } from './providers/fetch-providers.js'
 import { appendRatings } from './ratings/append-ratings.js'
 import { defaultCachePath, writeCache } from './cache.js'
-import { fetchNousModels } from './providers/nous.js'
-import { fetchOllamaModels } from './providers/ollama.js'
 import type { ModelRecord } from './types.js'
 
 class GatherModelData {
@@ -14,7 +14,7 @@ class GatherModelData {
 
   async run() {
     this.logStart()
-    await this.fetchProviderRecords()
+    await this.fetchProviders()
     this.dedupRecords()
     await this.appendRatings()
     this.writeModelRecordsToCache()
@@ -25,11 +25,12 @@ class GatherModelData {
     console.log('Fetching model data and building cache...')
   }
 
-  private async fetchProviderRecords() {
-    const nousRecords = await fetchNousModels()
-    const ollamaRecords = await fetchOllamaModels()
+  private async fetchProviders() {
+    const configs = loadProviderConfig(this.crowDirectory)
 
-    this.records = [...nousRecords, ...ollamaRecords]
+    this.records = (
+      await Promise.all(configs.map((config) => fetchProviders(config)))
+    ).flat()
   }
 
   private dedupRecords() {
