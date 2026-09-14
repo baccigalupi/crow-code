@@ -1,14 +1,14 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { AABenchmarks } from '../types.js'
-import { AAModel, matchAABenchmarks } from './aa-scores.js'
+import { AABenchmarks, AAModel } from '../types.js'
+import { matchAABenchmarks } from './aa-scores.js'
 
 const aaUrl = 'https://artificialanalysis.ai/api/v2/language/models/free'
 
 const aaKeyMissingMessage =
   'AA_API_KEY is not set. Put it in .env (AA_API_KEY=...) or export it, or get a free key at https://artificialanalysis.ai/api-key-management-redirect'
 
-interface AAPage {
+type AAPage = {
   data: AAModel[]
   pagination: { has_more: boolean }
 }

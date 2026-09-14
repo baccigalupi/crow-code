@@ -1,6 +1,6 @@
 import { AABenchmarks, CodingSource } from './types.js'
 
-export interface CodingResult {
+type CodingResult = {
   coding: number | null
   source: CodingSource | null
 }
@@ -10,6 +10,24 @@ export const nullableNumber = (value: number | undefined): number | null => {
     return null
   }
   return value
+}
+
+export const benchmarkIntelligence = (
+  benchmark: AABenchmarks | undefined,
+): number | null => {
+  if (benchmark === undefined) {
+    return null
+  }
+  return benchmark.intelligence
+}
+
+export const benchmarkAgentic = (
+  benchmark: AABenchmarks | undefined,
+): number | null => {
+  if (benchmark === undefined) {
+    return null
+  }
+  return benchmark.agentic
 }
 
 export const nullableString = (value: string | undefined): string | null => {

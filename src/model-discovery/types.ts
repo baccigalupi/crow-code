@@ -1,6 +1,6 @@
 export type CodingSource = 'AA' | 'Aider'
 
-export interface ModelRecord {
+export type ModelRecord = {
   id: string
   name: string
   providers: string[]
@@ -17,35 +17,24 @@ export interface ModelRecord {
   size: string
 }
 
-export interface CacheFile {
+export type CacheFile = {
   fetchedAt: string
   sources: string[]
   models: ModelRecord[]
 }
 
-export interface ReasoningMeta {
-  mandatory?: boolean
-  default_enabled?: boolean
-  default_effort?: string
-}
-
-export interface NousModel {
-  id: string
-  name?: string
-  context_length?: number
-  knowledge_cutoff?: string
-  pricing?: { prompt?: string; completion?: string }
-  reasoning?: ReasoningMeta | null
-  architecture?: { modality?: string }
-}
-
-export interface OllamaModel {
-  name: string
-  details?: { parameter_size?: string; context_length?: number }
-}
-
-export interface AABenchmarks {
+export type AABenchmarks = {
   intelligence: number
   coding: number
   agentic: number
+}
+
+export type AAModel = {
+  slug: string
+  model_creator: { name: string }
+  evaluations: {
+    artificial_analysis_intelligence_index: number | null
+    artificial_analysis_coding_index: number | null
+    artificial_analysis_agentic_index: number | null
+  }
 }

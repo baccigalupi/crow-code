@@ -1,10 +1,25 @@
-import { aiderPolyglotPct } from './ratings/aider-polyglot.js'
-import {
-  nullableNumber,
-  nullableString,
-  resolveCoding,
-} from './record-helpers.js'
-import { AABenchmarks, ModelRecord, NousModel, ReasoningMeta } from './types.js'
+import { ModelRecord } from '../types.js'
+import { nullableNumber, nullableString } from '../record-helpers.js'
+
+type ReasoningMeta = {
+  mandatory?: boolean
+  default_enabled?: boolean
+  default_effort?: string
+}
+
+type NousModel = {
+  id: string
+  name?: string
+  context_length?: number
+  knowledge_cutoff?: string
+  pricing?: { prompt?: string; completion?: string }
+  reasoning?: ReasoningMeta | null
+  architecture?: { modality?: string }
+}
+
+export const nousUrl = 'https://inference-api.nousresearch.com/v1/models'
+
+export const nousTimeoutMs = 20000
 
 const modelName = (model: NousModel): string => {
   if (model.name === undefined) {
@@ -44,24 +59,6 @@ const toMillionPrice = (pricePerToken: string | undefined): number => {
   return parseFloat(pricePerToken) * 1_000_000
 }
 
-const benchmarkIntelligence = (
-  benchmark: AABenchmarks | undefined,
-): number | null => {
-  if (benchmark === undefined) {
-    return null
-  }
-  return benchmark.intelligence
-}
-
-const benchmarkAgentic = (
-  benchmark: AABenchmarks | undefined,
-): number | null => {
-  if (benchmark === undefined) {
-    return null
-  }
-  return benchmark.agentic
-}
-
 const reasoningModeLabel = (meta: ReasoningMeta): string => {
   if (meta.mandatory === true) {
     return 'forced'
@@ -83,19 +80,15 @@ const reasoningMode = (meta: ReasoningMeta | null | undefined): string => {
   return `${mode}/${meta.default_effort}`
 }
 
-export const buildNousRecord = (
-  model: NousModel,
-  benchmark: AABenchmarks | undefined,
-): ModelRecord => {
-  const coding = resolveCoding(benchmark, aiderPolyglotPct[model.id])
+const buildNousRecord = (model: NousModel): ModelRecord => {
   return {
     id: model.id,
     name: modelName(model),
     providers: ['nous'],
-    reasoning: benchmarkIntelligence(benchmark),
-    coding: coding.coding,
-    codingSource: coding.source,
-    agentic: benchmarkAgentic(benchmark),
+    reasoning: null,
+    coding: null,
+    codingSource: null,
+    agentic: null,
     costInput: toMillionPrice(promptPrice(model.pricing)),
     costOutput: toMillionPrice(completionPrice(model.pricing)),
     contextLength: nullableNumber(model.context_length),
@@ -104,4 +97,12 @@ export const buildNousRecord = (
     knowledgeCutoff: nullableString(model.knowledge_cutoff),
     size: '',
   }
+}
+
+export const parseNousResponse = (raw: unknown): ModelRecord[] => {
+  const body = raw as { data?: NousModel[] }
+  if (body.data === undefined) {
+    return []
+  }
+  return body.data.map(buildNousRecord)
 }

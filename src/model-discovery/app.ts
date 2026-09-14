@@ -1,20 +1,33 @@
 import { fetchAABenchmarks } from './ratings/aa-benchmarks.js'
 import { buildRecords } from './build-records.js'
 import { defaultCachePath, readCache, writeCache } from './cache.js'
-import { fetchNousModels } from './fetch-nous.js'
-import { fetchOllamaModels } from './fetch-ollama.js'
+import { fetchCatalog } from './fetch-catalog.js'
+import { nousTimeoutMs, nousUrl, parseNousResponse } from './providers/nous.js'
+import {
+  ollamaTimeoutMs,
+  ollamaUrl,
+  parseOllamaResponse,
+} from './providers/ollama.js'
 import { CacheFile } from './types.js'
 
 const buildCache = async (): Promise<CacheFile> => {
   console.error('Fetching model data and building cache...')
-  const nousModels = await fetchNousModels()
-  const ollamaModels = await fetchOllamaModels()
+  const nousRecords = await fetchCatalog(
+    nousUrl,
+    parseNousResponse,
+    nousTimeoutMs,
+  )
+  const ollamaRecords = await fetchCatalog(
+    ollamaUrl,
+    parseOllamaResponse,
+    ollamaTimeoutMs,
+  )
   const catalogIds = new Set<string>([
-    ...nousModels.map((model) => model.id),
-    ...ollamaModels.map((model) => model.name),
+    ...nousRecords.map((record) => record.id),
+    ...ollamaRecords.map((record) => record.id),
   ])
   const benchmarks = await fetchAABenchmarks(catalogIds)
-  const models = buildRecords(nousModels, ollamaModels, benchmarks)
+  const models = buildRecords(nousRecords, ollamaRecords, benchmarks)
   writeCache(defaultCachePath(), models)
   console.log(`Wrote ${models.length} models to ${defaultCachePath()}`)
   return {

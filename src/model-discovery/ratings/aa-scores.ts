@@ -1,15 +1,5 @@
-import { AABenchmarks } from '../types.js'
+import { AABenchmarks, AAModel } from '../types.js'
 import { candidateIds } from './aa-match.js'
-
-export interface AAModel {
-  slug: string
-  model_creator: { name: string }
-  evaluations: {
-    artificial_analysis_intelligence_index: number | null
-    artificial_analysis_coding_index: number | null
-    artificial_analysis_agentic_index: number | null
-  }
-}
 
 const toScore = (value: number | null): number => {
   if (value === null) {

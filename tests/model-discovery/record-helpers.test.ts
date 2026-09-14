@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
+  benchmarkAgentic,
+  benchmarkIntelligence,
   nullableNumber,
   nullableString,
   resolveCoding,
@@ -49,5 +51,37 @@ describe('record-helpers', () => {
     const result = nullableString('2025')
 
     expect(result).toBe('2025')
+  })
+
+  it('when a benchmark is undefined, intelligence is null', () => {
+    const result = benchmarkIntelligence(undefined)
+
+    expect(result).toBeNull()
+  })
+
+  it('when a benchmark has intelligence, returns it', () => {
+    const result = benchmarkIntelligence({
+      intelligence: 40,
+      coding: 60,
+      agentic: 30,
+    })
+
+    expect(result).toBe(40)
+  })
+
+  it('when a benchmark is undefined, agentic is null', () => {
+    const result = benchmarkAgentic(undefined)
+
+    expect(result).toBeNull()
+  })
+
+  it('when a benchmark has agentic, returns it', () => {
+    const result = benchmarkAgentic({
+      intelligence: 40,
+      coding: 60,
+      agentic: 30,
+    })
+
+    expect(result).toBe(30)
   })
 })

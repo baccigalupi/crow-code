@@ -1,8 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import {
-  matchAABenchmarks,
-  AAModel,
-} from '../../../src/model-discovery/ratings/aa-scores'
+import { matchAABenchmarks } from '../../../src/model-discovery/ratings/aa-scores'
+import { AAModel } from '../../../src/model-discovery/types'
 
 describe('matchAABenchmarks', () => {
   it('when an AA model matches a catalog id, records its indices', () => {

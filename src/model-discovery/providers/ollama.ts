@@ -1,6 +1,14 @@
-import { aiderPolyglotPct } from './ratings/aider-polyglot.js'
-import { nullableNumber, resolveCoding } from './record-helpers.js'
-import { ModelRecord, OllamaModel } from './types.js'
+import { ModelRecord } from '../types.js'
+import { nullableNumber } from '../record-helpers.js'
+
+type OllamaModel = {
+  name: string
+  details?: { parameter_size?: string; context_length?: number }
+}
+
+export const ollamaUrl = 'http://pile-driver.local:11434/api/tags'
+
+export const ollamaTimeoutMs = 5000
 
 const ollamaContextLength = (
   details: OllamaModel['details'],
@@ -18,15 +26,14 @@ const ollamaSize = (details: OllamaModel['details']): string => {
   return details.parameter_size
 }
 
-export const buildOllamaRecord = (model: OllamaModel): ModelRecord => {
-  const coding = resolveCoding(undefined, aiderPolyglotPct[model.name])
+const buildOllamaRecord = (model: OllamaModel): ModelRecord => {
   return {
     id: model.name,
     name: model.name,
     providers: ['ollama'],
     reasoning: null,
-    coding: coding.coding,
-    codingSource: coding.source,
+    coding: null,
+    codingSource: null,
     agentic: null,
     costInput: 0,
     costOutput: 0,
@@ -36,4 +43,12 @@ export const buildOllamaRecord = (model: OllamaModel): ModelRecord => {
     knowledgeCutoff: null,
     size: ollamaSize(model.details),
   }
+}
+
+export const parseOllamaResponse = (raw: unknown): ModelRecord[] => {
+  const body = raw as { models?: OllamaModel[] }
+  if (body.models === undefined) {
+    return []
+  }
+  return body.models.map(buildOllamaRecord)
 }
