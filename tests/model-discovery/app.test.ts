@@ -39,26 +39,19 @@ afterEach(() => {
 })
 
 describe('main', () => {
-  it('when the cache exists, renders the table', async () => {
+  it('when the cache exists and no refresh is requested, keeps it', async () => {
     vi.mocked(readCache).mockReturnValue(cache)
     const log = vi.spyOn(console, 'log').mockImplementation(() => {})
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    await main([])
+    await main(false)
 
-    expect(log).toHaveBeenCalled()
     expect(vi.mocked(writeCache)).not.toHaveBeenCalled()
+    expect(log).not.toHaveBeenCalled()
+    expect(error).not.toHaveBeenCalled()
   })
 
-  it('when --json is given, renders the raw JSON', async () => {
-    vi.mocked(readCache).mockReturnValue(cache)
-    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
-
-    await main(['--json'])
-
-    expect(log).toHaveBeenCalledWith(JSON.stringify([model], null, 2))
-  })
-
-  it('when the cache is missing, fetches and builds it', async () => {
+  it('when the cache is missing, fetches and writes it', async () => {
     process.env.AA_API_KEY = 'test-key'
     vi.mocked(readCache).mockReturnValue(null)
     vi.stubGlobal(
@@ -68,7 +61,7 @@ describe('main', () => {
           return Promise.resolve({
             ok: true,
             status: 200,
-            json: async () => ({ models: [] }),
+            json: async () => ({ models: [{ name: 'qwen3-coder:30b' }] }),
           })
         }
         if (url.includes('artificialanalysis')) {
@@ -85,10 +78,10 @@ describe('main', () => {
         })
       }),
     )
-    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
     const log = vi.spyOn(console, 'log').mockImplementation(() => {})
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    await main([])
+    await main(false)
 
     expect(vi.mocked(writeCache)).toHaveBeenCalled()
     expect(log).toHaveBeenCalled()
@@ -97,7 +90,7 @@ describe('main', () => {
     )
   })
 
-  it('when --refresh is given, rebuilds the cache even when one exists', async () => {
+  it('when refresh is requested, rebuilds the cache even when one exists', async () => {
     process.env.AA_API_KEY = 'test-key'
     vi.mocked(readCache).mockReturnValue(cache)
     vi.stubGlobal(
@@ -124,22 +117,15 @@ describe('main', () => {
         })
       }),
     )
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
     const error = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    await main(['--refresh'])
+    await main(true)
 
     expect(vi.mocked(writeCache)).toHaveBeenCalled()
+    expect(log).toHaveBeenCalled()
     expect(error).toHaveBeenCalledWith(
       'Fetching model data and building cache...',
     )
-  })
-
-  it('when --all is given, skips limiting the rows', async () => {
-    vi.mocked(readCache).mockReturnValue(cache)
-    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
-
-    await main(['--all'])
-
-    expect(log).toHaveBeenCalled()
   })
 })

@@ -1,5 +1,3 @@
-export type SortKey = 'coding' | 'reasoning' | 'agentic' | 'cost' | 'context'
-
 export type CodingSource = 'AA' | 'Aider'
 
 export interface ModelRecord {
@@ -50,14 +48,4 @@ export interface AABenchmarks {
   intelligence: number
   coding: number
   agentic: number
-}
-
-export interface Options {
-  refresh: boolean
-  filter?: string
-  provider?: string
-  sort: SortKey
-  top: number
-  all: boolean
-  json: boolean
 }

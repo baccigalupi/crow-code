@@ -3,10 +3,6 @@ import { buildRecords } from './build-records.js'
 import { defaultCachePath, readCache, writeCache } from './cache.js'
 import { fetchNousModels } from './fetch-nous.js'
 import { fetchOllamaModels } from './fetch-ollama.js'
-import { filterRecords } from './filter.js'
-import { parseArguments } from './parse-args.js'
-import { renderJson, renderTable } from './render.js'
-import { sortRecords } from './sort.js'
 import { CacheFile } from './types.js'
 
 const buildCache = async (): Promise<CacheFile> => {
@@ -20,6 +16,7 @@ const buildCache = async (): Promise<CacheFile> => {
   const benchmarks = await fetchAABenchmarks(catalogIds)
   const models = buildRecords(nousModels, ollamaModels, benchmarks)
   writeCache(defaultCachePath(), models)
+  console.log(`Wrote ${models.length} models to ${defaultCachePath()}`)
   return {
     fetchedAt: new Date().toISOString(),
     sources: [],
@@ -37,18 +34,6 @@ const loadOrBuildCache = async (refresh: boolean): Promise<CacheFile> => {
   return buildCache()
 }
 
-export const main = async (argumentsList: string[]) => {
-  const options = parseArguments(argumentsList)
-  const cache = await loadOrBuildCache(options.refresh)
-  const filtered = filterRecords(cache.models, options)
-  const sorted = sortRecords(filtered, options.sort)
-  let models = sorted
-  if (!options.all) {
-    models = sorted.slice(0, options.top)
-  }
-  if (options.json) {
-    renderJson(models)
-    return
-  }
-  renderTable(models, cache)
+export const main = async (refresh: boolean) => {
+  await loadOrBuildCache(refresh)
 }
