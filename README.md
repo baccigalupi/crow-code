@@ -2,7 +2,7 @@
 
 Task oriented coding agent.
 
-## Cheap good coding agents
+## Coding agents until it is automated
 
 ```
 coding   in/out ($/M)     total    model
@@ -11,6 +11,14 @@ coding   in/out ($/M)     total    model
 60.2    $0.30/$0.61     $0.91     xiaomi/mimo-v2.5-pro
 58.8    $0.07/$0.29     $0.36     tencent/hy3
 56.8    $0.12/$0.24     $0.36     xiaomi/mimo-v2.5
+```
+
+## Free coding agents
+
+```
+upstage/solar-pro4:free        sibling AA coding 52.7
+meituan/longcat-2.0:free       sibling AA coding 45.3
+stepfun/step-3.7-flash:free    sibling AA coding 39.6
 ```
 
 ## Setup
