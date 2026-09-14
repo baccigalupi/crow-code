@@ -1,24 +1,24 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { fetchNousModels } from '../src/fetch-nous'
+import { fetchOllamaModels } from '../../src/model-discovery/fetch-ollama'
 
 afterEach(() => {
   vi.unstubAllGlobals()
 })
 
-describe('fetchNousModels', () => {
+describe('fetchOllamaModels', () => {
   it('when the API returns models, returns them', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        json: async () => ({ data: [{ id: 'deepseek/deepseek-chat' }] }),
+        json: async () => ({ models: [{ name: 'qwen3-coder:30b' }] }),
       }),
     )
 
-    const result = await fetchNousModels()
+    const result = await fetchOllamaModels()
 
-    expect(result).toEqual([{ id: 'deepseek/deepseek-chat' }])
+    expect(result).toEqual([{ name: 'qwen3-coder:30b' }])
   })
 
   it('when the API responds with an error, returns an empty list', async () => {
@@ -29,7 +29,7 @@ describe('fetchNousModels', () => {
         .mockResolvedValue({ ok: false, status: 500, json: async () => ({}) }),
     )
 
-    const result = await fetchNousModels()
+    const result = await fetchOllamaModels()
 
     expect(result).toEqual([])
   })

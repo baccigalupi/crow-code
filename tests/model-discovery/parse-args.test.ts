@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseArguments } from '../src/parse-args'
+import { parseArguments } from '../../src/model-discovery/parse-args'
 
 describe('parseArguments', () => {
   it('when no arguments are given, returns defaults', () => {

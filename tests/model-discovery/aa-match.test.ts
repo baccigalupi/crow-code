@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { candidateIds } from '../src/aa-match'
+import { candidateIds } from '../../src/model-discovery/aa-match'
 
 describe('candidateIds', () => {
   it('when the creator is unknown, returns no candidates', () => {

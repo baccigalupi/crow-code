@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import { formatCost, formatScore, padLeft, padRight } from '../src/render'
+import {
+  formatCost,
+  formatScore,
+  padLeft,
+  padRight,
+} from '../../src/model-discovery/render'
 
 describe('render', () => {
   it('when a score is null, shows n/a', () => {

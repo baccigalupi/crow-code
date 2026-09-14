@@ -20,7 +20,7 @@
   "type": "module",
   "main": "index.ts",
   "bin": {
-    "crow-code-models": "dist/run.js"
+    "crow-code-models": "dist/model-discovery/run.js"
   },
   "files": [
     "dist"
@@ -32,7 +32,7 @@
     "prepare": "npm run build",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "models": "tsx src/run.ts"
+    "models": "tsx src/model-discovery/run.ts"
   },
   "devDependencies": {
     "@types/node": "^26.5.1",

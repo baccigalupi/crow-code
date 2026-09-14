@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { filterRecords } from '../src/filter'
-import { ModelRecord, Options } from '../src/types'
+import { filterRecords } from '../../src/model-discovery/filter'
+import { ModelRecord, Options } from '../../src/model-discovery/types'
 
 const baseModel: ModelRecord = {
   id: 'a',

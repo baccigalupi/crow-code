@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest'
-import { readCache, writeCache } from '../src/cache'
-import { ModelRecord } from '../src/types'
+import { readCache, writeCache } from '../../src/model-discovery/cache'
+import { ModelRecord } from '../../src/model-discovery/types'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'

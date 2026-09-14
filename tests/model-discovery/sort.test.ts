@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { sortRecords } from '../src/sort'
-import { ModelRecord } from '../src/types'
+import { sortRecords } from '../../src/model-discovery/sort'
+import { ModelRecord } from '../../src/model-discovery/types'
 
 const baseModel: ModelRecord = {
   id: 'a',

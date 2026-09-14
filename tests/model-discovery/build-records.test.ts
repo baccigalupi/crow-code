@@ -1,6 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import { buildRecords } from '../src/build-records'
-import { AABenchmarks, NousModel, OllamaModel } from '../src/types'
+import { buildRecords } from '../../src/model-discovery/build-records'
+import {
+  AABenchmarks,
+  NousModel,
+  OllamaModel,
+} from '../../src/model-discovery/types'
 
 describe('buildRecords', () => {
   it('when a Nous model has an AA benchmark, records the AA indices', () => {
