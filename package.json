@@ -18,12 +18,13 @@
   "license": "MIT",
   "author": "Kane Baccigalupi",
   "type": "module",
-  "main": "index.ts",
+  "main": "dist/model-discovery/run.js",
   "bin": {
-    "crow-code-models": "dist/model-discovery/run.js"
+    "crow": "bin/crow"
   },
   "files": [
-    "dist"
+    "dist",
+    "bin"
   ],
   "scripts": {
     "test": "vitest",
