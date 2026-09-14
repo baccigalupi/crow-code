@@ -2,8 +2,8 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { CacheFile, ModelRecord } from './types.js'
 
-export const defaultCachePath = (): string => {
-  return join(process.cwd(), '.crow', 'models.json')
+export const defaultCachePath = (crowDirectory: string): string => {
+  return join(crowDirectory, '.crow', 'models.json')
 }
 
 export const writeCache = (path: string, models: ModelRecord[]): void => {

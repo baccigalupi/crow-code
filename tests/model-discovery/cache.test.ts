@@ -42,8 +42,8 @@ describe('cache', () => {
   })
 
   it('when asking for the default path, returns the .crow cache location', () => {
-    const result = defaultCachePath()
+    const result = defaultCachePath('/tmp/project')
 
-    expect(result.endsWith('.crow/models.json')).toBe(true)
+    expect(result).toBe('/tmp/project/.crow/models.json')
   })
 })

@@ -1,0 +1,13 @@
+{
+  "providers": [
+    {
+      "name": "nous",
+      "baseUrl": "https://inference-api.nousresearch.com"
+    },
+    {
+      "name": "ollama",
+      "baseUrl": "http://pile-driver.local:11434",
+      "modelsUrl": "http://pile-driver.local:11434/api/tags"
+    }
+  ]
+}

@@ -4,5 +4,6 @@ dist/
 coverage/
 .cache/
 .crow/models.json
+tests/support/fixtures/.crow/
 .env
 .env.local

@@ -1,20 +1,19 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
+import { readFileSync, rmSync } from 'node:fs'
+import { join } from 'node:path'
 import { main } from '../../src/model-discovery/app'
-import { writeCache } from '../../src/model-discovery/cache'
 
-vi.mock('../../src/model-discovery/cache', () => ({
-  defaultCachePath: () => '/tmp/crow-code-cache.json',
-  writeCache: vi.fn(),
-}))
+const crowDirectory = join('tests', 'support', 'fixtures')
 
 afterEach(() => {
   delete process.env.AA_API_KEY
   vi.unstubAllGlobals()
   vi.restoreAllMocks()
+  rmSync(join(crowDirectory, '.crow'), { recursive: true, force: true })
 })
 
 describe('main', () => {
-  it('when run, fetches and writes the cache', async () => {
+  it('when run, writes a models.json in the injected crow directory', async () => {
     process.env.AA_API_KEY = 'test-key'
     vi.stubGlobal(
       'fetch',
@@ -30,27 +29,52 @@ describe('main', () => {
           return Promise.resolve({
             ok: true,
             status: 200,
-            json: async () => ({ data: [], pagination: { has_more: false } }),
+            json: async () => ({
+              data: [
+                {
+                  slug: 'deepseek-chat',
+                  model_creator: { name: 'DeepSeek' },
+                  evaluations: {
+                    artificial_analysis_intelligence_index: 40,
+                    artificial_analysis_coding_index: 60,
+                    artificial_analysis_agentic_index: 30,
+                  },
+                },
+              ],
+              pagination: { has_more: false },
+            }),
           })
         }
         return Promise.resolve({
           ok: true,
           status: 200,
-          json: async () => ({ data: [{ id: 'deepseek/deepseek-chat' }] }),
+          json: async () => ({
+            data: [
+              {
+                id: 'deepseek/deepseek-chat',
+                name: 'DeepSeek Chat',
+                context_length: 1000,
+                pricing: { prompt: '0.0000005', completion: '0.0000015' },
+                reasoning: { mandatory: false, default_enabled: false },
+                architecture: { modality: 'text->text' },
+              },
+            ],
+          }),
         })
       }),
     )
     const log = vi.spyOn(console, 'log').mockImplementation(() => {})
 
-    await main()
+    await main(crowDirectory)
 
-    expect(vi.mocked(writeCache)).toHaveBeenCalledWith(
-      '/tmp/crow-code-cache.json',
-      expect.any(Array),
+    const saved = JSON.parse(
+      readFileSync(join(crowDirectory, '.crow', 'models.json'), 'utf8'),
     )
-    expect(log).toHaveBeenCalledWith(
-      'Fetching model data and building cache...',
+    const fixture = JSON.parse(
+      readFileSync(join(crowDirectory, 'crow-models.json'), 'utf8'),
     )
-    expect(log).toHaveBeenCalledWith(expect.stringContaining('Wrote '))
+    expect(typeof saved.fetchedAt).toBe('string')
+    expect(saved.sources).toEqual(fixture.sources)
+    expect(saved.models).toEqual(fixture.models)
   })
 })
