@@ -1,4 +1,4 @@
-import { aiderPolyglotPct } from './aider-polyglot.js'
+import { aiderPolyglotPct } from './ratings/aider-polyglot.js'
 import {
   nullableNumber,
   nullableString,

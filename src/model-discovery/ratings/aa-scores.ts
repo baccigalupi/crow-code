@@ -1,4 +1,4 @@
-import { AABenchmarks } from './types.js'
+import { AABenchmarks } from '../types.js'
 import { candidateIds } from './aa-match.js'
 
 export interface AAModel {

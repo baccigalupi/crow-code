@@ -17,7 +17,7 @@
  *   - cost, context, modality, reasoning mode → Nous / Ollama catalog
  */
 
-import { fetchAABenchmarks } from './aa-benchmarks.js'
+import { fetchAABenchmarks } from './ratings/aa-benchmarks.js'
 import { buildRecords } from './build-records.js'
 import { defaultCachePath, readCache, writeCache } from './cache.js'
 import { fetchNousModels } from './fetch-nous.js'

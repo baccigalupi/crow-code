@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { AABenchmarks } from './types.js'
+import { AABenchmarks } from '../types.js'
 import { AAModel, matchAABenchmarks } from './aa-scores.js'
 
 const aaUrl = 'https://artificialanalysis.ai/api/v2/language/models/free'

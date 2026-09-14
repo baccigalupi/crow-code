@@ -1,4 +1,4 @@
-import { aiderPolyglotPct } from './aider-polyglot.js'
+import { aiderPolyglotPct } from './ratings/aider-polyglot.js'
 import { nullableNumber, resolveCoding } from './record-helpers.js'
 import { ModelRecord, OllamaModel } from './types.js'
 
