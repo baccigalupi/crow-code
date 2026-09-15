@@ -9,3 +9,4 @@ tests/support/fixtures/.crow/
 .env.local
 
 .vitest/
+docs/plans/
