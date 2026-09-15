@@ -1,3 +1,4 @@
+import { readCache } from '../cache.js'
 import type { ModelRecord } from '../types.js'
 
 const defaultCheapCostThreshold = 0.001
@@ -44,7 +45,14 @@ class CheapSummarizerFilter {
   }
 }
 
-export const getCheapSummarizers = (models: ModelRecord[]): ModelRecord[] => {
+export const selectCheapNoReasoningModels = (
+  models: ModelRecord[],
+): ModelRecord[] => {
   const filter = new CheapSummarizerFilter()
   return filter.select(models)
+}
+
+export const getCheapNoReasoningModels = (cachePath: string): ModelRecord[] => {
+  const cache = readCache(cachePath)
+  return selectCheapNoReasoningModels(cache.models)
 }

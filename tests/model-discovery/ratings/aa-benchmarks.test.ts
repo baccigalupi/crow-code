@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import {
   fetchAABenchmarks,
   loadApiKey,
-} from '../../../src/model-discovery/ratings/aa-benchmarks'
+} from '../../../src/model-discovery/ratings/aa-benchmarks.js'
 
 const tempDirs: string[] = []
 

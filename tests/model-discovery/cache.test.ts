@@ -1,6 +1,9 @@
 import { describe, it, expect, afterEach } from 'vitest'
-import { defaultCachePath, writeCache } from '../../src/model-discovery/cache'
-import { ModelRecord } from '../../src/model-discovery/types'
+import {
+  defaultCachePath,
+  writeCache,
+} from '../../src/model-discovery/cache.js'
+import { ModelRecord } from '../../src/model-discovery/types.js'
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'

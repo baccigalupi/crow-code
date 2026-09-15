@@ -2,8 +2,8 @@ import { describe, it, expect, vi, afterEach } from 'vitest'
 import {
   fetchOllamaModels,
   parseOllamaResponse,
-} from '../../../src/model-discovery/providers/ollama'
-import type { ProviderConfig } from '../../../src/model-discovery/types'
+} from '../../../src/model-discovery/providers/ollama.js'
+import type { ProviderConfig } from '../../../src/model-discovery/types.js'
 
 afterEach(() => {
   vi.unstubAllGlobals()

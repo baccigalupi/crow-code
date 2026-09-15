@@ -4,12 +4,12 @@ import {
   benchmarkAgentic,
   benchmarkIntelligence,
   resolveCoding,
-} from '../../../src/model-discovery/ratings/record-scores'
-import { aiderPolyglotPct } from '../../../src/model-discovery/ratings/aider-polyglot'
+} from '../../../src/model-discovery/ratings/record-scores.js'
+import { aiderPolyglotPct } from '../../../src/model-discovery/ratings/aider-polyglot.js'
 import type {
   AABenchmarks,
   ModelRecord,
-} from '../../../src/model-discovery/types'
+} from '../../../src/model-discovery/types.js'
 
 describe('recordScores', () => {
   const record: ModelRecord = {

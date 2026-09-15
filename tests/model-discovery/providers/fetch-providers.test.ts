@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { fetchProviders } from '../../../src/model-discovery/providers/fetch-providers'
-import type { ProviderConfig } from '../../../src/model-discovery/types'
+import { fetchProviders } from '../../../src/model-discovery/providers/fetch-providers.js'
+import type { ProviderConfig } from '../../../src/model-discovery/types.js'
 
 describe('fetchProviders', () => {
   it('when the provider name is unknown, returns an empty list', async () => {

@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, writeFileSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { CacheFile, ModelRecord } from './types.js'
 
@@ -19,4 +19,9 @@ export const writeCache = (path: string, models: ModelRecord[]): void => {
     models,
   }
   writeFileSync(path, JSON.stringify(cache, null, 2))
+}
+
+export const readCache = (path: string): CacheFile => {
+  const raw = readFileSync(path, 'utf8')
+  return JSON.parse(raw)
 }

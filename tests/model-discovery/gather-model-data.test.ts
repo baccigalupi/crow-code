@@ -7,7 +7,7 @@ import {
   readdirSync,
 } from 'node:fs'
 import { join } from 'node:path'
-import { gatherModelData } from '../../src/model-discovery/gather-model-data'
+import { gatherModelData } from '../../src/model-discovery/gather-model-data.js'
 
 const crowDirectory = join('tests', 'support', 'fixtures')
 const providersPath = join(crowDirectory, '.crow', 'providers.json')

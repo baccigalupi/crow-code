@@ -129,17 +129,18 @@ Apply when creating or changing tests in this repo.
 
 ### Hard rules
 
-1. Source-to-test placement is one-to-one: `src/model-discovery/<path>.ts` ↔ `tests/model-discovery/<path>.test.ts` (same relative path under `src/model-discovery/` and `tests/model-discovery/`). One source file, one test file — no combining modules or splitting one module across multiple test files.
-2. Only one top level describe per test file
-3. When there is only one export for the module tested, use that for the top level describe name
-4. When there are multiple exports, name the top level describe after the file name, not any one import
-5. Use AAA formatting without comments. There should be a space between each of the A's to produce groupings
-6. Only when there are three or more tests for the same heading should you create a nested describe.
-7. Most test descriptions should be "when X, Y happens"
-8. Don't extract Arrange into helpers without first getting user permissions. That bans helpers in a test/support or helpers in the test file itself.
-9. Avoid putting arrange in beforeEach
-10. Only mock dependents when it makes the tests clearer
-11. Only test what logic is in the module, not what's in the dependencies.
+1. When finished touching TypeScript files, run `npm run typecheck` and report the actual output. Do not claim TS is clean from reading `tsconfig.json` alone. If the user reports a TS error, use that same command to find it — do not invent your own check or report clean when the real one is broken.
+2. Source-to-test placement is one-to-one: `src/model-discovery/<path>.ts` ↔ `tests/model-discovery/<path>.test.ts` (same relative path under `src/model-discovery/` and `tests/model-discovery/`). One source file, one test file — no combining modules or splitting one module across multiple test files.
+3. Only one top level describe per test file
+4. When there is only one export for the module tested, use that for the top level describe name
+5. When there are multiple exports, name the top level describe after the file name, not any one import
+6. Use AAA formatting without comments. There should be a space between each of the A's to produce groupings
+7. Only when there are three or more tests for the same heading should you create a nested describe.
+8. Most test descriptions should be "when X, Y happens"
+9. Don't extract Arrange into helpers without first getting user permissions. That bans helpers in a test/support or helpers in the test file itself.
+10. Avoid putting arrange in beforeEach
+11. Only mock dependents when it makes the tests clearer
+12. Only test what logic is in the module, not what's in the dependencies.
 
 ### Examples
 

@@ -4,7 +4,7 @@ vi.mock('../../src/model-discovery/gather-model-data', () => ({
   gatherModelData: vi.fn(),
 }))
 
-import { gatherModelData } from '../../src/model-discovery/gather-model-data'
+import { gatherModelData } from '../../src/model-discovery/gather-model-data.js'
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -15,7 +15,7 @@ describe('run', () => {
     vi.mocked(gatherModelData).mockResolvedValue(undefined)
     vi.resetModules()
 
-    await import('../../src/model-discovery/run')
+    await import('../../src/model-discovery/run.js')
 
     expect(gatherModelData).toHaveBeenCalled()
   })
@@ -26,7 +26,7 @@ describe('run', () => {
     const originalExitCode = process.exitCode
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    await import('../../src/model-discovery/run')
+    await import('../../src/model-discovery/run.js')
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(errorSpy).toHaveBeenCalled()

@@ -2,8 +2,8 @@ import { describe, it, expect, vi, afterEach } from 'vitest'
 import {
   fetchOpenRouterModels,
   parseOpenRouterResponse,
-} from '../../../src/model-discovery/providers/openrouter'
-import type { ProviderConfig } from '../../../src/model-discovery/types'
+} from '../../../src/model-discovery/providers/openrouter.js'
+import type { ProviderConfig } from '../../../src/model-discovery/types.js'
 
 afterEach(() => {
   vi.unstubAllGlobals()
