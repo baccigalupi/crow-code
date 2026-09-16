@@ -4,9 +4,13 @@ import type { ModelRecord } from '../types.ts'
 
 export const appendRatings = async (
   records: ModelRecord[],
+  fetchClient: typeof fetch = fetch,
 ): Promise<ModelRecord[]> => {
   const catalogIds = new Set(records.map((record) => record.id))
-  const benchmarks = await fetchAABenchmarks(catalogIds)
+  const benchmarks = await fetchAABenchmarks(
+    catalogIds,
+    { fetchClient },
+  )
 
   return applyScores(records, benchmarks)
 }
