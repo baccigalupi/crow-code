@@ -5,6 +5,7 @@ coverage/
 .cache/
 .crow/models.json
 tests/support/fixtures/.crow/
+tests/support/fixtures/env/
 .env
 .env.local
 

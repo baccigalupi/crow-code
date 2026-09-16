@@ -1,6 +1,5 @@
-import { existsSync } from 'jsr:@std/fs'
-import { join } from 'jsr:@std/path'
 import { AABenchmarks, AAModel } from '../types.ts'
+import { Environment } from '../../env.ts'
 import { matchAABenchmarks } from './aa-scores.ts'
 
 const aaUrl = 'https://artificialanalysis.ai/api/v2/language/models/free'
@@ -11,30 +10,6 @@ const aaKeyMissingMessage =
 type AAPage = {
   data: AAModel[]
   pagination: { has_more: boolean }
-}
-
-const loadApiKeyFromFile = (envPath: string): string | null => {
-  const keyLine = Deno.readTextFileSync(envPath)
-    .split('\n')
-    .find((line: string) => line.startsWith('AA_API_KEY='))
-  if (keyLine === undefined) {
-    return null
-  }
-  return keyLine.slice('AA_API_KEY='.length).trim()
-}
-
-export const loadApiKey = (envPath?: string): string | null => {
-  if (Deno.env.get('AA_API_KEY') !== undefined) {
-    return Deno.env.get('AA_API_KEY') ?? ''
-  }
-  let path = join(Deno.cwd(), '.env')
-  if (envPath !== undefined) {
-    path = envPath
-  }
-  if (!existsSync(path)) {
-    return null
-  }
-  return loadApiKeyFromFile(path)
 }
 
 const fetchAAModelsPage = async (
@@ -80,14 +55,17 @@ const collectAllAAModels = async (
 
 export const fetchAABenchmarks = async (
   catalogIds: Set<string>,
-  envPath?: string,
+  environment: Environment,
   fetchClient: typeof fetch = fetch,
 ): Promise<Record<string, AABenchmarks>> => {
-  const key = loadApiKey(envPath)
-  if (key === null) {
+  if (!environment.hasValue('AA_API_KEY')) {
     console.error(aaKeyMissingMessage)
     return {}
   }
-  const models = await collectAllAAModels(key, fetchClient)
+
+  const models = await collectAllAAModels(
+    environment.value('AA_API_KEY'),
+    fetchClient,
+  )
   return matchAABenchmarks(models, catalogIds)
 }

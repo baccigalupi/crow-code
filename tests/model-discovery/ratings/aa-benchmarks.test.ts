@@ -1,84 +1,31 @@
-import { describe, it, expect, vi, afterEach } from 'vitest'
-import { join } from 'jsr:@std/path'
-import {
-  fetchAABenchmarks,
-  loadApiKey,
-} from '../../../src/model-discovery/ratings/aa-benchmarks.js'
+import { describe, it } from 'jsr:@std/testing/bdd'
+import { expect } from 'jsr:@std/expect'
+import { stub } from 'jsr:@std/testing/mock'
+import { fetchAABenchmarks } from '../../../src/model-discovery/ratings/aa-benchmarks.ts'
+import { Environment } from '../../../src/env.ts'
 
-const tempDirs: string[] = []
-
-afterEach(() => {
-  Deno.env.delete('AA_API_KEY')
-  vi.unstubAllGlobals()
-  vi.restoreAllMocks()
-  tempDirs.forEach((dir) => Deno.removeSync(dir, { recursive: true }))
-  tempDirs.length = 0
-})
-
-describe('aa-benchmarks', () => {
-  it('when the key is set in the environment, returns it', () => {
-    Deno.env.set('AA_API_KEY', 'test-key')
-
-    const result = loadApiKey()
-
-    expect(result).toBe('test-key')
-  })
-
-  it('when the env file does not exist, returns null', async () => {
-    const missing = join(await Deno.makeTempDir(), 'crow-code-missing.env')
-
-    const result = loadApiKey(missing)
-
-    expect(result).toBeNull()
-  })
-
-  it('when the env file has no key line, returns null', async () => {
-    const dir = await Deno.makeTempDir({ prefix: 'crow-code-aa-' })
-    tempDirs.push(dir)
-    const envPath = join(dir, '.env')
-    await Deno.writeTextFile(envPath, 'SOME_OTHER_KEY=1')
-
-    const result = loadApiKey(envPath)
-
-    expect(result).toBeNull()
-  })
-
-  it('when the env file has a key, returns it', async () => {
-    const dir = await Deno.makeTempDir({ prefix: 'crow-code-aa-' })
-    tempDirs.push(dir)
-    const envPath = join(dir, '.env')
-    await Deno.writeTextFile(envPath, 'AA_API_KEY=abc')
-
-    const result = loadApiKey(envPath)
-
-    expect(result).toBe('abc')
-  })
-
+describe('fetchAABenchmarks', () => {
   it('when a catalog id matches an AA model, returns its scores', async () => {
-    Deno.env.set('AA_API_KEY', 'test-key')
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: async () => ({
-          data: [
-            {
-              slug: 'deepseek-v4',
-              model_creator: { name: 'DeepSeek' },
-              evaluations: {
-                artificial_analysis_intelligence_index: 40,
-                artificial_analysis_coding_index: 60,
-                artificial_analysis_agentic_index: 30,
-              },
-            },
-          ],
-          pagination: { has_more: false },
-        }),
-      }),
-    )
+    const aaModel = {
+      slug: 'deepseek-v4',
+      model_creator: { name: 'DeepSeek' },
+      evaluations: {
+        artificial_analysis_intelligence_index: 40,
+        artificial_analysis_coding_index: 60,
+        artificial_analysis_agentic_index: 30,
+      },
+    }
+    const benchmarksFetch = () => {
+      return Promise.resolve(
+        Response.json({ data: [aaModel], pagination: { has_more: false } }),
+      )
+    }
 
-    const result = await fetchAABenchmarks(new Set(['deepseek/deepseek-v4']))
+    const result = await fetchAABenchmarks(
+      new Set(['deepseek/deepseek-v4']),
+      new Environment({ AA_API_KEY: 'test-key' }),
+      benchmarksFetch,
+    )
 
     expect(result).toEqual({
       'deepseek/deepseek-v4': { intelligence: 40, coding: 60, agentic: 30 },
@@ -86,39 +33,32 @@ describe('aa-benchmarks', () => {
   })
 
   it('when the API returns multiple pages, collects them all', async () => {
-    Deno.env.set('AA_API_KEY', 'test-key')
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockImplementation((url: string) => {
-        if (url.includes('page=2')) {
-          return Promise.resolve({
-            ok: true,
-            status: 200,
-            json: async () => ({ data: [], pagination: { has_more: false } }),
-          })
-        }
-        return Promise.resolve({
-          ok: true,
-          status: 200,
-          json: async () => ({
-            data: [
-              {
-                slug: 'deepseek-v4',
-                model_creator: { name: 'DeepSeek' },
-                evaluations: {
-                  artificial_analysis_intelligence_index: 40,
-                  artificial_analysis_coding_index: 60,
-                  artificial_analysis_agentic_index: 30,
-                },
-              },
-            ],
-            pagination: { has_more: true },
-          }),
-        })
-      }),
-    )
+    const aaModel = {
+      slug: 'deepseek-v4',
+      model_creator: { name: 'DeepSeek' },
+      evaluations: {
+        artificial_analysis_intelligence_index: 40,
+        artificial_analysis_coding_index: 60,
+        artificial_analysis_agentic_index: 30,
+      },
+    }
+    const benchmarksFetch = (input: string | URL | Request) => {
+      const address = String(input)
+      if (address.includes('page=2')) {
+        return Promise.resolve(
+          Response.json({ data: [], pagination: { has_more: false } }),
+        )
+      }
+      return Promise.resolve(
+        Response.json({ data: [aaModel], pagination: { has_more: true } }),
+      )
+    }
 
-    const result = await fetchAABenchmarks(new Set(['deepseek/deepseek-v4']))
+    const result = await fetchAABenchmarks(
+      new Set(['deepseek/deepseek-v4']),
+      new Environment({ AA_API_KEY: 'test-key' }),
+      benchmarksFetch,
+    )
 
     expect(result).toEqual({
       'deepseek/deepseek-v4': { intelligence: 40, coding: 60, agentic: 30 },
@@ -126,44 +66,42 @@ describe('aa-benchmarks', () => {
   })
 
   it('when the API responds with an error, returns an empty record', async () => {
-    Deno.env.set('AA_API_KEY', 'test-key')
-    vi.stubGlobal(
-      'fetch',
-      vi
-        .fn()
-        .mockResolvedValue({ ok: false, status: 500, json: async () => ({}) }),
-    )
+    const benchmarksFetch = () => {
+      return Promise.resolve(new Response('server error', { status: 500 }))
+    }
 
-    const result = await fetchAABenchmarks(new Set(['deepseek/deepseek-v4']))
+    const result = await fetchAABenchmarks(
+      new Set(['deepseek/deepseek-v4']),
+      new Environment({ AA_API_KEY: 'test-key' }),
+      benchmarksFetch,
+    )
 
     expect(result).toEqual({})
   })
 
   it('when the network request fails, returns an empty record', async () => {
-    Deno.env.set('AA_API_KEY', 'test-key')
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')))
-
-    const result = await fetchAABenchmarks(new Set(['deepseek/deepseek-v4']))
-
-    expect(result).toEqual({})
-  })
-
-  it('when the key cannot be loaded, returns an empty record', async () => {
-    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    const missing = join(await Deno.makeTempDir(), 'crow-code-missing.env')
+    const benchmarksFetch = () => {
+      return Promise.reject(new Error('network down'))
+    }
 
     const result = await fetchAABenchmarks(
       new Set(['deepseek/deepseek-v4']),
-      missing,
+      new Environment({ AA_API_KEY: 'test-key' }),
+      benchmarksFetch,
     )
 
     expect(result).toEqual({})
-    expect(errorSpy).toHaveBeenCalled()
   })
 
-  it('when no env path is given, reads the local .env', () => {
-    const result = loadApiKey()
+  it('when the key is missing, returns an empty record', async () => {
+    using errorStub = stub(console, 'error', () => {})
 
-    expect(result).not.toBeNull()
+    const result = await fetchAABenchmarks(
+      new Set(['deepseek/deepseek-v4']),
+      new Environment({}),
+    )
+
+    expect(result).toEqual({})
+    expect(errorStub.calls.length).toBe(1)
   })
 })
