@@ -1,30 +1,23 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import {
-  readFileSync,
-  rmSync,
-  writeFileSync,
-  mkdirSync,
-  readdirSync,
-} from 'node:fs'
-import { join } from 'node:path'
+import { join } from 'jsr:@std/path'
 import { gatherModelData } from '../../src/model-discovery/gather-model-data.js'
 
 const crowDirectory = join('tests', 'support', 'fixtures')
 const providersPath = join(crowDirectory, '.crow', 'providers.json')
 
 afterEach(() => {
-  delete process.env.AA_API_KEY
+  Deno.env.delete('AA_API_KEY')
   vi.unstubAllGlobals()
   vi.restoreAllMocks()
   const modelsPath = join(crowDirectory, '.crow', 'models.json')
   try {
-    rmSync(modelsPath, { force: true })
+    Deno.removeSync(modelsPath)
   } catch {}
 })
 
 describe('gatherModelData', () => {
   it('when run, writes a models.json in the injected crow directory', async () => {
-    process.env.AA_API_KEY = 'test-key'
+    Deno.env.set('AA_API_KEY', 'test-key')
     vi.stubGlobal(
       'fetch',
       vi.fn().mockImplementation((url: string) => {
@@ -79,10 +72,10 @@ describe('gatherModelData', () => {
     await gatherModelData(crowDirectory)
 
     const saved = JSON.parse(
-      readFileSync(join(crowDirectory, '.crow', 'models.json'), 'utf8'),
+      Deno.readTextFileSync(join(crowDirectory, '.crow', 'models.json')),
     )
     const fixture = JSON.parse(
-      readFileSync(join(crowDirectory, 'crow-models.json'), 'utf8'),
+      Deno.readTextFileSync(join(crowDirectory, 'crow-models.json')),
     )
     expect(typeof saved.fetchedAt).toBe('string')
     expect(saved.sources).toEqual(fixture.sources)
@@ -90,9 +83,9 @@ describe('gatherModelData', () => {
   })
 
   it('when two providers return the same model id, merges the records', async () => {
-    process.env.AA_API_KEY = 'test-key'
+    Deno.env.set('AA_API_KEY', 'test-key')
 
-    const committedProviders = readFileSync(providersPath, 'utf8')
+    const committedProviders = Deno.readTextFileSync(providersPath)
 
     const providersJson = {
       providers: [
@@ -105,7 +98,7 @@ describe('gatherModelData', () => {
       ],
     }
 
-    writeFileSync(providersPath, JSON.stringify(providersJson))
+    await Deno.writeTextFile(providersPath, JSON.stringify(providersJson))
 
     vi.stubGlobal(
       'fetch',
@@ -162,12 +155,12 @@ describe('gatherModelData', () => {
     await gatherModelData(crowDirectory)
 
     const saved = JSON.parse(
-      readFileSync(join(crowDirectory, '.crow', 'models.json'), 'utf8'),
+      Deno.readTextFileSync(join(crowDirectory, '.crow', 'models.json')),
     )
 
     expect(saved.models).toHaveLength(1)
     expect(saved.models[0].providers).toEqual(['nous', 'ollama'])
 
-    writeFileSync(providersPath, committedProviders)
+    await Deno.writeTextFile(providersPath, committedProviders)
   })
 })

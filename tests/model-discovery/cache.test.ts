@@ -4,14 +4,12 @@ import {
   writeCache,
 } from '../../src/model-discovery/cache.js'
 import { ModelRecord } from '../../src/model-discovery/types.js'
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { join } from 'jsr:@std/path'
 
 const tempDirs: string[] = []
 
 afterEach(() => {
-  tempDirs.forEach((dir) => rmSync(dir, { recursive: true, force: true }))
+  tempDirs.forEach((dir) => Deno.removeSync(dir, { recursive: true }))
   tempDirs.length = 0
 })
 
@@ -33,14 +31,14 @@ const model: ModelRecord = {
 }
 
 describe('cache', () => {
-  it('when writing, creates the file with the models', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'crow-code-cache-'))
+  it('when writing, creates the file with the models', async () => {
+    const dir = await Deno.makeTempDir({ prefix: 'crow-code-cache-' })
     tempDirs.push(dir)
     const path = join(dir, 'models.json')
 
     writeCache(path, [model])
 
-    const saved = JSON.parse(readFileSync(path, 'utf8'))
+    const saved = JSON.parse(Deno.readTextFileSync(path))
     expect(saved.models).toEqual([model])
   })
 

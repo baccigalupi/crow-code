@@ -1,7 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { join } from 'jsr:@std/path'
 import {
   fetchAABenchmarks,
   loadApiKey,
@@ -10,46 +8,46 @@ import {
 const tempDirs: string[] = []
 
 afterEach(() => {
-  delete process.env.AA_API_KEY
+  Deno.env.delete('AA_API_KEY')
   vi.unstubAllGlobals()
   vi.restoreAllMocks()
-  tempDirs.forEach((dir) => rmSync(dir, { recursive: true, force: true }))
+  tempDirs.forEach((dir) => Deno.removeSync(dir, { recursive: true }))
   tempDirs.length = 0
 })
 
 describe('aa-benchmarks', () => {
   it('when the key is set in the environment, returns it', () => {
-    process.env.AA_API_KEY = 'test-key'
+    Deno.env.set('AA_API_KEY', 'test-key')
 
     const result = loadApiKey()
 
     expect(result).toBe('test-key')
   })
 
-  it('when the env file does not exist, returns null', () => {
-    const missing = join(tmpdir(), 'crow-code-missing.env')
+  it('when the env file does not exist, returns null', async () => {
+    const missing = join(await Deno.makeTempDir(), 'crow-code-missing.env')
 
     const result = loadApiKey(missing)
 
     expect(result).toBeNull()
   })
 
-  it('when the env file has no key line, returns null', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'crow-code-aa-'))
+  it('when the env file has no key line, returns null', async () => {
+    const dir = await Deno.makeTempDir({ prefix: 'crow-code-aa-' })
     tempDirs.push(dir)
     const envPath = join(dir, '.env')
-    writeFileSync(envPath, 'SOME_OTHER_KEY=1')
+    await Deno.writeTextFile(envPath, 'SOME_OTHER_KEY=1')
 
     const result = loadApiKey(envPath)
 
     expect(result).toBeNull()
   })
 
-  it('when the env file has a key, returns it', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'crow-code-aa-'))
+  it('when the env file has a key, returns it', async () => {
+    const dir = await Deno.makeTempDir({ prefix: 'crow-code-aa-' })
     tempDirs.push(dir)
     const envPath = join(dir, '.env')
-    writeFileSync(envPath, 'AA_API_KEY=abc')
+    await Deno.writeTextFile(envPath, 'AA_API_KEY=abc')
 
     const result = loadApiKey(envPath)
 
@@ -57,7 +55,7 @@ describe('aa-benchmarks', () => {
   })
 
   it('when a catalog id matches an AA model, returns its scores', async () => {
-    process.env.AA_API_KEY = 'test-key'
+    Deno.env.set('AA_API_KEY', 'test-key')
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({
@@ -88,7 +86,7 @@ describe('aa-benchmarks', () => {
   })
 
   it('when the API returns multiple pages, collects them all', async () => {
-    process.env.AA_API_KEY = 'test-key'
+    Deno.env.set('AA_API_KEY', 'test-key')
     vi.stubGlobal(
       'fetch',
       vi.fn().mockImplementation((url: string) => {
@@ -128,7 +126,7 @@ describe('aa-benchmarks', () => {
   })
 
   it('when the API responds with an error, returns an empty record', async () => {
-    process.env.AA_API_KEY = 'test-key'
+    Deno.env.set('AA_API_KEY', 'test-key')
     vi.stubGlobal(
       'fetch',
       vi
@@ -142,7 +140,7 @@ describe('aa-benchmarks', () => {
   })
 
   it('when the network request fails, returns an empty record', async () => {
-    process.env.AA_API_KEY = 'test-key'
+    Deno.env.set('AA_API_KEY', 'test-key')
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')))
 
     const result = await fetchAABenchmarks(new Set(['deepseek/deepseek-v4']))
@@ -152,7 +150,7 @@ describe('aa-benchmarks', () => {
 
   it('when the key cannot be loaded, returns an empty record', async () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    const missing = join(tmpdir(), 'crow-code-missing.env')
+    const missing = join(await Deno.makeTempDir(), 'crow-code-missing.env')
 
     const result = await fetchAABenchmarks(
       new Set(['deepseek/deepseek-v4']),

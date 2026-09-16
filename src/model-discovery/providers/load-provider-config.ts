@@ -1,5 +1,4 @@
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { join } from 'jsr:@std/path'
 import type { ProviderConfig } from '../types.js'
 
 type ProviderConfigFile = {
@@ -10,9 +9,9 @@ const providerConfigPath = (crowDirectory: string): string =>
   join(crowDirectory, '.crow', 'providers.json')
 
 export const loadProviderConfig = (
-  crowDirectory: string = process.cwd(),
+  crowDirectory: string = Deno.cwd(),
 ): ProviderConfig[] => {
-  const raw = readFileSync(providerConfigPath(crowDirectory), 'utf8')
+  const raw = Deno.readTextFileSync(providerConfigPath(crowDirectory))
   const parsed: ProviderConfigFile = JSON.parse(raw)
   return parsed.providers
 }

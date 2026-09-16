@@ -1,5 +1,4 @@
-import { mkdirSync, writeFileSync, readFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { dirname, join } from 'jsr:@std/path'
 import { CacheFile, ModelRecord } from './types.js'
 
 export const defaultCachePath = (crowDirectory: string): string => {
@@ -7,7 +6,7 @@ export const defaultCachePath = (crowDirectory: string): string => {
 }
 
 export const writeCache = (path: string, models: ModelRecord[]): void => {
-  mkdirSync(dirname(path), { recursive: true })
+  Deno.mkdirSync(dirname(path), { recursive: true })
   const cache: CacheFile = {
     fetchedAt: new Date().toISOString(),
     sources: [
@@ -18,10 +17,10 @@ export const writeCache = (path: string, models: ModelRecord[]): void => {
     ],
     models,
   }
-  writeFileSync(path, JSON.stringify(cache, null, 2))
+  Deno.writeTextFileSync(path, JSON.stringify(cache, null, 2))
 }
 
 export const readCache = (path: string): CacheFile => {
-  const raw = readFileSync(path, 'utf8')
+  const raw = Deno.readTextFileSync(path)
   return JSON.parse(raw)
 }

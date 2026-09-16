@@ -8,7 +8,7 @@ class GatherModelData {
   private crowDirectory: string
   private records: ModelRecord[] = []
 
-  constructor(crowDirectory: string = process.cwd()) {
+  constructor(crowDirectory: string = Deno.cwd()) {
     this.crowDirectory = crowDirectory
   }
 

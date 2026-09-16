@@ -1,5 +1,5 @@
-import { existsSync, readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { existsSync } from 'jsr:@std/fs'
+import { join } from 'jsr:@std/path'
 import { AABenchmarks, AAModel } from '../types.js'
 import { matchAABenchmarks } from './aa-scores.js'
 
@@ -14,9 +14,9 @@ type AAPage = {
 }
 
 const loadApiKeyFromFile = (envPath: string): string | null => {
-  const keyLine = readFileSync(envPath, 'utf8')
+  const keyLine = Deno.readTextFileSync(envPath)
     .split('\n')
-    .find((line) => line.startsWith('AA_API_KEY='))
+    .find((line: string) => line.startsWith('AA_API_KEY='))
   if (keyLine === undefined) {
     return null
   }
@@ -24,10 +24,10 @@ const loadApiKeyFromFile = (envPath: string): string | null => {
 }
 
 export const loadApiKey = (envPath?: string): string | null => {
-  if (process.env.AA_API_KEY !== undefined) {
-    return process.env.AA_API_KEY
+  if (Deno.env.get('AA_API_KEY') !== undefined) {
+    return Deno.env.get('AA_API_KEY') ?? ''
   }
-  let path = join(process.cwd(), '.env')
+  let path = join(Deno.cwd(), '.env')
   if (envPath !== undefined) {
     path = envPath
   }

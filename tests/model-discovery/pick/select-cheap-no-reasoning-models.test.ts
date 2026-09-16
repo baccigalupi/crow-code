@@ -3,8 +3,7 @@ import {
   selectCheapNoReasoningModels,
   getCheapNoReasoningModels,
 } from '../../../src/model-discovery/pick/select-cheap-no-reasoning-models.js'
-import { writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { join } from 'jsr:@std/path'
 
 const fixtureDir = join('tests', 'support', 'fixtures', '.crow')
 
@@ -216,7 +215,7 @@ describe('selectCheapNoReasoningModels', () => {
     expect(result).toEqual([freeNoReasoning])
   })
 
-  it('when given a cache path, reads models.json and filters', () => {
+  it('when given a cache path, reads models.json and filters', async () => {
     const freeNoReasoning = {
       id: 'qwen3-coder:30b',
       name: 'qwen3-coder:30b',
@@ -255,7 +254,7 @@ describe('selectCheapNoReasoningModels', () => {
       sources: ['test'],
       models: [reasoningModel, freeNoReasoning],
     }
-    writeFileSync(path, JSON.stringify(cache))
+    await Deno.writeTextFile(path, JSON.stringify(cache))
 
     const result = getCheapNoReasoningModels(path)
 

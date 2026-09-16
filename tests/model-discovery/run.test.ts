@@ -23,14 +23,13 @@ describe('run', () => {
   it('when gatherModelData rejects, logs the error and sets the exit code', async () => {
     vi.mocked(gatherModelData).mockRejectedValue(new Error('boom'))
     vi.resetModules()
-    const originalExitCode = process.exitCode
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const exitSpy = vi.spyOn(Deno, 'exit').mockImplementation(() => {})
 
     await import('../../src/model-discovery/run.js')
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(errorSpy).toHaveBeenCalled()
-    expect(process.exitCode).toBe(1)
-    process.exitCode = originalExitCode
+    expect(exitSpy).toHaveBeenCalledWith(1)
   })
 })
