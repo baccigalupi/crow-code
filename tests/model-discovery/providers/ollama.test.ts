@@ -1,28 +1,31 @@
-import { describe, it, expect, vi, afterEach } from 'vitest'
+import { describe, it } from 'jsr:@std/testing/bdd'
+import { expect } from 'jsr:@std/expect'
+import { mockFetchSuccess, mockFetchRejected } from '../../support/mock-fetch.ts'
 import {
   fetchOllamaModels,
   parseOllamaResponse,
-} from '../../../src/model-discovery/providers/ollama.js'
-import type { ProviderConfig } from '../../../src/model-discovery/types.js'
-
-afterEach(() => {
-  vi.unstubAllGlobals()
-})
-
-const ollamaConfig: ProviderConfig = {
-  name: 'ollama',
-  baseUrl: 'http://pile-driver.local:11434',
-  modelsUrl: 'http://pile-driver.local:11434/api/tags',
-}
+} from '../../../src/model-discovery/providers/ollama.ts'
+import type { ProviderConfig } from '../../../src/model-discovery/types.ts'
 
 describe('ollama', () => {
   it('when the body has no models key, returns an empty list', () => {
+    const ollamaConfig: ProviderConfig = {
+      name: 'ollama',
+      baseUrl: 'http://pile-driver.local:11434',
+      modelsUrl: 'http://pile-driver.local:11434/api/tags',
+    }
+
     const result = parseOllamaResponse({}, ollamaConfig)
 
     expect(result).toEqual([])
   })
 
   it('when the body has models, normalizes them into records', () => {
+    const ollamaConfig: ProviderConfig = {
+      name: 'ollama',
+      baseUrl: 'http://pile-driver.local:11434',
+      modelsUrl: 'http://pile-driver.local:11434/api/tags',
+    }
     const body = {
       models: [
         {
@@ -44,6 +47,12 @@ describe('ollama', () => {
   })
 
   it('when details are missing, size is empty and context is null', () => {
+    const ollamaConfig: ProviderConfig = {
+      name: 'ollama',
+      baseUrl: 'http://pile-driver.local:11434',
+      modelsUrl: 'http://pile-driver.local:11434/api/tags',
+    }
+
     const result = parseOllamaResponse(
       {
         models: [{ name: 'qwen3-coder:30b' }],
@@ -56,6 +65,12 @@ describe('ollama', () => {
   })
 
   it('when details have context_length of zero, context is null', () => {
+    const ollamaConfig: ProviderConfig = {
+      name: 'ollama',
+      baseUrl: 'http://pile-driver.local:11434',
+      modelsUrl: 'http://pile-driver.local:11434/api/tags',
+    }
+
     const result = parseOllamaResponse(
       {
         models: [{ name: 'x', details: { context_length: 0 } }],
@@ -67,45 +82,44 @@ describe('ollama', () => {
   })
 
   it('when fetched with modelsUrl omitted, falls back to baseUrl', async () => {
-    const config: ProviderConfig = {
+    const ollamaConfig: ProviderConfig = {
       name: 'ollama',
       baseUrl: 'http://pile-driver.local:11434',
     }
+    const mockFetch = mockFetchSuccess({
+      models: [{ name: 'qwen3-coder:30b' }],
+    })
 
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: async () => ({ models: [{ name: 'qwen3-coder:30b' }] }),
-      }),
-    )
-
-    const result = await fetchOllamaModels(config)
+    const result = await fetchOllamaModels(ollamaConfig, mockFetch)
 
     expect(result[0].id).toBe('qwen3-coder:30b')
   })
 
   it('when fetched, returns normalized records', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: async () => ({ models: [{ name: 'qwen3-coder:30b' }] }),
-      }),
-    )
+    const ollamaConfig: ProviderConfig = {
+      name: 'ollama',
+      baseUrl: 'http://pile-driver.local:11434',
+      modelsUrl: 'http://pile-driver.local:11434/api/tags',
+    }
+    const mockFetch = mockFetchSuccess({
+      models: [{ name: 'qwen3-coder:30b' }],
+    })
 
-    const result = await fetchOllamaModels(ollamaConfig)
+    const result = await fetchOllamaModels(ollamaConfig, mockFetch)
 
     expect(result[0].id).toBe('qwen3-coder:30b')
     expect(result[0].providers).toEqual(['ollama'])
   })
 
   it('when the network request fails, returns an empty list', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')))
+    const ollamaConfig: ProviderConfig = {
+      name: 'ollama',
+      baseUrl: 'http://pile-driver.local:11434',
+      modelsUrl: 'http://pile-driver.local:11434/api/tags',
+    }
+    const mockFetch = mockFetchRejected('network down')
 
-    const result = await fetchOllamaModels(ollamaConfig)
+    const result = await fetchOllamaModels(ollamaConfig, mockFetch)
 
     expect(result).toEqual([])
   })

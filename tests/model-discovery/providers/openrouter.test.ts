@@ -1,28 +1,32 @@
-import { describe, it, expect, vi, afterEach } from 'vitest'
+import { describe, it } from 'jsr:@std/testing/bdd'
+import { expect } from 'jsr:@std/expect'
+import { returnsNext, stub } from 'jsr:@std/testing/mock'
+import { mockFetchRejected, mockFetchSuccess } from '../../support/mock-fetch.ts'
 import {
   fetchOpenRouterModels,
   parseOpenRouterResponse,
-} from '../../../src/model-discovery/providers/openrouter.js'
-import type { ProviderConfig } from '../../../src/model-discovery/types.js'
-
-afterEach(() => {
-  vi.unstubAllGlobals()
-})
-
-const openrouterConfig: ProviderConfig = {
-  name: 'openrouter',
-  baseUrl: 'https://openrouter.ai',
-  modelsUrl: 'https://openrouter.ai/api/v1/models',
-}
+} from '../../../src/model-discovery/providers/openrouter.ts'
+import type { ProviderConfig } from '../../../src/model-discovery/types.ts'
 
 describe('openrouter', () => {
   it('when the body has no data key, returns an empty list', () => {
+    const openrouterConfig: ProviderConfig = {
+      name: 'openrouter',
+      baseUrl: 'https://openrouter.ai',
+      modelsUrl: 'https://openrouter.ai/api/v1/models',
+    }
+
     const result = parseOpenRouterResponse({}, openrouterConfig)
 
     expect(result).toEqual([])
   })
 
   it('when the body has models, normalizes them into records', () => {
+    const openrouterConfig: ProviderConfig = {
+      name: 'openrouter',
+      baseUrl: 'https://openrouter.ai',
+      modelsUrl: 'https://openrouter.ai/api/v1/models',
+    }
     const body = {
       data: [
         {
@@ -51,6 +55,12 @@ describe('openrouter', () => {
   })
 
   it('when the name is missing, uses the id as the name', () => {
+    const openrouterConfig: ProviderConfig = {
+      name: 'openrouter',
+      baseUrl: 'https://openrouter.ai',
+      modelsUrl: 'https://openrouter.ai/api/v1/models',
+    }
+
     const result = parseOpenRouterResponse(
       { data: [{ id: 'openai/gpt-4o' }] },
       openrouterConfig,
@@ -60,6 +70,12 @@ describe('openrouter', () => {
   })
 
   it('when pricing is missing, costs are zero', () => {
+    const openrouterConfig: ProviderConfig = {
+      name: 'openrouter',
+      baseUrl: 'https://openrouter.ai',
+      modelsUrl: 'https://openrouter.ai/api/v1/models',
+    }
+
     const result = parseOpenRouterResponse(
       { data: [{ id: 'openai/gpt-4o' }] },
       openrouterConfig,
@@ -70,6 +86,12 @@ describe('openrouter', () => {
   })
 
   it('when architecture is missing, modality is a dash', () => {
+    const openrouterConfig: ProviderConfig = {
+      name: 'openrouter',
+      baseUrl: 'https://openrouter.ai',
+      modelsUrl: 'https://openrouter.ai/api/v1/models',
+    }
+
     const result = parseOpenRouterResponse(
       { data: [{ id: 'openai/gpt-4o' }] },
       openrouterConfig,
@@ -79,6 +101,12 @@ describe('openrouter', () => {
   })
 
   it('when context_length is missing, contextLength is null', () => {
+    const openrouterConfig: ProviderConfig = {
+      name: 'openrouter',
+      baseUrl: 'https://openrouter.ai',
+      modelsUrl: 'https://openrouter.ai/api/v1/models',
+    }
+
     const result = parseOpenRouterResponse(
       { data: [{ id: 'openai/gpt-4o' }] },
       openrouterConfig,
@@ -88,29 +116,19 @@ describe('openrouter', () => {
   })
 
   it('when fetched, returns normalized records', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: async () => ({
-          data: [{ id: 'openai/gpt-4o', name: 'GPT-4o' }],
-        }),
-      }),
-    )
+    const openrouterConfig: ProviderConfig = {
+      name: 'openrouter',
+      baseUrl: 'https://openrouter.ai',
+      modelsUrl: 'https://openrouter.ai/api/v1/models',
+    }
+    const mockFetch = mockFetchSuccess({
+      data: [{ id: 'openai/gpt-4o', name: 'GPT-4o' }],
+    })
 
-    const result = await fetchOpenRouterModels(openrouterConfig)
+    const result = await fetchOpenRouterModels(openrouterConfig, mockFetch)
 
     expect(result[0].id).toBe('openai/gpt-4o')
     expect(result[0].providers).toEqual(['openrouter'])
-  })
-
-  it('when the network request fails, returns an empty list', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')))
-
-    const result = await fetchOpenRouterModels(openrouterConfig)
-
-    expect(result).toEqual([])
   })
 
   it('when modelsUrl is not set, falls back to baseUrl', async () => {
@@ -119,22 +137,33 @@ describe('openrouter', () => {
       baseUrl: 'https://openrouter.ai',
     }
 
-    vi.stubGlobal(
+    const resolvedResponse = Promise.resolve({
+      ok: true,
+      status: 200,
+      json: async () => ({ data: [{ id: 'openai/gpt-4o' }] }),
+    })
+    const _internals = { fetch: fetch }
+    using fetchStub = stub(
+      _internals,
       'fetch',
-      vi.fn().mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: async () => ({
-          data: [{ id: 'openai/gpt-4o' }],
-        }),
-      }),
+      returnsNext([resolvedResponse]),
     )
 
-    await fetchOpenRouterModels(configWithoutModelsUrl)
+    await fetchOpenRouterModels(configWithoutModelsUrl, _internals.fetch)
 
-    expect(vi.mocked(globalThis.fetch)).toHaveBeenCalledWith(
-      'https://openrouter.ai',
-      expect.any(Object),
-    )
+    expect(fetchStub.calls[0].args[0]).toBe('https://openrouter.ai')
+  })
+
+  it('when the network request fails, returns an empty list', async () => {
+    const openrouterConfig: ProviderConfig = {
+      name: 'openrouter',
+      baseUrl: 'https://openrouter.ai',
+      modelsUrl: 'https://openrouter.ai/api/v1/models',
+    }
+    const mockFetch = mockFetchRejected('network down')
+
+    const result = await fetchOpenRouterModels(openrouterConfig, mockFetch)
+
+    expect(result).toEqual([])
   })
 })

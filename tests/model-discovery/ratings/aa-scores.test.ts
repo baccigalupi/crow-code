@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest'
-import { matchAABenchmarks } from '../../../src/model-discovery/ratings/aa-scores.js'
-import { AAModel } from '../../../src/model-discovery/types.js'
+import { describe, it } from 'jsr:@std/testing/bdd'
+import { expect } from 'jsr:@std/expect'
+import { matchAABenchmarks } from '../../../src/model-discovery/ratings/aa-scores.ts'
+import type { AAModel } from '../../../src/model-discovery/types.ts'
 
 describe('matchAABenchmarks', () => {
   it('when an AA model matches a catalog id, records its indices', () => {

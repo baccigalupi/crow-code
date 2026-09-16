@@ -1,6 +1,8 @@
-import { describe, it, expect } from 'vitest'
-import { fetchProviders } from '../../../src/model-discovery/providers/fetch-providers.js'
-import type { ProviderConfig } from '../../../src/model-discovery/types.js'
+import { describe, it } from 'jsr:@std/testing/bdd'
+import { expect } from 'jsr:@std/expect'
+import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
+import { fetchProviders } from '../../../src/model-discovery/providers/fetch-providers.ts'
+import type { ProviderConfig } from '../../../src/model-discovery/types.ts'
 
 describe('fetchProviders', () => {
   it('when the provider name is unknown, returns an empty list', async () => {
@@ -10,6 +12,59 @@ describe('fetchProviders', () => {
     }
 
     const result = await fetchProviders(config)
+
+    expect(result).toEqual([])
+  })
+
+  it('when the provider name is known, returns the fetcher result', async () => {
+    const config: ProviderConfig = {
+      name: 'nous',
+      baseUrl: 'http://example.com',
+    }
+    const apiResponse = {
+      data: [
+        {
+          id: 'test-model',
+          name: 'test-model',
+          context_length: 100,
+          knowledge_cutoff: '2025-01-01',
+          architecture: { modality: 'text' },
+        },
+      ],
+    }
+    const mockFetch = mockFetchSuccess(apiResponse)
+    
+    const result = await fetchProviders(config, mockFetch)
+
+    expect(result).toEqual([
+      {
+        id: 'test-model',
+        name: 'test-model',
+        providers: ['nous'],
+        reasoning: null,
+        coding: null,
+        codingSource: null,
+        agentic: null,
+        costInput: 0,
+        costOutput: 0,
+        contextLength: 100,
+        modality: 'text',
+        reasoningMode: '-',
+        knowledgeCutoff: '2025-01-01',
+        size: '',
+      },
+    ])
+  })
+
+  it('when the provider name is known and the request fails, returns an empty list', async () => {
+    const config: ProviderConfig = {
+      name: 'nous',
+      baseUrl: 'http://example.com',
+    }
+
+    const mockFetch = mockFetchError(500)
+
+    const result = await fetchProviders(config, mockFetch)
 
     expect(result).toEqual([])
   })

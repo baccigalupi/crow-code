@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest'
-import { candidateIds } from '../../../src/model-discovery/ratings/aa-match.js'
+import { describe, it } from 'jsr:@std/testing/bdd'
+import { expect } from 'jsr:@std/expect'
+import { candidateIds } from '../../../src/model-discovery/ratings/aa-match.ts'
 
 describe('candidateIds', () => {
   it('when the creator is unknown, returns no candidates', () => {

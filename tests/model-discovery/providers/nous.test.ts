@@ -1,27 +1,28 @@
-import { describe, it, expect, vi, afterEach } from 'vitest'
+import { describe, it } from 'jsr:@std/testing/bdd'
+import { expect } from 'jsr:@std/expect'
+import { mockFetchSuccess, mockFetchRejected } from '../../support/mock-fetch.ts'
 import {
   fetchNousModels,
   parseNousResponse,
-} from '../../../src/model-discovery/providers/nous.js'
-import type { ProviderConfig } from '../../../src/model-discovery/types.js'
-
-afterEach(() => {
-  vi.unstubAllGlobals()
-})
-
-const nousConfig: ProviderConfig = {
-  name: 'nous',
-  baseUrl: 'https://inference-api.nousresearch.com',
-}
+} from '../../../src/model-discovery/providers/nous.ts'
+import type { ProviderConfig } from '../../../src/model-discovery/types.ts'
 
 describe('nous', () => {
   it('when the body has no data key, returns an empty list', () => {
+    const nousConfig: ProviderConfig = {
+      name: 'nous',
+      baseUrl: 'https://inference-api.nousresearch.com',
+    }
     const result = parseNousResponse({}, nousConfig)
 
     expect(result).toEqual([])
   })
 
   it('when the body has models, normalizes them into records', () => {
+    const nousConfig: ProviderConfig = {
+      name: 'nous',
+      baseUrl: 'https://inference-api.nousresearch.com',
+    }
     const body = {
       data: [
         {
@@ -56,6 +57,10 @@ describe('nous', () => {
   })
 
   it('when the name is missing, uses the id as the name', () => {
+    const nousConfig: ProviderConfig = {
+      name: 'nous',
+      baseUrl: 'https://inference-api.nousresearch.com',
+    }
     const result = parseNousResponse(
       { data: [{ id: 'deepseek/deepseek-chat' }] },
       nousConfig,
@@ -65,6 +70,10 @@ describe('nous', () => {
   })
 
   it('when pricing is missing, costs are zero', () => {
+    const nousConfig: ProviderConfig = {
+      name: 'nous',
+      baseUrl: 'https://inference-api.nousresearch.com',
+    }
     const result = parseNousResponse(
       { data: [{ id: 'deepseek/deepseek-chat' }] },
       nousConfig,
@@ -75,6 +84,10 @@ describe('nous', () => {
   })
 
   it('when reasoning metadata is missing, mode is a dash', () => {
+    const nousConfig: ProviderConfig = {
+      name: 'nous',
+      baseUrl: 'https://inference-api.nousresearch.com',
+    }
     const result = parseNousResponse(
       { data: [{ id: 'deepseek/deepseek-chat' }] },
       nousConfig,
@@ -84,6 +97,10 @@ describe('nous', () => {
   })
 
   it('when reasoning is optional, mode is off', () => {
+    const nousConfig: ProviderConfig = {
+      name: 'nous',
+      baseUrl: 'https://inference-api.nousresearch.com',
+    }
     const body = {
       data: [
         { id: 'x', reasoning: { mandatory: false, default_enabled: false } },
@@ -96,25 +113,28 @@ describe('nous', () => {
   })
 
   it('when fetched, returns normalized records', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: async () => ({ data: [{ id: 'deepseek/deepseek-chat' }] }),
-      }),
-    )
+    const nousConfig: ProviderConfig = {
+      name: 'nous',
+      baseUrl: 'https://inference-api.nousresearch.com',
+    }
+    const mockFetch = mockFetchSuccess({
+      data: [{ id: 'deepseek/deepseek-chat' }],
+    })
 
-    const result = await fetchNousModels(nousConfig)
+    const result = await fetchNousModels(nousConfig, mockFetch)
 
     expect(result[0].id).toBe('deepseek/deepseek-chat')
     expect(result[0].providers).toEqual(['nous'])
   })
 
   it('when the network request fails, returns an empty list', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')))
+    const nousConfig: ProviderConfig = {
+      name: 'nous',
+      baseUrl: 'https://inference-api.nousresearch.com',
+    }
+    const mockFetch = mockFetchRejected('network down')
 
-    const result = await fetchNousModels(nousConfig)
+    const result = await fetchNousModels(nousConfig, mockFetch)
 
     expect(result).toEqual([])
   })
