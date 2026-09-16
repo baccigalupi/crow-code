@@ -1,5 +1,5 @@
 import { join } from 'jsr:@std/path'
-import type { ProviderConfig } from '../types.js'
+import type { ProviderConfig } from '../types.ts'
 
 type ProviderConfigFile = {
   providers: ProviderConfig[]

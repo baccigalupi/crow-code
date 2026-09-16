@@ -1,5 +1,5 @@
-import { AABenchmarks, AAModel } from '../types.js'
-import { candidateIds } from './aa-match.js'
+import { AABenchmarks, AAModel } from '../types.ts'
+import { candidateIds } from './aa-match.ts'
 
 const toScore = (value: number | null): number => {
   if (value === null) {

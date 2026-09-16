@@ -1,6 +1,6 @@
-import { applyScores } from './record-scores.js'
-import { fetchAABenchmarks } from './aa-benchmarks.js'
-import type { ModelRecord } from '../types.js'
+import { applyScores } from './record-scores.ts'
+import { fetchAABenchmarks } from './aa-benchmarks.ts'
+import type { ModelRecord } from '../types.ts'
 
 export const appendRatings = async (
   records: ModelRecord[],

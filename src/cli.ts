@@ -2,7 +2,7 @@
  * crow — CLI for crow-code. Subcommands dispatch below.
  *   crow find-models   fetch model data and write .crow/models.json
  */
-import { gatherModelData } from './model-discovery/gather-model-data.js'
+import { gatherModelData } from './model-discovery/gather-model-data.ts'
 
 const usage = `Usage: crow <subcommand>
 

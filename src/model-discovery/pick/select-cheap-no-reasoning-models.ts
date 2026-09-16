@@ -1,5 +1,5 @@
-import { readCache } from '../cache.js'
-import type { ModelRecord } from '../types.js'
+import { readCache } from '../cache.ts'
+import type { ModelRecord } from '../types.ts'
 
 const defaultCheapCostThreshold = 0.001
 

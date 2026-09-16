@@ -1,5 +1,5 @@
-import { AABenchmarks, CodingSource, ModelRecord } from '../types.js'
-import { aiderPolyglotPct } from './aider-polyglot.js'
+import { AABenchmarks, CodingSource, ModelRecord } from '../types.ts'
+import { aiderPolyglotPct } from './aider-polyglot.ts'
 
 type CodingResult = {
   coding: number | null

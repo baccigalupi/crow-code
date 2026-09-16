@@ -2,9 +2,10 @@ export const fetchProvider = async <ApiRecord, T>(
   url: string,
   parse: (raw: ApiRecord) => T[],
   timeoutMs: number,
+  fetchClient: typeof fetch = fetch,
 ): Promise<T[]> => {
   try {
-    const response = await fetch(url, {
+    const response = await fetchClient(url, {
       signal: AbortSignal.timeout(timeoutMs),
     })
     if (!response.ok) {

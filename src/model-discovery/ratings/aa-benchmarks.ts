@@ -1,7 +1,7 @@
 import { existsSync } from 'jsr:@std/fs'
 import { join } from 'jsr:@std/path'
-import { AABenchmarks, AAModel } from '../types.js'
-import { matchAABenchmarks } from './aa-scores.js'
+import { AABenchmarks, AAModel } from '../types.ts'
+import { matchAABenchmarks } from './aa-scores.ts'
 
 const aaUrl = 'https://artificialanalysis.ai/api/v2/language/models/free'
 
@@ -40,9 +40,10 @@ export const loadApiKey = (envPath?: string): string | null => {
 const fetchAAModelsPage = async (
   key: string,
   page: number,
+  fetchClient: typeof fetch = fetch,
 ): Promise<AAPage | null> => {
   try {
-    const response = await fetch(`${aaUrl}?page=${page}`, {
+    const response = await fetchClient(`${aaUrl}?page=${page}`, {
       headers: { 'x-api-key': key },
       signal: AbortSignal.timeout(30000),
     })
@@ -57,11 +58,14 @@ const fetchAAModelsPage = async (
   }
 }
 
-const collectAllAAModels = async (key: string): Promise<AAModel[]> => {
+const collectAllAAModels = async (
+  key: string,
+  fetchClient: typeof fetch = fetch,
+): Promise<AAModel[]> => {
   const allModels: AAModel[] = []
   let page = 1
   while (true) {
-    const pageResult = await fetchAAModelsPage(key, page)
+    const pageResult = await fetchAAModelsPage(key, page, fetchClient)
     if (pageResult === null) {
       return allModels
     }
@@ -77,12 +81,13 @@ const collectAllAAModels = async (key: string): Promise<AAModel[]> => {
 export const fetchAABenchmarks = async (
   catalogIds: Set<string>,
   envPath?: string,
+  fetchClient: typeof fetch = fetch,
 ): Promise<Record<string, AABenchmarks>> => {
   const key = loadApiKey(envPath)
   if (key === null) {
     console.error(aaKeyMissingMessage)
     return {}
   }
-  const models = await collectAllAAModels(key)
+  const models = await collectAllAAModels(key, fetchClient)
   return matchAABenchmarks(models, catalogIds)
 }

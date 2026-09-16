@@ -3,9 +3,11 @@
  * Fetch model data and write .crow/models.json.
  */
 
-import { gatherModelData } from './gather-model-data.js'
+import { gatherModelData } from './gather-model-data.ts'
 
-gatherModelData().catch((error) => {
-  console.error(error)
-  Deno.exit(1)
-})
+export const run = () => {
+  gatherModelData().catch((error: unknown) => {
+    console.error(error)
+    Deno.exit(1)
+  })
+}

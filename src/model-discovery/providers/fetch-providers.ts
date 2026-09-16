@@ -1,7 +1,7 @@
-import { fetchNousModels } from './nous.js'
-import { fetchOllamaModels } from './ollama.js'
-import { fetchOpenRouterModels } from './openrouter.js'
-import type { ModelRecord, ProviderConfig } from '../types.js'
+import { fetchNousModels } from './nous.ts'
+import { fetchOllamaModels } from './ollama.ts'
+import { fetchOpenRouterModels } from './openrouter.ts'
+import type { ModelRecord, ProviderConfig } from '../types.ts'
 
 type ProviderFetcher = (config: ProviderConfig) => Promise<ModelRecord[]>
 

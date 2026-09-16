@@ -1,8 +1,8 @@
-import { loadProviderConfig } from './providers/load-provider-config.js'
-import { fetchProviders } from './providers/fetch-providers.js'
-import { appendRatings } from './ratings/append-ratings.js'
-import { defaultCachePath, writeCache } from './cache.js'
-import type { ModelRecord } from './types.js'
+import { loadProviderConfig } from './providers/load-provider-config.ts'
+import { fetchProviders } from './providers/fetch-providers.ts'
+import { appendRatings } from './ratings/append-ratings.ts'
+import { defaultCachePath, writeCache } from './cache.ts'
+import type { ModelRecord } from './types.ts'
 
 class GatherModelData {
   private crowDirectory: string
