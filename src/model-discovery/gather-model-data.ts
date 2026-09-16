@@ -6,10 +6,12 @@ import type { ModelRecord } from './types.ts'
 
 class GatherModelData {
   private crowDirectory: string
+  private fetchClient: typeof fetch
   private records: ModelRecord[] = []
 
-  constructor(crowDirectory: string = Deno.cwd()) {
+  constructor(crowDirectory: string = Deno.cwd(), fetchClient: typeof fetch = fetch) {
     this.crowDirectory = crowDirectory
+    this.fetchClient = fetchClient
   }
 
   async run() {
@@ -29,7 +31,9 @@ class GatherModelData {
     const configs = loadProviderConfig(this.crowDirectory)
 
     this.records = (
-      await Promise.all(configs.map((config) => fetchProviders(config)))
+      await Promise.all(
+        configs.map((config) => fetchProviders(config, this.fetchClient)),
+      )
     ).flat()
   }
 
@@ -56,7 +60,7 @@ class GatherModelData {
   }
 
   private async appendRatings() {
-    this.records = await appendRatings(this.records)
+    this.records = await appendRatings(this.records, this.fetchClient)
   }
 
   private writeModelRecordsToCache() {
@@ -70,7 +74,10 @@ class GatherModelData {
   }
 }
 
-export const gatherModelData = async (crowDirectory?: string) => {
-  const gatherer = new GatherModelData(crowDirectory)
+export const gatherModelData = async (
+  crowDirectory?: string,
+  fetchClient: typeof fetch = fetch,
+) => {
+  const gatherer = new GatherModelData(crowDirectory, fetchClient)
   return gatherer.run()
 }

@@ -114,10 +114,12 @@ export const parseNousResponse = (
 
 export const fetchNousModels = (
   config: ProviderConfig,
+  fetchClient: typeof fetch = fetch,
 ): Promise<ModelRecord[]> => {
   return fetchProvider<NousApiRecord, ModelRecord>(
     config.baseUrl + '/v1/models',
     (raw) => parseNousResponse(raw, config),
     nousTimeoutMs,
+    fetchClient,
   )
 }

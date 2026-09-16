@@ -60,10 +60,12 @@ export const parseOllamaResponse = (
 
 export const fetchOllamaModels = (
   config: ProviderConfig,
+  fetchClient: typeof fetch = fetch,
 ): Promise<ModelRecord[]> => {
   return fetchProvider<OllamaApiRecord, ModelRecord>(
     config.modelsUrl ?? config.baseUrl,
     (raw) => parseOllamaResponse(raw, config),
     ollamaTimeoutMs,
+    fetchClient,
   )
 }

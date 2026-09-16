@@ -94,10 +94,12 @@ export const parseOpenRouterResponse = (
 
 export const fetchOpenRouterModels = (
   config: ProviderConfig,
+  fetchClient: typeof fetch = fetch,
 ): Promise<ModelRecord[]> => {
   return fetchProvider<OpenRouterApiRecord, ModelRecord>(
     config.modelsUrl ?? config.baseUrl,
     (raw) => parseOpenRouterResponse(raw, config),
     openrouterTimeoutMs,
+    fetchClient,
   )
 }
