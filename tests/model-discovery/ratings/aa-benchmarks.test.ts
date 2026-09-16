@@ -2,7 +2,7 @@ import { describe, it } from 'jsr:@std/testing/bdd'
 import { expect } from 'jsr:@std/expect'
 import { stub } from 'jsr:@std/testing/mock'
 import { fetchAABenchmarks } from '../../../src/model-discovery/ratings/aa-benchmarks.ts'
-import { Environment } from '../../../src/env.ts'
+import { Environment } from '../../../src/env-vars.ts'
 
 describe('fetchAABenchmarks', () => {
   it('when a catalog id matches an AA model, returns its scores', async () => {

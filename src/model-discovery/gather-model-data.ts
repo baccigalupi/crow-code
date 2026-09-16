@@ -2,7 +2,7 @@ import { loadProviderConfig } from './providers/load-provider-config.ts'
 import { fetchProviders } from './providers/fetch-providers.ts'
 import { appendRatings } from './ratings/append-ratings.ts'
 import { defaultCachePath, writeCache } from './cache.ts'
-import { Environment, loadEnvironment } from '../env.ts'
+import { Environment, loadEnvironmentalVariables } from '../env-vars.ts'
 import type { ModelRecord } from './types.ts'
 
 class GatherModelData {
@@ -13,7 +13,7 @@ class GatherModelData {
 
   constructor(
     crowDirectory: string = Deno.cwd(),
-    environment: Environment = loadEnvironment(),
+    environment: Environment = loadEnvironmentalVariables(),
     fetchClient: typeof fetch = fetch,
   ) {
     this.crowDirectory = crowDirectory
@@ -87,7 +87,7 @@ class GatherModelData {
 
 export const gatherModelData = async (
   crowDirectory?: string,
-  environment: Environment = loadEnvironment(),
+  environment: Environment = loadEnvironmentalVariables(),
   fetchClient: typeof fetch = fetch,
 ) => {
   const gatherer = new GatherModelData(crowDirectory, environment, fetchClient)

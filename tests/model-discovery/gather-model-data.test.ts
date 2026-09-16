@@ -2,7 +2,7 @@ import { describe, it } from 'jsr:@std/testing/bdd'
 import { expect } from 'jsr:@std/expect'
 import { join } from 'jsr:@std/path'
 import { gatherModelData } from '../../src/model-discovery/gather-model-data.ts'
-import { Environment } from '../../src/env.ts'
+import { Environment } from '../../src/env-vars.ts'
 
 const fixtureDirectory = join(Deno.cwd(), 'tests', 'support', 'fixtures')
 

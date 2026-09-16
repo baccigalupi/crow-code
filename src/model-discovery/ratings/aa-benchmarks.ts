@@ -1,5 +1,5 @@
 import { AABenchmarks, AAModel } from '../types.ts'
-import { Environment } from '../../env.ts'
+import { Environment } from '../../env-vars.ts'
 import { matchAABenchmarks } from './aa-scores.ts'
 
 const aaUrl = 'https://artificialanalysis.ai/api/v2/language/models/free'

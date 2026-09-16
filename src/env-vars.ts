@@ -34,7 +34,7 @@ export class Environment {
   }
 }
 
-export const loadEnvironment = (
+export const loadEnvironmentalVariables = (
   envPath: string = defaultEnvironmentPath(),
 ): Environment => {
   const values = { ...fileValues(envPath), ...Deno.env.toObject() }

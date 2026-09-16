@@ -1,11 +1,11 @@
 import { describe, it } from 'jsr:@std/testing/bdd'
 import { expect } from 'jsr:@std/expect'
 import { join } from 'jsr:@std/path'
-import { Environment, loadEnvironment } from '../src/env.ts'
+import { Environment, loadEnvironmentalVariables } from '../src/env-vars.ts'
 
 const fixtureDirectory = join(Deno.cwd(), 'tests', 'support', 'fixtures', 'env')
 
-describe('env', () => {
+describe('env-vars', () => {
   describe('Environment', () => {
     it('when values are injected, returns a value by name', () => {
       const environment = new Environment({ AA_API_KEY: 'injected-key' })
@@ -40,7 +40,7 @@ describe('env', () => {
     })
   })
 
-  describe('loadEnvironment', () => {
+  describe('loadEnvironmentalVariables', () => {
     it('when the file has values, returns them by name', async () => {
       const valuesPath = join(fixtureDirectory, 'values.env')
       await Deno.mkdir(fixtureDirectory, { recursive: true })
@@ -49,7 +49,7 @@ describe('env', () => {
         'AA_API_KEY=file-key\nNOUS_API_KEY=fixture-nous-key\n',
       )
 
-      const environment = loadEnvironment(valuesPath)
+      const environment = loadEnvironmentalVariables(valuesPath)
 
       expect(environment.value('AA_API_KEY')).toBe('file-key')
       expect(environment.value('NOUS_API_KEY')).toBe('fixture-nous-key')
@@ -60,7 +60,7 @@ describe('env', () => {
     it('when the file does not exist, has no values', () => {
       const missingPath = join(fixtureDirectory, 'missing.env')
 
-      const environment = loadEnvironment(missingPath)
+      const environment = loadEnvironmentalVariables(missingPath)
 
       expect(environment.hasValue('AA_API_KEY')).toBe(false)
     })
@@ -70,7 +70,7 @@ describe('env', () => {
       await Deno.mkdir(fixtureDirectory, { recursive: true })
       await Deno.writeTextFile(valuesPath, 'PATH=/from/file\n')
 
-      const environment = loadEnvironment(valuesPath)
+      const environment = loadEnvironmentalVariables(valuesPath)
 
       expect(environment.value('PATH')).toBe(Deno.env.get('PATH'))
 
@@ -78,7 +78,7 @@ describe('env', () => {
     })
 
     it('when no path is given, reads the process environment', () => {
-      const environment = loadEnvironment()
+      const environment = loadEnvironmentalVariables()
 
       expect(environment.value('PATH')).toBe(Deno.env.get('PATH'))
     })
