@@ -1,41 +1,19 @@
-import { returnsNext, stub } from "jsr:@std/testing/mock";
+import { spy } from 'jsr:@std/testing/mock'
 
-const mockSuccessResponse= <T>(jsonData: T) => {
-  return {
-    ok: true,
-    status: 200,
-    json: async () => (jsonData),
-  }
-}
-
-const mockErrorResponse = (status: number) => {
-  return {
-    ok: false,
-    status,
-    json: async () => ({}),
-  }
-}
-
-export const mockFetchSuccess = <T>(response: T) => {
-  const _internals = { fetch }
-  const resolvedResponse = Promise.resolve(mockSuccessResponse(response))
-  using fetchStub = stub(_internals, 'fetch', returnsNext([resolvedResponse]))
-
-  return fetchStub
+export const mockFetchSuccess = <T>(body: T) => {
+  return spy((_input: string | URL | Request) => {
+    return Promise.resolve(Response.json(body))
+  })
 }
 
 export const mockFetchError = (status: number) => {
-  const _internals = { fetch }
-  const resolvedResponse = Promise.resolve(mockErrorResponse(status))
-  using fetchStub = stub(_internals, 'fetch', returnsNext([resolvedResponse]))
-
-  return fetchStub
+  return spy((_input: string | URL | Request) => {
+    return Promise.resolve(new Response(null, { status }))
+  })
 }
 
 export const mockFetchRejected = (message: string) => {
-  const _internals = { fetch }
-  const rejectedResponse = Promise.reject(new Error(message))
-  using fetchStub = stub(_internals, 'fetch', returnsNext([rejectedResponse]))
-
-  return fetchStub
+  return spy((_input: string | URL | Request) => {
+    return Promise.reject(new Error(message))
+  })
 }

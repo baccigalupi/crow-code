@@ -3,7 +3,7 @@ import { expect } from 'jsr:@std/expect'
 import {
   selectCheapNoReasoningModels,
   getCheapNoReasoningModels,
-} from '../../../src/model-discovery/pick/select-cheap-no-reasoning-models.js'
+} from '../../../src/model-discovery/pick/select-cheap-no-reasoning-models.ts'
 import { join } from 'jsr:@std/path'
 
 const fixtureDir = join('tests', 'support', 'fixtures', '.crow')

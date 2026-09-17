@@ -3,8 +3,8 @@ import { expect } from 'jsr:@std/expect'
 import {
   defaultCachePath,
   writeCache,
-} from '../../src/model-discovery/cache.js'
-import { ModelRecord } from '../../src/model-discovery/types.js'
+} from '../../src/model-discovery/cache.ts'
+import { ModelRecord } from '../../src/model-discovery/types.ts'
 import { join } from 'jsr:@std/path'
 
 describe('cache', () => {

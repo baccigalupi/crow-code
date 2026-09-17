@@ -1,6 +1,6 @@
 import { describe, it } from 'jsr:@std/testing/bdd'
 import { expect } from 'jsr:@std/expect'
-import { returnsNext, stub } from 'jsr:@std/testing/mock'
+import { assertSpyCalls } from 'jsr:@std/testing/mock'
 import { mockFetchRejected, mockFetchSuccess } from '../../support/mock-fetch.ts'
 import {
   fetchOpenRouterModels,
@@ -136,22 +136,12 @@ describe('openrouter', () => {
       name: 'openrouter',
       baseUrl: 'https://openrouter.ai',
     }
+    const mockFetch = mockFetchSuccess({ data: [{ id: 'openai/gpt-4o' }] })
 
-    const resolvedResponse = Promise.resolve({
-      ok: true,
-      status: 200,
-      json: async () => ({ data: [{ id: 'openai/gpt-4o' }] }),
-    })
-    const _internals = { fetch: fetch }
-    using fetchStub = stub(
-      _internals,
-      'fetch',
-      returnsNext([resolvedResponse]),
-    )
+    await fetchOpenRouterModels(configWithoutModelsUrl, mockFetch)
 
-    await fetchOpenRouterModels(configWithoutModelsUrl, _internals.fetch)
-
-    expect(fetchStub.calls[0].args[0]).toBe('https://openrouter.ai')
+    assertSpyCalls(mockFetch, 1)
+    expect(mockFetch.calls[0].args[0]).toBe('https://openrouter.ai')
   })
 
   it('when the network request fails, returns an empty list', async () => {
