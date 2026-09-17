@@ -66,7 +66,6 @@
     "packageJson": {
       "dependencies": [
         "npm:@types/node@^26.5.1",
-        "npm:@vitest/coverage-v8@5",
         "npm:prettier@^3.9.6",
         "npm:tsx@^4.23.13",
         "npm:typescript@^7.0.2",

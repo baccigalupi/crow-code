@@ -39,7 +39,6 @@ while IFS= read -r line; do
       # Compute percentages
       if [[ -n "$fnf" && "$fnf" -gt 0 ]]; then
         func_pct=$(( fnh * 100 / fnf ))
-        # Use integer math; 95% means >= 95
         if [[ $func_pct -lt 95 ]]; then
           echo "FAIL: $current_file functions coverage ${func_pct}% < 95%"
           FAILED=1
