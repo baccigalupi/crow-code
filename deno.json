@@ -6,8 +6,7 @@
     "typecheck": "deno check src bin tests agents",
     "diagnostics": "deno run --allow-run --allow-read --allow-env agents/editor-diagnostics.ts src bin tests",
     "format": "deno fmt",
-    "format:check": "deno fmt --check",
-    "models": "deno run src/model-discovery/run.ts"
+    "format:check": "deno fmt --check"
   },
   "exports": {
     ".": "./src/cli.ts"
