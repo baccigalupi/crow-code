@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "permissions": {
+   "allow": [
+      "Exec(dev/test)",
+      "Exec(dev/lint)",
+      "Exec(dev/coverage)",
+      "Exec(agents/check-covenage.sh)",
+      "Exec(agents/coverage-report)",
+      "Exec(agents/editor-diagnostics.ts)",
+      "Exec(agents/format-check)",
+      "Exec(agents/language-server-client.ts)",
+      "Exec(agents/pre-commit.sh)",
+      "Fetch(domain:docs.devin.ai)"
+    ],
+    "deny": [
+      "Exec(cd)",
+      "Exec(sudo)"
+    ]
+  }
+}
