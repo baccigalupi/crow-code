@@ -1,6 +1,6 @@
-import { describe, it } from 'jsr:@std/testing/bdd'
-import { expect } from 'jsr:@std/expect'
-import { join } from 'jsr:@std/path'
+import { describe, it } from '@std/testing/bdd'
+import { expect } from '@std/expect'
+import { join } from '@std/path'
 import { Environment, loadEnvironmentalVariables } from '../src/env-vars.ts'
 
 const fixtureDirectory = join(Deno.cwd(), 'tests', 'support', 'fixtures', 'env')

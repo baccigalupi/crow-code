@@ -1,11 +1,11 @@
-import { describe, it } from 'jsr:@std/testing/bdd'
-import { expect } from 'jsr:@std/expect'
+import { describe, it } from '@std/testing/bdd'
+import { expect } from '@std/expect'
 import {
   defaultCachePath,
   writeCache,
 } from '../../src/model-discovery/cache.ts'
 import { ModelRecord } from '../../src/model-discovery/types.ts'
-import { join } from 'jsr:@std/path'
+import { join } from '@std/path'
 
 describe('cache', () => {
   it('when writing, creates the file with the models', () => {

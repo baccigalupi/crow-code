@@ -3,7 +3,8 @@
   "description": "task oriented coding agent",
   "tasks": {
     "test": "deno test --allow-env --allow-read --allow-write",
-    "typecheck": "deno check src bin",
+    "typecheck": "deno check src bin tests agents",
+    "diagnostics": "deno run --allow-run --allow-read --allow-env agents/editor-diagnostics.ts src bin tests",
     "format": "deno fmt",
     "format:check": "deno fmt --check",
     "models": "deno run src/model-discovery/run.ts"

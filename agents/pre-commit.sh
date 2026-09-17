@@ -5,7 +5,7 @@ echo "==> Running pre-commit checks..."
 
 echo ""
 echo "--> Typecheck"
-deno check src bin tests scripts
+deno check src bin tests agents
 
 echo ""
 echo "--> Format check"

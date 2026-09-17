@@ -1,6 +1,6 @@
-import { existsSync } from 'jsr:@std/fs'
-import { parse } from 'jsr:@std/dotenv'
-import { join } from 'jsr:@std/path'
+import { existsSync } from '@std/fs'
+import { parse } from '@std/dotenv'
+import { join } from '@std/path'
 
 type EnvironmentValues = Record<string, string>
 

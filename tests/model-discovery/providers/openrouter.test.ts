@@ -1,6 +1,6 @@
-import { describe, it } from 'jsr:@std/testing/bdd'
-import { expect } from 'jsr:@std/expect'
-import { assertSpyCalls } from 'jsr:@std/testing/mock'
+import { describe, it } from '@std/testing/bdd'
+import { expect } from '@std/expect'
+import { assertSpyCalls } from '@std/testing/mock'
 import {
   mockFetchRejected,
   mockFetchSuccess,

@@ -1,5 +1,5 @@
-import { describe, it } from 'jsr:@std/testing/bdd'
-import { expect } from 'jsr:@std/expect'
+import { describe, it } from '@std/testing/bdd'
+import { expect } from '@std/expect'
 import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
 import { fetchProviders } from '../../../src/model-discovery/providers/fetch-providers.ts'
 import type { ProviderConfig } from '../../../src/model-discovery/types.ts'

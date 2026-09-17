@@ -1,6 +1,6 @@
-import { describe, it } from 'jsr:@std/testing/bdd'
-import { expect } from 'jsr:@std/expect'
-import { join } from 'jsr:@std/path'
+import { describe, it } from '@std/testing/bdd'
+import { expect } from '@std/expect'
+import { join } from '@std/path'
 import { gatherModelData } from '../../src/model-discovery/gather-model-data.ts'
 import { Environment } from '../../src/env-vars.ts'
 

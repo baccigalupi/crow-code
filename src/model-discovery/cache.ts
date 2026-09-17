@@ -1,4 +1,4 @@
-import { dirname, join } from 'jsr:@std/path'
+import { dirname, join } from '@std/path'
 import { CacheFile, ModelRecord } from './types.ts'
 
 export const defaultCachePath = (crowDirectory: string): string => {

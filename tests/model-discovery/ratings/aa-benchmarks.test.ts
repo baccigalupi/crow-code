@@ -1,6 +1,6 @@
-import { describe, it } from 'jsr:@std/testing/bdd'
-import { expect } from 'jsr:@std/expect'
-import { stub } from 'jsr:@std/testing/mock'
+import { describe, it } from '@std/testing/bdd'
+import { expect } from '@std/expect'
+import { stub } from '@std/testing/mock'
 import { fetchAABenchmarks } from '../../../src/model-discovery/ratings/aa-benchmarks.ts'
 import { Environment } from '../../../src/env-vars.ts'
 

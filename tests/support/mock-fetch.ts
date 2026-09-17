@@ -1,4 +1,4 @@
-import { spy } from 'jsr:@std/testing/mock'
+import { spy } from '@std/testing/mock'
 
 export const mockFetchSuccess = <T>(body: T) => {
   return spy((_input: string | URL | Request) => {

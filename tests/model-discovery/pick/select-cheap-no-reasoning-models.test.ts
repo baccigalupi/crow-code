@@ -1,10 +1,10 @@
-import { describe, it } from 'jsr:@std/testing/bdd'
-import { expect } from 'jsr:@std/expect'
+import { describe, it } from '@std/testing/bdd'
+import { expect } from '@std/expect'
 import {
   getCheapNoReasoningModels,
   selectCheapNoReasoningModels,
 } from '../../../src/model-discovery/pick/select-cheap-no-reasoning-models.ts'
-import { join } from 'jsr:@std/path'
+import { join } from '@std/path'
 
 const fixtureDir = join('tests', 'support', 'fixtures', '.crow')
 

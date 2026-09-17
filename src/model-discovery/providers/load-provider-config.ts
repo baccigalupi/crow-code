@@ -1,4 +1,4 @@
-import { join } from 'jsr:@std/path'
+import { join } from '@std/path'
 import type { ProviderConfig } from '../types.ts'
 
 type ProviderConfigFile = {
