@@ -4,21 +4,21 @@ set -euo pipefail
 echo "==> Running pre-commit checks..."
 
 echo ""
-echo "--> Lint"
+echo "--> Format check"
+bash agents/format-check
+
+echo ""
+echo "--> Lint (read-only)"
 deno lint
 
 echo ""
 echo "--> Typecheck"
-deno check src bin tests agents
-
-echo ""
-echo "--> Format check"
-deno fmt --check
+bash agents/typecheck
 
 echo ""
 echo "--> Tests with coverage (95% per-file on branches, functions, lines)"
-deno test --coverage --allow-env --allow-read --allow-write
-deno coverage --lcov --output coverage/lcov.info
+bash dev/test
+bash agents/coverage-report
 bash agents/check-coverage.sh
 
 echo ""

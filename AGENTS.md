@@ -147,7 +147,7 @@ Apply when creating or changing tests in this repo.
 
 ### Hard rules
 
-1. When finished touching TypeScript files, run `npm run typecheck` and report
+1. When finished touching TypeScript files, run `deno task typecheck` and report
    the actual output. Do not claim TS is clean from reading `tsconfig.json`
    alone. If the user reports a TS error, use that same command to find it — do
    not invent your own check or report clean when the real one is broken.

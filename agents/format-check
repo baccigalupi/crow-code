@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Format gate for CI and pre-commit. Read-only.
+set -euo pipefail
+
+exec deno fmt --check

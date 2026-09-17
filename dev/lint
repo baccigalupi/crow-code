@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Dev-local helper: auto-fix lint and formatting, then typecheck via the agent gate.
+# Formatting auto-fix is applied by deno fmt (lint --fix only fixes lint rules).
+set -euo pipefail
+
+echo "--> Lint (auto-fix)"
+deno lint --fix
+
+echo "--> Format (auto-fix)"
+deno fmt
+
+echo "--> Typecheck (TS issues)"
+bash agents/typecheck

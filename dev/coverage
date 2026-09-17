@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Run the test suite with coverage, then print a human-readable coverage summary.
+# Any arguments are forwarded to dev/test (which forwards them to deno test).
+set -euo pipefail
+
+bash dev/test "$@"
+echo "==> Coverage summary"
+deno coverage || true

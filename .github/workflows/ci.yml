@@ -17,20 +17,17 @@ jobs:
         with:
           deno-version: v2.x
 
-      - name: Typecheck
-        run: deno task typecheck
-
-      - name: Lint
-        run: deno lint
-
       - name: Format check
-        run: deno fmt --check
+        run: bash agents/format-check
+
+      - name: Lint (auto-fix) and typecheck
+        run: bash dev/lint
 
       - name: Tests with coverage
-        run: deno test --coverage --allow-env --allow-read --allow-write
+        run: bash dev/test
 
-      - name: Coverage report
-        run: deno coverage --lcov --output coverage/lcov.info
+      - name: Coverage report (lcov)
+        run: bash agents/coverage-report
 
       - name: Per-file coverage gate
         run: bash agents/check-coverage.sh

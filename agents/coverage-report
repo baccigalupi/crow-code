@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Export the coverage profile collected by dev/test to lcov for machine checking.
+set -euo pipefail
+
+exec deno coverage --lcov --output coverage/lcov.info
