@@ -147,10 +147,9 @@ Apply when creating or changing tests in this repo.
 
 ### Hard rules
 
-1. When finished touching TypeScript files, run `deno task typecheck` and report
-   the actual output. Do not claim TS is clean from reading `tsconfig.json`
-   alone. If the user reports a TS error, use that same command to find it — do
-   not invent your own check or report clean when the real one is broken.
+1. When finished touching TypeScript files, run `bash agents/typecheck` and
+   report the actual output. Do not claim TS is clean without running the
+   typecheck gate.
 2. Source-to-test placement is one-to-one: `src/model-discovery/<path>.ts` ↔
    `tests/model-discovery/<path>.test.ts` (same relative path under
    `src/model-discovery/` and `tests/model-discovery/`). One source file, one

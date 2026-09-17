@@ -2,13 +2,6 @@
   "name": "crow-code",
   "version": "0.0.1",
   "description": "task oriented coding agent",
-  "tasks": {
-    "test": "deno test --allow-env --allow-read --allow-write",
-    "typecheck": "deno check src bin tests agents",
-    "diagnostics": "deno run --allow-run --allow-read --allow-env agents/editor-diagnostics.ts src bin tests",
-    "format": "deno fmt",
-    "format:check": "deno fmt --check"
-  },
   "exports": {
     ".": "./src/cli.ts"
   },

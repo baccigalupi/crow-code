@@ -23,9 +23,10 @@ stepfun/step-3.7-flash:free    sibling AA coding 39.6
 
 ## Setup
 
-```bash
-deno task typecheck
-deno test
+```
+bash dev/lint   # auto-fix lint + formatting, then typecheck
+bash dev/test   # run tests with coverage, forward args to deno test
+bash dev/coverage   # run tests with coverage then print human-readable summary
 ```
 
 ## TDD
@@ -33,8 +34,8 @@ deno test
 This repo follows strict test-driven development: write the failing test first,
 watch it fail, write minimal code to pass, then refactor.
 
-```bash
-deno test   # watch it fail (RED)
+```
+bash dev/test   # watch it fail (RED)
 3. Implement in src/
-4. deno test   # watch it pass (GREEN)
+4. bash dev/test   # watch it pass (GREEN)
 ```
