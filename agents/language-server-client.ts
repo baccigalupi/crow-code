@@ -8,6 +8,8 @@ export type Diagnostic = {
   source?: string
   code?: string | number
   message: string
+  severity?: number
+  tags?: number[]
   range: { start: { line: number; character: number } }
 }
 

@@ -40,7 +40,31 @@ const waitFor = async (
   }
 }
 
-const label = (diagnostic: Diagnostic) => {
+const severityNames = ['error', 'warning', 'information', 'hint']
+const deprecatedTag = 2
+
+const severityName = (diagnostic: Diagnostic) => {
+  if (diagnostic.severity === undefined) {
+    return 'error'
+  }
+  return severityNames[diagnostic.severity - 1]
+}
+
+const isBlocking = (diagnostic: Diagnostic) => {
+  if (diagnostic.severity === undefined) {
+    return true
+  }
+  return diagnostic.severity <= 2
+}
+
+const isDeprecated = (diagnostic: Diagnostic) => {
+  if (diagnostic.tags === undefined) {
+    return false
+  }
+  return diagnostic.tags.includes(deprecatedTag)
+}
+
+const describe = (diagnostic: Diagnostic) => {
   const { line, character } = diagnostic.range.start
   let source = 'deno'
   if (diagnostic.source !== undefined) {
@@ -50,23 +74,35 @@ const label = (diagnostic: Diagnostic) => {
   if (diagnostic.code !== undefined) {
     code = `${diagnostic.code}`
   }
-  return `${source}(${code}) at ${line + 1}:${character + 1}`
+  let deprecated = ''
+  if (isDeprecated(diagnostic)) {
+    deprecated = ' (deprecated)'
+  }
+  return `${severityName(diagnostic)}${deprecated} ${source}(${code}) at ${
+    line + 1
+  }:${character + 1}`
 }
 
 const report = (server: LanguageServer, files: string[]) => {
   let total = 0
+  let blocking = 0
   for (const file of files) {
     for (const diagnostic of server.diagnosticsFor(file)) {
       console.log(
         `${relative(Deno.cwd(), file)}: ${
-          label(diagnostic)
+          describe(diagnostic)
         }: ${diagnostic.message}`,
       )
       total += 1
+      if (isBlocking(diagnostic)) {
+        blocking += 1
+      }
     }
   }
-  console.log(`\n${files.length} files, ${total} diagnostics`)
-  return total
+  console.log(
+    `\n${files.length} files, ${total} diagnostics, ${blocking} errors or warnings`,
+  )
+  return blocking
 }
 
 const startServer = () => {
@@ -101,10 +137,10 @@ const main = async () => {
     collectionMilliseconds,
   )
   await sleep(pollMilliseconds)
-  const total = report(server, files)
+  const blocking = report(server, files)
   server.stop()
   await listening
-  Deno.exit(total === 0 ? 0 : 1)
+  Deno.exit(blocking === 0 ? 0 : 1)
 }
 
 await main()
