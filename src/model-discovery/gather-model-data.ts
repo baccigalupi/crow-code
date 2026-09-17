@@ -95,5 +95,5 @@ export const gatherModelData = async (
   fetchClient: typeof fetch = fetch,
 ) => {
   const gatherer = new GatherModelData(crowDirectory, environment, fetchClient)
-  return gatherer.run()
+  return await gatherer.run()
 }

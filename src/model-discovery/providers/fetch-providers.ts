@@ -14,14 +14,12 @@ const providerFetchers: ReadonlyMap<string, ProviderFetcher> = new Map([
   ['openrouter', fetchOpenRouterModels],
 ])
 
-const fetchProviders = async (
+export const fetchProviders = async (
   config: ProviderConfig,
   fetchClient: typeof fetch = fetch,
 ): Promise<ModelRecord[]> => {
   if (!providerFetchers.has(config.name)) {
-    return []
+    return Promise.resolve([] as ModelRecord[])
   }
-  return providerFetchers.get(config.name)!(config, fetchClient)
+  return await providerFetchers.get(config.name)!(config, fetchClient)
 }
-
-export { fetchProviders }
