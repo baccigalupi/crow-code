@@ -33,7 +33,7 @@ describe('fetchProviders', () => {
       ],
     }
     const mockFetch = mockFetchSuccess(apiResponse)
-    
+
     const result = await fetchProviders(config, mockFetch)
 
     expect(result).toEqual([

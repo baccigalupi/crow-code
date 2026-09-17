@@ -30,7 +30,8 @@ npm test
 
 ## TDD
 
-This repo follows strict test-driven development: write the failing test first, watch it fail, write minimal code to pass, then refactor.
+This repo follows strict test-driven development: write the failing test first,
+watch it fail, write minimal code to pass, then refactor.
 
 ```bash
 # New feature workflow

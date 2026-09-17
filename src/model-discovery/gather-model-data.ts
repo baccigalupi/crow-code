@@ -80,7 +80,11 @@ class GatherModelData {
 
   private logCompletion() {
     console.log(
-      `Wrote ${this.records.length} models to ${defaultCachePath(this.crowDirectory)}`,
+      `Wrote ${this.records.length} models to ${
+        defaultCachePath(
+          this.crowDirectory,
+        )
+      }`,
     )
   }
 }

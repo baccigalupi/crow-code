@@ -1,8 +1,8 @@
 import { describe, it } from 'jsr:@std/testing/bdd'
 import { expect } from 'jsr:@std/expect'
 import {
-  selectCheapNoReasoningModels,
   getCheapNoReasoningModels,
+  selectCheapNoReasoningModels,
 } from '../../../src/model-discovery/pick/select-cheap-no-reasoning-models.ts'
 import { join } from 'jsr:@std/path'
 

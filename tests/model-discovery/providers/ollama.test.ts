@@ -1,6 +1,9 @@
 import { describe, it } from 'jsr:@std/testing/bdd'
 import { expect } from 'jsr:@std/expect'
-import { mockFetchSuccess, mockFetchRejected } from '../../support/mock-fetch.ts'
+import {
+  mockFetchRejected,
+  mockFetchSuccess,
+} from '../../support/mock-fetch.ts'
 import {
   fetchOllamaModels,
   parseOllamaResponse,

@@ -82,11 +82,11 @@ const stripDatePatterns = (value: string, patterns: RegExp[]): string[] => {
 const collectVariants = (base: string): Set<string> => {
   const variants = new Set<string>([base])
   stripSuffixes(base, effortSuffixes).forEach((variant) =>
-    variants.add(variant),
+    variants.add(variant)
   )
   stripSuffixes(base, modeSuffixes).forEach((variant) => variants.add(variant))
   stripDatePatterns(base, datePatterns).forEach((variant) =>
-    variants.add(variant),
+    variants.add(variant)
   )
   return variants
 }
@@ -95,7 +95,7 @@ const expandEffortVariants = (variants: Set<string>): void => {
   const extra: string[] = []
   variants.forEach((variant) => {
     stripSuffixes(variant, effortSuffixes).forEach((stripped) =>
-      extra.push(stripped),
+      extra.push(stripped)
     )
   })
   extra.forEach((variant) => variants.add(variant))

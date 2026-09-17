@@ -3,7 +3,10 @@ import { fetchOllamaModels } from './ollama.ts'
 import { fetchOpenRouterModels } from './openrouter.ts'
 import type { ModelRecord, ProviderConfig } from '../types.ts'
 
-type ProviderFetcher = (config: ProviderConfig, fetchClient: typeof fetch) => Promise<ModelRecord[]>
+type ProviderFetcher = (
+  config: ProviderConfig,
+  fetchClient: typeof fetch,
+) => Promise<ModelRecord[]>
 
 const providerFetchers: ReadonlyMap<string, ProviderFetcher> = new Map([
   ['nous', fetchNousModels],
