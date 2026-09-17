@@ -67,14 +67,6 @@
       "jsr:@std/fs@1.0.24",
       "jsr:@std/path@1.1.6",
       "jsr:@std/testing@1.0.20"
-    ],
-    "packageJson": {
-      "dependencies": [
-        "npm:@types/node@^26.5.1",
-        "npm:tsx@^4.23.13",
-        "npm:typescript@^7.0.2",
-        "npm:vitest@5"
-      ]
-    }
+    ]
   }
 }
