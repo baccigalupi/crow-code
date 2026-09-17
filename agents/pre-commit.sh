@@ -4,6 +4,10 @@ set -euo pipefail
 echo "==> Running pre-commit checks..."
 
 echo ""
+echo "--> Lint"
+deno lint
+
+echo ""
 echo "--> Typecheck"
 deno check src bin tests agents
 

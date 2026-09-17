@@ -1,6 +1,6 @@
 import { applyScores } from './record-scores.ts'
 import { fetchAABenchmarks } from './aa-benchmarks.ts'
-import { Environment } from '../../env-vars.ts'
+import type { Environment } from '../../env-vars.ts'
 import type { ModelRecord } from '../types.ts'
 
 export const appendRatings = async (

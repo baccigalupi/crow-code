@@ -4,7 +4,7 @@ import {
   defaultCachePath,
   writeCache,
 } from '../../src/model-discovery/cache.ts'
-import { ModelRecord } from '../../src/model-discovery/types.ts'
+import type { ModelRecord } from '../../src/model-discovery/types.ts'
 import { join } from '@std/path'
 
 describe('cache', () => {

@@ -1,4 +1,4 @@
-import { AABenchmarks, CodingSource, ModelRecord } from '../types.ts'
+import type { AABenchmarks, CodingSource, ModelRecord } from '../types.ts'
 import { aiderPolyglotPct } from './aider-polyglot.ts'
 
 type CodingResult = {

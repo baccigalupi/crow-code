@@ -1,5 +1,5 @@
 import { fetchProvider } from './fetch-provider.ts'
-import { ModelRecord, ProviderConfig } from '../types.ts'
+import type { ModelRecord, ProviderConfig } from '../types.ts'
 
 type OllamaModel = {
   name: string

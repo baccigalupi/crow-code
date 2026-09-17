@@ -9,24 +9,28 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20, 22]
-      fail-fast: true
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: npm
+          deno-version: v2.x
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Typecheck
+        run: deno task typecheck
 
-      - name: Type check
-        run: npx tsc --noEmit
+      - name: Lint
+        run: deno lint
 
-      - name: Run tests
-        run: npm test
+      - name: Format check
+        run: deno fmt --check
+
+      - name: Tests with coverage
+        run: deno test --coverage --allow-env --allow-read --allow-write
+
+      - name: Coverage report
+        run: deno coverage --lcov --output coverage/lcov.info
+
+      - name: Per-file coverage gate
+        run: bash agents/check-coverage.sh

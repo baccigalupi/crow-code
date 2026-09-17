@@ -1,5 +1,5 @@
 import { dirname, join } from '@std/path'
-import { CacheFile, ModelRecord } from './types.ts'
+import type { CacheFile, ModelRecord } from './types.ts'
 
 export const defaultCachePath = (crowDirectory: string): string => {
   return join(crowDirectory, '.crow', 'models.json')

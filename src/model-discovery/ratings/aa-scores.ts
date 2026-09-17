@@ -1,4 +1,4 @@
-import { AABenchmarks, AAModel } from '../types.ts'
+import type { AABenchmarks, AAModel } from '../types.ts'
 import { candidateIds } from './aa-match.ts'
 
 const toScore = (value: number | null): number => {

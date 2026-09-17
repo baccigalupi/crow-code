@@ -2,7 +2,7 @@ import { loadProviderConfig } from './providers/load-provider-config.ts'
 import { fetchProviders } from './providers/fetch-providers.ts'
 import { appendRatings } from './ratings/append-ratings.ts'
 import { defaultCachePath, writeCache } from './cache.ts'
-import { Environment, loadEnvironmentalVariables } from '../env-vars.ts'
+import { type Environment, loadEnvironmentalVariables } from '../env-vars.ts'
 import type { ModelRecord } from './types.ts'
 
 class GatherModelData {
