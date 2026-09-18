@@ -1,6 +1,7 @@
 import { parseGoals } from './parse-goals.ts'
 import { requestMessages } from './messages.ts'
 import { modelRequest } from '../model-request.ts'
+import { ApiRequest } from '../api-request.ts'
 import type { ModelEndpointDetails } from '../types.ts'
 
 type GoalMessage = { content?: string }
@@ -24,7 +25,7 @@ class ModelResponseParser {
     }
     const content = this.firstContent(await this.response.json())
     if (content === null) {
-      console.error('Goal response had no message content')
+      console.error('Response had no message content')
       return this.empty()
     }
     return parseGoals(content)
@@ -47,35 +48,6 @@ class ModelResponseParser {
 
 const parseModelResponse = (response: Response) => {
   return new ModelResponseParser(response).parse()
-}
-
-class ApiRequest<T> {
-  private request: Request
-  private fetchClient: typeof fetch
-  private parse: (response: Response) => Promise<T>
-
-  constructor(
-    request: Request,
-    fetchClient: typeof fetch,
-    parse: (response: Response) => Promise<T>,
-  ) {
-    this.request = request
-    this.fetchClient = fetchClient
-    this.parse = parse
-  }
-
-  async perform() {
-    try {
-      const response = await this.fetchClient(this.request)
-      if (!response.ok) {
-        console.error(`Goal request failed with status ${response.status}`)
-      }
-      return await this.parse(response)
-    } catch {
-      console.error('Goal request failed')
-      return await this.parse(Response.error())
-    }
-  }
 }
 
 export const requestGoals = (
