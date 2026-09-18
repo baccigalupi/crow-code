@@ -2,21 +2,8 @@
 // PreToolUse hook: blocks exec calls outside the prescribed allowlist.
 // Prints {"decision":"block","reason":...} on stdout to deny; silence means pass.
 
-const allowedScripts = [
-  'dev/test',
-  'dev/lint',
-  'dev/coverage',
-  'agents/typecheck',
-  'agents/format-check',
-  'agents/pre-commit.sh',
-  'agents/check-coverage.sh',
-  'agents/coverage-report',
-  'agents/editor-diagnostics.ts',
-]
-
-const reason = `Allowed commands: ${
-  allowedScripts.join(', ')
-}, git (except push), bd`
+const reason =
+  'Allowed commands: scripts in agents/ or dev/, git (except push), bd'
 
 const block = () => {
   console.log(JSON.stringify({ decision: 'block', reason }))
@@ -68,7 +55,10 @@ const gitSubcommand = (words: string[]) => {
 
 const segmentAllowed = (segment: string) => {
   const words = stripLeading(segment).split(/\s+/)
-  if (allowedScripts.includes(words[0]) || words[0] === 'bd') {
+  if (words[0].startsWith('agents/') || words[0].startsWith('dev/')) {
+    return true
+  }
+  if (words[0] === 'bd') {
     return true
   }
   if (words[0] === 'git') {

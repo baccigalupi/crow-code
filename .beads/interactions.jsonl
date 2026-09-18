@@ -1,0 +1,1 @@
+{"id":"int-bb302bdc","kind":"field_change","created_at":"2026-09-18T21:11:57.75892Z","actor":"Kane Baccigalupi","issue_id":"crow-code-ctf","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Implemented pino JSON file logging with injected logger dependencies and passing verification"}}
