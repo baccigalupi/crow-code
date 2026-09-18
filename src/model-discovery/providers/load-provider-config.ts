@@ -6,10 +6,10 @@ type ProviderConfigFile = {
 }
 
 const providerConfigPath = (crowDirectory: string): string =>
-  join(crowDirectory, '.crow', 'providers.json')
+  join(crowDirectory, 'providers.json')
 
 export const loadProviderConfig = (
-  crowDirectory: string = Deno.cwd(),
+  crowDirectory: string,
 ): ProviderConfig[] => {
   const raw = Deno.readTextFileSync(providerConfigPath(crowDirectory))
   const parsed: ProviderConfigFile = JSON.parse(raw)

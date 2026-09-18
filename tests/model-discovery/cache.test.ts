@@ -40,8 +40,8 @@ describe('cache', () => {
     expect(saved.models).toEqual([model])
   })
 
-  it('when asking for the default path, returns the .crow cache location', () => {
-    const result = defaultCachePath('tests/support/fixtures')
+  it('when asking for the default path, returns models.json inside the given directory', () => {
+    const result = defaultCachePath('tests/support/fixtures/.crow')
 
     expect(result).toBe('tests/support/fixtures/.crow/models.json')
   })

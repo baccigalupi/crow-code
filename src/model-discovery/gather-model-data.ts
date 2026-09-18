@@ -12,7 +12,7 @@ class GatherModelData {
   private records: ModelRecord[] = []
 
   constructor(
-    crowDirectory: string = Deno.cwd(),
+    crowDirectory: string,
     environment: Environment = loadEnvironmentalVariables(),
     fetchClient: typeof fetch = fetch,
   ) {
@@ -90,7 +90,7 @@ class GatherModelData {
 }
 
 export const gatherModelData = async (
-  crowDirectory?: string,
+  crowDirectory: string,
   environment: Environment = loadEnvironmentalVariables(),
   fetchClient: typeof fetch = fetch,
 ) => {

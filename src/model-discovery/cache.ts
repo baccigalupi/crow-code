@@ -2,7 +2,7 @@ import { dirname, join } from '@std/path'
 import type { CacheFile, ModelRecord } from './types.ts'
 
 export const defaultCachePath = (crowDirectory: string): string => {
-  return join(crowDirectory, '.crow', 'models.json')
+  return join(crowDirectory, 'models.json')
 }
 
 export const writeCache = (path: string, models: ModelRecord[]): void => {

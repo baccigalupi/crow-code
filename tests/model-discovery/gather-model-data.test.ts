@@ -59,7 +59,7 @@ describe('gatherModelData', () => {
     }
     const environment = new Environment({ AA_API_KEY: 'test-key' })
 
-    await gatherModelData(fixtureDirectory, environment, catalogFetch)
+    await gatherModelData(crowDirectory, environment, catalogFetch)
 
     const saved = JSON.parse(Deno.readTextFileSync(modelsPath))
     const expected = JSON.parse(Deno.readTextFileSync(expectedModelsPath))
@@ -117,7 +117,7 @@ describe('gatherModelData', () => {
     }
     const environment = new Environment({ AA_API_KEY: 'test-key' })
 
-    await gatherModelData(fixtureDirectory, environment, catalogFetch)
+    await gatherModelData(crowDirectory, environment, catalogFetch)
 
     const saved = JSON.parse(Deno.readTextFileSync(modelsPath))
 
