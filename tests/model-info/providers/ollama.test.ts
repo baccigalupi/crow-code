@@ -9,16 +9,14 @@ import {
   fetchOllamaModels,
   parseOllamaResponse,
 } from '../../../src/model-info/providers/ollama.ts'
-import type { ProviderConfig } from '../../../src/model-info/types.ts'
-
-const ollamaConfig: ProviderConfig = {
-  name: 'ollama',
-  baseUrl: 'http://pile-driver.local:11434',
-  modelsUrl: 'http://pile-driver.local:11434/api/tags',
-}
 
 describe('ollama', () => {
   it('when the body has models, parseOllamaResponse normalizes them into records', () => {
+    const ollamaConfig = {
+      name: 'ollama' as const,
+      baseUrl: 'http://pile-driver.local:11434',
+      modelsUrl: 'http://pile-driver.local:11434/api/tags',
+    }
     const body = {
       models: [{ name: 'qwen3-coder:30b' }],
     }
@@ -30,6 +28,11 @@ describe('ollama', () => {
   })
 
   it('when fetched, fetchOllamaModels returns normalized records', async () => {
+    const ollamaConfig = {
+      name: 'ollama' as const,
+      baseUrl: 'http://pile-driver.local:11434',
+      modelsUrl: 'http://pile-driver.local:11434/api/tags',
+    }
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess({
       models: [{ name: 'qwen3-coder:30b' }],
@@ -42,8 +45,8 @@ describe('ollama', () => {
   })
 
   it('when fetched with modelsUrl omitted, falls back to baseUrl/api/tags', async () => {
-    const configWithoutModelsUrl: ProviderConfig = {
-      name: 'ollama',
+    const configWithoutModelsUrl = {
+      name: 'ollama' as const,
       baseUrl: 'http://pile-driver.local:11434',
     }
     const logger = pino({ enabled: false })
@@ -61,6 +64,11 @@ describe('ollama', () => {
   })
 
   it('when the network request fails, fetchOllamaModels returns an empty list', async () => {
+    const ollamaConfig = {
+      name: 'ollama' as const,
+      baseUrl: 'http://pile-driver.local:11434',
+      modelsUrl: 'http://pile-driver.local:11434/api/tags',
+    }
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchRejected('network down')
 

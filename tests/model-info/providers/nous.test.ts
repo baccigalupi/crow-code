@@ -9,15 +9,13 @@ import {
   fetchNousModels,
   parseNousResponse,
 } from '../../../src/model-info/providers/nous.ts'
-import type { ProviderConfig } from '../../../src/model-info/types.ts'
-
-const nousConfig: ProviderConfig = {
-  name: 'nous',
-  baseUrl: 'https://inference-api.nousresearch.com',
-}
 
 describe('nous', () => {
   it('when the body has models, parseNousResponse normalizes them into records', () => {
+    const nousConfig = {
+      name: 'nous' as const,
+      baseUrl: 'https://inference-api.nousresearch.com',
+    }
     const body = {
       data: [{ id: 'deepseek/deepseek-chat' }],
     }
@@ -29,6 +27,10 @@ describe('nous', () => {
   })
 
   it('when fetched, fetchNousModels returns normalized records', async () => {
+    const nousConfig = {
+      name: 'nous' as const,
+      baseUrl: 'https://inference-api.nousresearch.com',
+    }
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess({
       data: [{ id: 'deepseek/deepseek-chat' }],
@@ -41,6 +43,10 @@ describe('nous', () => {
   })
 
   it('when the network request fails, fetchNousModels returns an empty list', async () => {
+    const nousConfig = {
+      name: 'nous' as const,
+      baseUrl: 'https://inference-api.nousresearch.com',
+    }
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchRejected('network down')
 

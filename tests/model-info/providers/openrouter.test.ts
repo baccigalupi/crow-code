@@ -9,16 +9,14 @@ import {
   fetchOpenRouterModels,
   parseOpenRouterResponse,
 } from '../../../src/model-info/providers/openrouter.ts'
-import type { ProviderConfig } from '../../../src/model-info/types.ts'
-
-const openrouterConfig: ProviderConfig = {
-  name: 'openrouter',
-  baseUrl: 'https://openrouter.ai',
-  modelsUrl: 'https://openrouter.ai/api/v1/models',
-}
 
 describe('openrouter', () => {
   it('when the body has models, parseOpenRouterResponse normalizes them into records', () => {
+    const openrouterConfig = {
+      name: 'openrouter' as const,
+      baseUrl: 'https://openrouter.ai',
+      modelsUrl: 'https://openrouter.ai/api/v1/models',
+    }
     const body = {
       data: [{ id: 'openai/gpt-4o', name: 'GPT-4o' }],
     }
@@ -30,6 +28,11 @@ describe('openrouter', () => {
   })
 
   it('when fetched, returns normalized records', async () => {
+    const openrouterConfig = {
+      name: 'openrouter' as const,
+      baseUrl: 'https://openrouter.ai',
+      modelsUrl: 'https://openrouter.ai/api/v1/models',
+    }
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess({
       data: [{ id: 'openai/gpt-4o', name: 'GPT-4o' }],
@@ -46,8 +49,8 @@ describe('openrouter', () => {
   })
 
   it('when modelsUrl is not set, falls back to baseUrl', async () => {
-    const configWithoutModelsUrl: ProviderConfig = {
-      name: 'openrouter',
+    const configWithoutModelsUrl = {
+      name: 'openrouter' as const,
       baseUrl: 'https://openrouter.ai',
     }
     const logger = pino({ enabled: false })
@@ -60,6 +63,11 @@ describe('openrouter', () => {
   })
 
   it('when the network request fails, returns an empty list', async () => {
+    const openrouterConfig = {
+      name: 'openrouter' as const,
+      baseUrl: 'https://openrouter.ai',
+      modelsUrl: 'https://openrouter.ai/api/v1/models',
+    }
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchRejected('network down')
 
