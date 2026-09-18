@@ -1,14 +1,19 @@
-import { describe, it } from 'node:test'
+import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { fetchAABenchmarks } from '../../../src/model-info/ratings/benchmarks.ts'
 import { Environment } from '../../../src/env-vars.ts'
+import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import pino from 'pino'
 import { createLogger } from '../../../src/logger.ts'
 
 const logger = pino({ enabled: false })
+const crowDirectory = join(fixturesDirectory, 'logger', 'aa-key')
 
 describe('fetchAABenchmarks', () => {
+  beforeEach(() => clearDirectory(crowDirectory))
+  afterEach(() => clearDirectory(crowDirectory))
+
   it('when a catalog id matches an AA model, returns its scores', async () => {
     const aaModel = {
       slug: 'deepseek-v4',
@@ -102,16 +107,8 @@ describe('fetchAABenchmarks', () => {
   })
 
   it('when the key is missing, logs the error and returns an empty record', async () => {
-    const crowDirectory = join(
-      Deno.cwd(),
-      'tests',
-      'support',
-      'fixtures',
-      'logger',
-      'aa-key',
-    )
     const logPath = join(crowDirectory, 'logs', 'development.log')
-    Deno.mkdirSync(join(crowDirectory, 'logs'), { recursive: true })
+    await Deno.mkdir(join(crowDirectory, 'logs'), { recursive: true })
     Deno.writeTextFileSync(logPath, '')
     const fileLogger = createLogger(crowDirectory, 'error')
 

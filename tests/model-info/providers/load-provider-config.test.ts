@@ -1,14 +1,20 @@
-import { describe, it } from 'node:test'
+import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { loadProviderConfig } from '../../../src/model-info/providers/load-provider-config.ts'
+import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 
-const crowDirectory = join(Deno.cwd(), 'tests', 'support', 'fixtures', '.crow')
+const crowDirectory = join(fixturesDirectory, 'load-provider-config', '.crow')
 
 describe('loadProviderConfig', () => {
+  beforeEach(async () => {
+    await clearDirectory(crowDirectory)
+    await Deno.mkdir(crowDirectory, { recursive: true })
+  })
+  afterEach(() => clearDirectory(crowDirectory))
+
   it('when the crow directory contains providers.json, returns the parsed providers', () => {
     const providersPath = join(crowDirectory, 'providers.json')
-    Deno.mkdirSync(crowDirectory, { recursive: true })
     Deno.writeTextFileSync(
       providersPath,
       JSON.stringify({
@@ -23,7 +29,5 @@ describe('loadProviderConfig', () => {
     expect(providers).toEqual([
       { name: 'nous', baseUrl: 'https://inference-api.nousresearch.com' },
     ])
-
-    Deno.removeSync(providersPath)
   })
 })

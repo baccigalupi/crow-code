@@ -1,27 +1,27 @@
-import { describe, it } from 'node:test'
+import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { resolveModelEndpoint } from '../../../src/plan/goals/resolve-model-endpoint.ts'
 import { Environment } from '../../../src/env-vars.ts'
+import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import pino from 'pino'
 
 const logger = pino({ enabled: false })
 
-const fixtureDirectory = join(
-  Deno.cwd(),
-  'tests',
-  'support',
-  'fixtures',
-  '.crow',
-)
+const fixtureDirectory = join(fixturesDirectory, 'resolve-model-endpoint')
 
 describe('resolveModelEndpoint', () => {
+  beforeEach(async () => {
+    await clearDirectory(fixtureDirectory)
+    await Deno.mkdir(fixtureDirectory, { recursive: true })
+  })
+  afterEach(() => clearDirectory(fixtureDirectory))
+
   it('when the model catalog has a cheap model on a configured provider, returns the model endpoint', () => {
     const modelCatalogPath = join(
       fixtureDirectory,
       'resolve-model-endpoint-happy.json',
     )
-    Deno.mkdirSync(fixtureDirectory, { recursive: true })
     Deno.writeTextFileSync(
       modelCatalogPath,
       JSON.stringify({
@@ -68,8 +68,6 @@ describe('resolveModelEndpoint', () => {
       apiKey: 'secret-key',
       model: 'qwen3-coder:30b',
     })
-
-    Deno.removeSync(modelCatalogPath)
   })
 
   it('when the model catalog file is missing, returns null', () => {
@@ -101,7 +99,6 @@ describe('resolveModelEndpoint', () => {
       fixtureDirectory,
       'resolve-model-endpoint-empty.json',
     )
-    Deno.mkdirSync(fixtureDirectory, { recursive: true })
     Deno.writeTextFileSync(
       modelCatalogPath,
       JSON.stringify({
@@ -144,8 +141,6 @@ describe('resolveModelEndpoint', () => {
     )
 
     expect(modelEndpoint).toBeNull()
-
-    Deno.removeSync(modelCatalogPath)
   })
 
   it('when the model provider is not configured, returns null', () => {
@@ -153,7 +148,6 @@ describe('resolveModelEndpoint', () => {
       fixtureDirectory,
       'resolve-model-endpoint-unknown.json',
     )
-    Deno.mkdirSync(fixtureDirectory, { recursive: true })
     Deno.writeTextFileSync(
       modelCatalogPath,
       JSON.stringify({
@@ -196,8 +190,6 @@ describe('resolveModelEndpoint', () => {
     )
 
     expect(modelEndpoint).toBeNull()
-
-    Deno.removeSync(modelCatalogPath)
   })
 
   it('when the provider api key env var is unset, returns null', () => {
@@ -205,7 +197,6 @@ describe('resolveModelEndpoint', () => {
       fixtureDirectory,
       'resolve-model-endpoint-nokey.json',
     )
-    Deno.mkdirSync(fixtureDirectory, { recursive: true })
     Deno.writeTextFileSync(
       modelCatalogPath,
       JSON.stringify({
@@ -248,8 +239,6 @@ describe('resolveModelEndpoint', () => {
     )
 
     expect(modelEndpoint).toBeNull()
-
-    Deno.removeSync(modelCatalogPath)
   })
 
   it('when the provider has no api key env var, uses an unused key', () => {
@@ -257,7 +246,6 @@ describe('resolveModelEndpoint', () => {
       fixtureDirectory,
       'resolve-model-endpoint-local.json',
     )
-    Deno.mkdirSync(fixtureDirectory, { recursive: true })
     Deno.writeTextFileSync(
       modelCatalogPath,
       JSON.stringify({
@@ -304,7 +292,5 @@ describe('resolveModelEndpoint', () => {
       apiKey: 'unused',
       model: 'qwen3-coder:30b',
     })
-
-    Deno.removeSync(modelCatalogPath)
   })
 })

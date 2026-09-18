@@ -1,24 +1,18 @@
-import { describe, it } from 'node:test'
+import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import { existsSync } from '@std/fs'
 import { createLogger } from '../src/logger.ts'
+import { clearDirectory, fixturesDirectory } from './support/fixtures.ts'
 
-const fixtureDirectory = join(
-  Deno.cwd(),
-  'tests',
-  'support',
-  'fixtures',
-  'logger',
-)
+const loggerDirectory = join(fixturesDirectory, 'logger')
 
 describe('createLogger', () => {
+  beforeEach(() => clearDirectory(loggerDirectory))
+  afterEach(() => clearDirectory(loggerDirectory))
+
   it('when created, creates the development log file', () => {
-    const crowDirectory = join(fixtureDirectory, 'creates-file')
+    const crowDirectory = join(loggerDirectory, 'creates-file')
     const logPath = join(crowDirectory, 'logs', 'development.log')
-    if (existsSync(logPath)) {
-      Deno.removeSync(logPath)
-    }
 
     createLogger(crowDirectory, 'error')
 
@@ -26,10 +20,8 @@ describe('createLogger', () => {
   })
 
   it('when an info message is logged, writes a JSON line', async () => {
-    const crowDirectory = join(fixtureDirectory, 'writes-message')
+    const crowDirectory = join(loggerDirectory, 'writes-message')
     const logPath = join(crowDirectory, 'logs', 'development.log')
-    Deno.mkdirSync(join(crowDirectory, 'logs'), { recursive: true })
-    Deno.writeTextFileSync(logPath, '')
     const logger = createLogger(crowDirectory, 'info')
 
     logger.info('catalog built')
@@ -42,10 +34,8 @@ describe('createLogger', () => {
   })
 
   it('when a message is below the level, skips it', async () => {
-    const crowDirectory = join(fixtureDirectory, 'skips-message')
+    const crowDirectory = join(loggerDirectory, 'skips-message')
     const logPath = join(crowDirectory, 'logs', 'development.log')
-    Deno.mkdirSync(join(crowDirectory, 'logs'), { recursive: true })
-    Deno.writeTextFileSync(logPath, '')
     const logger = createLogger(crowDirectory, 'error')
 
     logger.info('catalog built')

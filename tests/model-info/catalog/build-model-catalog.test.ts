@@ -1,15 +1,19 @@
-import { describe, it } from 'node:test'
+import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { buildModelCatalog } from '../../../src/model-info/catalog/build-model-catalog.ts'
 import { Environment } from '../../../src/env-vars.ts'
+import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import { mockFetchRoutes } from '../../support/mock-fetch.ts'
 import pino from 'pino'
 
-const fixtureDirectory = join(Deno.cwd(), 'tests', 'support', 'fixtures')
+const fixtureDirectory = join(fixturesDirectory, 'build-model-catalog')
 const logger = pino({ enabled: false })
 
 describe('buildModelCatalog', () => {
+  beforeEach(() => clearDirectory(fixtureDirectory))
+  afterEach(() => clearDirectory(fixtureDirectory))
+
   it('when run, writes a models.json in the injected crow directory', async () => {
     const crowDirectory = join(fixtureDirectory, '.crow')
     const providersPath = join(crowDirectory, 'providers.json')
@@ -94,9 +98,6 @@ describe('buildModelCatalog', () => {
         size: '',
       },
     ])
-
-    Deno.removeSync(providersPath)
-    Deno.removeSync(modelsPath)
   })
 
   it('when two providers return the same model id, merges the records', async () => {
@@ -143,8 +144,5 @@ describe('buildModelCatalog', () => {
 
     expect(saved.models).toHaveLength(1)
     expect(saved.models[0].providers).toEqual(['nous', 'ollama'])
-
-    Deno.removeSync(providersPath)
-    Deno.removeSync(modelsPath)
   })
 })

@@ -1,11 +1,15 @@
-import { describe, it } from 'node:test'
+import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { Environment, loadEnvironmentalVariables } from '../src/env-vars.ts'
+import { clearDirectory, fixturesDirectory } from './support/fixtures.ts'
 
-const fixtureDirectory = join(Deno.cwd(), 'tests', 'support', 'fixtures', 'env')
+const fixtureDirectory = join(fixturesDirectory, 'env')
 
 describe('env-vars', () => {
+  beforeEach(() => clearDirectory(fixtureDirectory))
+  afterEach(() => clearDirectory(fixtureDirectory))
+
   describe('Environment', () => {
     it('when values are injected, returns a value by name', () => {
       const environment = new Environment({ AA_API_KEY: 'injected-key' })
@@ -53,8 +57,6 @@ describe('env-vars', () => {
 
       expect(environment.value('AA_API_KEY')).toBe('file-key')
       expect(environment.value('NOUS_API_KEY')).toBe('fixture-nous-key')
-
-      Deno.removeSync(valuesPath)
     })
 
     it('when the file does not exist, has no values', () => {
@@ -73,8 +75,6 @@ describe('env-vars', () => {
       const environment = loadEnvironmentalVariables(valuesPath)
 
       expect(environment.value('PATH')).toBe(Deno.env.get('PATH'))
-
-      Deno.removeSync(valuesPath)
     })
 
     it('when no path is given, reads the process environment', () => {
