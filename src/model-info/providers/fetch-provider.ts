@@ -1,10 +1,10 @@
-import type pino from 'pino'
+import type { Logger } from '../types.ts'
 
 export const fetchProvider = async <ApiRecord, T>(
   url: string,
   parse: (raw: ApiRecord) => T[],
   timeoutMs: number,
-  logger: pino.Logger,
+  logger: Logger,
   fetchClient: typeof fetch = fetch,
 ): Promise<T[]> => {
   try {

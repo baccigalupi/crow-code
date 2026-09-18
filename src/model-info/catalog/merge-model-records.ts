@@ -1,4 +1,4 @@
-import type { ModelInfo } from './types.ts'
+import type { ModelInfo } from '../types.ts'
 
 const mergeRecords = (existing: ModelInfo, record: ModelInfo): ModelInfo => {
   return {

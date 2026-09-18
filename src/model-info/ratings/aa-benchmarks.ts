@@ -1,7 +1,6 @@
-import type { AABenchmarks, AAModel } from '../types.ts'
+import type { AABenchmarks, AAModel, Logger } from '../types.ts'
 import type { Environment } from '../../env-vars.ts'
 import { matchAABenchmarks } from './aa-scores.ts'
-import type pino from 'pino'
 
 const aaUrl = 'https://artificialanalysis.ai/api/v2/language/models/free'
 
@@ -16,7 +15,7 @@ type AAPage = {
 const fetchAAModelsPage = async (
   key: string,
   page: number,
-  logger: pino.Logger,
+  logger: Logger,
   fetchClient: typeof fetch = fetch,
 ): Promise<AAPage | null> => {
   try {
@@ -37,7 +36,7 @@ const fetchAAModelsPage = async (
 
 const collectAllAAModels = async (
   key: string,
-  logger: pino.Logger,
+  logger: Logger,
   fetchClient: typeof fetch = fetch,
 ): Promise<AAModel[]> => {
   const allModels: AAModel[] = []
@@ -59,7 +58,7 @@ const collectAllAAModels = async (
 export const fetchAABenchmarks = async (
   catalogIds: Set<string>,
   environment: Environment,
-  logger: pino.Logger,
+  logger: Logger,
   fetchClient: typeof fetch = fetch,
 ): Promise<Record<string, AABenchmarks>> => {
   if (!environment.hasValue('AA_API_KEY')) {

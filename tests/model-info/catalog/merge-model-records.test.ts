@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { mergeModelRecords } from '../../src/model-info/merge-model-records.ts'
-import type { ModelInfo } from '../../src/model-info/types.ts'
+import { mergeModelRecords } from '../../../src/model-info/catalog/merge-model-records.ts'
+import type { ModelInfo } from '../../../src/model-info/types.ts'
 
 describe('mergeModelRecords', () => {
   it('when records share an id, merges their providers', () => {

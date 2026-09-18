@@ -1,6 +1,5 @@
 import { fetchProvider } from './fetch-provider.ts'
-import type { ModelInfo, ProviderConfig } from '../types.ts'
-import type pino from 'pino'
+import type { Logger, ModelInfo, ProviderConfig } from '../types.ts'
 
 type ReasoningMeta = {
   mandatory?: boolean
@@ -115,7 +114,7 @@ export const parseNousResponse = (
 
 export const fetchNousModels = (
   config: ProviderConfig,
-  logger: pino.Logger,
+  logger: Logger,
   fetchClient: typeof fetch = fetch,
 ): Promise<ModelInfo[]> => {
   return fetchProvider<NousApiRecord, ModelInfo>(

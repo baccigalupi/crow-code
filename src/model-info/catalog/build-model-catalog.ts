@@ -1,24 +1,23 @@
-import { loadProviderConfig } from './providers/load-provider-config.ts'
-import { fetchProviders } from './providers/fetch-providers.ts'
-import { appendRatings } from './ratings/append-ratings.ts'
+import { loadProviderConfig } from '../providers/load-provider-config.ts'
+import { fetchProviders } from '../providers/fetch-providers.ts'
+import { appendRatings } from '../ratings/append-ratings.ts'
 import { defaultModelCatalogPath, writeModelCatalog } from './model-catalog.ts'
-import { type Environment, loadEnvironmentalVariables } from '../env-vars.ts'
-import type { ModelInfo } from './types.ts'
-import type pino from 'pino'
+import { type Environment, loadEnvironmentalVariables } from '../../env-vars.ts'
+import type { Logger, ModelInfo } from '../types.ts'
 import { mergeModelRecords } from './merge-model-records.ts'
 
 class BuildModelCatalog {
   private crowDirectory: string
   private environment: Environment
   private fetchClient: typeof fetch
-  private logger: pino.Logger
+  private logger: Logger
   private records: ModelInfo[] = []
 
   constructor(
     crowDirectory: string,
     environment: Environment,
     fetchClient: typeof fetch,
-    logger: pino.Logger,
+    logger: Logger,
   ) {
     this.crowDirectory = crowDirectory
     this.environment = environment
@@ -84,7 +83,7 @@ class BuildModelCatalog {
 
 export const buildModelCatalog = async (
   crowDirectory: string,
-  logger: pino.Logger,
+  logger: Logger,
   environment: Environment = loadEnvironmentalVariables(),
   fetchClient: typeof fetch = fetch,
 ) => {

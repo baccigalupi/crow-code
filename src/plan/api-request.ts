@@ -1,17 +1,17 @@
-import type pino from 'pino'
+import type { Logger } from '../model-info/types.ts'
 
 export class ApiRequest<T> {
   private request: Request
   private fetchClient: typeof fetch
   private parse: (response: Response) => Promise<T>
-  private logger: pino.Logger
+  private logger: Logger
   private response: Response
 
   constructor(
     request: Request,
     fetchClient: typeof fetch,
     parse: (response: Response) => Promise<T>,
-    logger: pino.Logger,
+    logger: Logger,
   ) {
     this.request = request
     this.fetchClient = fetchClient

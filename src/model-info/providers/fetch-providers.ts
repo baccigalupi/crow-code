@@ -1,12 +1,11 @@
 import { fetchNousModels } from './nous.ts'
 import { fetchOllamaModels } from './ollama.ts'
 import { fetchOpenRouterModels } from './openrouter.ts'
-import type { ModelInfo, ProviderConfig } from '../types.ts'
-import type pino from 'pino'
+import type { Logger, ModelInfo, ProviderConfig } from '../types.ts'
 
 type ProviderFetcher = (
   config: ProviderConfig,
-  logger: pino.Logger,
+  logger: Logger,
   fetchClient: typeof fetch,
 ) => Promise<ModelInfo[]>
 
@@ -18,7 +17,7 @@ const providerFetchers: ReadonlyMap<string, ProviderFetcher> = new Map([
 
 export const fetchProviders = async (
   config: ProviderConfig,
-  logger: pino.Logger,
+  logger: Logger,
   fetchClient: typeof fetch = fetch,
 ): Promise<ModelInfo[]> => {
   if (!providerFetchers.has(config.name)) {

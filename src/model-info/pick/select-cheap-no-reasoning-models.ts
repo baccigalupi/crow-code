@@ -1,4 +1,4 @@
-import { readModelCatalog } from '../model-catalog.ts'
+import { readModelCatalog } from '../catalog/model-catalog.ts'
 import type { ModelInfo } from '../types.ts'
 
 const defaultCheapCostThreshold = 0.001

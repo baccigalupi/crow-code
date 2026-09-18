@@ -1,3 +1,7 @@
+import type pino from 'pino'
+
+export type Logger = pino.Logger
+
 export type CodingSource = 'AA' | 'Aider'
 
 export type ProviderConfig = {

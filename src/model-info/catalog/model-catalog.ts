@@ -1,5 +1,5 @@
 import { dirname, join } from '@std/path'
-import type { ModelCatalog, ModelInfo } from './types.ts'
+import type { ModelCatalog, ModelInfo } from '../types.ts'
 
 export const defaultModelCatalogPath = (crowDirectory: string): string => {
   return join(crowDirectory, 'models.json')

@@ -1,18 +1,21 @@
 import { existsSync } from '@std/fs'
 import { getCheapNoReasoningModels } from '../../model-info/pick/select-cheap-no-reasoning-models.ts'
-import type { ModelInfo, ProviderConfig } from '../../model-info/types.ts'
+import type {
+  Logger,
+  ModelInfo,
+  ProviderConfig,
+} from '../../model-info/types.ts'
 import type { Environment } from '../../env-vars.ts'
-import type pino from 'pino'
 
 class ModelEndpointResolver {
   private providers: ProviderConfig[]
   private environment: Environment
-  private logger: pino.Logger
+  private logger: Logger
 
   constructor(
     providers: ProviderConfig[],
     environment: Environment,
-    logger: pino.Logger,
+    logger: Logger,
   ) {
     this.providers = providers
     this.environment = environment
@@ -65,7 +68,7 @@ export const resolveModelEndpoint = (
   modelCatalogPath: string,
   providers: ProviderConfig[],
   environment: Environment,
-  logger: pino.Logger,
+  logger: Logger,
 ) => {
   if (!existsSync(modelCatalogPath)) {
     logger.error(`Model catalog not found: ${modelCatalogPath}`)
