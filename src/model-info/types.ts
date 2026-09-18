@@ -49,3 +49,21 @@ export type AAModel = {
     artificial_analysis_agentic_index: number | null
   }
 }
+
+export type ReasoningMeta = {
+  mandatory?: boolean
+  default_enabled?: boolean
+  default_effort?: string
+}
+
+export type NousModel = {
+  id: string
+  name?: string
+  context_length?: number
+  knowledge_cutoff?: string
+  pricing?: { prompt?: string; completion?: string }
+  reasoning?: ReasoningMeta | null
+  architecture?: { modality?: string }
+}
+
+export type NousApiRecord = { data?: NousModel[] }
