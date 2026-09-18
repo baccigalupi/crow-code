@@ -8,7 +8,7 @@ export const appendRatings = async (
   environment: Environment,
   logger: Logger,
   fetchClient: typeof fetch = fetch,
-): Promise<ModelInfo[]> => {
+) => {
   const catalogIds = new Set(records.map((record) => record.id))
   const benchmarks = await fetchAABenchmarks(
     catalogIds,

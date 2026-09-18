@@ -45,16 +45,12 @@ class CheapSummarizerFilter {
   }
 }
 
-export const selectCheapNoReasoningModels = (
-  models: ModelInfo[],
-): ModelInfo[] => {
+export const selectCheapNoReasoningModels = (models: ModelInfo[]) => {
   const filter = new CheapSummarizerFilter()
   return filter.select(models)
 }
 
-export const getCheapNoReasoningModels = (
-  modelCatalogPath: string,
-): ModelInfo[] => {
+export const getCheapNoReasoningModels = (modelCatalogPath: string) => {
   const catalog = readModelCatalog(modelCatalogPath)
   return selectCheapNoReasoningModels(catalog.models)
 }

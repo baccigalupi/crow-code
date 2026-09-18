@@ -19,14 +19,14 @@ type NousModel = {
 
 const nousTimeoutMs = 20000
 
-const modelName = (model: NousModel): string => {
+const modelName = (model: NousModel) => {
   if (model.name === undefined) {
     return model.id
   }
   return model.name
 }
 
-const modality = (model: NousModel): string => {
+const modality = (model: NousModel) => {
   if (
     model.architecture === undefined ||
     model.architecture.modality === undefined
@@ -36,28 +36,28 @@ const modality = (model: NousModel): string => {
   return model.architecture.modality
 }
 
-const promptPrice = (pricing: NousModel['pricing']): string | undefined => {
+const promptPrice = (pricing: NousModel['pricing']) => {
   if (pricing === undefined) {
     return undefined
   }
   return pricing.prompt
 }
 
-const completionPrice = (pricing: NousModel['pricing']): string | undefined => {
+const completionPrice = (pricing: NousModel['pricing']) => {
   if (pricing === undefined) {
     return undefined
   }
   return pricing.completion
 }
 
-const toMillionPrice = (pricePerToken: string | undefined): number => {
+const toMillionPrice = (pricePerToken: string | undefined) => {
   if (pricePerToken === undefined) {
     return 0
   }
   return parseFloat(pricePerToken) * 1_000_000
 }
 
-const reasoningModeLabel = (meta: ReasoningMeta): string => {
+const reasoningModeLabel = (meta: ReasoningMeta) => {
   if (meta.mandatory === true) {
     return 'forced'
   }
@@ -67,7 +67,7 @@ const reasoningModeLabel = (meta: ReasoningMeta): string => {
   return 'off'
 }
 
-const reasoningMode = (meta: ReasoningMeta | null | undefined): string => {
+const reasoningMode = (meta: ReasoningMeta | null | undefined) => {
   if (meta === null || meta === undefined) {
     return '-'
   }
@@ -81,7 +81,7 @@ const reasoningMode = (meta: ReasoningMeta | null | undefined): string => {
 const buildNousRecord = (
   model: NousModel,
   config: ProviderConfig,
-): ModelInfo => {
+) => {
   return {
     id: model.id,
     name: modelName(model),
@@ -105,7 +105,7 @@ type NousApiRecord = { data?: NousModel[] }
 export const parseNousResponse = (
   raw: NousApiRecord,
   config: ProviderConfig,
-): ModelInfo[] => {
+) => {
   if (raw.data === undefined) {
     return []
   }
@@ -116,7 +116,7 @@ export const fetchNousModels = (
   config: ProviderConfig,
   logger: Logger,
   fetchClient: typeof fetch = fetch,
-): Promise<ModelInfo[]> => {
+) => {
   return fetchProvider<NousApiRecord, ModelInfo>(
     config.baseUrl + '/v1/models',
     (raw) => parseNousResponse(raw, config),

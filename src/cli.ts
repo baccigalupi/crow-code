@@ -14,7 +14,7 @@ Available subcommands:
 export const run = async (
   subcommand: string,
   logger: Logger,
-): Promise<void> => {
+) => {
   if (subcommand === 'find-models') {
     const crowDirectory = join(Deno.cwd(), '.crow')
     await buildModelCatalog(crowDirectory, logger)

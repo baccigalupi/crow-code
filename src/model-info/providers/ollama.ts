@@ -8,16 +8,14 @@ type OllamaModel = {
 
 const ollamaTimeoutMs = 5000
 
-const ollamaContextLength = (
-  details: OllamaModel['details'],
-): number | null => {
+const ollamaContextLength = (details: OllamaModel['details']) => {
   if (details === undefined) {
     return null
   }
   return details.context_length || null
 }
 
-const ollamaSize = (details: OllamaModel['details']): string => {
+const ollamaSize = (details: OllamaModel['details']) => {
   if (details === undefined || details.parameter_size === undefined) {
     return ''
   }
@@ -27,7 +25,7 @@ const ollamaSize = (details: OllamaModel['details']): string => {
 const buildOllamaRecord = (
   model: OllamaModel,
   config: ProviderConfig,
-): ModelInfo => {
+) => {
   return {
     id: model.name,
     name: model.name,
@@ -51,7 +49,7 @@ type OllamaApiRecord = { models?: OllamaModel[] }
 export const parseOllamaResponse = (
   raw: OllamaApiRecord,
   config: ProviderConfig,
-): ModelInfo[] => {
+) => {
   if (raw.models === undefined) {
     return []
   }
@@ -62,7 +60,7 @@ export const fetchOllamaModels = (
   config: ProviderConfig,
   logger: Logger,
   fetchClient: typeof fetch = fetch,
-): Promise<ModelInfo[]> => {
+) => {
   return fetchProvider<OllamaApiRecord, ModelInfo>(
     config.modelsUrl ?? config.baseUrl,
     (raw) => parseOllamaResponse(raw, config),

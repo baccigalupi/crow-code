@@ -1,4 +1,4 @@
-import type { AABenchmarks, AAModel, Logger } from '../types.ts'
+import type { AAModel, Logger } from '../types.ts'
 import type { Environment } from '../../env-vars.ts'
 import { matchAABenchmarks } from './aa-scores.ts'
 
@@ -17,7 +17,7 @@ const fetchAAModelsPage = async (
   page: number,
   logger: Logger,
   fetchClient: typeof fetch = fetch,
-): Promise<AAPage | null> => {
+) => {
   try {
     const response = await fetchClient(`${aaUrl}?page=${page}`, {
       headers: { 'x-api-key': key },
@@ -38,7 +38,7 @@ const collectAllAAModels = async (
   key: string,
   logger: Logger,
   fetchClient: typeof fetch = fetch,
-): Promise<AAModel[]> => {
+) => {
   const allModels: AAModel[] = []
   let page = 1
   while (true) {
@@ -60,7 +60,7 @@ export const fetchAABenchmarks = async (
   environment: Environment,
   logger: Logger,
   fetchClient: typeof fetch = fetch,
-): Promise<Record<string, AABenchmarks>> => {
+) => {
   if (!environment.hasValue('AA_API_KEY')) {
     logger.error(aaKeyMissingMessage)
     return {}

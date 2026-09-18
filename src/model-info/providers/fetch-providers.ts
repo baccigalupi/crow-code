@@ -19,7 +19,7 @@ export const fetchProviders = async (
   config: ProviderConfig,
   logger: Logger,
   fetchClient: typeof fetch = fetch,
-): Promise<ModelInfo[]> => {
+) => {
   if (!providerFetchers.has(config.name)) {
     return Promise.resolve([] as ModelInfo[])
   }

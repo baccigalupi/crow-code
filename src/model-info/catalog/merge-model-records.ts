@@ -1,6 +1,6 @@
 import type { ModelInfo } from '../types.ts'
 
-const mergeRecords = (existing: ModelInfo, record: ModelInfo): ModelInfo => {
+const mergeRecords = (existing: ModelInfo, record: ModelInfo) => {
   return {
     ...existing,
     providers: [...new Set([...existing.providers, ...record.providers])],

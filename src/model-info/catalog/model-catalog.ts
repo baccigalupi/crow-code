@@ -1,11 +1,11 @@
 import { dirname, join } from '@std/path'
 import type { ModelCatalog, ModelInfo } from '../types.ts'
 
-export const defaultModelCatalogPath = (crowDirectory: string): string => {
+export const defaultModelCatalogPath = (crowDirectory: string) => {
   return join(crowDirectory, 'models.json')
 }
 
-export const writeModelCatalog = (path: string, models: ModelInfo[]): void => {
+export const writeModelCatalog = (path: string, models: ModelInfo[]) => {
   Deno.mkdirSync(dirname(path), { recursive: true })
   const catalog: ModelCatalog = {
     fetchedAt: new Date().toISOString(),

@@ -16,14 +16,14 @@ type OpenRouterModel = {
 
 const openrouterTimeoutMs = 20000
 
-const modelName = (model: OpenRouterModel): string => {
+const modelName = (model: OpenRouterModel) => {
   if (model.name === undefined) {
     return model.id
   }
   return model.name
 }
 
-const modality = (model: OpenRouterModel): string => {
+const modality = (model: OpenRouterModel) => {
   if (
     model.architecture === undefined ||
     model.architecture.modality === undefined
@@ -33,25 +33,21 @@ const modality = (model: OpenRouterModel): string => {
   return model.architecture.modality
 }
 
-const promptPrice = (
-  pricing: OpenRouterPricing | undefined,
-): string | undefined => {
+const promptPrice = (pricing: OpenRouterPricing | undefined) => {
   if (pricing === undefined) {
     return undefined
   }
   return pricing.prompt
 }
 
-const completionPrice = (
-  pricing: OpenRouterPricing | undefined,
-): string | undefined => {
+const completionPrice = (pricing: OpenRouterPricing | undefined) => {
   if (pricing === undefined) {
     return undefined
   }
   return pricing.completion
 }
 
-const toMillionPrice = (pricePerToken: string | undefined): number => {
+const toMillionPrice = (pricePerToken: string | undefined) => {
   if (pricePerToken === undefined) {
     return 0
   }
@@ -61,7 +57,7 @@ const toMillionPrice = (pricePerToken: string | undefined): number => {
 const buildOpenRouterRecord = (
   model: OpenRouterModel,
   config: ProviderConfig,
-): ModelInfo => {
+) => {
   return {
     id: model.id,
     name: modelName(model),
@@ -85,7 +81,7 @@ type OpenRouterApiRecord = { data?: OpenRouterModel[] }
 export const parseOpenRouterResponse = (
   raw: OpenRouterApiRecord,
   config: ProviderConfig,
-): ModelInfo[] => {
+) => {
   if (raw.data === undefined) {
     return []
   }
@@ -96,7 +92,7 @@ export const fetchOpenRouterModels = (
   config: ProviderConfig,
   logger: Logger,
   fetchClient: typeof fetch = fetch,
-): Promise<ModelInfo[]> => {
+) => {
   return fetchProvider<OpenRouterApiRecord, ModelInfo>(
     config.modelsUrl ?? config.baseUrl,
     (raw) => parseOpenRouterResponse(raw, config),
