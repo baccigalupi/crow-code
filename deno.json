@@ -13,8 +13,7 @@
     "@std/dotenv": "jsr:@std/dotenv@0.225.8",
     "@std/expect": "jsr:@std/expect@1.0.20",
     "@std/fs": "jsr:@std/fs@1.0.24",
-    "@std/path": "jsr:@std/path@1.1.6",
-    "@std/testing": "jsr:@std/testing@1.0.20"
+    "@std/path": "jsr:@std/path@1.1.6"
   },
   "fmt": {
     "semiColons": false,

@@ -1,4 +1,4 @@
-import { describe, it } from '@std/testing/bdd'
+import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
 import { fetchProviders } from '../../../src/model-discovery/providers/fetch-providers.ts'

@@ -1,6 +1,5 @@
-import { describe, it } from '@std/testing/bdd'
+import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { assertSpyCalls } from '@std/testing/mock'
 import {
   mockFetchRejected,
   mockFetchSuccess,
@@ -143,8 +142,8 @@ describe('openrouter', () => {
 
     await fetchOpenRouterModels(configWithoutModelsUrl, mockFetch)
 
-    assertSpyCalls(mockFetch, 1)
-    expect(mockFetch.calls[0].args[0]).toBe('https://openrouter.ai')
+    expect(mockFetch.calls).toHaveLength(1)
+    expect(mockFetch.calls[0]).toBe('https://openrouter.ai')
   })
 
   it('when the network request fails, returns an empty list', async () => {

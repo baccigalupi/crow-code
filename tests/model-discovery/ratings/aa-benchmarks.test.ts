@@ -1,6 +1,5 @@
-import { describe, it } from '@std/testing/bdd'
+import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { stub } from '@std/testing/mock'
 import { fetchAABenchmarks } from '../../../src/model-discovery/ratings/aa-benchmarks.ts'
 import { Environment } from '../../../src/env-vars.ts'
 
@@ -94,14 +93,19 @@ describe('fetchAABenchmarks', () => {
   })
 
   it('when the key is missing, returns an empty record', async () => {
-    using errorStub = stub(console, 'error', () => {})
+    const originalError = console.error
+    const errorCalls: unknown[] = []
+    console.error = () => {
+      errorCalls.push(null)
+    }
 
     const result = await fetchAABenchmarks(
       new Set(['deepseek/deepseek-v4']),
       new Environment({}),
     )
 
+    console.error = originalError
     expect(result).toEqual({})
-    expect(errorStub.calls.length).toBe(1)
+    expect(errorCalls).toHaveLength(1)
   })
 })

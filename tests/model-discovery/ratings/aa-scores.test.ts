@@ -1,4 +1,4 @@
-import { describe, it } from '@std/testing/bdd'
+import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { matchAABenchmarks } from '../../../src/model-discovery/ratings/aa-scores.ts'
 import type { AAModel } from '../../../src/model-discovery/types.ts'

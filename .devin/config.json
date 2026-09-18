@@ -1,7 +1,7 @@
 {
   "version": 1,
   "permissions": {
-   "allow": [
+    "allow": [
       "Exec(dev/test)",
       "Exec(dev/lint)",
       "Exec(dev/coverage)",
@@ -11,11 +11,14 @@
       "Exec(agents/format-check)",
       "Exec(agents/language-server-client.ts)",
       "Exec(agents/pre-commit.sh)",
+      "Exec(agents/typecheck)",
       "Fetch(domain:docs.devin.ai)"
     ],
     "deny": [
       "Exec(cd)",
-      "Exec(sudo)"
+      "Exec(sudo)",
+      "Exec(bash)",
+      "Exec(deno)"
     ]
   }
 }

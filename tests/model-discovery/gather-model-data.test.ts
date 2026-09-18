@@ -1,4 +1,4 @@
-import { describe, it } from '@std/testing/bdd'
+import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { gatherModelData } from '../../src/model-discovery/gather-model-data.ts'
