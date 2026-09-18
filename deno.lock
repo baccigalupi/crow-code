@@ -53,7 +53,8 @@
       "jsr:@std/dotenv@0.225.8",
       "jsr:@std/expect@1.0.20",
       "jsr:@std/fs@1.0.24",
-      "jsr:@std/path@1.1.6"
+      "jsr:@std/path@1.1.6",
+      "npm:openai@7.15.0"
     ]
   }
 }

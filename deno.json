@@ -13,7 +13,8 @@
     "@std/dotenv": "jsr:@std/dotenv@0.225.8",
     "@std/expect": "jsr:@std/expect@1.0.20",
     "@std/fs": "jsr:@std/fs@1.0.24",
-    "@std/path": "jsr:@std/path@1.1.6"
+    "@std/path": "jsr:@std/path@1.1.6",
+    "openai": "npm:openai@7.15.0"
   },
   "fmt": {
     "semiColons": false,
