@@ -24,7 +24,7 @@ export type ModelInfo = {
   size: string
 }
 
-export type CacheFile = {
+export type ModelCatalog = {
   fetchedAt: string
   modelCount: number
   models: ModelInfo[]

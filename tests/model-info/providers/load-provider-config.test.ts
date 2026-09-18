@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import { loadProviderConfig } from '../../../src/model-discovery/providers/load-provider-config.ts'
+import { loadProviderConfig } from '../../../src/model-info/providers/load-provider-config.ts'
 
 const crowDirectory = join(Deno.cwd(), 'tests', 'support', 'fixtures', '.crow')
 

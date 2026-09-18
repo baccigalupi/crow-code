@@ -5,11 +5,8 @@ import {
   benchmarkAgentic,
   benchmarkIntelligence,
   resolveCoding,
-} from '../../../src/model-discovery/ratings/record-scores.ts'
-import type {
-  AABenchmarks,
-  ModelInfo,
-} from '../../../src/model-discovery/types.ts'
+} from '../../../src/model-info/ratings/record-scores.ts'
+import type { AABenchmarks, ModelInfo } from '../../../src/model-info/types.ts'
 
 describe('recordScores', () => {
   it('when the AA benchmark has a coding score, uses it with source AA', () => {

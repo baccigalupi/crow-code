@@ -7,8 +7,8 @@ import {
 import {
   fetchOpenRouterModels,
   parseOpenRouterResponse,
-} from '../../../src/model-discovery/providers/openrouter.ts'
-import type { ProviderConfig } from '../../../src/model-discovery/types.ts'
+} from '../../../src/model-info/providers/openrouter.ts'
+import type { ProviderConfig } from '../../../src/model-info/types.ts'
 
 describe('openrouter', () => {
   it('when the body has no data key, returns an empty list', () => {

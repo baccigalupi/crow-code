@@ -13,14 +13,14 @@ const fixtureDirectory = join(
 )
 
 describe('resolveModelEndpoint', () => {
-  it('when the cache has a cheap model on a configured provider, returns the model endpoint', () => {
-    const cachePath = join(
+  it('when the model catalog has a cheap model on a configured provider, returns the model endpoint', () => {
+    const modelCatalogPath = join(
       fixtureDirectory,
       'resolve-model-endpoint-happy.json',
     )
     Deno.mkdirSync(fixtureDirectory, { recursive: true })
     Deno.writeTextFileSync(
-      cachePath,
+      modelCatalogPath,
       JSON.stringify({
         fetchedAt: '2026-01-01T00:00:00.000Z',
         modelCount: 1,
@@ -54,7 +54,7 @@ describe('resolveModelEndpoint', () => {
     const environment = new Environment({ NOUS_API_KEY: 'secret-key' })
 
     const modelEndpoint = resolveModelEndpoint(
-      cachePath,
+      modelCatalogPath,
       providers,
       environment,
     )
@@ -65,11 +65,11 @@ describe('resolveModelEndpoint', () => {
       model: 'qwen3-coder:30b',
     })
 
-    Deno.removeSync(cachePath)
+    Deno.removeSync(modelCatalogPath)
   })
 
-  it('when the cache file is missing, returns null', () => {
-    const cachePath = join(
+  it('when the model catalog file is missing, returns null', () => {
+    const modelCatalogPath = join(
       fixtureDirectory,
       'resolve-model-endpoint-missing.json',
     )
@@ -83,7 +83,7 @@ describe('resolveModelEndpoint', () => {
     const environment = new Environment({ NOUS_API_KEY: 'secret-key' })
 
     const modelEndpoint = resolveModelEndpoint(
-      cachePath,
+      modelCatalogPath,
       providers,
       environment,
     )
@@ -91,14 +91,14 @@ describe('resolveModelEndpoint', () => {
     expect(modelEndpoint).toBeNull()
   })
 
-  it('when the cache has no cheap no-reasoning models, returns null', () => {
-    const cachePath = join(
+  it('when the model catalog has no cheap no-reasoning models, returns null', () => {
+    const modelCatalogPath = join(
       fixtureDirectory,
       'resolve-model-endpoint-empty.json',
     )
     Deno.mkdirSync(fixtureDirectory, { recursive: true })
     Deno.writeTextFileSync(
-      cachePath,
+      modelCatalogPath,
       JSON.stringify({
         fetchedAt: '2026-01-01T00:00:00.000Z',
         modelCount: 1,
@@ -132,24 +132,24 @@ describe('resolveModelEndpoint', () => {
     const environment = new Environment({ NOUS_API_KEY: 'secret-key' })
 
     const modelEndpoint = resolveModelEndpoint(
-      cachePath,
+      modelCatalogPath,
       providers,
       environment,
     )
 
     expect(modelEndpoint).toBeNull()
 
-    Deno.removeSync(cachePath)
+    Deno.removeSync(modelCatalogPath)
   })
 
   it('when the model provider is not configured, returns null', () => {
-    const cachePath = join(
+    const modelCatalogPath = join(
       fixtureDirectory,
       'resolve-model-endpoint-unknown.json',
     )
     Deno.mkdirSync(fixtureDirectory, { recursive: true })
     Deno.writeTextFileSync(
-      cachePath,
+      modelCatalogPath,
       JSON.stringify({
         fetchedAt: '2026-01-01T00:00:00.000Z',
         modelCount: 1,
@@ -183,24 +183,24 @@ describe('resolveModelEndpoint', () => {
     const environment = new Environment({ OPENROUTER_API_KEY: 'secret-key' })
 
     const modelEndpoint = resolveModelEndpoint(
-      cachePath,
+      modelCatalogPath,
       providers,
       environment,
     )
 
     expect(modelEndpoint).toBeNull()
 
-    Deno.removeSync(cachePath)
+    Deno.removeSync(modelCatalogPath)
   })
 
   it('when the provider api key env var is unset, returns null', () => {
-    const cachePath = join(
+    const modelCatalogPath = join(
       fixtureDirectory,
       'resolve-model-endpoint-nokey.json',
     )
     Deno.mkdirSync(fixtureDirectory, { recursive: true })
     Deno.writeTextFileSync(
-      cachePath,
+      modelCatalogPath,
       JSON.stringify({
         fetchedAt: '2026-01-01T00:00:00.000Z',
         modelCount: 1,
@@ -234,24 +234,24 @@ describe('resolveModelEndpoint', () => {
     const environment = new Environment({})
 
     const modelEndpoint = resolveModelEndpoint(
-      cachePath,
+      modelCatalogPath,
       providers,
       environment,
     )
 
     expect(modelEndpoint).toBeNull()
 
-    Deno.removeSync(cachePath)
+    Deno.removeSync(modelCatalogPath)
   })
 
   it('when the provider has no api key env var, uses an unused key', () => {
-    const cachePath = join(
+    const modelCatalogPath = join(
       fixtureDirectory,
       'resolve-model-endpoint-local.json',
     )
     Deno.mkdirSync(fixtureDirectory, { recursive: true })
     Deno.writeTextFileSync(
-      cachePath,
+      modelCatalogPath,
       JSON.stringify({
         fetchedAt: '2026-01-01T00:00:00.000Z',
         modelCount: 1,
@@ -285,7 +285,7 @@ describe('resolveModelEndpoint', () => {
     const environment = new Environment({})
 
     const modelEndpoint = resolveModelEndpoint(
-      cachePath,
+      modelCatalogPath,
       providers,
       environment,
     )
@@ -296,6 +296,6 @@ describe('resolveModelEndpoint', () => {
       model: 'qwen3-coder:30b',
     })
 
-    Deno.removeSync(cachePath)
+    Deno.removeSync(modelCatalogPath)
   })
 })

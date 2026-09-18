@@ -1,20 +1,20 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import {
-  defaultCachePath,
-  writeCache,
-} from '../../src/model-discovery/cache.ts'
-import type { ModelInfo } from '../../src/model-discovery/types.ts'
+  defaultModelCatalogPath,
+  writeModelCatalog,
+} from '../../src/model-info/model-catalog.ts'
+import type { ModelInfo } from '../../src/model-info/types.ts'
 import { join } from '@std/path'
 
-describe('cache', () => {
+describe('modelCatalog', () => {
   it('when writing, creates the file with the models', () => {
     const path = join(
       'tests',
       'support',
       'fixtures',
       '.crow',
-      'cache-write-test.json',
+      'model-catalog-write-test.json',
     )
 
     const model: ModelInfo = {
@@ -34,7 +34,7 @@ describe('cache', () => {
       size: '',
     }
 
-    writeCache(path, [model])
+    writeModelCatalog(path, [model])
 
     const saved = JSON.parse(Deno.readTextFileSync(path))
     expect(saved.models).toEqual([model])
@@ -46,7 +46,7 @@ describe('cache', () => {
       'support',
       'fixtures',
       '.crow',
-      'cache-count-test.json',
+      'model-catalog-count-test.json',
     )
     const model: ModelInfo = {
       id: 'deepseek/deepseek-chat',
@@ -65,7 +65,7 @@ describe('cache', () => {
       size: '',
     }
 
-    writeCache(path, [model])
+    writeModelCatalog(path, [model])
 
     const saved = JSON.parse(Deno.readTextFileSync(path))
     expect(saved.modelCount).toBe(1)
@@ -73,7 +73,7 @@ describe('cache', () => {
   })
 
   it('when asking for the default path, returns models.json inside the given directory', () => {
-    const result = defaultCachePath('tests/support/fixtures/.crow')
+    const result = defaultModelCatalogPath('tests/support/fixtures/.crow')
 
     expect(result).toBe('tests/support/fixtures/.crow/models.json')
   })

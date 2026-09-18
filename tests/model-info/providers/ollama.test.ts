@@ -7,8 +7,8 @@ import {
 import {
   fetchOllamaModels,
   parseOllamaResponse,
-} from '../../../src/model-discovery/providers/ollama.ts'
-import type { ProviderConfig } from '../../../src/model-discovery/types.ts'
+} from '../../../src/model-info/providers/ollama.ts'
+import type { ProviderConfig } from '../../../src/model-info/types.ts'
 
 describe('ollama', () => {
   it('when the body has no models key, returns an empty list', () => {

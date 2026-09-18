@@ -1,9 +1,8 @@
 # crow-code — coding and testing rules
 
 Project quality rules for this repo. Follow these when writing or changing
-production TypeScript (`src/model-discovery/`) and tests
-(`tests/model-discovery/`). Pulled from the haruspex project's rules and adapted
-for Hermes.
+production TypeScript (`src/model-info/`) and tests (`tests/model-info/`).
+Pulled from the haruspex project's rules and adapted for Hermes.
 
 ## Writing code
 
@@ -11,8 +10,8 @@ Apply when creating or changing production TypeScript in this repo.
 
 ### Hard rules
 
-1. Types used in more than one location go in `src/model-discovery/types.ts`,
-   not re-exported from a feature module
+1. Types used in more than one location go in `src/model-info/types.ts`, not
+   re-exported from a feature module
 2. Module-level: `const foo = () => {}` — not `function foo() {}`
 3. When the same data is passed between multiple functions in a module, use a
    class; class methods use normal `method() {}` syntax (not arrow properties)
@@ -54,7 +53,7 @@ Apply when creating or changing production TypeScript in this repo.
 
 ```ts
 // Shared types — used by more than one module
-// src/model-discovery/types.ts
+// src/model-info/types.ts
 export type Goal = { text: string }
 
 // camelCase consts (no SCREAMING_CASE)
@@ -119,7 +118,7 @@ while (true) {
 
 ### Self-check
 
-- [ ] Shared types live in `src/model-discovery/types.ts`, not re-exported from
+- [ ] Shared types live in `src/model-info/types.ts`, not re-exported from
       feature modules
 - [ ] Module-level functions are `const` arrows; class methods use `method() {}`
 - [ ] Shared module data uses a class when passed between multiple functions
@@ -150,11 +149,10 @@ Apply when creating or changing tests in this repo.
 1. When finished touching TypeScript files, run `agents/typecheck` and report
    the actual output. Do not claim TS is clean without running the typecheck
    gate.
-2. Source-to-test placement is one-to-one: `src/model-discovery/<path>.ts` ↔
-   `tests/model-discovery/<path>.test.ts` (same relative path under
-   `src/model-discovery/` and `tests/model-discovery/`). One source file, one
-   test file — no combining modules or splitting one module across multiple test
-   files.
+2. Source-to-test placement is one-to-one: `src/model-info/<path>.ts` ↔
+   `tests/model-info/<path>.test.ts` (same relative path under `src/model-info/`
+   and `tests/model-info/`). One source file, one test file — no combining
+   modules or splitting one module across multiple test files.
 3. Only one top level describe per test file
 4. When there is only one export for the module tested, use that for the top
    level describe name
@@ -176,8 +174,8 @@ Apply when creating or changing tests in this repo.
 ```ts
 // File placement
 // Good
-src/model-discovery/cli.ts          → tests/model-discovery/cli.test.ts
-src/model-discovery/foo/bar.ts      → tests/model-discovery/foo/bar.test.ts
+src/model-info/cli.ts          → tests/model-info/cli.test.ts
+src/model-info/foo/bar.ts      → tests/model-info/foo/bar.test.ts
 
 // Top-level describe name
 describe('extractGoals', () => { ... }) // single export
@@ -204,8 +202,8 @@ describe('cli', () => {
 
 ### Self-check
 
-- [ ] Test path mirrors source: `src/model-discovery/<path>.ts` ↔
-      `tests/model-discovery/<path>.test.ts`
+- [ ] Test path mirrors source: `src/model-info/<path>.ts` ↔
+      `tests/model-info/<path>.test.ts`
 - [ ] Exactly one top-level `describe`
 - [ ] Describe name follows single-export vs file-stem rule
 - [ ] Blank line between Arrange / Act / Assert; no `// Arrange` comments
@@ -218,7 +216,7 @@ describe('cli', () => {
 
 ## E2e tests
 
-Applies to specs under `tests/model-discovery/e2e/**/*`.
+Applies to specs under `tests/model-info/e2e/**/*`.
 
 ### Shape (not AAA)
 

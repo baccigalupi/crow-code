@@ -7,8 +7,8 @@ import {
 import {
   fetchNousModels,
   parseNousResponse,
-} from '../../../src/model-discovery/providers/nous.ts'
-import type { ProviderConfig } from '../../../src/model-discovery/types.ts'
+} from '../../../src/model-info/providers/nous.ts'
+import type { ProviderConfig } from '../../../src/model-info/types.ts'
 
 describe('nous', () => {
   it('when the body has no data key, returns an empty list', () => {

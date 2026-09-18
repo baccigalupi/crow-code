@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { fetchAABenchmarks } from '../../../src/model-discovery/ratings/aa-benchmarks.ts'
+import { fetchAABenchmarks } from '../../../src/model-info/ratings/aa-benchmarks.ts'
 import { Environment } from '../../../src/env-vars.ts'
 
 describe('fetchAABenchmarks', () => {

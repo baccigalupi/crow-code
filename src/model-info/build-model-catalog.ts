@@ -1,11 +1,11 @@
 import { loadProviderConfig } from './providers/load-provider-config.ts'
 import { fetchProviders } from './providers/fetch-providers.ts'
 import { appendRatings } from './ratings/append-ratings.ts'
-import { defaultCachePath, writeCache } from './cache.ts'
+import { defaultModelCatalogPath, writeModelCatalog } from './model-catalog.ts'
 import { type Environment, loadEnvironmentalVariables } from '../env-vars.ts'
 import type { ModelInfo } from './types.ts'
 
-class GatherModelData {
+class BuildModelCatalog {
   private crowDirectory: string
   private environment: Environment
   private fetchClient: typeof fetch
@@ -26,12 +26,12 @@ class GatherModelData {
     await this.fetchProviders()
     this.dedupRecords()
     await this.appendRatings()
-    this.writeModelInfosToCache()
+    this.persistModelCatalog()
     this.logCompletion()
   }
 
   private logStart() {
-    console.log('Fetching model data and building cache...')
+    console.log('Fetching model data and building model catalog...')
   }
 
   private async fetchProviders() {
@@ -74,14 +74,17 @@ class GatherModelData {
     )
   }
 
-  private writeModelInfosToCache() {
-    writeCache(defaultCachePath(this.crowDirectory), this.records)
+  private persistModelCatalog() {
+    writeModelCatalog(
+      defaultModelCatalogPath(this.crowDirectory),
+      this.records,
+    )
   }
 
   private logCompletion() {
     console.log(
       `Wrote ${this.records.length} models to ${
-        defaultCachePath(
+        defaultModelCatalogPath(
           this.crowDirectory,
         )
       }`,
@@ -89,11 +92,11 @@ class GatherModelData {
   }
 }
 
-export const gatherModelData = async (
+export const buildModelCatalog = async (
   crowDirectory: string,
   environment: Environment = loadEnvironmentalVariables(),
   fetchClient: typeof fetch = fetch,
 ) => {
-  const gatherer = new GatherModelData(crowDirectory, environment, fetchClient)
-  return await gatherer.run()
+  const builder = new BuildModelCatalog(crowDirectory, environment, fetchClient)
+  return await builder.run()
 }

@@ -1,13 +1,13 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import { gatherModelData } from '../../src/model-discovery/gather-model-data.ts'
+import { buildModelCatalog } from '../../src/model-info/build-model-catalog.ts'
 import { Environment } from '../../src/env-vars.ts'
 import { mockFetchRoutes } from '../support/mock-fetch.ts'
 
 const fixtureDirectory = join(Deno.cwd(), 'tests', 'support', 'fixtures')
 
-describe('gatherModelData', () => {
+describe('buildModelCatalog', () => {
   it('when run, writes a models.json in the injected crow directory', async () => {
     const crowDirectory = join(fixtureDirectory, '.crow')
     const providersPath = join(crowDirectory, 'providers.json')
@@ -53,7 +53,7 @@ describe('gatherModelData', () => {
     ])
     const environment = new Environment({ AA_API_KEY: 'test-key' })
 
-    await gatherModelData(crowDirectory, environment, catalogFetch)
+    await buildModelCatalog(crowDirectory, environment, catalogFetch)
 
     const saved = JSON.parse(Deno.readTextFileSync(modelsPath))
     expect(typeof saved.fetchedAt).toBe('string')
@@ -135,7 +135,7 @@ describe('gatherModelData', () => {
     ])
     const environment = new Environment({ AA_API_KEY: 'test-key' })
 
-    await gatherModelData(crowDirectory, environment, catalogFetch)
+    await buildModelCatalog(crowDirectory, environment, catalogFetch)
 
     const saved = JSON.parse(Deno.readTextFileSync(modelsPath))
 

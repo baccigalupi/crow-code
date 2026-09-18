@@ -5,7 +5,7 @@ import {
   mockFetchRejected,
   mockFetchSuccess,
 } from '../../support/mock-fetch.ts'
-import { fetchProvider } from '../../../src/model-discovery/providers/fetch-provider.ts'
+import { fetchProvider } from '../../../src/model-info/providers/fetch-provider.ts'
 
 describe('fetchProvider', () => {
   it('when the request succeeds, returns the parsed models', async () => {

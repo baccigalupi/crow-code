@@ -3,7 +3,7 @@
  *   crow find-models   fetch model data into the crow directory
  */
 import { join } from '@std/path'
-import { gatherModelData } from './model-discovery/gather-model-data.ts'
+import { buildModelCatalog } from './model-info/build-model-catalog.ts'
 
 const usage = `Usage: crow <subcommand>
 
@@ -12,7 +12,7 @@ Available subcommands:
 
 export const run = async (subcommand: string): Promise<void> => {
   if (subcommand === 'find-models') {
-    await gatherModelData(join(Deno.cwd(), '.crow'))
+    await buildModelCatalog(join(Deno.cwd(), '.crow'))
     return
   }
   console.error(usage)

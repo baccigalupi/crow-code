@@ -1,8 +1,8 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
-import { fetchProviders } from '../../../src/model-discovery/providers/fetch-providers.ts'
-import type { ProviderConfig } from '../../../src/model-discovery/types.ts'
+import { fetchProviders } from '../../../src/model-info/providers/fetch-providers.ts'
+import type { ProviderConfig } from '../../../src/model-info/types.ts'
 
 describe('fetchProviders', () => {
   it('when the provider name is unknown, returns an empty list', async () => {

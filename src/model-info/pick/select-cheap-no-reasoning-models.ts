@@ -1,4 +1,4 @@
-import { readCache } from '../cache.ts'
+import { readModelCatalog } from '../model-catalog.ts'
 import type { ModelInfo } from '../types.ts'
 
 const defaultCheapCostThreshold = 0.001
@@ -52,7 +52,9 @@ export const selectCheapNoReasoningModels = (
   return filter.select(models)
 }
 
-export const getCheapNoReasoningModels = (cachePath: string): ModelInfo[] => {
-  const cache = readCache(cachePath)
-  return selectCheapNoReasoningModels(cache.models)
+export const getCheapNoReasoningModels = (
+  modelCatalogPath: string,
+): ModelInfo[] => {
+  const catalog = readModelCatalog(modelCatalogPath)
+  return selectCheapNoReasoningModels(catalog.models)
 }

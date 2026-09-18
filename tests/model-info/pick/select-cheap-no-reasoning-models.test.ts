@@ -3,7 +3,7 @@ import { expect } from '@std/expect'
 import {
   getCheapNoReasoningModels,
   selectCheapNoReasoningModels,
-} from '../../../src/model-discovery/pick/select-cheap-no-reasoning-models.ts'
+} from '../../../src/model-info/pick/select-cheap-no-reasoning-models.ts'
 import { join } from '@std/path'
 
 const fixtureDir = join('tests', 'support', 'fixtures', '.crow')
@@ -216,7 +216,7 @@ describe('selectCheapNoReasoningModels', () => {
     expect(result).toEqual([freeNoReasoning])
   })
 
-  it('when given a cache path, reads models.json and filters', async () => {
+  it('when given a model catalog path, reads models.json and filters', async () => {
     const freeNoReasoning = {
       id: 'qwen3-coder:30b',
       name: 'qwen3-coder:30b',
@@ -250,12 +250,12 @@ describe('selectCheapNoReasoningModels', () => {
       size: '',
     }
     const path = join(fixtureDir, 'cheap-summarizers-test.json')
-    const cache = {
+    const catalog = {
       fetchedAt: '2026-01-01T00:00:00.000Z',
       modelCount: 2,
       models: [reasoningModel, freeNoReasoning],
     }
-    await Deno.writeTextFile(path, JSON.stringify(cache))
+    await Deno.writeTextFile(path, JSON.stringify(catalog))
 
     const result = getCheapNoReasoningModels(path)
 

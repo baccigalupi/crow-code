@@ -1,6 +1,6 @@
 import { existsSync } from '@std/fs'
-import { getCheapNoReasoningModels } from '../../model-discovery/pick/select-cheap-no-reasoning-models.ts'
-import type { ModelInfo, ProviderConfig } from '../../model-discovery/types.ts'
+import { getCheapNoReasoningModels } from '../../model-info/pick/select-cheap-no-reasoning-models.ts'
+import type { ModelInfo, ProviderConfig } from '../../model-info/types.ts'
 import type { Environment } from '../../env-vars.ts'
 
 class ModelEndpointResolver {
@@ -12,10 +12,10 @@ class ModelEndpointResolver {
     this.environment = environment
   }
 
-  resolve(cachePath: string) {
-    const models = getCheapNoReasoningModels(cachePath)
+  resolve(modelCatalogPath: string) {
+    const models = getCheapNoReasoningModels(modelCatalogPath)
     if (models.length === 0) {
-      console.error('No cheap no-reasoning models in the model cache')
+      console.error('No cheap no-reasoning models in the model catalog')
       return null
     }
     return this.modelEndpointFor(models[0])
@@ -27,10 +27,10 @@ class ModelEndpointResolver {
       console.error(`No provider config for ${model.providers[0]}`)
       return null
     }
-    return this.buildTarget(config, model.id)
+    return this.buildEndpoint(config, model.id)
   }
 
-  private buildTarget(
+  private buildEndpoint(
     config: ProviderConfig,
     model: string,
   ) {
@@ -55,14 +55,14 @@ class ModelEndpointResolver {
 }
 
 export const resolveModelEndpoint = (
-  cachePath: string,
+  modelCatalogPath: string,
   providers: ProviderConfig[],
   environment: Environment,
 ) => {
-  if (!existsSync(cachePath)) {
-    console.error(`Model cache not found: ${cachePath}`)
+  if (!existsSync(modelCatalogPath)) {
+    console.error(`Model catalog not found: ${modelCatalogPath}`)
     return null
   }
   const resolver = new ModelEndpointResolver(providers, environment)
-  return resolver.resolve(cachePath)
+  return resolver.resolve(modelCatalogPath)
 }
