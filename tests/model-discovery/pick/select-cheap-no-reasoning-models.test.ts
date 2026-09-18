@@ -252,7 +252,7 @@ describe('selectCheapNoReasoningModels', () => {
     const path = join(fixtureDir, 'cheap-summarizers-test.json')
     const cache = {
       fetchedAt: '2026-01-01T00:00:00.000Z',
-      sources: ['test'],
+      modelCount: 2,
       models: [reasoningModel, freeNoReasoning],
     }
     await Deno.writeTextFile(path, JSON.stringify(cache))

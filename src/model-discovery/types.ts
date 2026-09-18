@@ -25,7 +25,7 @@ export type ModelRecord = {
 
 export type CacheFile = {
   fetchedAt: string
-  sources: string[]
+  modelCount: number
   models: ModelRecord[]
 }
 

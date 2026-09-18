@@ -9,12 +9,7 @@ export const writeCache = (path: string, models: ModelRecord[]): void => {
   Deno.mkdirSync(dirname(path), { recursive: true })
   const cache: CacheFile = {
     fetchedAt: new Date().toISOString(),
-    sources: [
-      'Nous catalog (pricing, context, modality, reasoning mode)',
-      'Ollama local catalog',
-      'Artificial Analysis Intelligence/Coding/Agentic indices (free tier)',
-      'Aider polyglot leaderboard (coding fallback)',
-    ],
+    modelCount: models.length,
     models,
   }
   Deno.writeTextFileSync(path, JSON.stringify(cache, null, 2))

@@ -3,6 +3,7 @@ import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { gatherModelData } from '../../src/model-discovery/gather-model-data.ts'
 import { Environment } from '../../src/env-vars.ts'
+import { mockFetchRoutes } from '../support/mock-fetch.ts'
 
 const fixtureDirectory = join(Deno.cwd(), 'tests', 'support', 'fixtures')
 
@@ -11,7 +12,6 @@ describe('gatherModelData', () => {
     const crowDirectory = join(fixtureDirectory, '.crow')
     const providersPath = join(crowDirectory, 'providers.json')
     const modelsPath = join(crowDirectory, 'models.json')
-    const expectedModelsPath = join(fixtureDirectory, 'crow-models.json')
     await Deno.mkdir(crowDirectory, { recursive: true })
     await Deno.writeTextFile(
       providersPath,
@@ -43,29 +43,55 @@ describe('gatherModelData', () => {
       reasoning: { mandatory: false, default_enabled: false },
       architecture: { modality: 'text->text' },
     }
-    const catalogFetch = (input: string | URL | Request) => {
-      const address = String(input)
-      if (address.includes('artificialanalysis')) {
-        return Promise.resolve(
-          Response.json({ data: [aaModel], pagination: { has_more: false } }),
-        )
-      }
-      if (address.includes('pile-driver')) {
-        return Promise.resolve(
-          Response.json({ models: [{ name: 'qwen3-coder:30b' }] }),
-        )
-      }
-      return Promise.resolve(Response.json({ data: [nousModel] }))
-    }
+    const catalogFetch = mockFetchRoutes([
+      [
+        'artificialanalysis',
+        { data: [aaModel], pagination: { has_more: false } },
+      ],
+      ['pile-driver', { models: [{ name: 'qwen3-coder:30b' }] }],
+      ['nousresearch', { data: [nousModel] }],
+    ])
     const environment = new Environment({ AA_API_KEY: 'test-key' })
 
     await gatherModelData(crowDirectory, environment, catalogFetch)
 
     const saved = JSON.parse(Deno.readTextFileSync(modelsPath))
-    const expected = JSON.parse(Deno.readTextFileSync(expectedModelsPath))
     expect(typeof saved.fetchedAt).toBe('string')
-    expect(saved.sources).toEqual(expected.sources)
-    expect(saved.models).toEqual(expected.models)
+    expect(saved.modelCount).toBe(2)
+    expect(saved.models).toEqual([
+      {
+        id: 'deepseek/deepseek-chat',
+        name: 'DeepSeek Chat',
+        providers: ['nous'],
+        reasoning: 40,
+        coding: 60,
+        codingSource: 'AA',
+        agentic: 30,
+        costInput: 0.5,
+        costOutput: 1.5,
+        contextLength: 1000,
+        modality: 'text->text',
+        reasoningMode: 'off',
+        knowledgeCutoff: null,
+        size: '',
+      },
+      {
+        id: 'qwen3-coder:30b',
+        name: 'qwen3-coder:30b',
+        providers: ['ollama'],
+        reasoning: null,
+        coding: null,
+        codingSource: null,
+        agentic: null,
+        costInput: 0,
+        costOutput: 0,
+        contextLength: null,
+        modality: 'local',
+        reasoningMode: '-',
+        knowledgeCutoff: null,
+        size: '',
+      },
+    ])
 
     Deno.removeSync(providersPath)
     Deno.removeSync(modelsPath)
@@ -89,20 +115,12 @@ describe('gatherModelData', () => {
         ],
       }),
     )
-    const catalogFetch = (input: string | URL | Request) => {
-      const address = String(input)
-      if (address.includes('artificialanalysis')) {
-        return Promise.resolve(
-          Response.json({ data: [], pagination: { has_more: false } }),
-        )
-      }
-      if (address.includes('pile-driver')) {
-        return Promise.resolve(
-          Response.json({ models: [{ name: 'deepseek/deepseek-chat' }] }),
-        )
-      }
-      return Promise.resolve(
-        Response.json({
+    const catalogFetch = mockFetchRoutes([
+      ['artificialanalysis', { data: [], pagination: { has_more: false } }],
+      ['pile-driver', { models: [{ name: 'deepseek/deepseek-chat' }] }],
+      [
+        'nousresearch',
+        {
           data: [
             {
               id: 'deepseek/deepseek-chat',
@@ -112,9 +130,9 @@ describe('gatherModelData', () => {
               architecture: { modality: 'text->text' },
             },
           ],
-        }),
-      )
-    }
+        },
+      ],
+    ])
     const environment = new Environment({ AA_API_KEY: 'test-key' })
 
     await gatherModelData(crowDirectory, environment, catalogFetch)
