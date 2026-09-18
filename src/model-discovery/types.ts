@@ -7,7 +7,7 @@ export type ProviderConfig = {
   apiKeyEnv?: string
 }
 
-export type ModelRecord = {
+export type ModelInfo = {
   id: string
   name: string
   providers: string[]
@@ -27,7 +27,7 @@ export type ModelRecord = {
 export type CacheFile = {
   fetchedAt: string
   modelCount: number
-  models: ModelRecord[]
+  models: ModelInfo[]
 }
 
 export type AABenchmarks = {

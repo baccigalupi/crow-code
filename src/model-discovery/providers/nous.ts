@@ -1,5 +1,5 @@
 import { fetchProvider } from './fetch-provider.ts'
-import type { ModelRecord, ProviderConfig } from '../types.ts'
+import type { ModelInfo, ProviderConfig } from '../types.ts'
 
 type ReasoningMeta = {
   mandatory?: boolean
@@ -81,7 +81,7 @@ const reasoningMode = (meta: ReasoningMeta | null | undefined): string => {
 const buildNousRecord = (
   model: NousModel,
   config: ProviderConfig,
-): ModelRecord => {
+): ModelInfo => {
   return {
     id: model.id,
     name: modelName(model),
@@ -105,7 +105,7 @@ type NousApiRecord = { data?: NousModel[] }
 export const parseNousResponse = (
   raw: NousApiRecord,
   config: ProviderConfig,
-): ModelRecord[] => {
+): ModelInfo[] => {
   if (raw.data === undefined) {
     return []
   }
@@ -115,8 +115,8 @@ export const parseNousResponse = (
 export const fetchNousModels = (
   config: ProviderConfig,
   fetchClient: typeof fetch = fetch,
-): Promise<ModelRecord[]> => {
-  return fetchProvider<NousApiRecord, ModelRecord>(
+): Promise<ModelInfo[]> => {
+  return fetchProvider<NousApiRecord, ModelInfo>(
     config.baseUrl + '/v1/models',
     (raw) => parseNousResponse(raw, config),
     nousTimeoutMs,

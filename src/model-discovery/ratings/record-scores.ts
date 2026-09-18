@@ -1,4 +1,4 @@
-import type { AABenchmarks, CodingSource, ModelRecord } from '../types.ts'
+import type { AABenchmarks, CodingSource, ModelInfo } from '../types.ts'
 import { aiderPolyglotPct } from './aider-polyglot.ts'
 
 type CodingResult = {
@@ -38,9 +38,9 @@ export const resolveCoding = (
 }
 
 const applyToRecord = (
-  record: ModelRecord,
+  record: ModelInfo,
   benchmark: AABenchmarks | undefined,
-): ModelRecord => {
+): ModelInfo => {
   const coding = resolveCoding(benchmark, aiderPolyglotPct[record.id])
   return {
     ...record,
@@ -52,8 +52,8 @@ const applyToRecord = (
 }
 
 export const applyScores = (
-  records: ModelRecord[],
+  records: ModelInfo[],
   benchmarks: Record<string, AABenchmarks>,
-): ModelRecord[] => {
+): ModelInfo[] => {
   return records.map((record) => applyToRecord(record, benchmarks[record.id]))
 }

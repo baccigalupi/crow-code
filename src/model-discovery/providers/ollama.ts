@@ -1,5 +1,5 @@
 import { fetchProvider } from './fetch-provider.ts'
-import type { ModelRecord, ProviderConfig } from '../types.ts'
+import type { ModelInfo, ProviderConfig } from '../types.ts'
 
 type OllamaModel = {
   name: string
@@ -27,7 +27,7 @@ const ollamaSize = (details: OllamaModel['details']): string => {
 const buildOllamaRecord = (
   model: OllamaModel,
   config: ProviderConfig,
-): ModelRecord => {
+): ModelInfo => {
   return {
     id: model.name,
     name: model.name,
@@ -51,7 +51,7 @@ type OllamaApiRecord = { models?: OllamaModel[] }
 export const parseOllamaResponse = (
   raw: OllamaApiRecord,
   config: ProviderConfig,
-): ModelRecord[] => {
+): ModelInfo[] => {
   if (raw.models === undefined) {
     return []
   }
@@ -61,8 +61,8 @@ export const parseOllamaResponse = (
 export const fetchOllamaModels = (
   config: ProviderConfig,
   fetchClient: typeof fetch = fetch,
-): Promise<ModelRecord[]> => {
-  return fetchProvider<OllamaApiRecord, ModelRecord>(
+): Promise<ModelInfo[]> => {
+  return fetchProvider<OllamaApiRecord, ModelInfo>(
     config.modelsUrl ?? config.baseUrl,
     (raw) => parseOllamaResponse(raw, config),
     ollamaTimeoutMs,

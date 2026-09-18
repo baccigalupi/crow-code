@@ -1,5 +1,5 @@
 import { fetchProvider } from './fetch-provider.ts'
-import type { ModelRecord, ProviderConfig } from '../types.ts'
+import type { ModelInfo, ProviderConfig } from '../types.ts'
 
 type OpenRouterPricing = {
   prompt?: string
@@ -61,7 +61,7 @@ const toMillionPrice = (pricePerToken: string | undefined): number => {
 const buildOpenRouterRecord = (
   model: OpenRouterModel,
   config: ProviderConfig,
-): ModelRecord => {
+): ModelInfo => {
   return {
     id: model.id,
     name: modelName(model),
@@ -85,7 +85,7 @@ type OpenRouterApiRecord = { data?: OpenRouterModel[] }
 export const parseOpenRouterResponse = (
   raw: OpenRouterApiRecord,
   config: ProviderConfig,
-): ModelRecord[] => {
+): ModelInfo[] => {
   if (raw.data === undefined) {
     return []
   }
@@ -95,8 +95,8 @@ export const parseOpenRouterResponse = (
 export const fetchOpenRouterModels = (
   config: ProviderConfig,
   fetchClient: typeof fetch = fetch,
-): Promise<ModelRecord[]> => {
-  return fetchProvider<OpenRouterApiRecord, ModelRecord>(
+): Promise<ModelInfo[]> => {
+  return fetchProvider<OpenRouterApiRecord, ModelInfo>(
     config.modelsUrl ?? config.baseUrl,
     (raw) => parseOpenRouterResponse(raw, config),
     openrouterTimeoutMs,

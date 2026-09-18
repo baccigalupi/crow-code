@@ -1,9 +1,6 @@
 import { existsSync } from '@std/fs'
 import { getCheapNoReasoningModels } from '../../model-discovery/pick/select-cheap-no-reasoning-models.ts'
-import type {
-  ModelRecord,
-  ProviderConfig,
-} from '../../model-discovery/types.ts'
+import type { ModelInfo, ProviderConfig } from '../../model-discovery/types.ts'
 import type { Environment } from '../../env-vars.ts'
 
 class ModelEndpointResolver {
@@ -24,7 +21,7 @@ class ModelEndpointResolver {
     return this.modelEndpointFor(models[0])
   }
 
-  private modelEndpointFor(model: ModelRecord) {
+  private modelEndpointFor(model: ModelInfo) {
     const config = this.configFor(model.providers[0])
     if (config === undefined) {
       console.error(`No provider config for ${model.providers[0]}`)

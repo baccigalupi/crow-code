@@ -3,13 +3,13 @@ import { fetchProviders } from './providers/fetch-providers.ts'
 import { appendRatings } from './ratings/append-ratings.ts'
 import { defaultCachePath, writeCache } from './cache.ts'
 import { type Environment, loadEnvironmentalVariables } from '../env-vars.ts'
-import type { ModelRecord } from './types.ts'
+import type { ModelInfo } from './types.ts'
 
 class GatherModelData {
   private crowDirectory: string
   private environment: Environment
   private fetchClient: typeof fetch
-  private records: ModelRecord[] = []
+  private records: ModelInfo[] = []
 
   constructor(
     crowDirectory: string,
@@ -26,7 +26,7 @@ class GatherModelData {
     await this.fetchProviders()
     this.dedupRecords()
     await this.appendRatings()
-    this.writeModelRecordsToCache()
+    this.writeModelInfosToCache()
     this.logCompletion()
   }
 
@@ -45,7 +45,7 @@ class GatherModelData {
   }
 
   private dedupRecords() {
-    const byId = new Map<string, ModelRecord>()
+    const byId = new Map<string, ModelInfo>()
 
     for (const record of this.records) {
       const existing = byId.get(record.id)
@@ -59,7 +59,7 @@ class GatherModelData {
     this.records = Array.from(byId.values())
   }
 
-  private mergeRecords(a: ModelRecord, b: ModelRecord): ModelRecord {
+  private mergeRecords(a: ModelInfo, b: ModelInfo): ModelInfo {
     return {
       ...a,
       providers: [...new Set([...a.providers, ...b.providers])],
@@ -74,7 +74,7 @@ class GatherModelData {
     )
   }
 
-  private writeModelRecordsToCache() {
+  private writeModelInfosToCache() {
     writeCache(defaultCachePath(this.crowDirectory), this.records)
   }
 

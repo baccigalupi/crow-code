@@ -25,7 +25,10 @@ const requestHeaders = (modelEndpoint: ModelEndpointDetails) => {
   }
 }
 
-const buildRequest = (modelEndpoint: ModelEndpointDetails, userText: string) => {
+const buildRequest = (
+  modelEndpoint: ModelEndpointDetails,
+  userText: string,
+) => {
   return new Request(`${modelEndpoint.baseURL}/chat/completions`, {
     method: 'POST',
     headers: requestHeaders(modelEndpoint),

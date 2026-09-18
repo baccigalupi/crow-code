@@ -8,7 +8,7 @@ import {
 } from '../../../src/model-discovery/ratings/record-scores.ts'
 import type {
   AABenchmarks,
-  ModelRecord,
+  ModelInfo,
 } from '../../../src/model-discovery/types.ts'
 
 describe('recordScores', () => {
@@ -74,7 +74,7 @@ describe('recordScores', () => {
 
   describe('applyScores', () => {
     it('when a record has a matching benchmark, applies intelligence, coding, and agentic', () => {
-      const record: ModelRecord = {
+      const record: ModelInfo = {
         id: 'anthropic/claude-sonnet-4',
         name: 'Claude Sonnet 4',
         providers: ['anthropic'],
@@ -112,7 +112,7 @@ describe('recordScores', () => {
     })
 
     it('when a record has no matching benchmark, keeps all scores null', () => {
-      const record: ModelRecord = {
+      const record: ModelInfo = {
         id: 'anthropic/claude-sonnet-4',
         name: 'Claude Sonnet 4',
         providers: ['anthropic'],
@@ -128,7 +128,7 @@ describe('recordScores', () => {
         knowledgeCutoff: '2025-08-01',
         size: 'large',
       }
-      const noMatchRecord: ModelRecord = {
+      const noMatchRecord: ModelInfo = {
         ...record,
         id: 'qwen/qwen2-72b',
       }
@@ -148,7 +148,7 @@ describe('recordScores', () => {
     })
 
     it('when a record has a benchmark with no coding but an Aider entry, falls back to Aider', () => {
-      const record: ModelRecord = {
+      const record: ModelInfo = {
         id: 'anthropic/claude-sonnet-4',
         name: 'Claude Sonnet 4',
         providers: ['anthropic'],
@@ -164,7 +164,7 @@ describe('recordScores', () => {
         knowledgeCutoff: '2025-08-01',
         size: 'large',
       }
-      const gpt5Record: ModelRecord = {
+      const gpt5Record: ModelInfo = {
         ...record,
         id: 'openai/gpt-5',
       }

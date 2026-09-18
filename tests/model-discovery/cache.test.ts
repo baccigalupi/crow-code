@@ -4,7 +4,7 @@ import {
   defaultCachePath,
   writeCache,
 } from '../../src/model-discovery/cache.ts'
-import type { ModelRecord } from '../../src/model-discovery/types.ts'
+import type { ModelInfo } from '../../src/model-discovery/types.ts'
 import { join } from '@std/path'
 
 describe('cache', () => {
@@ -17,7 +17,7 @@ describe('cache', () => {
       'cache-write-test.json',
     )
 
-    const model: ModelRecord = {
+    const model: ModelInfo = {
       id: 'deepseek/deepseek-chat',
       name: 'deepseek-chat',
       providers: ['nous', 'ollama'],
@@ -48,7 +48,7 @@ describe('cache', () => {
       '.crow',
       'cache-count-test.json',
     )
-    const model: ModelRecord = {
+    const model: ModelInfo = {
       id: 'deepseek/deepseek-chat',
       name: 'deepseek-chat',
       providers: ['nous', 'ollama'],

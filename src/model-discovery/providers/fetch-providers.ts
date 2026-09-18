@@ -1,12 +1,12 @@
 import { fetchNousModels } from './nous.ts'
 import { fetchOllamaModels } from './ollama.ts'
 import { fetchOpenRouterModels } from './openrouter.ts'
-import type { ModelRecord, ProviderConfig } from '../types.ts'
+import type { ModelInfo, ProviderConfig } from '../types.ts'
 
 type ProviderFetcher = (
   config: ProviderConfig,
   fetchClient: typeof fetch,
-) => Promise<ModelRecord[]>
+) => Promise<ModelInfo[]>
 
 const providerFetchers: ReadonlyMap<string, ProviderFetcher> = new Map([
   ['nous', fetchNousModels],
@@ -17,9 +17,9 @@ const providerFetchers: ReadonlyMap<string, ProviderFetcher> = new Map([
 export const fetchProviders = async (
   config: ProviderConfig,
   fetchClient: typeof fetch = fetch,
-): Promise<ModelRecord[]> => {
+): Promise<ModelInfo[]> => {
   if (!providerFetchers.has(config.name)) {
-    return Promise.resolve([] as ModelRecord[])
+    return Promise.resolve([] as ModelInfo[])
   }
   return await providerFetchers.get(config.name)!(config, fetchClient)
 }
