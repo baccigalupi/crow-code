@@ -8,18 +8,13 @@ import {
 import { ApiRequest } from '../../src/plan/api-request.ts'
 import pino from 'pino'
 
-const parseBody = async (response: Response) => {
-  if (!response.ok) {
-    return 'empty'
-  }
-  const body = await response.json()
-  return body.value as string
-}
-
 describe('ApiRequest', () => {
   it('when the response is ok, parses the response', async () => {
     const request = new Request('https://example.com/api')
     const logger = pino({ enabled: false })
+    const parseBody = async (response: Response) => {
+      return (await response.json()).value as string
+    }
     const fetchMock = mockFetchSuccess({ value: 'hello' })
 
     const result = await new ApiRequest(request, fetchMock, parseBody, logger)
@@ -31,6 +26,7 @@ describe('ApiRequest', () => {
   it('when the response is not ok, logs the status and parses the error response', async () => {
     const request = new Request('https://example.com/api')
     const logger = pino({ enabled: false })
+    const parseBody = () => Promise.resolve('empty')
     const fetchMock = mockFetchError(500)
 
     const result = await new ApiRequest(request, fetchMock, parseBody, logger)
@@ -42,6 +38,7 @@ describe('ApiRequest', () => {
   it('when the fetch rejects, logs the failure and parses an error response', async () => {
     const request = new Request('https://example.com/api')
     const logger = pino({ enabled: false })
+    const parseBody = () => Promise.resolve('empty')
     const fetchMock = mockFetchRejected('network down')
 
     const result = await new ApiRequest(request, fetchMock, parseBody, logger)
@@ -53,6 +50,9 @@ describe('ApiRequest', () => {
   it('when performing the request, sends the request to the fetch client', async () => {
     const request = new Request('https://example.com/api')
     const logger = pino({ enabled: false })
+    const parseBody = async (response: Response) => {
+      return (await response.json()).value as string
+    }
     const fetchMock = mockFetchSuccess({ value: 'hello' })
 
     await new ApiRequest(request, fetchMock, parseBody, logger).perform()
