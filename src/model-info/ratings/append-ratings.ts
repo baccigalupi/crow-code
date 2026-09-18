@@ -1,5 +1,5 @@
 import { applyScores } from './record-scores.ts'
-import { fetchAABenchmarks } from './aa-benchmarks.ts'
+import { fetchAABenchmarks } from './aa/benchmarks.ts'
 import type { Environment } from '../../env-vars.ts'
 import type { Logger, ModelInfo } from '../types.ts'
 

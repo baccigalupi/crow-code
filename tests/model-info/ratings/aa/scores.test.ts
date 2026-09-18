@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { matchAABenchmarks } from '../../../src/model-info/ratings/aa-scores.ts'
-import type { AAModel } from '../../../src/model-info/types.ts'
+import { matchAABenchmarks } from '../../../../src/model-info/ratings/aa/scores.ts'
+import type { AAModel } from '../../../../src/model-info/types.ts'
 
 describe('matchAABenchmarks', () => {
   it('when an AA model matches a catalog id, records its indices', () => {
