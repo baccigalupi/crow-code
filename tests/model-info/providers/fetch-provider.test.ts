@@ -8,12 +8,10 @@ import {
 import { fetchProvider } from '../../../src/model-info/providers/fetch-provider.ts'
 import pino from 'pino'
 
-const logger = pino({ enabled: false })
-
 describe('fetchProvider', () => {
   it('when the request succeeds, returns the parsed models', async () => {
     type ApiRecord = { items: string[] }
-
+    const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess<ApiRecord>({ items: ['a'] })
 
     const result = await fetchProvider<ApiRecord, string>(
@@ -29,7 +27,7 @@ describe('fetchProvider', () => {
 
   it('when the response is an error, returns an empty list', async () => {
     type ApiRecord = { items?: string[] }
-
+    const logger = pino({ enabled: false })
     const mockFetch = mockFetchError(500)
 
     const result = await fetchProvider<ApiRecord, string>(
@@ -45,7 +43,7 @@ describe('fetchProvider', () => {
 
   it('when the network request fails, returns an empty list', async () => {
     type ApiRecord = { items?: string[] }
-
+    const logger = pino({ enabled: false })
     const mockFetch = mockFetchRejected('network down')
 
     const result = await fetchProvider<ApiRecord, string>(

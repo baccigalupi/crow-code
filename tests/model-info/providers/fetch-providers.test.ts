@@ -5,14 +5,13 @@ import { fetchProviders } from '../../../src/model-info/providers/fetch-provider
 import type { ProviderConfig } from '../../../src/model-info/types.ts'
 import pino from 'pino'
 
-const logger = pino({ enabled: false })
-
 describe('fetchProviders', () => {
   it('when the provider name is unknown, returns an empty list', async () => {
     const config: ProviderConfig = {
       name: 'unknown',
       baseUrl: 'http://example.com',
     }
+    const logger = pino({ enabled: false })
 
     const result = await fetchProviders(config, logger)
 
@@ -35,6 +34,7 @@ describe('fetchProviders', () => {
         },
       ],
     }
+    const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess(apiResponse)
 
     const result = await fetchProviders(config, logger, mockFetch)
@@ -65,6 +65,7 @@ describe('fetchProviders', () => {
       baseUrl: 'http://example.com',
     }
 
+    const logger = pino({ enabled: false })
     const mockFetch = mockFetchError(500)
 
     const result = await fetchProviders(config, logger, mockFetch)

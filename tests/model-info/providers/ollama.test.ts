@@ -11,8 +11,6 @@ import {
 } from '../../../src/model-info/providers/ollama.ts'
 import type { ProviderConfig } from '../../../src/model-info/types.ts'
 
-const logger = pino({ enabled: false })
-
 const ollamaConfig: ProviderConfig = {
   name: 'ollama',
   baseUrl: 'http://pile-driver.local:11434',
@@ -32,6 +30,7 @@ describe('ollama', () => {
   })
 
   it('when fetched, fetchOllamaModels returns normalized records', async () => {
+    const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess({
       models: [{ name: 'qwen3-coder:30b' }],
     })
@@ -47,6 +46,7 @@ describe('ollama', () => {
       name: 'ollama',
       baseUrl: 'http://pile-driver.local:11434',
     }
+    const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess({
       models: [{ name: 'qwen3-coder:30b' }],
     })
@@ -61,6 +61,7 @@ describe('ollama', () => {
   })
 
   it('when the network request fails, fetchOllamaModels returns an empty list', async () => {
+    const logger = pino({ enabled: false })
     const mockFetch = mockFetchRejected('network down')
 
     const result = await fetchOllamaModels(ollamaConfig, logger, mockFetch)

@@ -7,7 +7,6 @@ import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import pino from 'pino'
 import { createLogger } from '../../../src/logger.ts'
 
-const logger = pino({ enabled: false })
 const crowDirectory = join(fixturesDirectory, 'logger', 'aa-key')
 
 describe('fetchAABenchmarks', () => {
@@ -24,6 +23,7 @@ describe('fetchAABenchmarks', () => {
         artificial_analysis_agentic_index: 30,
       },
     }
+    const logger = pino({ enabled: false })
     const benchmarksFetch = () => {
       return Promise.resolve(
         Response.json({ data: [aaModel], pagination: { has_more: false } }),
@@ -52,6 +52,7 @@ describe('fetchAABenchmarks', () => {
         artificial_analysis_agentic_index: 30,
       },
     }
+    const logger = pino({ enabled: false })
     const benchmarksFetch = (input: string | URL | Request) => {
       const address = String(input)
       if (address.includes('page=2')) {
@@ -77,6 +78,7 @@ describe('fetchAABenchmarks', () => {
   })
 
   it('when the API responds with an error, returns an empty record', async () => {
+    const logger = pino({ enabled: false })
     const benchmarksFetch = () => {
       return Promise.resolve(new Response('server error', { status: 500 }))
     }
@@ -92,6 +94,7 @@ describe('fetchAABenchmarks', () => {
   })
 
   it('when the network request fails, returns an empty record', async () => {
+    const logger = pino({ enabled: false })
     const benchmarksFetch = () => {
       return Promise.reject(new Error('network down'))
     }
@@ -116,11 +119,6 @@ describe('fetchAABenchmarks', () => {
       new Set(['deepseek/deepseek-v4']),
       new Environment({}),
       fileLogger,
-    )
-    await new Promise<void>((resolve, reject) =>
-      fileLogger.flush((error) =>
-        error === undefined ? resolve() : reject(error)
-      )
     )
 
     const logContents = Deno.readTextFileSync(logPath)

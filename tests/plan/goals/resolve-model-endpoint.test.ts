@@ -6,8 +6,6 @@ import { Environment } from '../../../src/env-vars.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import pino from 'pino'
 
-const logger = pino({ enabled: false })
-
 const fixtureDirectory = join(fixturesDirectory, 'resolve-model-endpoint')
 
 describe('resolveModelEndpoint', () => {
@@ -54,6 +52,7 @@ describe('resolveModelEndpoint', () => {
         apiKeyEnv: 'NOUS_API_KEY',
       },
     ]
+    const logger = pino({ enabled: false })
     const environment = new Environment({ NOUS_API_KEY: 'secret-key' })
 
     const modelEndpoint = resolveModelEndpoint(
@@ -82,6 +81,7 @@ describe('resolveModelEndpoint', () => {
         apiKeyEnv: 'NOUS_API_KEY',
       },
     ]
+    const logger = pino({ enabled: false })
     const environment = new Environment({ NOUS_API_KEY: 'secret-key' })
 
     const modelEndpoint = resolveModelEndpoint(
@@ -131,6 +131,7 @@ describe('resolveModelEndpoint', () => {
         apiKeyEnv: 'NOUS_API_KEY',
       },
     ]
+    const logger = pino({ enabled: false })
     const environment = new Environment({ NOUS_API_KEY: 'secret-key' })
 
     const modelEndpoint = resolveModelEndpoint(
@@ -180,6 +181,7 @@ describe('resolveModelEndpoint', () => {
         apiKeyEnv: 'OPENROUTER_API_KEY',
       },
     ]
+    const logger = pino({ enabled: false })
     const environment = new Environment({ OPENROUTER_API_KEY: 'secret-key' })
 
     const modelEndpoint = resolveModelEndpoint(
@@ -229,6 +231,7 @@ describe('resolveModelEndpoint', () => {
         apiKeyEnv: 'NOUS_API_KEY',
       },
     ]
+    const logger = pino({ enabled: false })
     const environment = new Environment({})
 
     const modelEndpoint = resolveModelEndpoint(
@@ -278,6 +281,7 @@ describe('resolveModelEndpoint', () => {
         modelsUrl: 'http://pile-driver.local:11434/api/tags',
       },
     ]
+    const logger = pino({ enabled: false })
     const environment = new Environment({})
 
     const modelEndpoint = resolveModelEndpoint(

@@ -11,8 +11,6 @@ import {
 } from '../../../src/model-info/providers/openrouter.ts'
 import type { ProviderConfig } from '../../../src/model-info/types.ts'
 
-const logger = pino({ enabled: false })
-
 const openrouterConfig: ProviderConfig = {
   name: 'openrouter',
   baseUrl: 'https://openrouter.ai',
@@ -32,6 +30,7 @@ describe('openrouter', () => {
   })
 
   it('when fetched, returns normalized records', async () => {
+    const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess({
       data: [{ id: 'openai/gpt-4o', name: 'GPT-4o' }],
     })
@@ -51,6 +50,7 @@ describe('openrouter', () => {
       name: 'openrouter',
       baseUrl: 'https://openrouter.ai',
     }
+    const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess({ data: [{ id: 'openai/gpt-4o' }] })
 
     await fetchOpenRouterModels(configWithoutModelsUrl, logger, mockFetch)
@@ -60,6 +60,7 @@ describe('openrouter', () => {
   })
 
   it('when the network request fails, returns an empty list', async () => {
+    const logger = pino({ enabled: false })
     const mockFetch = mockFetchRejected('network down')
 
     const result = await fetchOpenRouterModels(

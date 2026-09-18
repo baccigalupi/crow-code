@@ -8,8 +8,6 @@ import {
 import { requestGoals } from '../../../src/plan/goals/request.ts'
 import pino from 'pino'
 
-const logger = pino({ enabled: false })
-
 describe('requestGoals', () => {
   it('when the response contains a goals array, returns the goals', async () => {
     const modelEndpoint = {
@@ -17,6 +15,7 @@ describe('requestGoals', () => {
       apiKey: 'test-key',
       model: 'qwen3-coder:30b',
     }
+    const logger = pino({ enabled: false })
     const fetchMock = mockFetchSuccess({
       choices: [{ message: { content: '["ship the CLI", "write tests"]' } }],
     })
@@ -37,6 +36,7 @@ describe('requestGoals', () => {
       apiKey: 'test-key',
       model: 'qwen3-coder:30b',
     }
+    const logger = pino({ enabled: false })
     const fetchMock = mockFetchSuccess({
       choices: [{ message: { content: '[]' } }],
     })
@@ -62,6 +62,7 @@ describe('requestGoals', () => {
       apiKey: 'test-key',
       model: 'qwen3-coder:30b',
     }
+    const logger = pino({ enabled: false })
     const fetchMock = mockFetchError(500)
 
     const goals = await requestGoals(
@@ -80,6 +81,7 @@ describe('requestGoals', () => {
       apiKey: 'test-key',
       model: 'qwen3-coder:30b',
     }
+    const logger = pino({ enabled: false })
     const fetchMock = mockFetchRejected('network down')
 
     const goals = await requestGoals(
@@ -98,6 +100,7 @@ describe('requestGoals', () => {
       apiKey: 'test-key',
       model: 'qwen3-coder:30b',
     }
+    const logger = pino({ enabled: false })
     const fetchMock = mockFetchSuccess({
       choices: [{ message: { content: 'not json' } }],
     })
@@ -118,6 +121,7 @@ describe('requestGoals', () => {
       apiKey: 'test-key',
       model: 'qwen3-coder:30b',
     }
+    const logger = pino({ enabled: false })
     const fetchMock = mockFetchSuccess({})
 
     const goals = await requestGoals(
@@ -136,6 +140,7 @@ describe('requestGoals', () => {
       apiKey: 'test-key',
       model: 'qwen3-coder:30b',
     }
+    const logger = pino({ enabled: false })
     const fetchMock = mockFetchSuccess({ choices: [] })
 
     const goals = await requestGoals(
@@ -154,6 +159,7 @@ describe('requestGoals', () => {
       apiKey: 'test-key',
       model: 'qwen3-coder:30b',
     }
+    const logger = pino({ enabled: false })
     const fetchMock = mockFetchSuccess({ choices: [{}] })
 
     const goals = await requestGoals(
@@ -172,6 +178,7 @@ describe('requestGoals', () => {
       apiKey: 'test-key',
       model: 'qwen3-coder:30b',
     }
+    const logger = pino({ enabled: false })
     const fetchMock = mockFetchSuccess({ choices: [{ message: {} }] })
 
     const goals = await requestGoals(

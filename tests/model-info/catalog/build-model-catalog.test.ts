@@ -8,7 +8,6 @@ import { mockFetchRoutes } from '../../support/mock-fetch.ts'
 import pino from 'pino'
 
 const fixtureDirectory = join(fixturesDirectory, 'build-model-catalog')
-const logger = pino({ enabled: false })
 
 describe('buildModelCatalog', () => {
   beforeEach(() => clearDirectory(fixtureDirectory))
@@ -57,6 +56,7 @@ describe('buildModelCatalog', () => {
       ['pile-driver', { models: [{ name: 'qwen3-coder:30b' }] }],
       ['nousresearch', { data: [nousModel] }],
     ])
+    const logger = pino({ enabled: false })
     const environment = new Environment({ AA_API_KEY: 'test-key' })
 
     await buildModelCatalog(crowDirectory, logger, environment, catalogFetch)
@@ -136,6 +136,7 @@ describe('buildModelCatalog', () => {
         },
       ],
     ])
+    const logger = pino({ enabled: false })
     const environment = new Environment({ AA_API_KEY: 'test-key' })
 
     await buildModelCatalog(crowDirectory, logger, environment, catalogFetch)
