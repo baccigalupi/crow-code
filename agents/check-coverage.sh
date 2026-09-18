@@ -36,6 +36,10 @@ while IFS= read -r line; do
       brh="${line#BRH:}"
       ;;
     end_of_record)
+      # Test files and test helpers are not gated.
+      if [[ "$current_file" == *"/tests/"* ]]; then
+        continue
+      fi
       # Compute percentages
       if [[ -n "$fnf" && "$fnf" -gt 0 ]]; then
         func_pct=$(( fnh * 100 / fnf ))

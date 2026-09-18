@@ -4,6 +4,7 @@ export type ProviderConfig = {
   name: string
   baseUrl: string
   modelsUrl?: string
+  apiKeyEnv?: string
 }
 
 export type ModelRecord = {

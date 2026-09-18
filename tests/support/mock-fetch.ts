@@ -27,9 +27,6 @@ export const mockFetchRoutes = (routes: [string, unknown][]) => {
   return createFetchMock((input) => {
     const address = String(input)
     const route = routes.find(([pattern]) => address.includes(pattern))
-    if (route === undefined) {
-      return Promise.resolve(Response.json({}))
-    }
-    return Promise.resolve(Response.json(route[1]))
+    return Promise.resolve(Response.json(route![1]))
   })
 }

@@ -5,4 +5,4 @@ set -euo pipefail
 
 bash dev/test "$@"
 echo "==> Coverage summary"
-deno coverage || true
+deno coverage --exclude="tests/" || true
