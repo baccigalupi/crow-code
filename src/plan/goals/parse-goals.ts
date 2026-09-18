@@ -1,31 +1,54 @@
-const stripFence = (raw: string) => {
-  const trimmed = raw.trim()
-  if (!trimmed.startsWith('```')) {
-    return trimmed
-  }
-  return trimmed.replace(/^```[a-zA-Z]*\n?/, '').replace(/```$/, '').trim()
-}
+class GoalParser {
+  private raw: string
+  private stripped = ''
+  private parsed: unknown = []
 
-const isStringArray = (parsed: unknown): parsed is string[] => {
-  if (!Array.isArray(parsed)) {
-    return false
+  constructor(raw: string) {
+    this.raw = raw
   }
-  return parsed.every((element) => typeof element === 'string')
+
+  parse() {
+    this.load()
+    if (this.isStringArray()) {
+      return this.parsed as string[]
+    } else {
+      return this.nullObject()
+    }
+  }
+
+  private load() {
+    this.stripped = this.strip()
+    this.parsed = this.parseJson()
+  }
+
+  private strip() {
+    return this.raw.trim()
+      .replace(/^```[a-zA-Z]*\n?/, '')
+      .replace(/```$/, '')
+      .trim()
+  }
+
+  private parseJson() {
+    try {
+      return JSON.parse(this.stripped)
+    } catch {
+      return this.nullObject()
+    }
+  }
+
+  private isStringArray() {
+    return Array.isArray(this.parsed) && this.parsed.every(GoalParser.isString)
+  }
+
+  private static isString(value: unknown) {
+    return typeof value === 'string'
+  }
+
+  private nullObject() {
+    return []
+  }
 }
 
 export const parseGoals = (raw: string) => {
-  if (raw === '') {
-    return []
-  }
-  try {
-    const parsed: unknown = JSON.parse(stripFence(raw))
-    if (!isStringArray(parsed)) {
-      console.error('Goal response was not an array of strings')
-      return []
-    }
-    return parsed
-  } catch {
-    console.error('Goal response was not valid JSON')
-    return []
-  }
+  return new GoalParser(raw).parse()
 }
