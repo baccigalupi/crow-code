@@ -9,9 +9,11 @@ type Change = { path: string; isNew: boolean; line: number }
 
 class ReviewGenerator {
   private root: string
+  private targetRef: string
 
-  constructor(root: string) {
+  constructor(root: string, targetRef: string) {
     this.root = root
+    this.targetRef = targetRef
   }
 
   private async runGit(...args: string[]) {
@@ -39,8 +41,31 @@ class ReviewGenerator {
     return parts[parts.length - 1]
   }
 
+  private async parentRef() {
+    const output = await this.runGit(
+      'log',
+      '--pretty=%P',
+      '-n1',
+      this.targetRef,
+    )
+    const parents = output.trim().split(' ')
+    if (parents.length === 0 || parents[0] === '') {
+      return '4b825dc642cb6eb9a060e54bf8d69288fbee4904'
+    }
+    return parents[0]
+  }
+
+  private async diffRange() {
+    if (this.targetRef === 'HEAD') {
+      return ['HEAD']
+    }
+    const parent = await this.parentRef()
+    return [parent, this.targetRef]
+  }
+
   private async firstChangedLine(file: string) {
-    const diff = await this.runGit('diff', '-U0', 'HEAD', '--', file)
+    const range = await this.diffRange()
+    const diff = await this.runGit('diff', '-U0', ...range, '--', file)
     const match = diff.match(/@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@/)
     if (match === null) return 1
     return parseInt(match[1], 10)
@@ -51,18 +76,57 @@ class ReviewGenerator {
     return this.firstChangedLine(file)
   }
 
-  private async collectChanges(): Promise<Change[]> {
-    const output = await this.runGit('status', '--porcelain=v1', '-u')
-    const changes: Change[] = []
-    for (const line of output.split('\n').filter((line) => line !== '')) {
-      const status = line.slice(0, 2)
-      const kind = this.parseStatus(status)
-      if (kind === 'other') continue
-      const file = this.parsePath(line)
-      const isNew = kind === 'new'
-      changes.push({ path: file, isNew, line: await this.lineFor(file, isNew) })
+  private async changeFromStatusLine(line: string) {
+    const status = line.slice(0, 2)
+    const kind = this.parseStatus(status)
+    if (kind === 'other') return null
+    const file = this.parsePath(line)
+    const isNew = kind === 'new'
+    return { path: file, isNew, line: await this.lineFor(file, isNew) }
+  }
+
+  private parseDiffLine(line: string) {
+    const parts = line.split('\t')
+    return { status: parts[0], path: parts[parts.length - 1] }
+  }
+
+  private async changeFromDiffLine(line: string) {
+    const parsed = this.parseDiffLine(line)
+    const kind = this.parseStatus(parsed.status + ' ')
+    if (kind === 'other') return null
+    return {
+      path: parsed.path,
+      isNew: kind === 'new',
+      line: await this.lineFor(parsed.path, kind === 'new'),
     }
-    return changes
+  }
+
+  private async collectStatusChanges(): Promise<Change[]> {
+    const output = await this.runGit('status', '--porcelain=v1', '-u')
+    const changes = await Promise.all(
+      output.split('\n').filter((line) => line !== '').map((line) =>
+        this.changeFromStatusLine(line)
+      ),
+    )
+    return changes.filter((change): change is Change => change !== null)
+  }
+
+  private async collectDiffChanges(): Promise<Change[]> {
+    const range = await this.diffRange()
+    const output = await this.runGit('diff', '--name-status', ...range)
+    const changes = await Promise.all(
+      output.split('\n').filter((line) => line !== '').map((line) =>
+        this.changeFromDiffLine(line)
+      ),
+    )
+    return changes.filter((change): change is Change => change !== null)
+  }
+
+  private collectChanges(): Promise<Change[]> {
+    if (this.targetRef === 'HEAD') {
+      return this.collectStatusChanges()
+    }
+    return this.collectDiffChanges()
   }
 
   private markdownLink(change: Change) {
@@ -125,7 +189,8 @@ const main = async () => {
     stdout: 'piped',
   }).output()
   const root = decode(result.stdout).trim()
-  await new ReviewGenerator(root).generate()
+  const targetRef = Deno.args.length === 0 ? 'HEAD' : Deno.args[0]
+  await new ReviewGenerator(root, targetRef).generate()
 }
 
 await main()
