@@ -3,3 +3,10 @@ export type ModelEndpointDetails = {
   apiKey: string
   model: string
 }
+
+export type Message = {
+  role: string
+  content: string
+}
+
+export type Messages = Message[]

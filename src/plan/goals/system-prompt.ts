@@ -1,4 +1,4 @@
-export const goalSystemPrompt = `
+export const systemPrompt = `
 You are an agent focused on extracting goals from user provided information.
 
 Goals you extract should be:

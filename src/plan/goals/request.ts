@@ -1,41 +1,11 @@
 import { parseGoals } from './parse-goals.ts'
-import { goalSystemPrompt } from './system-prompt.ts'
+import { requestMessages } from './messages.ts'
+import { modelRequest } from '../model-request.ts'
 import type { ModelEndpointDetails } from '../types.ts'
 
 type GoalMessage = { content?: string }
 type GoalChoice = { message?: GoalMessage }
 type GoalResponse = { choices?: GoalChoice[] }
-
-const goalRequestTimeoutMs = 20000
-
-const requestBody = (modelEndpoint: ModelEndpointDetails, userText: string) => {
-  return JSON.stringify({
-    model: modelEndpoint.model,
-    messages: [
-      { role: 'system', content: goalSystemPrompt },
-      { role: 'user', content: userText },
-    ],
-  })
-}
-
-const requestHeaders = (modelEndpoint: ModelEndpointDetails) => {
-  return {
-    'content-type': 'application/json',
-    authorization: `Bearer ${modelEndpoint.apiKey}`,
-  }
-}
-
-const buildRequest = (
-  modelEndpoint: ModelEndpointDetails,
-  userText: string,
-) => {
-  return new Request(`${modelEndpoint.baseURL}/chat/completions`, {
-    method: 'POST',
-    headers: requestHeaders(modelEndpoint),
-    body: requestBody(modelEndpoint, userText),
-    signal: AbortSignal.timeout(goalRequestTimeoutMs),
-  })
-}
 
 const messageContent = (message: GoalMessage | undefined) => {
   if (message === undefined || message.content === undefined) {
@@ -66,7 +36,9 @@ export const requestGoals = async (
   fetchClient: typeof fetch = fetch,
 ) => {
   try {
-    const response = await fetchClient(buildRequest(modelEndpoint, userText))
+    const response = await fetchClient(
+      modelRequest(modelEndpoint, requestMessages(userText)),
+    )
     if (!response.ok) {
       console.error(`Goal request failed with status ${response.status}`)
       return []
