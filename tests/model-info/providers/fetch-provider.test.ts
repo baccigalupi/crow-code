@@ -6,6 +6,9 @@ import {
   mockFetchSuccess,
 } from '../../support/mock-fetch.ts'
 import { fetchProvider } from '../../../src/model-info/providers/fetch-provider.ts'
+import pino from 'pino'
+
+const logger = pino({ enabled: false })
 
 describe('fetchProvider', () => {
   it('when the request succeeds, returns the parsed models', async () => {
@@ -17,6 +20,7 @@ describe('fetchProvider', () => {
       'http://example.com',
       (raw: ApiRecord): string[] => raw.items,
       1000,
+      logger,
       mockFetch,
     )
 
@@ -32,6 +36,7 @@ describe('fetchProvider', () => {
       'http://example.com',
       (): string[] => [],
       1000,
+      logger,
       mockFetch,
     )
 
@@ -47,6 +52,7 @@ describe('fetchProvider', () => {
       'http://example.com',
       (): string[] => [],
       1000,
+      logger,
       mockFetch,
     )
 

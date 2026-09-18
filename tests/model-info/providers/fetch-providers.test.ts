@@ -3,6 +3,9 @@ import { expect } from '@std/expect'
 import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
 import { fetchProviders } from '../../../src/model-info/providers/fetch-providers.ts'
 import type { ProviderConfig } from '../../../src/model-info/types.ts'
+import pino from 'pino'
+
+const logger = pino({ enabled: false })
 
 describe('fetchProviders', () => {
   it('when the provider name is unknown, returns an empty list', async () => {
@@ -11,7 +14,7 @@ describe('fetchProviders', () => {
       baseUrl: 'http://example.com',
     }
 
-    const result = await fetchProviders(config)
+    const result = await fetchProviders(config, logger)
 
     expect(result).toEqual([])
   })
@@ -34,7 +37,7 @@ describe('fetchProviders', () => {
     }
     const mockFetch = mockFetchSuccess(apiResponse)
 
-    const result = await fetchProviders(config, mockFetch)
+    const result = await fetchProviders(config, logger, mockFetch)
 
     expect(result).toEqual([
       {
@@ -64,7 +67,7 @@ describe('fetchProviders', () => {
 
     const mockFetch = mockFetchError(500)
 
-    const result = await fetchProviders(config, mockFetch)
+    const result = await fetchProviders(config, logger, mockFetch)
 
     expect(result).toEqual([])
   })

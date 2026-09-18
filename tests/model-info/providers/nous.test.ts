@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
+import pino from 'pino'
 import {
   mockFetchRejected,
   mockFetchSuccess,
@@ -9,6 +10,8 @@ import {
   parseNousResponse,
 } from '../../../src/model-info/providers/nous.ts'
 import type { ProviderConfig } from '../../../src/model-info/types.ts'
+
+const logger = pino({ enabled: false })
 
 describe('nous', () => {
   it('when the body has no data key, returns an empty list', () => {
@@ -124,7 +127,7 @@ describe('nous', () => {
       data: [{ id: 'deepseek/deepseek-chat' }],
     })
 
-    const result = await fetchNousModels(nousConfig, mockFetch)
+    const result = await fetchNousModels(nousConfig, logger, mockFetch)
 
     expect(result[0].id).toBe('deepseek/deepseek-chat')
     expect(result[0].providers).toEqual(['nous'])
@@ -137,7 +140,7 @@ describe('nous', () => {
     }
     const mockFetch = mockFetchRejected('network down')
 
-    const result = await fetchNousModels(nousConfig, mockFetch)
+    const result = await fetchNousModels(nousConfig, logger, mockFetch)
 
     expect(result).toEqual([])
   })

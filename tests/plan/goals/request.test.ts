@@ -6,6 +6,9 @@ import {
   mockFetchSuccess,
 } from '../../support/mock-fetch.ts'
 import { requestGoals } from '../../../src/plan/goals/request.ts'
+import pino from 'pino'
+
+const logger = pino({ enabled: false })
 
 describe('requestGoals', () => {
   it('when the response contains a goals array, returns the goals', async () => {
@@ -18,7 +21,12 @@ describe('requestGoals', () => {
       choices: [{ message: { content: '["ship the CLI", "write tests"]' } }],
     })
 
-    const goals = await requestGoals(modelEndpoint, 'build me a cli', fetchMock)
+    const goals = await requestGoals(
+      modelEndpoint,
+      'build me a cli',
+      logger,
+      fetchMock,
+    )
 
     expect(goals).toEqual(['ship the CLI', 'write tests'])
   })
@@ -33,7 +41,7 @@ describe('requestGoals', () => {
       choices: [{ message: { content: '[]' } }],
     })
 
-    await requestGoals(modelEndpoint, 'build me a cli', fetchMock)
+    await requestGoals(modelEndpoint, 'build me a cli', logger, fetchMock)
 
     const request = fetchMock.calls[0] as Request
     expect(request.method).toBe('POST')
@@ -56,7 +64,12 @@ describe('requestGoals', () => {
     }
     const fetchMock = mockFetchError(500)
 
-    const goals = await requestGoals(modelEndpoint, 'build me a cli', fetchMock)
+    const goals = await requestGoals(
+      modelEndpoint,
+      'build me a cli',
+      logger,
+      fetchMock,
+    )
 
     expect(goals).toEqual([])
   })
@@ -69,7 +82,12 @@ describe('requestGoals', () => {
     }
     const fetchMock = mockFetchRejected('network down')
 
-    const goals = await requestGoals(modelEndpoint, 'build me a cli', fetchMock)
+    const goals = await requestGoals(
+      modelEndpoint,
+      'build me a cli',
+      logger,
+      fetchMock,
+    )
 
     expect(goals).toEqual([])
   })
@@ -84,7 +102,12 @@ describe('requestGoals', () => {
       choices: [{ message: { content: 'not json' } }],
     })
 
-    const goals = await requestGoals(modelEndpoint, 'build me a cli', fetchMock)
+    const goals = await requestGoals(
+      modelEndpoint,
+      'build me a cli',
+      logger,
+      fetchMock,
+    )
 
     expect(goals).toEqual([])
   })
@@ -97,7 +120,12 @@ describe('requestGoals', () => {
     }
     const fetchMock = mockFetchSuccess({})
 
-    const goals = await requestGoals(modelEndpoint, 'build me a cli', fetchMock)
+    const goals = await requestGoals(
+      modelEndpoint,
+      'build me a cli',
+      logger,
+      fetchMock,
+    )
 
     expect(goals).toEqual([])
   })
@@ -110,7 +138,12 @@ describe('requestGoals', () => {
     }
     const fetchMock = mockFetchSuccess({ choices: [] })
 
-    const goals = await requestGoals(modelEndpoint, 'build me a cli', fetchMock)
+    const goals = await requestGoals(
+      modelEndpoint,
+      'build me a cli',
+      logger,
+      fetchMock,
+    )
 
     expect(goals).toEqual([])
   })
@@ -123,7 +156,12 @@ describe('requestGoals', () => {
     }
     const fetchMock = mockFetchSuccess({ choices: [{}] })
 
-    const goals = await requestGoals(modelEndpoint, 'build me a cli', fetchMock)
+    const goals = await requestGoals(
+      modelEndpoint,
+      'build me a cli',
+      logger,
+      fetchMock,
+    )
 
     expect(goals).toEqual([])
   })
@@ -136,7 +174,12 @@ describe('requestGoals', () => {
     }
     const fetchMock = mockFetchSuccess({ choices: [{ message: {} }] })
 
-    const goals = await requestGoals(modelEndpoint, 'build me a cli', fetchMock)
+    const goals = await requestGoals(
+      modelEndpoint,
+      'build me a cli',
+      logger,
+      fetchMock,
+    )
 
     expect(goals).toEqual([])
   })

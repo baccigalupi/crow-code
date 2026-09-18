@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
+import pino from 'pino'
 import {
   mockFetchRejected,
   mockFetchSuccess,
@@ -9,6 +10,8 @@ import {
   parseOllamaResponse,
 } from '../../../src/model-info/providers/ollama.ts'
 import type { ProviderConfig } from '../../../src/model-info/types.ts'
+
+const logger = pino({ enabled: false })
 
 describe('ollama', () => {
   it('when the body has no models key, returns an empty list', () => {
@@ -93,7 +96,7 @@ describe('ollama', () => {
       models: [{ name: 'qwen3-coder:30b' }],
     })
 
-    const result = await fetchOllamaModels(ollamaConfig, mockFetch)
+    const result = await fetchOllamaModels(ollamaConfig, logger, mockFetch)
 
     expect(result[0].id).toBe('qwen3-coder:30b')
   })
@@ -108,7 +111,7 @@ describe('ollama', () => {
       models: [{ name: 'qwen3-coder:30b' }],
     })
 
-    const result = await fetchOllamaModels(ollamaConfig, mockFetch)
+    const result = await fetchOllamaModels(ollamaConfig, logger, mockFetch)
 
     expect(result[0].id).toBe('qwen3-coder:30b')
     expect(result[0].providers).toEqual(['ollama'])
@@ -122,7 +125,7 @@ describe('ollama', () => {
     }
     const mockFetch = mockFetchRejected('network down')
 
-    const result = await fetchOllamaModels(ollamaConfig, mockFetch)
+    const result = await fetchOllamaModels(ollamaConfig, logger, mockFetch)
 
     expect(result).toEqual([])
   })

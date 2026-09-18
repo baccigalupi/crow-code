@@ -11,6 +11,7 @@
       "Exec(agents/check-coverage.sh)",
       "Exec(agents/coverage-report)",
       "Exec(agents/editor-diagnostics.ts)",
+      "Exec(agents/generate-review)",
       "Exec(./dev/test)",
       "Exec(./dev/lint)",
       "Exec(./dev/coverage)",
@@ -20,6 +21,7 @@
       "Exec(./agents/check-coverage.sh)",
       "Exec(./agents/coverage-report)",
       "Exec(./agents/editor-diagnostics.ts)",
+      "Exec(./agents/generate-review)",
       "Exec(git)",
       "Exec(bd)",
       "Fetch(domain:docs.devin.ai)"

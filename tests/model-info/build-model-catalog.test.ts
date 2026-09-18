@@ -4,8 +4,10 @@ import { join } from '@std/path'
 import { buildModelCatalog } from '../../src/model-info/build-model-catalog.ts'
 import { Environment } from '../../src/env-vars.ts'
 import { mockFetchRoutes } from '../support/mock-fetch.ts'
+import pino from 'pino'
 
 const fixtureDirectory = join(Deno.cwd(), 'tests', 'support', 'fixtures')
+const logger = pino({ enabled: false })
 
 describe('buildModelCatalog', () => {
   it('when run, writes a models.json in the injected crow directory', async () => {
@@ -53,7 +55,7 @@ describe('buildModelCatalog', () => {
     ])
     const environment = new Environment({ AA_API_KEY: 'test-key' })
 
-    await buildModelCatalog(crowDirectory, environment, catalogFetch)
+    await buildModelCatalog(crowDirectory, logger, environment, catalogFetch)
 
     const saved = JSON.parse(Deno.readTextFileSync(modelsPath))
     expect(typeof saved.fetchedAt).toBe('string')
@@ -135,7 +137,7 @@ describe('buildModelCatalog', () => {
     ])
     const environment = new Environment({ AA_API_KEY: 'test-key' })
 
-    await buildModelCatalog(crowDirectory, environment, catalogFetch)
+    await buildModelCatalog(crowDirectory, logger, environment, catalogFetch)
 
     const saved = JSON.parse(Deno.readTextFileSync(modelsPath))
 

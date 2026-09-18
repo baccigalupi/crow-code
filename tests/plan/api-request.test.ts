@@ -6,6 +6,9 @@ import {
   mockFetchSuccess,
 } from '../support/mock-fetch.ts'
 import { ApiRequest } from '../../src/plan/api-request.ts'
+import pino from 'pino'
+
+const logger = pino({ enabled: false })
 
 const parseBody = async (response: Response) => {
   if (!response.ok) {
@@ -20,7 +23,8 @@ describe('ApiRequest', () => {
     const request = new Request('https://example.com/api')
     const fetchMock = mockFetchSuccess({ value: 'hello' })
 
-    const result = await new ApiRequest(request, fetchMock, parseBody).perform()
+    const result = await new ApiRequest(request, fetchMock, parseBody, logger)
+      .perform()
 
     expect(result).toBe('hello')
   })
@@ -29,7 +33,8 @@ describe('ApiRequest', () => {
     const request = new Request('https://example.com/api')
     const fetchMock = mockFetchError(500)
 
-    const result = await new ApiRequest(request, fetchMock, parseBody).perform()
+    const result = await new ApiRequest(request, fetchMock, parseBody, logger)
+      .perform()
 
     expect(result).toBe('empty')
   })
@@ -38,7 +43,8 @@ describe('ApiRequest', () => {
     const request = new Request('https://example.com/api')
     const fetchMock = mockFetchRejected('network down')
 
-    const result = await new ApiRequest(request, fetchMock, parseBody).perform()
+    const result = await new ApiRequest(request, fetchMock, parseBody, logger)
+      .perform()
 
     expect(result).toBe('empty')
   })
@@ -47,7 +53,7 @@ describe('ApiRequest', () => {
     const request = new Request('https://example.com/api')
     const fetchMock = mockFetchSuccess({ value: 'hello' })
 
-    await new ApiRequest(request, fetchMock, parseBody).perform()
+    await new ApiRequest(request, fetchMock, parseBody, logger).perform()
 
     expect(fetchMock.calls[0]).toBe(request)
   })

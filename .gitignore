@@ -4,8 +4,10 @@ dist/
 coverage/
 .cache/
 .crow/models.json
+.crow/logs/*.log
 tests/support/fixtures/.crow/
 tests/support/fixtures/env/
+tests/support/fixtures/logger/
 .env
 .env.local
 

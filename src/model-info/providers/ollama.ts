@@ -1,5 +1,6 @@
 import { fetchProvider } from './fetch-provider.ts'
 import type { ModelInfo, ProviderConfig } from '../types.ts'
+import type pino from 'pino'
 
 type OllamaModel = {
   name: string
@@ -60,12 +61,14 @@ export const parseOllamaResponse = (
 
 export const fetchOllamaModels = (
   config: ProviderConfig,
+  logger: pino.Logger,
   fetchClient: typeof fetch = fetch,
 ): Promise<ModelInfo[]> => {
   return fetchProvider<OllamaApiRecord, ModelInfo>(
     config.modelsUrl ?? config.baseUrl,
     (raw) => parseOllamaResponse(raw, config),
     ollamaTimeoutMs,
+    logger,
     fetchClient,
   )
 }

@@ -1,7 +1,12 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
+import { join } from '@std/path'
 import { fetchAABenchmarks } from '../../../src/model-info/ratings/aa-benchmarks.ts'
 import { Environment } from '../../../src/env-vars.ts'
+import pino from 'pino'
+import { createLogger } from '../../../src/logger.ts'
+
+const logger = pino({ enabled: false })
 
 describe('fetchAABenchmarks', () => {
   it('when a catalog id matches an AA model, returns its scores', async () => {
@@ -23,6 +28,7 @@ describe('fetchAABenchmarks', () => {
     const result = await fetchAABenchmarks(
       new Set(['deepseek/deepseek-v4']),
       new Environment({ AA_API_KEY: 'test-key' }),
+      logger,
       benchmarksFetch,
     )
 
@@ -56,6 +62,7 @@ describe('fetchAABenchmarks', () => {
     const result = await fetchAABenchmarks(
       new Set(['deepseek/deepseek-v4']),
       new Environment({ AA_API_KEY: 'test-key' }),
+      logger,
       benchmarksFetch,
     )
 
@@ -72,6 +79,7 @@ describe('fetchAABenchmarks', () => {
     const result = await fetchAABenchmarks(
       new Set(['deepseek/deepseek-v4']),
       new Environment({ AA_API_KEY: 'test-key' }),
+      logger,
       benchmarksFetch,
     )
 
@@ -86,26 +94,40 @@ describe('fetchAABenchmarks', () => {
     const result = await fetchAABenchmarks(
       new Set(['deepseek/deepseek-v4']),
       new Environment({ AA_API_KEY: 'test-key' }),
+      logger,
       benchmarksFetch,
     )
 
     expect(result).toEqual({})
   })
 
-  it('when the key is missing, returns an empty record', async () => {
-    const originalError = console.error
-    const errorCalls: unknown[] = []
-    console.error = () => {
-      errorCalls.push(null)
-    }
+  it('when the key is missing, logs the error and returns an empty record', async () => {
+    const crowDirectory = join(
+      Deno.cwd(),
+      'tests',
+      'support',
+      'fixtures',
+      'logger',
+      'aa-key',
+    )
+    const logPath = join(crowDirectory, 'logs', 'development.log')
+    Deno.mkdirSync(join(crowDirectory, 'logs'), { recursive: true })
+    Deno.writeTextFileSync(logPath, '')
+    const fileLogger = createLogger(crowDirectory, 'error')
 
     const result = await fetchAABenchmarks(
       new Set(['deepseek/deepseek-v4']),
       new Environment({}),
+      fileLogger,
+    )
+    await new Promise<void>((resolve, reject) =>
+      fileLogger.flush((error) =>
+        error === undefined ? resolve() : reject(error)
+      )
     )
 
-    console.error = originalError
+    const logContents = Deno.readTextFileSync(logPath)
     expect(result).toEqual({})
-    expect(errorCalls).toHaveLength(1)
+    expect(logContents).toContain('AA_API_KEY is not set')
   })
 })

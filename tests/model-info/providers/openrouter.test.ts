@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
+import pino from 'pino'
 import {
   mockFetchRejected,
   mockFetchSuccess,
@@ -9,6 +10,8 @@ import {
   parseOpenRouterResponse,
 } from '../../../src/model-info/providers/openrouter.ts'
 import type { ProviderConfig } from '../../../src/model-info/types.ts'
+
+const logger = pino({ enabled: false })
 
 describe('openrouter', () => {
   it('when the body has no data key, returns an empty list', () => {
@@ -127,7 +130,11 @@ describe('openrouter', () => {
       data: [{ id: 'openai/gpt-4o', name: 'GPT-4o' }],
     })
 
-    const result = await fetchOpenRouterModels(openrouterConfig, mockFetch)
+    const result = await fetchOpenRouterModels(
+      openrouterConfig,
+      logger,
+      mockFetch,
+    )
 
     expect(result[0].id).toBe('openai/gpt-4o')
     expect(result[0].providers).toEqual(['openrouter'])
@@ -140,7 +147,7 @@ describe('openrouter', () => {
     }
     const mockFetch = mockFetchSuccess({ data: [{ id: 'openai/gpt-4o' }] })
 
-    await fetchOpenRouterModels(configWithoutModelsUrl, mockFetch)
+    await fetchOpenRouterModels(configWithoutModelsUrl, logger, mockFetch)
 
     expect(mockFetch.calls).toHaveLength(1)
     expect(mockFetch.calls[0]).toBe('https://openrouter.ai')
@@ -154,7 +161,11 @@ describe('openrouter', () => {
     }
     const mockFetch = mockFetchRejected('network down')
 
-    const result = await fetchOpenRouterModels(openrouterConfig, mockFetch)
+    const result = await fetchOpenRouterModels(
+      openrouterConfig,
+      logger,
+      mockFetch,
+    )
 
     expect(result).toEqual([])
   })

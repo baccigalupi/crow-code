@@ -1,5 +1,6 @@
 import { fetchProvider } from './fetch-provider.ts'
 import type { ModelInfo, ProviderConfig } from '../types.ts'
+import type pino from 'pino'
 
 type ReasoningMeta = {
   mandatory?: boolean
@@ -114,12 +115,14 @@ export const parseNousResponse = (
 
 export const fetchNousModels = (
   config: ProviderConfig,
+  logger: pino.Logger,
   fetchClient: typeof fetch = fetch,
 ): Promise<ModelInfo[]> => {
   return fetchProvider<NousApiRecord, ModelInfo>(
     config.baseUrl + '/v1/models',
     (raw) => parseNousResponse(raw, config),
     nousTimeoutMs,
+    logger,
     fetchClient,
   )
 }

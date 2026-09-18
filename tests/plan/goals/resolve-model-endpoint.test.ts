@@ -3,6 +3,9 @@ import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { resolveModelEndpoint } from '../../../src/plan/goals/resolve-model-endpoint.ts'
 import { Environment } from '../../../src/env-vars.ts'
+import pino from 'pino'
+
+const logger = pino({ enabled: false })
 
 const fixtureDirectory = join(
   Deno.cwd(),
@@ -57,6 +60,7 @@ describe('resolveModelEndpoint', () => {
       modelCatalogPath,
       providers,
       environment,
+      logger,
     )
 
     expect(modelEndpoint).toEqual({
@@ -86,6 +90,7 @@ describe('resolveModelEndpoint', () => {
       modelCatalogPath,
       providers,
       environment,
+      logger,
     )
 
     expect(modelEndpoint).toBeNull()
@@ -135,6 +140,7 @@ describe('resolveModelEndpoint', () => {
       modelCatalogPath,
       providers,
       environment,
+      logger,
     )
 
     expect(modelEndpoint).toBeNull()
@@ -186,6 +192,7 @@ describe('resolveModelEndpoint', () => {
       modelCatalogPath,
       providers,
       environment,
+      logger,
     )
 
     expect(modelEndpoint).toBeNull()
@@ -237,6 +244,7 @@ describe('resolveModelEndpoint', () => {
       modelCatalogPath,
       providers,
       environment,
+      logger,
     )
 
     expect(modelEndpoint).toBeNull()
@@ -288,6 +296,7 @@ describe('resolveModelEndpoint', () => {
       modelCatalogPath,
       providers,
       environment,
+      logger,
     )
 
     expect(modelEndpoint).toEqual({

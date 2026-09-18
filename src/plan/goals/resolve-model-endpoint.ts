@@ -2,20 +2,27 @@ import { existsSync } from '@std/fs'
 import { getCheapNoReasoningModels } from '../../model-info/pick/select-cheap-no-reasoning-models.ts'
 import type { ModelInfo, ProviderConfig } from '../../model-info/types.ts'
 import type { Environment } from '../../env-vars.ts'
+import type pino from 'pino'
 
 class ModelEndpointResolver {
   private providers: ProviderConfig[]
   private environment: Environment
+  private logger: pino.Logger
 
-  constructor(providers: ProviderConfig[], environment: Environment) {
+  constructor(
+    providers: ProviderConfig[],
+    environment: Environment,
+    logger: pino.Logger,
+  ) {
     this.providers = providers
     this.environment = environment
+    this.logger = logger
   }
 
   resolve(modelCatalogPath: string) {
     const models = getCheapNoReasoningModels(modelCatalogPath)
     if (models.length === 0) {
-      console.error('No cheap no-reasoning models in the model catalog')
+      this.logger.error('No cheap no-reasoning models in the model catalog')
       return null
     }
     return this.modelEndpointFor(models[0])
@@ -24,7 +31,7 @@ class ModelEndpointResolver {
   private modelEndpointFor(model: ModelInfo) {
     const config = this.configFor(model.providers[0])
     if (config === undefined) {
-      console.error(`No provider config for ${model.providers[0]}`)
+      this.logger.error(`No provider config for ${model.providers[0]}`)
       return null
     }
     return this.buildEndpoint(config, model.id)
@@ -36,7 +43,7 @@ class ModelEndpointResolver {
   ) {
     const key = this.apiKey(config)
     if (key === '') {
-      console.error(`Missing api key env var ${config.apiKeyEnv}`)
+      this.logger.error(`Missing api key env var ${config.apiKeyEnv}`)
       return null
     }
     return { baseURL: `${config.baseUrl}/v1`, apiKey: key, model }
@@ -58,11 +65,12 @@ export const resolveModelEndpoint = (
   modelCatalogPath: string,
   providers: ProviderConfig[],
   environment: Environment,
+  logger: pino.Logger,
 ) => {
   if (!existsSync(modelCatalogPath)) {
-    console.error(`Model catalog not found: ${modelCatalogPath}`)
+    logger.error(`Model catalog not found: ${modelCatalogPath}`)
     return null
   }
-  const resolver = new ModelEndpointResolver(providers, environment)
+  const resolver = new ModelEndpointResolver(providers, environment, logger)
   return resolver.resolve(modelCatalogPath)
 }

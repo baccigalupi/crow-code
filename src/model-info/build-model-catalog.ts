@@ -4,21 +4,26 @@ import { appendRatings } from './ratings/append-ratings.ts'
 import { defaultModelCatalogPath, writeModelCatalog } from './model-catalog.ts'
 import { type Environment, loadEnvironmentalVariables } from '../env-vars.ts'
 import type { ModelInfo } from './types.ts'
+import type pino from 'pino'
+import { mergeModelRecords } from './merge-model-records.ts'
 
 class BuildModelCatalog {
   private crowDirectory: string
   private environment: Environment
   private fetchClient: typeof fetch
+  private logger: pino.Logger
   private records: ModelInfo[] = []
 
   constructor(
     crowDirectory: string,
-    environment: Environment = loadEnvironmentalVariables(),
-    fetchClient: typeof fetch = fetch,
+    environment: Environment,
+    fetchClient: typeof fetch,
+    logger: pino.Logger,
   ) {
     this.crowDirectory = crowDirectory
     this.environment = environment
     this.fetchClient = fetchClient
+    this.logger = logger
   }
 
   async run() {
@@ -31,7 +36,7 @@ class BuildModelCatalog {
   }
 
   private logStart() {
-    console.log('Fetching model data and building model catalog...')
+    this.logger.info('Fetching model data and building model catalog...')
   }
 
   private async fetchProviders() {
@@ -39,37 +44,22 @@ class BuildModelCatalog {
 
     this.records = (
       await Promise.all(
-        configs.map((config) => fetchProviders(config, this.fetchClient)),
+        configs.map((config) =>
+          fetchProviders(config, this.logger, this.fetchClient)
+        ),
       )
     ).flat()
   }
 
   private dedupRecords() {
-    const byId = new Map<string, ModelInfo>()
-
-    for (const record of this.records) {
-      const existing = byId.get(record.id)
-      if (existing === undefined) {
-        byId.set(record.id, record)
-      } else {
-        byId.set(record.id, this.mergeRecords(existing, record))
-      }
-    }
-
-    this.records = Array.from(byId.values())
-  }
-
-  private mergeRecords(a: ModelInfo, b: ModelInfo): ModelInfo {
-    return {
-      ...a,
-      providers: [...new Set([...a.providers, ...b.providers])],
-    }
+    this.records = mergeModelRecords(this.records)
   }
 
   private async appendRatings() {
     this.records = await appendRatings(
       this.records,
       this.environment,
+      this.logger,
       this.fetchClient,
     )
   }
@@ -82,7 +72,7 @@ class BuildModelCatalog {
   }
 
   private logCompletion() {
-    console.log(
+    this.logger.info(
       `Wrote ${this.records.length} models to ${
         defaultModelCatalogPath(
           this.crowDirectory,
@@ -94,9 +84,15 @@ class BuildModelCatalog {
 
 export const buildModelCatalog = async (
   crowDirectory: string,
+  logger: pino.Logger,
   environment: Environment = loadEnvironmentalVariables(),
   fetchClient: typeof fetch = fetch,
 ) => {
-  const builder = new BuildModelCatalog(crowDirectory, environment, fetchClient)
+  const builder = new BuildModelCatalog(
+    crowDirectory,
+    environment,
+    fetchClient,
+    logger,
+  )
   return await builder.run()
 }

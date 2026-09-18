@@ -1,7 +1,10 @@
+import type pino from 'pino'
+
 export const fetchProvider = async <ApiRecord, T>(
   url: string,
   parse: (raw: ApiRecord) => T[],
   timeoutMs: number,
+  logger: pino.Logger,
   fetchClient: typeof fetch = fetch,
 ): Promise<T[]> => {
   try {
@@ -9,14 +12,14 @@ export const fetchProvider = async <ApiRecord, T>(
       signal: AbortSignal.timeout(timeoutMs),
     })
     if (!response.ok) {
-      console.error(
+      logger.error(
         `Catalog request failed with status ${response.status}: ${url}`,
       )
       return []
     }
     return parse((await response.json()) as ApiRecord)
   } catch {
-    console.error(`Catalog request failed: ${url}`)
+    logger.error(`Catalog request failed: ${url}`)
     return []
   }
 }

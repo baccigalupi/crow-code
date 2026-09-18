@@ -1,17 +1,22 @@
+import type pino from 'pino'
+
 export class ApiRequest<T> {
   private request: Request
   private fetchClient: typeof fetch
   private parse: (response: Response) => Promise<T>
+  private logger: pino.Logger
   private response: Response
 
   constructor(
     request: Request,
     fetchClient: typeof fetch,
     parse: (response: Response) => Promise<T>,
+    logger: pino.Logger,
   ) {
     this.request = request
     this.fetchClient = fetchClient
     this.parse = parse
+    this.logger = logger
     this.response = Response.error()
   }
 
@@ -34,13 +39,13 @@ export class ApiRequest<T> {
   }
 
   private fail() {
-    console.error(`Error: ${this.request.url} failed to connect`)
+    this.logger.error(`Error: ${this.request.url} failed to connect`)
     this.response = Response.error()
   }
 
   private logError() {
     if (!this.response.ok) {
-      console.error(
+      this.logger.error(
         `Error: ${this.request.url} returned ${this.response.status}`,
       )
     }

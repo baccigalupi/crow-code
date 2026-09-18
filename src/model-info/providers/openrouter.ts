@@ -1,5 +1,6 @@
 import { fetchProvider } from './fetch-provider.ts'
 import type { ModelInfo, ProviderConfig } from '../types.ts'
+import type pino from 'pino'
 
 type OpenRouterPricing = {
   prompt?: string
@@ -94,12 +95,14 @@ export const parseOpenRouterResponse = (
 
 export const fetchOpenRouterModels = (
   config: ProviderConfig,
+  logger: pino.Logger,
   fetchClient: typeof fetch = fetch,
 ): Promise<ModelInfo[]> => {
   return fetchProvider<OpenRouterApiRecord, ModelInfo>(
     config.modelsUrl ?? config.baseUrl,
     (raw) => parseOpenRouterResponse(raw, config),
     openrouterTimeoutMs,
+    logger,
     fetchClient,
   )
 }
