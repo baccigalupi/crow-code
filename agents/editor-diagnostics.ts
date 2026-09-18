@@ -1,5 +1,6 @@
+#!/usr/bin/env -S deno run --allow-run --allow-read --allow-env
 // Prints the diagnostics the VS Code Deno extension shows for the given roots.
-// Usage: deno run --allow-run --allow-read --allow-env agents/editor-diagnostics.ts src bin tests
+// Usage: agents/editor-diagnostics.ts src bin tests
 
 import { relative, resolve } from '@std/path'
 import { type Diagnostic, LanguageServer } from './language-server-client.ts'

@@ -147,9 +147,9 @@ Apply when creating or changing tests in this repo.
 
 ### Hard rules
 
-1. When finished touching TypeScript files, run `bash agents/typecheck` and
-   report the actual output. Do not claim TS is clean without running the
-   typecheck gate.
+1. When finished touching TypeScript files, run `agents/typecheck` and report
+   the actual output. Do not claim TS is clean without running the typecheck
+   gate.
 2. Source-to-test placement is one-to-one: `src/model-discovery/<path>.ts` ↔
    `tests/model-discovery/<path>.test.ts` (same relative path under
    `src/model-discovery/` and `tests/model-discovery/`). One source file, one
@@ -275,8 +275,9 @@ details and anti-patterns.
 
 ## Session Completion
 
-**When ending a work session**, you MUST complete ALL steps below. Work is NOT
-complete until `git push` succeeds.
+**When ending a work session**, complete ALL steps below. Git mutations happen
+ONLY when the user explicitly asks — never commit, stage, push, stash, or prune
+on your own initiative.
 
 **MANDATORY WORKFLOW:**
 
@@ -284,21 +285,12 @@ complete until `git push` succeeds.
    follow-up
 2. **Run quality gates** (if code changed) - Tests, linters, builds
 3. **Update issue status** - Close finished work, update in-progress items
-4. **PUSH TO REMOTE** - This is MANDATORY:
-   ```bash
-   git pull --rebase
-   git push
-   git status  # MUST show "up to date with origin"
-   ```
-5. **Clean up** - Clear stashes, prune remote branches
-6. **Verify** - All changes committed AND pushed
-7. **Hand off** - Provide context for next session
+4. **Hand off** - Provide context for next session; leave the working tree as it
+   is unless the user asked for a commit
 
 **CRITICAL RULES:**
 
-- Work is NOT complete until `git push` succeeds
-- NEVER stop before pushing - that leaves work stranded locally
-- NEVER say "ready to push when you are" - YOU must push
-- If push fails, resolve and retry until it succeeds
+- NEVER commit, stage, or push unless the user explicitly asks
+- `git push` is denied to the agent by the exec allowlist
 
 <!-- END BEADS INTEGRATION -->
