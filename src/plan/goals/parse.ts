@@ -49,6 +49,6 @@ class GoalParser {
   }
 }
 
-export const parseGoals = (raw: string) => {
+export const parse = (raw: string) => {
   return new GoalParser(raw).parse()
 }
