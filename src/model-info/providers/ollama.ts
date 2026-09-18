@@ -1,59 +1,26 @@
 import { fetchProvider } from './fetch-provider.ts'
-import type { Logger, ModelInfo, ProviderConfig } from '../types.ts'
-
-type OllamaModel = {
-  name: string
-  details?: { parameter_size?: string; context_length?: number }
-}
+import { OllamaParser } from './ollama/parser.ts'
+import type {
+  Logger,
+  ModelInfo,
+  OllamaApiRecord,
+  ProviderConfig,
+} from '../types.ts'
 
 const ollamaTimeoutMs = 5000
 
-const ollamaContextLength = (details: OllamaModel['details']) => {
-  if (details === undefined) {
-    return null
+const modelsEndpoint = (config: ProviderConfig) => {
+  if (config.modelsUrl === undefined) {
+    return `${config.baseUrl}/api/tags`
   }
-  return details.context_length || null
+  return config.modelsUrl
 }
-
-const ollamaSize = (details: OllamaModel['details']) => {
-  if (details === undefined || details.parameter_size === undefined) {
-    return ''
-  }
-  return details.parameter_size
-}
-
-const buildOllamaRecord = (
-  model: OllamaModel,
-  config: ProviderConfig,
-) => {
-  return {
-    id: model.name,
-    name: model.name,
-    providers: [config.name],
-    reasoning: null,
-    coding: null,
-    codingSource: null,
-    agentic: null,
-    costInput: 0,
-    costOutput: 0,
-    contextLength: ollamaContextLength(model.details),
-    modality: 'local',
-    reasoningMode: '-',
-    knowledgeCutoff: null,
-    size: ollamaSize(model.details),
-  }
-}
-
-type OllamaApiRecord = { models?: OllamaModel[] }
 
 export const parseOllamaResponse = (
   raw: OllamaApiRecord,
   config: ProviderConfig,
 ) => {
-  if (raw.models === undefined) {
-    return []
-  }
-  return raw.models.map((model) => buildOllamaRecord(model, config))
+  return new OllamaParser(config).parseResponse(raw)
 }
 
 export const fetchOllamaModels = (
@@ -62,8 +29,8 @@ export const fetchOllamaModels = (
   fetchClient: typeof fetch = fetch,
 ) => {
   return fetchProvider<OllamaApiRecord, ModelInfo>(
-    config.modelsUrl ?? config.baseUrl,
-    (raw) => parseOllamaResponse(raw, config),
+    modelsEndpoint(config),
+    (raw) => new OllamaParser(config).parseResponse(raw),
     ollamaTimeoutMs,
     logger,
     fetchClient,

@@ -67,3 +67,25 @@ export type NousModel = {
 }
 
 export type NousApiRecord = { data?: NousModel[] }
+
+export type OllamaModel = {
+  name: string
+  details?: { parameter_size?: string; context_length?: number }
+}
+
+export type OllamaApiRecord = { models?: OllamaModel[] }
+
+export type OpenRouterPricing = {
+  prompt?: string
+  completion?: string
+}
+
+export type OpenRouterModel = {
+  id: string
+  name?: string
+  context_length?: number
+  pricing?: OpenRouterPricing
+  architecture?: { modality?: string }
+}
+
+export type OpenRouterApiRecord = { data?: OpenRouterModel[] }
