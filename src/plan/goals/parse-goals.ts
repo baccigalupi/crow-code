@@ -14,6 +14,9 @@ const isStringArray = (parsed: unknown): parsed is string[] => {
 }
 
 export const parseGoals = (raw: string) => {
+  if (raw === '') {
+    return []
+  }
   try {
     const parsed: unknown = JSON.parse(stripFence(raw))
     if (!isStringArray(parsed)) {
