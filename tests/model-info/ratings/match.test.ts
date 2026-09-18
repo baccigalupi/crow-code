@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { candidateIds } from '../../../../src/model-info/ratings/aa/match.ts'
+import { candidateIds } from '../../../src/model-info/ratings/match.ts'
 
 describe('candidateIds', () => {
   it('when the creator is unknown, returns no candidates', () => {

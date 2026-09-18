@@ -1,5 +1,4 @@
 import type { AABenchmarks, CodingSource, ModelInfo } from '../types.ts'
-import { aiderPolyglotPct } from './aider-polyglot.ts'
 
 type CodingResult = {
   coding: number | null
@@ -12,6 +11,7 @@ export const benchmarkIntelligence = (
   if (benchmark === undefined) {
     return null
   }
+
   return benchmark.intelligence
 }
 
@@ -21,19 +21,17 @@ export const benchmarkAgentic = (
   if (benchmark === undefined) {
     return null
   }
+
   return benchmark.agentic
 }
 
 export const resolveCoding = (
   benchmark: AABenchmarks | undefined,
-  aiderScore: number | undefined,
 ): CodingResult => {
   if (benchmark !== undefined && benchmark.coding > 0) {
     return { coding: benchmark.coding, source: 'AA' }
   }
-  if (aiderScore !== undefined) {
-    return { coding: aiderScore, source: 'Aider' }
-  }
+
   return { coding: null, source: null }
 }
 
@@ -41,7 +39,8 @@ const applyToRecord = (
   record: ModelInfo,
   benchmark: AABenchmarks | undefined,
 ): ModelInfo => {
-  const coding = resolveCoding(benchmark, aiderPolyglotPct[record.id])
+  const coding = resolveCoding(benchmark)
+
   return {
     ...record,
     reasoning: benchmarkIntelligence(benchmark),

@@ -1,10 +1,10 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import { fetchAABenchmarks } from '../../../../src/model-info/ratings/aa/benchmarks.ts'
-import { Environment } from '../../../../src/env-vars.ts'
+import { fetchAABenchmarks } from '../../../src/model-info/ratings/benchmarks.ts'
+import { Environment } from '../../../src/env-vars.ts'
 import pino from 'pino'
-import { createLogger } from '../../../../src/logger.ts'
+import { createLogger } from '../../../src/logger.ts'
 
 const logger = pino({ enabled: false })
 
