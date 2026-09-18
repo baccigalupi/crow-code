@@ -1,0 +1,374 @@
+#!/usr/bin/env node
+
+import { execFileSync } from 'node:child_process'
+
+const parseArgs = () => {
+  const argv = process.argv.slice(2)
+  let daily = false
+  let hours = false
+  let json = false
+  let since = null
+
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index]
+    if (arg === '--daily') {
+      daily = true
+    } else if (arg === '--hours') {
+      hours = true
+    } else if (arg === '--json') {
+      json = true
+    } else if (arg === '--since') {
+      index += 1
+      since = argv[index]
+    }
+  }
+
+  return { daily, hours, json, since }
+}
+
+const mondayOf = (dayIso) => {
+  const day = new Date(`${dayIso}T12:00:00`)
+  const daysSinceMonday = (day.getDay() + 6) % 7
+  const monday = new Date(day)
+  monday.setDate(day.getDate() - daysSinceMonday)
+  return monday.toISOString().slice(0, 10)
+}
+
+const weekLabel = (weekStartIso) => {
+  const start = new Date(`${weekStartIso}T12:00:00`)
+  const end = new Date(start)
+  end.setDate(start.getDate() + 6)
+  return `${weekStartIso} .. ${end.toISOString().slice(0, 10)}`
+}
+
+const hourBucketKey = (timestamp) => timestamp.slice(0, 13)
+
+const editsPerHour = (edits, activeHours) => {
+  if (activeHours === 0) {
+    return 0
+  }
+  return edits / activeHours
+}
+
+const mean = (values) => {
+  if (values.length === 0) {
+    return 0
+  }
+  let total = 0
+  for (const value of values) {
+    total += value
+  }
+  return total / values.length
+}
+
+const median = (values) => {
+  if (values.length === 0) {
+    return 0
+  }
+  const sorted = [...values].sort((left, right) => left - right)
+  const mid = Math.floor(sorted.length / 2)
+  if (sorted.length % 2 === 0) {
+    return (sorted[mid - 1] + sorted[mid]) / 2
+  }
+  return sorted[mid]
+}
+
+const emptyDay = () => ({
+  edits: 0,
+  commits: 0,
+  hourKeys: new Set(),
+})
+
+const emptyHourBucket = () => ({
+  edits: 0,
+  commits: 0,
+})
+
+const readGitActivity = (since) => {
+  const command = ['log', '--numstat', '--format=COMMIT %ai']
+  if (since !== null) {
+    command.push('--since', since)
+  }
+
+  let raw = ''
+  try {
+    raw = execFileSync('git', command, { encoding: 'utf8' })
+  } catch (error) {
+    console.error(`edit-activity: git log failed: ${error}`)
+    process.exit(1)
+  }
+
+  const byDay = new Map()
+  const byHourBucket = new Map()
+  let commits = 0
+  let currentDay = null
+  let currentBucket = null
+
+  for (const line of raw.split('\n')) {
+    if (line.startsWith('COMMIT ')) {
+      const timestamp = line.slice(7).trim()
+      currentDay = timestamp.slice(0, 10)
+      currentBucket = hourBucketKey(timestamp)
+      commits += 1
+
+      if (!byDay.has(currentDay)) {
+        byDay.set(currentDay, emptyDay())
+      }
+      const day = byDay.get(currentDay)
+      day.commits += 1
+      day.hourKeys.add(currentBucket)
+
+      if (!byHourBucket.has(currentBucket)) {
+        byHourBucket.set(currentBucket, emptyHourBucket())
+      }
+      byHourBucket.get(currentBucket).commits += 1
+      continue
+    }
+
+    if (currentDay === null || currentBucket === null || line.trim() === '') {
+      continue
+    }
+
+    const parts = line.split('\t')
+    if (parts.length < 2 || parts[0] === '-' || parts[1] === '-') {
+      continue
+    }
+
+    const additions = Number.parseInt(parts[0], 10)
+    const deletions = Number.parseInt(parts[1], 10)
+    if (Number.isNaN(additions) || Number.isNaN(deletions)) {
+      continue
+    }
+
+    const edits = additions + deletions
+    byDay.get(currentDay).edits += edits
+    byHourBucket.get(currentBucket).edits += edits
+  }
+
+  return { byDay, byHourBucket, commits }
+}
+
+const buildWeeks = (byHourBucket) => {
+  const weeks = new Map()
+  const bucketKeys = [...byHourBucket.keys()].sort()
+
+  for (const bucketKey of bucketKeys) {
+    const weekStart = mondayOf(bucketKey.slice(0, 10))
+    const activity = byHourBucket.get(bucketKey)
+
+    if (!weeks.has(weekStart)) {
+      weeks.set(weekStart, {
+        weekStart,
+        edits: 0,
+        commits: 0,
+        activeHours: 0,
+        hourKeys: new Set(),
+      })
+    }
+
+    const week = weeks.get(weekStart)
+    week.edits += activity.edits
+    week.commits += activity.commits
+    if (!week.hourKeys.has(bucketKey)) {
+      week.hourKeys.add(bucketKey)
+      week.activeHours += 1
+    }
+  }
+
+  return [...weeks.keys()].sort().map((key) => weeks.get(key))
+}
+
+const hourOfDayTotals = (byHourBucket) => {
+  const byHourOfDay = new Map()
+
+  for (const [bucketKey, activity] of byHourBucket.entries()) {
+    const hour = Number.parseInt(bucketKey.slice(11, 13), 10)
+    if (!byHourOfDay.has(hour)) {
+      byHourOfDay.set(hour, { edits: 0, commits: 0 })
+    }
+    const hourActivity = byHourOfDay.get(hour)
+    hourActivity.edits += activity.edits
+    hourActivity.commits += activity.commits
+  }
+
+  return byHourOfDay
+}
+
+const weeklyProductivityRates = (weeks) =>
+  weeks.map((week) => editsPerHour(week.edits, week.activeHours))
+
+const formatReport = (byDay, byHourBucket, commits, showDaily, showHours) => {
+  const weeks = buildWeeks(byHourBucket)
+  let totalEdits = 0
+  for (const day of byDay.values()) {
+    totalEdits += day.edits
+  }
+  const activeHourBuckets = byHourBucket.size
+  const weeklyRates = weeklyProductivityRates(weeks)
+  const byHourOfDay = hourOfDayTotals(byHourBucket)
+  const activeClockHours = []
+  for (let hour = 0; hour < 24; hour += 1) {
+    const hourActivity = byHourOfDay.get(hour)
+    if (hourActivity && (hourActivity.edits > 0 || hourActivity.commits > 0)) {
+      activeClockHours.push(hour)
+    }
+  }
+
+  const lines = [
+    'Git edit productivity (additions + deletions per changed line)',
+    '',
+    `Total edits:              ${totalEdits.toLocaleString('en-US').padStart(10)}`,
+    `Commits:                  ${commits.toLocaleString('en-US').padStart(10)}`,
+    `Active hour buckets:      ${activeHourBuckets.toLocaleString('en-US').padStart(10)}`,
+    `Active weeks:             ${weeks.length.toLocaleString('en-US').padStart(10)}`,
+    `Edits/active hour (all):  ${Math.round(editsPerHour(totalEdits, activeHourBuckets)).toLocaleString('en-US').padStart(10)}`,
+    `Weekly edits/hr (mean):   ${Math.round(mean(weeklyRates)).toLocaleString('en-US').padStart(10)}`,
+    `Weekly edits/hr (median): ${Math.round(median(weeklyRates)).toLocaleString('en-US').padStart(10)}`,
+    '',
+    'Weekly productivity (weeks with commits only; rate = edits / active hours in week)',
+    `${'Week (Mon..Sun)'.padEnd(25)} ${'Hrs'.padStart(5)} ${'Edits'.padStart(10)} ${'Edits/hr'.padStart(10)}`,
+  ]
+
+  for (const week of weeks) {
+    const rate = editsPerHour(week.edits, week.activeHours)
+    lines.push(
+      `${weekLabel(week.weekStart).padEnd(25)} ${String(week.activeHours).padStart(5)} ${week.edits.toLocaleString('en-US').padStart(10)} ${Math.round(rate).toLocaleString('en-US').padStart(10)}`,
+    )
+  }
+
+  if (showDaily) {
+    lines.push('', 'Daily productivity (days with commits only)')
+    lines.push(
+      `${'Date'.padEnd(12)} ${'Hrs'.padStart(5)} ${'Edits'.padStart(10)} ${'Commits'.padStart(8)} ${'Edits/hr'.padStart(10)}`,
+    )
+    for (const dayKey of [...byDay.keys()].sort()) {
+      const day = byDay.get(dayKey)
+      const activeHours = day.hourKeys.size
+      const rate = editsPerHour(day.edits, activeHours)
+      lines.push(
+        `${dayKey.padEnd(12)} ${String(activeHours).padStart(5)} ${day.edits.toLocaleString('en-US').padStart(10)} ${String(day.commits).padStart(8)} ${Math.round(rate).toLocaleString('en-US').padStart(10)}`,
+      )
+    }
+  }
+
+  if (showHours) {
+    lines.push('', 'Hour of day (author timezone; active clock hours only)')
+    lines.push(
+      `${'Hour'.padEnd(6)} ${'Edits'.padStart(10)} ${'Commits'.padStart(8)} ${'Edits/hr'.padStart(10)}`,
+    )
+    for (const hour of activeClockHours) {
+      const hourActivity = byHourOfDay.get(hour)
+      let bucketCount = 0
+      for (const bucketKey of byHourBucket.keys()) {
+        if (Number.parseInt(bucketKey.slice(11, 13), 10) === hour) {
+          bucketCount += 1
+        }
+      }
+      const rate = editsPerHour(hourActivity.edits, bucketCount)
+      lines.push(
+        `${`${String(hour).padStart(2, '0')}:00`.padEnd(6)} ${hourActivity.edits.toLocaleString('en-US').padStart(10)} ${String(hourActivity.commits).padStart(8)} ${Math.round(rate).toLocaleString('en-US').padStart(10)}`,
+      )
+    }
+  }
+
+  return lines.join('\n')
+}
+
+const jsonReport = (byDay, byHourBucket, commits, showDaily, showHours) => {
+  const weeks = buildWeeks(byHourBucket)
+  let totalEdits = 0
+  for (const day of byDay.values()) {
+    totalEdits += day.edits
+  }
+  const activeHourBuckets = byHourBucket.size
+  const weeklyRates = weeklyProductivityRates(weeks)
+  const byHourOfDay = hourOfDayTotals(byHourBucket)
+  const activeClockHours = []
+  for (let hour = 0; hour < 24; hour += 1) {
+    const hourActivity = byHourOfDay.get(hour)
+    if (hourActivity && (hourActivity.edits > 0 || hourActivity.commits > 0)) {
+      activeClockHours.push(hour)
+    }
+  }
+
+  const weekEndIso = (weekStartIso) => {
+    const end = new Date(`${weekStartIso}T12:00:00`)
+    end.setDate(end.getDate() + 6)
+    return end.toISOString().slice(0, 10)
+  }
+
+  const payload = {
+    summary: {
+      totalEdits,
+      commits,
+      activeHourBuckets,
+      activeWeeks: weeks.length,
+      editsPerActiveHour:
+        Math.round(editsPerHour(totalEdits, activeHourBuckets) * 100) / 100,
+      meanWeeklyEditsPerActiveHour: Math.round(mean(weeklyRates) * 100) / 100,
+      medianWeeklyEditsPerActiveHour:
+        Math.round(median(weeklyRates) * 100) / 100,
+    },
+    weeks: weeks.map((week) => ({
+      weekStart: week.weekStart,
+      weekEnd: weekEndIso(week.weekStart),
+      activeHours: week.activeHours,
+      edits: week.edits,
+      commits: week.commits,
+      editsPerActiveHour:
+        Math.round(editsPerHour(week.edits, week.activeHours) * 100) / 100,
+    })),
+  }
+
+  if (showDaily) {
+    payload.days = [...byDay.keys()].sort().map((dayKey) => {
+      const day = byDay.get(dayKey)
+      return {
+        date: dayKey,
+        activeHours: day.hourKeys.size,
+        edits: day.edits,
+        commits: day.commits,
+        editsPerActiveHour:
+          Math.round(editsPerHour(day.edits, day.hourKeys.size) * 100) / 100,
+      }
+    })
+  }
+
+  if (showHours) {
+    payload.hoursOfDay = activeClockHours.map((hour) => {
+      const hourActivity = byHourOfDay.get(hour)
+      let bucketCount = 0
+      for (const bucketKey of byHourBucket.keys()) {
+        if (Number.parseInt(bucketKey.slice(11, 13), 10) === hour) {
+          bucketCount += 1
+        }
+      }
+      return {
+        hour,
+        activeHourBuckets: bucketCount,
+        edits: hourActivity.edits,
+        commits: hourActivity.commits,
+        editsPerActiveHour:
+          Math.round(editsPerHour(hourActivity.edits, bucketCount) * 100) / 100,
+      }
+    })
+  }
+
+  return JSON.stringify(payload, null, 2)
+}
+
+const args = parseArgs()
+const { byDay, byHourBucket, commits } = readGitActivity(args.since)
+
+if (byDay.size === 0) {
+  console.error('edit-activity: no commits found')
+  process.exit(1)
+}
+
+if (args.json) {
+  console.log(jsonReport(byDay, byHourBucket, commits, args.daily, args.hours))
+} else {
+  console.log(
+    formatReport(byDay, byHourBucket, commits, args.daily, args.hours),
+  )
+}

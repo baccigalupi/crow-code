@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$root"
+
+total_lines=0
+
+count_lines() {
+  local label="$1"
+  shift
+  local line_sum=0
+  local file_count=0
+  local file=''
+  local lines=0
+
+  while IFS= read -r -d '' file; do
+    lines="$(wc -l <"$file" | tr -d ' ')"
+    line_sum=$((line_sum + lines))
+    file_count=$((file_count + 1))
+  done < <(find "$@" -type f -print0)
+
+  printf '%-22s %7d lines  (%d files)\n' "$label" "$line_sum" "$file_count"
+  total_lines=$((total_lines + line_sum))
+}
+
+echo "Codebase lines (physical lines, wc -l; excludes tests/)"
+echo "Root: $root"
+echo
+
+count_lines 'TypeScript' src bin \( -name '*.ts' -o -name '*.tsx' \)
+count_lines 'Shell / scripts' dev agents -not -name '*.ts'
+
+echo '----------------------------------------'
+printf '%-22s %7d lines\n' 'Total' "$total_lines"
