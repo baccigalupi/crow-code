@@ -1,4 +1,4 @@
-const stripFence = (raw: string): string => {
+const stripFence = (raw: string) => {
   const trimmed = raw.trim()
   if (!trimmed.startsWith('```')) {
     return trimmed
@@ -13,7 +13,7 @@ const isStringArray = (parsed: unknown): parsed is string[] => {
   return parsed.every((element) => typeof element === 'string')
 }
 
-export const parseGoals = (raw: string): string[] => {
+export const parseGoals = (raw: string) => {
   try {
     const parsed: unknown = JSON.parse(stripFence(raw))
     if (!isStringArray(parsed)) {

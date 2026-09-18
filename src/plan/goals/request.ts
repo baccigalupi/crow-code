@@ -1,6 +1,6 @@
 import { parseGoals } from './parse-goals.ts'
 import { goalSystemPrompt } from './system-prompt.ts'
-import type { GoalTarget } from '../types.ts'
+import type { ModelEndpointDetails } from '../types.ts'
 
 type GoalMessage = { content?: string }
 type GoalChoice = { message?: GoalMessage }
@@ -8,9 +8,9 @@ type GoalResponse = { choices?: GoalChoice[] }
 
 const goalRequestTimeoutMs = 20000
 
-const requestBody = (target: GoalTarget, userText: string): string => {
+const requestBody = (modelEndpoint: ModelEndpointDetails, userText: string) => {
   return JSON.stringify({
-    model: target.model,
+    model: modelEndpoint.model,
     messages: [
       { role: 'system', content: goalSystemPrompt },
       { role: 'user', content: userText },
@@ -18,37 +18,37 @@ const requestBody = (target: GoalTarget, userText: string): string => {
   })
 }
 
-const requestHeaders = (target: GoalTarget) => {
+const requestHeaders = (modelEndpoint: ModelEndpointDetails) => {
   return {
     'content-type': 'application/json',
-    authorization: `Bearer ${target.apiKey}`,
+    authorization: `Bearer ${modelEndpoint.apiKey}`,
   }
 }
 
-const buildRequest = (target: GoalTarget, userText: string): Request => {
-  return new Request(`${target.baseURL}/chat/completions`, {
+const buildRequest = (modelEndpoint: ModelEndpointDetails, userText: string) => {
+  return new Request(`${modelEndpoint.baseURL}/chat/completions`, {
     method: 'POST',
-    headers: requestHeaders(target),
-    body: requestBody(target, userText),
+    headers: requestHeaders(modelEndpoint),
+    body: requestBody(modelEndpoint, userText),
     signal: AbortSignal.timeout(goalRequestTimeoutMs),
   })
 }
 
-const messageContent = (message: GoalMessage | undefined): string | null => {
+const messageContent = (message: GoalMessage | undefined) => {
   if (message === undefined || message.content === undefined) {
     return null
   }
   return message.content
 }
 
-const firstContent = (body: GoalResponse): string | null => {
+const firstContent = (body: GoalResponse) => {
   if (body.choices === undefined || body.choices.length === 0) {
     return null
   }
   return messageContent(body.choices[0].message)
 }
 
-const goalsFrom = async (response: Response): Promise<string[]> => {
+const goalsFrom = async (response: Response) => {
   const content = firstContent(await response.json())
   if (content === null) {
     console.error('Goal response had no message content')
@@ -58,12 +58,12 @@ const goalsFrom = async (response: Response): Promise<string[]> => {
 }
 
 export const requestGoals = async (
-  target: GoalTarget,
+  modelEndpoint: ModelEndpointDetails,
   userText: string,
   fetchClient: typeof fetch = fetch,
-): Promise<string[]> => {
+) => {
   try {
-    const response = await fetchClient(buildRequest(target, userText))
+    const response = await fetchClient(buildRequest(modelEndpoint, userText))
     if (!response.ok) {
       console.error(`Goal request failed with status ${response.status}`)
       return []

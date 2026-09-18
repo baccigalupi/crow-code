@@ -5,9 +5,8 @@ import type {
   ProviderConfig,
 } from '../../model-discovery/types.ts'
 import type { Environment } from '../../env-vars.ts'
-import type { GoalTarget } from '../types.ts'
 
-class GoalTargetResolver {
+class ModelEndpointResolver {
   private providers: ProviderConfig[]
   private environment: Environment
 
@@ -16,16 +15,16 @@ class GoalTargetResolver {
     this.environment = environment
   }
 
-  resolve(cachePath: string): GoalTarget | null {
+  resolve(cachePath: string) {
     const models = getCheapNoReasoningModels(cachePath)
     if (models.length === 0) {
       console.error('No cheap no-reasoning models in the model cache')
       return null
     }
-    return this.targetFor(models[0])
+    return this.modelEndpointFor(models[0])
   }
 
-  private targetFor(model: ModelRecord): GoalTarget | null {
+  private modelEndpointFor(model: ModelRecord) {
     const config = this.configFor(model.providers[0])
     if (config === undefined) {
       console.error(`No provider config for ${model.providers[0]}`)
@@ -37,7 +36,7 @@ class GoalTargetResolver {
   private buildTarget(
     config: ProviderConfig,
     model: string,
-  ): GoalTarget | null {
+  ) {
     const key = this.apiKey(config)
     if (key === '') {
       console.error(`Missing api key env var ${config.apiKeyEnv}`)
@@ -46,7 +45,7 @@ class GoalTargetResolver {
     return { baseURL: `${config.baseUrl}/v1`, apiKey: key, model }
   }
 
-  private apiKey(config: ProviderConfig): string {
+  private apiKey(config: ProviderConfig) {
     if (config.apiKeyEnv === undefined) {
       return 'unused'
     }
@@ -58,15 +57,15 @@ class GoalTargetResolver {
   }
 }
 
-export const resolveGoalTarget = (
+export const resolveModelEndpoint = (
   cachePath: string,
   providers: ProviderConfig[],
   environment: Environment,
-): GoalTarget | null => {
+) => {
   if (!existsSync(cachePath)) {
     console.error(`Model cache not found: ${cachePath}`)
     return null
   }
-  const resolver = new GoalTargetResolver(providers, environment)
+  const resolver = new ModelEndpointResolver(providers, environment)
   return resolver.resolve(cachePath)
 }

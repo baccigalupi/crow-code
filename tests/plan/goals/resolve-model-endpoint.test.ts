@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import { resolveGoalTarget } from '../../../src/plan/goals/goal-target.ts'
+import { resolveModelEndpoint } from '../../../src/plan/goals/resolve-model-endpoint.ts'
 import { Environment } from '../../../src/env-vars.ts'
 
 const fixtureDirectory = join(
@@ -12,9 +12,9 @@ const fixtureDirectory = join(
   '.crow',
 )
 
-describe('resolveGoalTarget', () => {
-  it('when the cache has a cheap model on a configured provider, returns the target', () => {
-    const cachePath = join(fixtureDirectory, 'goal-target-happy.json')
+describe('resolveModelEndpoint', () => {
+  it('when the cache has a cheap model on a configured provider, returns the model endpoint', () => {
+    const cachePath = join(fixtureDirectory, 'resolve-model-endpoint-happy.json')
     Deno.mkdirSync(fixtureDirectory, { recursive: true })
     Deno.writeTextFileSync(
       cachePath,
@@ -50,9 +50,9 @@ describe('resolveGoalTarget', () => {
     ]
     const environment = new Environment({ NOUS_API_KEY: 'secret-key' })
 
-    const target = resolveGoalTarget(cachePath, providers, environment)
+    const modelEndpoint = resolveModelEndpoint(cachePath, providers, environment)
 
-    expect(target).toEqual({
+    expect(modelEndpoint).toEqual({
       baseURL: 'https://inference-api.nousresearch.com/v1',
       apiKey: 'secret-key',
       model: 'qwen3-coder:30b',
@@ -62,7 +62,7 @@ describe('resolveGoalTarget', () => {
   })
 
   it('when the cache file is missing, returns null', () => {
-    const cachePath = join(fixtureDirectory, 'goal-target-missing.json')
+    const cachePath = join(fixtureDirectory, 'resolve-model-endpoint-missing.json')
     const providers = [
       {
         name: 'nous',
@@ -72,13 +72,13 @@ describe('resolveGoalTarget', () => {
     ]
     const environment = new Environment({ NOUS_API_KEY: 'secret-key' })
 
-    const target = resolveGoalTarget(cachePath, providers, environment)
+    const modelEndpoint = resolveModelEndpoint(cachePath, providers, environment)
 
-    expect(target).toBeNull()
+    expect(modelEndpoint).toBeNull()
   })
 
   it('when the cache has no cheap no-reasoning models, returns null', () => {
-    const cachePath = join(fixtureDirectory, 'goal-target-empty.json')
+    const cachePath = join(fixtureDirectory, 'resolve-model-endpoint-empty.json')
     Deno.mkdirSync(fixtureDirectory, { recursive: true })
     Deno.writeTextFileSync(
       cachePath,
@@ -114,15 +114,15 @@ describe('resolveGoalTarget', () => {
     ]
     const environment = new Environment({ NOUS_API_KEY: 'secret-key' })
 
-    const target = resolveGoalTarget(cachePath, providers, environment)
+    const modelEndpoint = resolveModelEndpoint(cachePath, providers, environment)
 
-    expect(target).toBeNull()
+    expect(modelEndpoint).toBeNull()
 
     Deno.removeSync(cachePath)
   })
 
   it('when the model provider is not configured, returns null', () => {
-    const cachePath = join(fixtureDirectory, 'goal-target-unknown.json')
+    const cachePath = join(fixtureDirectory, 'resolve-model-endpoint-unknown.json')
     Deno.mkdirSync(fixtureDirectory, { recursive: true })
     Deno.writeTextFileSync(
       cachePath,
@@ -158,15 +158,15 @@ describe('resolveGoalTarget', () => {
     ]
     const environment = new Environment({ OPENROUTER_API_KEY: 'secret-key' })
 
-    const target = resolveGoalTarget(cachePath, providers, environment)
+    const modelEndpoint = resolveModelEndpoint(cachePath, providers, environment)
 
-    expect(target).toBeNull()
+    expect(modelEndpoint).toBeNull()
 
     Deno.removeSync(cachePath)
   })
 
   it('when the provider api key env var is unset, returns null', () => {
-    const cachePath = join(fixtureDirectory, 'goal-target-nokey.json')
+    const cachePath = join(fixtureDirectory, 'resolve-model-endpoint-nokey.json')
     Deno.mkdirSync(fixtureDirectory, { recursive: true })
     Deno.writeTextFileSync(
       cachePath,
@@ -202,15 +202,15 @@ describe('resolveGoalTarget', () => {
     ]
     const environment = new Environment({})
 
-    const target = resolveGoalTarget(cachePath, providers, environment)
+    const modelEndpoint = resolveModelEndpoint(cachePath, providers, environment)
 
-    expect(target).toBeNull()
+    expect(modelEndpoint).toBeNull()
 
     Deno.removeSync(cachePath)
   })
 
   it('when the provider has no api key env var, uses an unused key', () => {
-    const cachePath = join(fixtureDirectory, 'goal-target-local.json')
+    const cachePath = join(fixtureDirectory, 'resolve-model-endpoint-local.json')
     Deno.mkdirSync(fixtureDirectory, { recursive: true })
     Deno.writeTextFileSync(
       cachePath,
@@ -246,9 +246,9 @@ describe('resolveGoalTarget', () => {
     ]
     const environment = new Environment({})
 
-    const target = resolveGoalTarget(cachePath, providers, environment)
+    const modelEndpoint = resolveModelEndpoint(cachePath, providers, environment)
 
-    expect(target).toEqual({
+    expect(modelEndpoint).toEqual({
       baseURL: 'http://pile-driver.local:11434/v1',
       apiKey: 'unused',
       model: 'qwen3-coder:30b',
