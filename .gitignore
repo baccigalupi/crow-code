@@ -18,3 +18,6 @@ docs/plans/
 .dolt/
 *.db
 .beads-credential-key
+
+# Codebase Memory persistent graph artifacts (generated locally by the watcher)
+.codebase-memory/
