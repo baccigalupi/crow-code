@@ -32,6 +32,14 @@ export class Environment {
 
     return this.values[name]
   }
+
+  missingAaApiKey(): boolean {
+    return !this.hasValue('AA_API_KEY')
+  }
+
+  aaApiKey(): string {
+    return this.value('AA_API_KEY')
+  }
 }
 
 export const loadEnvironmentalVariables = (

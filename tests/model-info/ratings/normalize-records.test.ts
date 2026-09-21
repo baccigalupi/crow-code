@@ -161,7 +161,7 @@ describe('normalizeRecords', () => {
   it('when a fetch fails, still returns normalized records', async () => {
     const records = [baseRecord]
     const fetchMock = (input: string | URL | Request) => {
-      const address = String(input)
+      const address = input instanceof Request ? input.url : String(input)
       if (address.includes('models.dev')) {
         return Promise.resolve(Response.json(modelsDevResponse))
       }

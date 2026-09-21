@@ -1,6 +1,5 @@
 Source:
 
-- [src/model-info/ratings/aa/benchmarks.ts](/src/model-info/ratings/aa/benchmarks.ts#L15)
 - [src/model-info/ratings/aa/record-scores.ts](/src/model-info/ratings/aa/record-scores.ts#L5)
 - [src/model-info/ratings/aa/scores.ts](/src/model-info/ratings/aa/scores.ts#L4)
 - [src/model-info/ratings/enrich-records.ts](/src/model-info/ratings/enrich-records.ts#L4)

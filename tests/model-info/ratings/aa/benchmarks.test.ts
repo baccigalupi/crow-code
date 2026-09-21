@@ -59,7 +59,7 @@ describe('fetchAABenchmarks', () => {
     }
     const logger = pino({ enabled: false })
     const benchmarksFetch = (input: string | URL | Request) => {
-      const address = String(input)
+      const address = input instanceof Request ? input.url : String(input)
       if (address.includes('page=2')) {
         return Promise.resolve(
           Response.json({ data: [], pagination: { has_more: false } }),
