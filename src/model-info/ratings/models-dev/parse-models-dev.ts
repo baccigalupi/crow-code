@@ -1,74 +1,80 @@
-import type {
-  ModelsDevCatalog,
-  ModelsDevEntry,
-  ReasoningOption,
-} from '../../types.ts'
+import type { ModelsDevCatalog, ReasoningOption } from '../../types.ts'
 
-const optionTypes: ReasoningOption[] = [
-  'toggle',
-  'effort',
-  'budget_tokens',
-]
+class ModelParser {
+  private static reasoningOptionTypes: ReasoningOption[] = [
+    'toggle',
+    'effort',
+    'budget_tokens',
+  ]
+  private raw: Record<string, unknown>
 
-const isObject = (value: unknown): value is Record<string, unknown> => {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
-
-const toReasoningOption = (option: unknown): ReasoningOption | null => {
-  if (!isObject(option) || typeof option.type !== 'string') {
-    return null
+  constructor(raw: Record<string, unknown>) {
+    this.raw = raw
   }
-  const type = option.type as ReasoningOption
-  if (optionTypes.includes(type)) {
-    return type
-  }
-  return null
-}
 
-const parseReasoningOptions = (model: Record<string, unknown>) => {
-  if (!Array.isArray(model.reasoning_options)) {
+  parse() {
+    return {
+      reasoning: this.reasoning(),
+      reasoningOptions: this.reasoningOptions(),
+    }
+  }
+
+  private reasoning() {
+    if (this.raw.reasoning === undefined) return null
+    return this.raw.reasoning as boolean
+  }
+
+  private reasoningOptions() {
+    if (this.raw.reasoning_options === undefined) return []
+    const options = this.raw.reasoning_options as unknown[]
+    return options.flatMap(ModelParser.reasoningOptionFrom)
+  }
+
+  private static reasoningOptionFrom(option: unknown): ReasoningOption[] {
+    const record = option as Record<string, unknown>
+    const type = record.type as ReasoningOption
+    if (ModelParser.reasoningOptionTypes.includes(type)) return [type]
     return []
   }
-  const options = model.reasoning_options
-    .map(toReasoningOption)
-    .filter((option) => option !== null)
-  return [...new Set(options)]
 }
 
-const parseEntry = (model: unknown): ModelsDevEntry => {
-  if (!isObject(model)) {
-    return { reasoning: null, reasoningOptions: [] }
-  }
-  let reasoning: boolean | null = null
-  if (typeof model.reasoning === 'boolean') {
-    reasoning = model.reasoning
-  }
-  return { reasoning, reasoningOptions: parseReasoningOptions(model) }
-}
+class CatalogParser {
+  private raw: unknown
 
-const parseProvider = (
-  catalog: ModelsDevCatalog,
-  provider: string,
-  value: unknown,
-) => {
-  if (!isObject(value) || !isObject(value.models)) {
-    return catalog
+  constructor(raw: unknown) {
+    this.raw = raw
   }
-  Object.entries(value.models).forEach(([id, model]) => {
-    if (catalog[provider] === undefined) {
-      catalog[provider] = {}
+
+  async parse() {
+    const body = await this.responseBody()
+    return this.parsedCatalog(body)
+  }
+
+  private responseBody() {
+    if (this.raw instanceof Response) {
+      if (!this.raw.ok) return {}
+      return this.raw.json()
     }
-    catalog[provider][id] = parseEntry(model)
-  })
-  return catalog
+    return this.raw
+  }
+
+  private parsedCatalog(body: unknown) {
+    const catalog = { ...body as Record<string, Record<string, unknown>> }
+    for (const provider of Object.keys(catalog)) {
+      catalog[provider] = this.parseProviderModels(catalog[provider])
+    }
+    return catalog as ModelsDevCatalog
+  }
+
+  private parseProviderModels(value: Record<string, unknown>) {
+    const models = value.models as Record<string, Record<string, unknown>>
+    for (const id of Object.keys(models)) {
+      models[id] = new ModelParser(models[id]).parse()
+    }
+    return models
+  }
 }
 
-export const parseModelsDevCatalog = (raw: unknown): ModelsDevCatalog => {
-  if (!isObject(raw)) {
-    return {}
-  }
-  return Object.entries(raw).reduce(
-    (catalog, [provider, value]) => parseProvider(catalog, provider, value),
-    {} as ModelsDevCatalog,
-  )
+export const parseCatalog = (raw: unknown) => {
+  return new CatalogParser(raw).parse()
 }

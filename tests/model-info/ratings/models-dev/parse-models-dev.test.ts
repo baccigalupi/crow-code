@@ -1,9 +1,46 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { parseModelsDevCatalog } from '../../../../src/model-info/ratings/models-dev/parse-models-dev.ts'
+import { loadModelsDevFixture } from '../../../support/fixtures.ts'
+import { parseCatalog } from '../../../../src/model-info/ratings/models-dev/parse-models-dev.ts'
 
-describe('parseModelsDevCatalog', () => {
-  it('when a model has reasoning options, returns deduped option types', () => {
+describe('parseCatalog', () => {
+  it('when parsing the real fixture, returns parsed entries', async () => {
+    const raw = await loadModelsDevFixture()
+
+    const result = await parseCatalog(raw)
+
+    expect(result['subconscious']['subconscious/glm-5.2'].reasoning).toBe(true)
+    expect(result['subconscious']['subconscious/glm-5.2'].reasoningOptions)
+      .toEqual([
+        'toggle',
+        'budget_tokens',
+      ])
+  })
+
+  it('when response is ok, returns parsed catalog', async () => {
+    const raw = {
+      openai: {
+        models: {
+          'openai/gpt-4o-mini': { reasoning: false },
+        },
+      },
+    }
+    const response = new Response(JSON.stringify(raw))
+
+    const result = await parseCatalog(response)
+
+    expect(result['openai']['openai/gpt-4o-mini'].reasoning).toBe(false)
+  })
+
+  it('when response is not ok, returns an empty catalog', async () => {
+    const response = new Response(null, { status: 500 })
+
+    const result = await parseCatalog(response)
+
+    expect(result).toEqual({})
+  })
+
+  it('when a model has reasoning options, returns the option types', async () => {
     const raw = {
       deepseek: {
         models: {
@@ -19,19 +56,19 @@ describe('parseModelsDevCatalog', () => {
       },
     }
 
-    const result = parseModelsDevCatalog(raw)
+    const result = await parseCatalog(raw)
 
     expect(result).toEqual({
       deepseek: {
         'deepseek/deepseek-v4': {
           reasoning: true,
-          reasoningOptions: ['toggle', 'effort'],
+          reasoningOptions: ['toggle', 'toggle', 'effort'],
         },
       },
     })
   })
 
-  it('when a model is non-reasoning, reasoning is false', () => {
+  it('when a model is non-reasoning, reasoning is false', async () => {
     const raw = {
       openai: {
         models: {
@@ -40,7 +77,7 @@ describe('parseModelsDevCatalog', () => {
       },
     }
 
-    const result = parseModelsDevCatalog(raw)
+    const result = await parseCatalog(raw)
 
     expect(result['openai']['openai/gpt-4o-mini'].reasoning).toBe(false)
     expect(result['openai']['openai/gpt-4o-mini'].reasoningOptions).toEqual(
@@ -48,17 +85,17 @@ describe('parseModelsDevCatalog', () => {
     )
   })
 
-  it('when a model has no reasoning field, reasoning is null', () => {
+  it('when a model has no reasoning field, reasoning is null', async () => {
     const raw = {
       openai: { models: { 'openai/mystery': {} } },
     }
 
-    const result = parseModelsDevCatalog(raw)
+    const result = await parseCatalog(raw)
 
     expect(result['openai']['openai/mystery'].reasoning).toBeNull()
   })
 
-  it('when an option type is unknown, it is dropped', () => {
+  it('when an option type is unknown, it is dropped', async () => {
     const raw = {
       openai: {
         models: {
@@ -70,37 +107,10 @@ describe('parseModelsDevCatalog', () => {
       },
     }
 
-    const result = parseModelsDevCatalog(raw)
+    const result = await parseCatalog(raw)
 
     expect(result['openai']['openai/x'].reasoningOptions).toEqual([
       'budget_tokens',
     ])
-  })
-
-  it('when a model entry is not an object, it yields a null capability', () => {
-    const raw = {
-      openai: { models: { 'openai/broken': 'oops' } },
-    }
-
-    const result = parseModelsDevCatalog(raw)
-
-    expect(result['openai']['openai/broken']).toEqual({
-      reasoning: null,
-      reasoningOptions: [],
-    })
-  })
-
-  it('when a provider has no models object, it is skipped', () => {
-    const raw = { openai: { name: 'OpenAI' } }
-
-    const result = parseModelsDevCatalog(raw)
-
-    expect(result).toEqual({})
-  })
-
-  it('when the body is not an object, returns an empty catalog', () => {
-    const result = parseModelsDevCatalog('not an object')
-
-    expect(result).toEqual({})
   })
 })

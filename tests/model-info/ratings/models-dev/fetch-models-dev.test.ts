@@ -1,6 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import pino from 'pino'
+import { loadModelsDevFixture } from '../../../support/fixtures.ts'
 import {
   mockFetchError,
   mockFetchRejected,
@@ -12,17 +13,11 @@ const logger = pino({ enabled: false })
 
 describe('fetchModelsDev', () => {
   it('when the response has models, returns the parsed catalog', async () => {
-    const mockFetch = mockFetchSuccess({
-      openai: {
-        models: {
-          'openai/gpt-4o-mini': { reasoning: false },
-        },
-      },
-    })
+    const mockFetch = mockFetchSuccess(await loadModelsDevFixture())
 
     const result = await fetchModelsDev(logger, mockFetch)
 
-    expect(result['openai']['openai/gpt-4o-mini'].reasoning).toBe(false)
+    expect(result['subconscious']['subconscious/glm-5.2'].reasoning).toBe(true)
   })
 
   it('when the response is an error, returns an empty catalog', async () => {
