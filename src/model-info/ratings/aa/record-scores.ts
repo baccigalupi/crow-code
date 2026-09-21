@@ -1,56 +1,47 @@
 import type { AABenchmarks, ModelInfo } from '../../types.ts'
 
-export const benchmarkIntelligence = (
-  benchmark: AABenchmarks | undefined,
-) => {
-  if (benchmark === undefined) {
-    return null
+class UpdateRecord {
+  private record: ModelInfo
+  private benchmark: AABenchmarks | undefined
+
+  constructor(record: ModelInfo, benchmark: AABenchmarks | undefined) {
+    this.record = record
+    this.benchmark = benchmark
   }
 
-  return benchmark.intelligence
-}
-
-export const benchmarkAgentic = (
-  benchmark: AABenchmarks | undefined,
-) => {
-  if (benchmark === undefined) {
-    return null
+  update() {
+    if (this.benchmark !== undefined) {
+      return this.updateValues(this.benchmark)
+    } else {
+      return this.setToNull()
+    }
   }
 
-  return benchmark.agentic
-}
-
-export const benchmarkCoding = (
-  benchmark: AABenchmarks | undefined,
-) => {
-  if (benchmark !== undefined && benchmark.coding > 0) {
-    return benchmark.coding
+  private updateValues(benchmark: AABenchmarks) {
+    return {
+      ...this.record,
+      intelligence: benchmark.intelligence || null,
+      coding: benchmark.coding || null,
+      agentic: benchmark.agentic || null,
+      reasoning: this.reasoning(benchmark),
+    }
   }
 
-  return null
-}
-
-const resolveReasoning = (
-  record: ModelInfo,
-  benchmark: AABenchmarks | undefined,
-) => {
-  if (record.reasoning !== null || benchmark === undefined) {
-    return record.reasoning
+  private setToNull() {
+    return {
+      ...this.record,
+      intelligence: null,
+      coding: null,
+      agentic: null,
+    }
   }
 
-  return benchmark.reasoning
-}
-
-const applyToRecord = (
-  record: ModelInfo,
-  benchmark: AABenchmarks | undefined,
-) => {
-  return {
-    ...record,
-    intelligence: benchmarkIntelligence(benchmark),
-    coding: benchmarkCoding(benchmark),
-    agentic: benchmarkAgentic(benchmark),
-    reasoning: resolveReasoning(record, benchmark),
+  private reasoning(benchmark: AABenchmarks) {
+    if (this.record.reasoning === null) {
+      return benchmark.reasoning
+    } else {
+      return this.record.reasoning
+    }
   }
 }
 
@@ -58,5 +49,7 @@ export const applyScores = (
   records: ModelInfo[],
   benchmarks: Record<string, AABenchmarks>,
 ) => {
-  return records.map((record) => applyToRecord(record, benchmarks[record.id]))
+  return records.map((record) =>
+    new UpdateRecord(record, benchmarks[record.id]).update()
+  )
 }
