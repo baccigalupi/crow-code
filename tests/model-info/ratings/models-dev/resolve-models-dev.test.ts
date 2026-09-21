@@ -5,23 +5,23 @@ import type { ModelsDevCatalog } from '../../../../src/model-info/types.ts'
 
 const catalog: ModelsDevCatalog = {
   openrouter: {
-    'openai/gpt-6-astra': { reasoning: true, reasoningControls: ['effort'] },
+    'openai/gpt-6-astra': { reasoning: true, reasoningOptions: ['effort'] },
     'deepseek/deepseek-v4-flash-0731': {
       reasoning: true,
-      reasoningControls: ['toggle'],
+      reasoningOptions: ['toggle'],
     },
   },
   deepseek: {
     'deepseek/deepseek-v4-flash-0731': {
       reasoning: false,
-      reasoningControls: [],
+      reasoningOptions: [],
     },
   },
   poolside: {
-    'poolside/laguna-xs-2.1': { reasoning: false, reasoningControls: [] },
+    'poolside/laguna-xs-2.1': { reasoning: false, reasoningOptions: [] },
   },
   google: {
-    'google/gemma-4-26b-a4b-it': { reasoning: false, reasoningControls: [] },
+    'google/gemma-4-26b-a4b-it': { reasoning: false, reasoningOptions: [] },
   },
 }
 
@@ -34,7 +34,7 @@ describe('resolveModelsDevEntry', () => {
       'text->text',
     )
 
-    expect(result).toEqual({ reasoning: true, reasoningControls: ['effort'] })
+    expect(result).toEqual({ reasoning: true, reasoningOptions: ['effort'] })
   })
 
   it('when the id has a serving suffix, resolves the normalized id', () => {
@@ -45,7 +45,7 @@ describe('resolveModelsDevEntry', () => {
       'text->text',
     )
 
-    expect(result).toEqual({ reasoning: true, reasoningControls: ['toggle'] })
+    expect(result).toEqual({ reasoning: true, reasoningOptions: ['toggle'] })
   })
 
   it('when the id is a serving alias, inherits the base capability', () => {
@@ -56,7 +56,7 @@ describe('resolveModelsDevEntry', () => {
       'text->text',
     )
 
-    expect(result).toEqual({ reasoning: true, reasoningControls: ['effort'] })
+    expect(result).toEqual({ reasoning: true, reasoningOptions: ['effort'] })
   })
 
   it('when the id is an Ollama local alias, resolves the canonical model', () => {
@@ -67,7 +67,7 @@ describe('resolveModelsDevEntry', () => {
       'local',
     )
 
-    expect(result).toEqual({ reasoning: false, reasoningControls: [] })
+    expect(result).toEqual({ reasoning: false, reasoningOptions: [] })
   })
 
   it('when the provider is missing but the id is canonical, uses another provider entry', () => {
@@ -78,7 +78,7 @@ describe('resolveModelsDevEntry', () => {
       'text->text',
     )
 
-    expect(result).toEqual({ reasoning: false, reasoningControls: [] })
+    expect(result).toEqual({ reasoning: false, reasoningOptions: [] })
   })
 
   it('when the modality is embeddings, returns non-reasoning without a lookup', () => {
@@ -89,7 +89,7 @@ describe('resolveModelsDevEntry', () => {
       'text->embeddings',
     )
 
-    expect(result).toEqual({ reasoning: false, reasoningControls: [] })
+    expect(result).toEqual({ reasoning: false, reasoningOptions: [] })
   })
 
   it('when an embedding id also exists in the catalog, embeddings still wins', () => {
@@ -97,7 +97,7 @@ describe('resolveModelsDevEntry', () => {
       nous: {
         'openai/text-embedding-4': {
           reasoning: true,
-          reasoningControls: ['toggle' as const],
+          reasoningOptions: ['toggle' as const],
         },
       },
     }
@@ -109,7 +109,7 @@ describe('resolveModelsDevEntry', () => {
       'text->embeddings',
     )
 
-    expect(result).toEqual({ reasoning: false, reasoningControls: [] })
+    expect(result).toEqual({ reasoning: false, reasoningOptions: [] })
   })
 
   it('when a local name has no alias, stays unmatched', () => {

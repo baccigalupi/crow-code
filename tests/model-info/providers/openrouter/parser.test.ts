@@ -118,7 +118,7 @@ describe('OpenRouterParser', () => {
     })
 
     expect(result[0].reasoning).toBeNull()
-    expect(result[0].reasoningControls).toEqual(['toggle', 'effort'])
+    expect(result[0].reasoningOptions).toEqual(['toggle', 'effort'])
   })
 
   it('when reasoning metadata is omitted, reasoning is null', () => {
@@ -127,6 +127,6 @@ describe('OpenRouterParser', () => {
     const result = parser.parseResponse({ data: [{ id: 'x' }] })
 
     expect(result[0].reasoning).toBeNull()
-    expect(result[0].reasoningControls).toEqual([])
+    expect(result[0].reasoningOptions).toEqual([])
   })
 })

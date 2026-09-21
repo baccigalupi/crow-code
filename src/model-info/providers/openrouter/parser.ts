@@ -3,10 +3,8 @@ import type {
   OpenRouterModel,
   ProviderConfig,
 } from '../../types.ts'
-import {
-  providerNativeReasoning,
-  supportedParametersControls,
-} from '../supported-parameters.ts'
+import { providerReasoning } from '../provider-reasoning.ts'
+import { reasoningOptions } from '../reasoning-options.ts'
 
 export class OpenRouterParser {
   private config: ProviderConfig
@@ -27,12 +25,12 @@ export class OpenRouterParser {
       id: model.id,
       name: this.modelName(model),
       provider: this.config.name,
-      reasoning: providerNativeReasoning(
+      reasoning: providerReasoning(
         false,
         model.supported_parameters,
-        this.modality(model),
+        this.modality(model).endsWith('->embeddings'),
       ),
-      reasoningControls: supportedParametersControls(
+      reasoningOptions: reasoningOptions(
         model.supported_parameters,
       ),
       intelligence: null,

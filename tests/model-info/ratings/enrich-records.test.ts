@@ -12,7 +12,7 @@ describe('enrichRecords', () => {
       nous: {
         'deepseek/deepseek-v4': {
           reasoning: true,
-          reasoningControls: ['toggle', 'effort'],
+          reasoningOptions: ['toggle', 'effort'],
         },
       },
     }
@@ -21,7 +21,7 @@ describe('enrichRecords', () => {
       name: 'DeepSeek V4',
       provider: 'nous',
       reasoning: null,
-      reasoningControls: [],
+      reasoningOptions: [],
       intelligence: null,
       coding: null,
       agentic: null,
@@ -36,7 +36,7 @@ describe('enrichRecords', () => {
     const result = enrichRecords([native], catalog)
 
     expect(result[0].reasoning).toBe(true)
-    expect(result[0].reasoningControls).toEqual(['toggle', 'effort'])
+    expect(result[0].reasoningOptions).toEqual(['toggle', 'effort'])
   })
 
   it('when models.dev misses, keeps the provider-native capability', () => {
@@ -45,7 +45,7 @@ describe('enrichRecords', () => {
       name: 'DeepSeek V4',
       provider: 'nous',
       reasoning: true,
-      reasoningControls: ['toggle'],
+      reasoningOptions: ['toggle'],
       intelligence: null,
       coding: null,
       agentic: null,
@@ -62,10 +62,10 @@ describe('enrichRecords', () => {
     expect(result[0]).toEqual(native)
   })
 
-  it('when models.dev gives reasoning but no controls, keeps native controls', () => {
+  it('when models.dev gives reasoning but no options, keeps native options', () => {
     const catalog: ModelsDevCatalog = {
       nous: {
-        'deepseek/deepseek-v4': { reasoning: false, reasoningControls: [] },
+        'deepseek/deepseek-v4': { reasoning: false, reasoningOptions: [] },
       },
     }
     const native: ModelInfo = {
@@ -73,7 +73,7 @@ describe('enrichRecords', () => {
       name: 'DeepSeek V4',
       provider: 'nous',
       reasoning: null,
-      reasoningControls: ['effort'],
+      reasoningOptions: ['effort'],
       intelligence: null,
       coding: null,
       agentic: null,
@@ -88,7 +88,7 @@ describe('enrichRecords', () => {
     const result = enrichRecords([native], catalog)
 
     expect(result[0].reasoning).toBe(false)
-    expect(result[0].reasoningControls).toEqual(['effort'])
+    expect(result[0].reasoningOptions).toEqual(['effort'])
   })
 
   it('when models.dev reasoning is unknown, keeps native reasoning', () => {
@@ -96,7 +96,7 @@ describe('enrichRecords', () => {
       nous: {
         'deepseek/deepseek-v4': {
           reasoning: null,
-          reasoningControls: ['toggle'],
+          reasoningOptions: ['toggle'],
         },
       },
     }
@@ -105,7 +105,7 @@ describe('enrichRecords', () => {
       name: 'DeepSeek V4',
       provider: 'nous',
       reasoning: true,
-      reasoningControls: [],
+      reasoningOptions: [],
       intelligence: null,
       coding: null,
       agentic: null,
@@ -120,16 +120,16 @@ describe('enrichRecords', () => {
     const result = enrichRecords([native], catalog)
 
     expect(result[0].reasoning).toBe(true)
-    expect(result[0].reasoningControls).toEqual(['toggle'])
+    expect(result[0].reasoningOptions).toEqual(['toggle'])
   })
 
   it('when two providers serve the same id, each keeps its own capability', () => {
     const catalog: ModelsDevCatalog = {
       nous: {
-        'deepseek/deepseek-v4': { reasoning: true, reasoningControls: [] },
+        'deepseek/deepseek-v4': { reasoning: true, reasoningOptions: [] },
       },
       openrouter: {
-        'deepseek/deepseek-v4': { reasoning: false, reasoningControls: [] },
+        'deepseek/deepseek-v4': { reasoning: false, reasoningOptions: [] },
       },
     }
     const nousRecord: ModelInfo = {
@@ -137,7 +137,7 @@ describe('enrichRecords', () => {
       name: 'DeepSeek V4',
       provider: 'nous',
       reasoning: null,
-      reasoningControls: [],
+      reasoningOptions: [],
       intelligence: null,
       coding: null,
       agentic: null,
@@ -165,7 +165,7 @@ describe('enrichRecords', () => {
       name: 'Text Embedding 4',
       provider: 'nous',
       reasoning: null,
-      reasoningControls: [],
+      reasoningOptions: [],
       intelligence: null,
       coding: null,
       agentic: null,
@@ -180,6 +180,6 @@ describe('enrichRecords', () => {
     const result = enrichRecords([embedding], {})
 
     expect(result[0].reasoning).toBe(false)
-    expect(result[0].reasoningControls).toEqual([])
+    expect(result[0].reasoningOptions).toEqual([])
   })
 })

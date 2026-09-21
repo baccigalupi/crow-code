@@ -3,7 +3,7 @@ import { expect } from '@std/expect'
 import { parseModelsDevCatalog } from '../../../../src/model-info/ratings/models-dev/parse-models-dev.ts'
 
 describe('parseModelsDevCatalog', () => {
-  it('when a model has reasoning options, returns deduped control types', () => {
+  it('when a model has reasoning options, returns deduped option types', () => {
     const raw = {
       deepseek: {
         models: {
@@ -25,7 +25,7 @@ describe('parseModelsDevCatalog', () => {
       deepseek: {
         'deepseek/deepseek-v4': {
           reasoning: true,
-          reasoningControls: ['toggle', 'effort'],
+          reasoningOptions: ['toggle', 'effort'],
         },
       },
     })
@@ -43,7 +43,7 @@ describe('parseModelsDevCatalog', () => {
     const result = parseModelsDevCatalog(raw)
 
     expect(result['openai']['openai/gpt-4o-mini'].reasoning).toBe(false)
-    expect(result['openai']['openai/gpt-4o-mini'].reasoningControls).toEqual(
+    expect(result['openai']['openai/gpt-4o-mini'].reasoningOptions).toEqual(
       [],
     )
   })
@@ -72,7 +72,7 @@ describe('parseModelsDevCatalog', () => {
 
     const result = parseModelsDevCatalog(raw)
 
-    expect(result['openai']['openai/x'].reasoningControls).toEqual([
+    expect(result['openai']['openai/x'].reasoningOptions).toEqual([
       'budget_tokens',
     ])
   })
@@ -86,7 +86,7 @@ describe('parseModelsDevCatalog', () => {
 
     expect(result['openai']['openai/broken']).toEqual({
       reasoning: null,
-      reasoningControls: [],
+      reasoningOptions: [],
     })
   })
 

@@ -24,7 +24,7 @@ export class OllamaParser {
       name: model.name,
       provider: this.config.name,
       reasoning: null,
-      reasoningControls: [],
+      reasoningOptions: [],
       intelligence: null,
       coding: null,
       agentic: null,

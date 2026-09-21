@@ -88,7 +88,7 @@ describe('recordScores', () => {
       name: 'Claude Sonnet 4',
       provider: 'anthropic',
       reasoning: null,
-      reasoningControls: [],
+      reasoningOptions: [],
       intelligence: null,
       coding: null,
       agentic: null,
@@ -126,7 +126,7 @@ describe('recordScores', () => {
       name: 'Claude Sonnet 4',
       provider: 'anthropic',
       reasoning: null,
-      reasoningControls: [],
+      reasoningOptions: [],
       intelligence: null,
       coding: null,
       agentic: null,
@@ -157,7 +157,7 @@ describe('recordScores', () => {
       name: 'Claude Sonnet 4',
       provider: 'anthropic',
       reasoning: false,
-      reasoningControls: ['toggle'],
+      reasoningOptions: ['toggle'],
       intelligence: null,
       coding: null,
       agentic: null,
@@ -180,7 +180,7 @@ describe('recordScores', () => {
     const result = applyScores([record], benchmarks)
 
     expect(result[0].reasoning).toBe(false)
-    expect(result[0].reasoningControls).toEqual(['toggle'])
+    expect(result[0].reasoningOptions).toEqual(['toggle'])
   })
 
   it('when a record has no matching benchmark, keeps all scores null', () => {
@@ -189,7 +189,7 @@ describe('recordScores', () => {
       name: 'Claude Sonnet 4',
       provider: 'anthropic',
       reasoning: null,
-      reasoningControls: [],
+      reasoningOptions: [],
       intelligence: null,
       coding: null,
       agentic: null,

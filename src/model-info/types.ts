@@ -2,7 +2,7 @@ import type pino from 'pino'
 
 export type Logger = pino.Logger
 
-export type ReasoningControl = 'toggle' | 'effort' | 'budget_tokens'
+export type ReasoningOption = 'toggle' | 'effort' | 'budget_tokens'
 
 export type ProviderConfig = {
   name: string
@@ -16,7 +16,7 @@ export type ModelInfo = {
   name: string
   provider: string
   reasoning: boolean | null
-  reasoningControls: ReasoningControl[]
+  reasoningOptions: ReasoningOption[]
   intelligence: number | null
   coding: number | null
   agentic: number | null
@@ -96,7 +96,7 @@ export type OpenRouterApiRecord = { data?: OpenRouterModel[] }
 
 export type ModelsDevEntry = {
   reasoning: boolean | null
-  reasoningControls: ReasoningControl[]
+  reasoningOptions: ReasoningOption[]
 }
 
 export type ModelsDevCatalog = Record<string, Record<string, ModelsDevEntry>>

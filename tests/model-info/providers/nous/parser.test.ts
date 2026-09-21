@@ -138,10 +138,10 @@ describe('NousParser', () => {
     })
 
     expect(result[0].reasoning).toBeNull()
-    expect(result[0].reasoningControls).toEqual([])
+    expect(result[0].reasoningOptions).toEqual([])
   })
 
-  it('when supported_parameters lists reasoning controls, maps them to control types', () => {
+  it('when supported_parameters lists reasoning params, maps them to reasoning options', () => {
     const parser = new NousParser(nousConfig)
 
     const result = parser.parseResponse({
@@ -158,6 +158,6 @@ describe('NousParser', () => {
       ],
     })
 
-    expect(result[0].reasoningControls).toEqual(['toggle', 'effort'])
+    expect(result[0].reasoningOptions).toEqual(['toggle', 'effort'])
   })
 })

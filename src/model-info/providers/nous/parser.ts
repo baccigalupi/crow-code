@@ -1,8 +1,6 @@
 import type { NousApiRecord, NousModel, ProviderConfig } from '../../types.ts'
-import {
-  providerNativeReasoning,
-  supportedParametersControls,
-} from '../supported-parameters.ts'
+import { providerReasoning } from '../provider-reasoning.ts'
+import { reasoningOptions } from '../reasoning-options.ts'
 
 export class NousParser {
   private config: ProviderConfig
@@ -23,12 +21,12 @@ export class NousParser {
       id: model.id,
       name: this.modelName(model),
       provider: this.config.name,
-      reasoning: providerNativeReasoning(
+      reasoning: providerReasoning(
         model.reasoning !== undefined && model.reasoning !== null,
         model.supported_parameters,
-        this.modality(model),
+        this.modality(model).endsWith('->embeddings'),
       ),
-      reasoningControls: supportedParametersControls(
+      reasoningOptions: reasoningOptions(
         model.supported_parameters,
       ),
       intelligence: null,

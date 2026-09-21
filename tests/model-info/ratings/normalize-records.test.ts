@@ -11,7 +11,7 @@ const baseRecord: ModelInfo = {
   name: 'DeepSeek V4',
   provider: 'nous',
   reasoning: null,
-  reasoningControls: [],
+  reasoningOptions: [],
   intelligence: null,
   coding: null,
   agentic: null,
@@ -68,7 +68,7 @@ describe('normalizeRecords', () => {
     )
 
     expect(result[0].reasoning).toBe(true)
-    expect(result[0].reasoningControls).toEqual(['toggle'])
+    expect(result[0].reasoningOptions).toEqual(['toggle'])
     expect(result[0].intelligence).toBe(40)
     expect(result[0].coding).toBe(60)
     expect(result[0].agentic).toBe(30)
@@ -178,7 +178,7 @@ describe('normalizeRecords', () => {
     )
 
     expect(result[0].reasoning).toBe(true)
-    expect(result[0].reasoningControls).toEqual(['toggle'])
+    expect(result[0].reasoningOptions).toEqual(['toggle'])
     expect(result[0].intelligence).toBeNull()
     expect(result[0].coding).toBeNull()
     expect(result[0].agentic).toBeNull()

@@ -3,7 +3,7 @@ import { resolveServingId } from './identity.ts'
 
 const embeddingEntry = (): ModelsDevEntry => ({
   reasoning: false,
-  reasoningControls: [],
+  reasoningOptions: [],
 })
 
 const providerEntry = (

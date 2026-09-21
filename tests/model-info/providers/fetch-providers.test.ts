@@ -45,7 +45,7 @@ describe('fetchProviders', () => {
         name: 'test-model',
         provider: 'nous',
         reasoning: null,
-        reasoningControls: [],
+        reasoningOptions: [],
         intelligence: null,
         coding: null,
         agentic: null,

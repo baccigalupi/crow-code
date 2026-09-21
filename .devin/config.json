@@ -29,6 +29,7 @@
       "Exec(./agents/editor-diagnostics.ts)",
       "Exec(./agents/generate-review)",
       "Exec(git)",
+      "Exec(git mv)",
       "Exec(bd)",
       "Exec(chmod)",
       "Fetch(domain:docs.devin.ai)",

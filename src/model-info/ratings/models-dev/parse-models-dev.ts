@@ -1,10 +1,10 @@
 import type {
   ModelsDevCatalog,
   ModelsDevEntry,
-  ReasoningControl,
+  ReasoningOption,
 } from '../../types.ts'
 
-const controlTypes: ReasoningControl[] = [
+const optionTypes: ReasoningOption[] = [
   'toggle',
   'effort',
   'budget_tokens',
@@ -14,36 +14,36 @@ const isObject = (value: unknown): value is Record<string, unknown> => {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
-const toControl = (option: unknown): ReasoningControl | null => {
+const toReasoningOption = (option: unknown): ReasoningOption | null => {
   if (!isObject(option) || typeof option.type !== 'string') {
     return null
   }
-  const type = option.type as ReasoningControl
-  if (controlTypes.includes(type)) {
+  const type = option.type as ReasoningOption
+  if (optionTypes.includes(type)) {
     return type
   }
   return null
 }
 
-const parseControls = (model: Record<string, unknown>) => {
+const parseReasoningOptions = (model: Record<string, unknown>) => {
   if (!Array.isArray(model.reasoning_options)) {
     return []
   }
-  const controls = model.reasoning_options
-    .map(toControl)
-    .filter((control) => control !== null)
-  return [...new Set(controls)]
+  const options = model.reasoning_options
+    .map(toReasoningOption)
+    .filter((option) => option !== null)
+  return [...new Set(options)]
 }
 
 const parseEntry = (model: unknown): ModelsDevEntry => {
   if (!isObject(model)) {
-    return { reasoning: null, reasoningControls: [] }
+    return { reasoning: null, reasoningOptions: [] }
   }
   let reasoning: boolean | null = null
   if (typeof model.reasoning === 'boolean') {
     reasoning = model.reasoning
   }
-  return { reasoning, reasoningControls: parseControls(model) }
+  return { reasoning, reasoningOptions: parseReasoningOptions(model) }
 }
 
 const parseProvider = (

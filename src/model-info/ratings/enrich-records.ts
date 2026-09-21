@@ -8,16 +8,16 @@ const enrichedReasoning = (record: ModelInfo, entry: ModelsDevEntry) => {
   return record.reasoning
 }
 
-const enrichedControls = (record: ModelInfo, entry: ModelsDevEntry) => {
-  if (entry.reasoningControls.length > 0) {
-    return entry.reasoningControls
+const enrichedOptions = (record: ModelInfo, entry: ModelsDevEntry) => {
+  if (entry.reasoningOptions.length > 0) {
+    return entry.reasoningOptions
   }
-  return record.reasoningControls
+  return record.reasoningOptions
 }
 
 const enrichment = (record: ModelInfo, entry: ModelsDevEntry) => ({
   reasoning: enrichedReasoning(record, entry),
-  reasoningControls: enrichedControls(record, entry),
+  reasoningOptions: enrichedOptions(record, entry),
 })
 
 const enrichRecord = (
