@@ -13,14 +13,6 @@ coding   in/out ($/M)     total    model
 56.8    $0.12/$0.24     $0.36     xiaomi/mimo-v2.5
 ```
 
-## Free coding agents
-
-```
-upstage/solar-pro4:free        sibling AA coding 52.7
-meituan/longcat-2.0:free       sibling AA coding 45.3
-stepfun/step-3.7-flash:free    sibling AA coding 39.6
-```
-
 ## Setup
 
 ```

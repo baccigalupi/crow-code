@@ -2,7 +2,6 @@ import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { buildModelCatalog } from '../../../src/model-info/catalog/build-model-catalog.ts'
-import { Environment } from '../../../src/env-vars.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import { mockFetchRoutes } from '../../support/mock-fetch.ts'
 import pino from 'pino'
@@ -31,15 +30,6 @@ describe('buildModelCatalog', () => {
         ],
       }),
     )
-    const aaModel = {
-      slug: 'deepseek-chat',
-      model_creator: { name: 'DeepSeek' },
-      evaluations: {
-        artificial_analysis_intelligence_index: 40,
-        artificial_analysis_coding_index: 60,
-        artificial_analysis_agentic_index: 30,
-      },
-    }
     const nousModel = {
       id: 'deepseek/deepseek-chat',
       name: 'DeepSeek Chat',
@@ -49,10 +39,6 @@ describe('buildModelCatalog', () => {
       architecture: { modality: 'text->text' },
     }
     const catalogFetch = mockFetchRoutes([
-      [
-        'artificialanalysis',
-        { data: [aaModel], pagination: { has_more: false } },
-      ],
       [
         'models.dev',
         {
@@ -70,9 +56,7 @@ describe('buildModelCatalog', () => {
       ['nousresearch', { data: [nousModel] }],
     ])
     const logger = pino({ enabled: false })
-    const environment = new Environment({ AA_API_KEY: 'test-key' })
-
-    await buildModelCatalog(crowDirectory, logger, environment, catalogFetch)
+    await buildModelCatalog(crowDirectory, logger, catalogFetch)
 
     const saved = JSON.parse(Deno.readTextFileSync(modelsPath))
     expect(typeof saved.fetchedAt).toBe('string')
@@ -84,9 +68,6 @@ describe('buildModelCatalog', () => {
         provider: 'nous',
         reasoning: false,
         reasoningOptions: ['toggle'],
-        intelligence: 40,
-        coding: 60,
-        agentic: 30,
         costInput: 0.5,
         costOutput: 1.5,
         contextLength: 1000,
@@ -100,9 +81,6 @@ describe('buildModelCatalog', () => {
         provider: 'ollama',
         reasoning: null,
         reasoningOptions: [],
-        intelligence: null,
-        coding: null,
-        agentic: null,
         costInput: 0,
         costOutput: 0,
         contextLength: null,
@@ -132,7 +110,6 @@ describe('buildModelCatalog', () => {
       }),
     )
     const catalogFetch = mockFetchRoutes([
-      ['artificialanalysis', { data: [], pagination: { has_more: false } }],
       [
         'pile-driver',
         { models: [{ name: 'deepseek/deepseek-chat' }] },
@@ -154,9 +131,7 @@ describe('buildModelCatalog', () => {
       ],
     ])
     const logger = pino({ enabled: false })
-    const environment = new Environment({ AA_API_KEY: 'test-key' })
-
-    await buildModelCatalog(crowDirectory, logger, environment, catalogFetch)
+    await buildModelCatalog(crowDirectory, logger, catalogFetch)
 
     const saved = JSON.parse(Deno.readTextFileSync(modelsPath))
 

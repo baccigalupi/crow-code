@@ -43,7 +43,6 @@ describe('NousParser', () => {
     expect(result[0].contextLength).toBe(1000)
     expect(result[0].modality).toBe('text->text')
     expect(result[0].knowledgeCutoff).toBe('2025-01-01')
-    expect(result[0].coding).toBeNull()
   })
 
   it('when the name is missing, uses the id as the name', () => {

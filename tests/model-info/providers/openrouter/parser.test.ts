@@ -43,7 +43,6 @@ describe('OpenRouterParser', () => {
     expect(result[0].contextLength).toBe(128000)
     expect(result[0].modality).toBe('text->text')
     expect(result[0].knowledgeCutoff).toBeNull()
-    expect(result[0].coding).toBeNull()
   })
 
   it('when the name is missing, uses the id as the name', () => {

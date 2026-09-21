@@ -17,9 +17,6 @@ export type ModelInfo = {
   provider: string
   reasoning: boolean | null
   reasoningOptions: ReasoningOption[]
-  intelligence: number | null
-  coding: number | null
-  agentic: number | null
   costInput: number
   costOutput: number
   contextLength: number | null
@@ -32,24 +29,6 @@ export type ModelCatalog = {
   fetchedAt: string
   modelCount: number
   models: ModelInfo[]
-}
-
-export type AABenchmarks = {
-  intelligence: number
-  coding: number
-  agentic: number
-  reasoning: boolean | null
-}
-
-export type AAModel = {
-  slug: string
-  model_creator: { name: string }
-  reasoning_model?: boolean | null
-  evaluations: {
-    artificial_analysis_intelligence_index: number | null
-    artificial_analysis_coding_index: number | null
-    artificial_analysis_agentic_index: number | null
-  }
 }
 
 export type ReasoningMeta = {

@@ -33,9 +33,6 @@ export class OpenRouterParser {
       reasoningOptions: reasoningOptions(
         model.supported_parameters,
       ),
-      intelligence: null,
-      coding: null,
-      agentic: null,
       costInput: this.toMillionPrice(this.promptPrice(model.pricing)),
       costOutput: this.toMillionPrice(this.completionPrice(model.pricing)),
       contextLength: model.context_length || null,
