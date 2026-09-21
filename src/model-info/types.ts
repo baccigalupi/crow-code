@@ -2,7 +2,7 @@ import type pino from 'pino'
 
 export type Logger = pino.Logger
 
-export type CodingSource = 'AA'
+export type ReasoningControl = 'toggle' | 'effort' | 'budget_tokens'
 
 export type ProviderConfig = {
   name: string
@@ -14,16 +14,16 @@ export type ProviderConfig = {
 export type ModelInfo = {
   id: string
   name: string
-  providers: string[]
-  reasoning: number | null
+  provider: string
+  reasoning: boolean | null
+  reasoningControls: ReasoningControl[]
+  intelligence: number | null
   coding: number | null
-  codingSource: CodingSource | null
   agentic: number | null
   costInput: number
   costOutput: number
   contextLength: number | null
   modality: string
-  reasoningMode: string
   knowledgeCutoff: string | null
   size: string
 }
@@ -38,11 +38,13 @@ export type AABenchmarks = {
   intelligence: number
   coding: number
   agentic: number
+  reasoning: boolean | null
 }
 
 export type AAModel = {
   slug: string
   model_creator: { name: string }
+  reasoning_model?: boolean | null
   evaluations: {
     artificial_analysis_intelligence_index: number | null
     artificial_analysis_coding_index: number | null
@@ -63,6 +65,7 @@ export type NousModel = {
   knowledge_cutoff?: string
   pricing?: { prompt?: string; completion?: string }
   reasoning?: ReasoningMeta | null
+  supported_parameters?: string[]
   architecture?: { modality?: string }
 }
 
@@ -85,7 +88,15 @@ export type OpenRouterModel = {
   name?: string
   context_length?: number
   pricing?: OpenRouterPricing
+  supported_parameters?: string[]
   architecture?: { modality?: string }
 }
 
 export type OpenRouterApiRecord = { data?: OpenRouterModel[] }
+
+export type ModelsDevEntry = {
+  reasoning: boolean | null
+  reasoningControls: ReasoningControl[]
+}
+
+export type ModelsDevCatalog = Record<string, Record<string, ModelsDevEntry>>

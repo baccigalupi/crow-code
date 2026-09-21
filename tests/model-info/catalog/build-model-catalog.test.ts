@@ -53,6 +53,19 @@ describe('buildModelCatalog', () => {
         'artificialanalysis',
         { data: [aaModel], pagination: { has_more: false } },
       ],
+      [
+        'models.dev',
+        {
+          deepseek: {
+            models: {
+              'deepseek/deepseek-chat': {
+                reasoning: false,
+                reasoning_options: [{ type: 'toggle' }],
+              },
+            },
+          },
+        },
+      ],
       ['pile-driver', { models: [{ name: 'qwen3-coder:30b' }] }],
       ['nousresearch', { data: [nousModel] }],
     ])
@@ -68,39 +81,39 @@ describe('buildModelCatalog', () => {
       {
         id: 'deepseek/deepseek-chat',
         name: 'DeepSeek Chat',
-        providers: ['nous'],
-        reasoning: 40,
+        provider: 'nous',
+        reasoning: false,
+        reasoningControls: ['toggle'],
+        intelligence: 40,
         coding: 60,
-        codingSource: 'AA',
         agentic: 30,
         costInput: 0.5,
         costOutput: 1.5,
         contextLength: 1000,
         modality: 'text->text',
-        reasoningMode: 'off',
         knowledgeCutoff: null,
         size: '',
       },
       {
         id: 'qwen3-coder:30b',
         name: 'qwen3-coder:30b',
-        providers: ['ollama'],
+        provider: 'ollama',
         reasoning: null,
+        reasoningControls: [],
+        intelligence: null,
         coding: null,
-        codingSource: null,
         agentic: null,
         costInput: 0,
         costOutput: 0,
         contextLength: null,
         modality: 'local',
-        reasoningMode: '-',
         knowledgeCutoff: null,
         size: '',
       },
     ])
   })
 
-  it('when two providers return the same model id, merges the records', async () => {
+  it('when two providers return the same model id, keeps a record per provider', async () => {
     const crowDirectory = join(fixtureDirectory, '.crow')
     const providersPath = join(crowDirectory, 'providers.json')
     const modelsPath = join(crowDirectory, 'models.json')
@@ -120,7 +133,10 @@ describe('buildModelCatalog', () => {
     )
     const catalogFetch = mockFetchRoutes([
       ['artificialanalysis', { data: [], pagination: { has_more: false } }],
-      ['pile-driver', { models: [{ name: 'deepseek/deepseek-chat' }] }],
+      [
+        'pile-driver',
+        { models: [{ name: 'deepseek/deepseek-chat' }] },
+      ],
       [
         'nousresearch',
         {
@@ -130,6 +146,7 @@ describe('buildModelCatalog', () => {
               name: 'DeepSeek Chat',
               context_length: 1000,
               pricing: { prompt: '0.0000005', completion: '0.0000015' },
+              reasoning: { mandatory: true, default_enabled: true },
               architecture: { modality: 'text->text' },
             },
           ],
@@ -143,7 +160,10 @@ describe('buildModelCatalog', () => {
 
     const saved = JSON.parse(Deno.readTextFileSync(modelsPath))
 
-    expect(saved.models).toHaveLength(1)
-    expect(saved.models[0].providers).toEqual(['nous', 'ollama'])
+    expect(saved.models).toHaveLength(2)
+    expect(saved.models[0].provider).toBe('nous')
+    expect(saved.models[0].reasoning).toBe(true)
+    expect(saved.models[1].provider).toBe('ollama')
+    expect(saved.models[1].reasoning).toBeNull()
   })
 })

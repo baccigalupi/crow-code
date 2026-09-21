@@ -23,7 +23,7 @@ describe('nous', () => {
     const result = parseNousResponse(body, nousConfig)
 
     expect(result[0].id).toBe('deepseek/deepseek-chat')
-    expect(result[0].providers).toEqual(['nous'])
+    expect(result[0].provider).toBe('nous')
   })
 
   it('when fetched, fetchNousModels returns normalized records', async () => {
@@ -39,7 +39,7 @@ describe('nous', () => {
     const result = await fetchNousModels(nousConfig, logger, mockFetch)
 
     expect(result[0].id).toBe('deepseek/deepseek-chat')
-    expect(result[0].providers).toEqual(['nous'])
+    expect(result[0].provider).toBe('nous')
   })
 
   it('when the network request fails, fetchNousModels returns an empty list', async () => {

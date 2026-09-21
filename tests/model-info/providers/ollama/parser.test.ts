@@ -33,7 +33,7 @@ describe('OllamaParser', () => {
 
     expect(result).toHaveLength(1)
     expect(result[0].id).toBe('qwen3-coder:30b')
-    expect(result[0].providers).toEqual(['ollama'])
+    expect(result[0].provider).toBe('ollama')
     expect(result[0].size).toBe('30B')
     expect(result[0].contextLength).toBe(32768)
     expect(result[0].costInput).toBe(0)

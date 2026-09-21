@@ -1,9 +1,8 @@
-import type {
-  NousApiRecord,
-  NousModel,
-  ProviderConfig,
-  ReasoningMeta,
-} from '../../types.ts'
+import type { NousApiRecord, NousModel, ProviderConfig } from '../../types.ts'
+import {
+  providerNativeReasoning,
+  supportedParametersControls,
+} from '../supported-parameters.ts'
 
 export class NousParser {
   private config: ProviderConfig
@@ -23,16 +22,22 @@ export class NousParser {
     return {
       id: model.id,
       name: this.modelName(model),
-      providers: [this.config.name],
-      reasoning: null,
+      provider: this.config.name,
+      reasoning: providerNativeReasoning(
+        model.reasoning !== undefined && model.reasoning !== null,
+        model.supported_parameters,
+        this.modality(model),
+      ),
+      reasoningControls: supportedParametersControls(
+        model.supported_parameters,
+      ),
+      intelligence: null,
       coding: null,
-      codingSource: null,
       agentic: null,
       costInput: this.toMillionPrice(this.promptPrice(model.pricing)),
       costOutput: this.toMillionPrice(this.completionPrice(model.pricing)),
       contextLength: model.context_length || null,
       modality: this.modality(model),
-      reasoningMode: this.reasoningMode(model.reasoning),
       knowledgeCutoff: model.knowledge_cutoff || null,
       size: '',
     }
@@ -74,26 +79,5 @@ export class NousParser {
       return 0
     }
     return parseFloat(pricePerToken) * 1_000_000
-  }
-
-  private reasoningModeLabel(meta: ReasoningMeta) {
-    if (meta.mandatory === true) {
-      return 'forced'
-    }
-    if (meta.default_enabled === true) {
-      return 'on'
-    }
-    return 'off'
-  }
-
-  private reasoningMode(meta: ReasoningMeta | null | undefined) {
-    if (meta === null || meta === undefined) {
-      return '-'
-    }
-    const mode = this.reasoningModeLabel(meta)
-    if (meta.default_effort === undefined) {
-      return mode
-    }
-    return `${mode}/${meta.default_effort}`
   }
 }

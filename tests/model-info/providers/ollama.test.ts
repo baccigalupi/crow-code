@@ -24,7 +24,7 @@ describe('ollama', () => {
     const result = parseOllamaResponse(body, ollamaConfig)
 
     expect(result[0].id).toBe('qwen3-coder:30b')
-    expect(result[0].providers).toEqual(['ollama'])
+    expect(result[0].provider).toBe('ollama')
   })
 
   it('when fetched, fetchOllamaModels returns normalized records', async () => {
@@ -41,7 +41,7 @@ describe('ollama', () => {
     const result = await fetchOllamaModels(ollamaConfig, logger, mockFetch)
 
     expect(result[0].id).toBe('qwen3-coder:30b')
-    expect(result[0].providers).toEqual(['ollama'])
+    expect(result[0].provider).toBe('ollama')
   })
 
   it('when fetched with modelsUrl omitted, falls back to baseUrl/api/tags', async () => {

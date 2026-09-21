@@ -1,10 +1,9 @@
 import { loadProviderConfig } from '../providers/load-provider-config.ts'
 import { fetchProviders } from '../providers/fetch-providers.ts'
-import { appendRatings } from '../ratings/append-ratings.ts'
+import { normalizeRecords } from '../ratings/normalize-records.ts'
 import { defaultModelCatalogPath, writeModelCatalog } from './model-catalog.ts'
 import { type Environment, loadEnvironmentalVariables } from '../../env-vars.ts'
 import type { Logger, ModelInfo } from '../types.ts'
-import { mergeModelRecords } from './merge-model-records.ts'
 
 class BuildModelCatalog {
   private crowDirectory: string
@@ -28,10 +27,8 @@ class BuildModelCatalog {
   async run() {
     this.logStart()
     await this.fetchProviders()
-    this.dedupRecords()
-    await this.appendRatings()
+    await this.normalizeRecords()
     this.persistModelCatalog()
-    this.logCompletion()
   }
 
   private logStart() {
@@ -50,12 +47,8 @@ class BuildModelCatalog {
     ).flat()
   }
 
-  private dedupRecords() {
-    this.records = mergeModelRecords(this.records)
-  }
-
-  private async appendRatings() {
-    this.records = await appendRatings(
+  private async normalizeRecords() {
+    this.records = await normalizeRecords(
       this.records,
       this.environment,
       this.logger,
@@ -64,20 +57,9 @@ class BuildModelCatalog {
   }
 
   private persistModelCatalog() {
-    writeModelCatalog(
-      defaultModelCatalogPath(this.crowDirectory),
-      this.records,
-    )
-  }
-
-  private logCompletion() {
-    this.logger.info(
-      `Wrote ${this.records.length} models to ${
-        defaultModelCatalogPath(
-          this.crowDirectory,
-        )
-      }`,
-    )
+    const path = defaultModelCatalogPath(this.crowDirectory)
+    writeModelCatalog(path, this.records)
+    this.logger.info(`Wrote ${this.records.length} models to ${path}`)
   }
 }
 

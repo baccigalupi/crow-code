@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Regenerate .crow/models.json from live provider, models.dev, and AA data.
+set -euo pipefail
+
+exec deno run --allow-read --allow-write --allow-env --allow-net --allow-sys=hostname bin/crow.ts find-models

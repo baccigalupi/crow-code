@@ -27,11 +27,6 @@ describe('NousParser', () => {
           context_length: 1000,
           knowledge_cutoff: '2025-01-01',
           pricing: { prompt: '0.0000005', completion: '0.0000015' },
-          reasoning: {
-            mandatory: true,
-            default_enabled: true,
-            default_effort: 'high',
-          },
           architecture: { modality: 'text->text' },
         },
       ],
@@ -42,12 +37,11 @@ describe('NousParser', () => {
     expect(result).toHaveLength(1)
     expect(result[0].id).toBe('deepseek/deepseek-v4')
     expect(result[0].name).toBe('DeepSeek V4')
-    expect(result[0].providers).toEqual(['nous'])
+    expect(result[0].provider).toBe('nous')
     expect(result[0].costInput).toBe(0.5)
     expect(result[0].costOutput).toBe(1.5)
     expect(result[0].contextLength).toBe(1000)
     expect(result[0].modality).toBe('text->text')
-    expect(result[0].reasoningMode).toBe('forced/high')
     expect(result[0].knowledgeCutoff).toBe('2025-01-01')
     expect(result[0].coding).toBeNull()
   })
@@ -73,26 +67,97 @@ describe('NousParser', () => {
     expect(result[0].costOutput).toBe(0)
   })
 
-  it('when reasoning metadata is missing, mode is a dash', () => {
-    const parser = new NousParser(nousConfig)
-
-    const result = parser.parseResponse({
-      data: [{ id: 'deepseek/deepseek-chat' }],
-    })
-
-    expect(result[0].reasoningMode).toBe('-')
-  })
-
-  it('when reasoning is optional, mode is off', () => {
+  it('when a reasoning object is present, reasoning is true', () => {
     const parser = new NousParser(nousConfig)
     const body = {
       data: [
-        { id: 'x', reasoning: { mandatory: false, default_enabled: false } },
+        {
+          id: 'deepseek/deepseek-v4',
+          reasoning: { mandatory: true, default_enabled: true },
+        },
       ],
     }
 
     const result = parser.parseResponse(body)
 
-    expect(result[0].reasoningMode).toBe('off')
+    expect(result[0].reasoning).toBe(true)
+  })
+
+  it('when the modality is embeddings, reasoning is false', () => {
+    const parser = new NousParser(nousConfig)
+    const body = {
+      data: [
+        {
+          id: 'openai/text-embedding-4',
+          supported_parameters: [],
+          architecture: { modality: 'text->embeddings' },
+        },
+      ],
+    }
+
+    const result = parser.parseResponse(body)
+
+    expect(result[0].reasoning).toBe(false)
+  })
+
+  it('when supported_parameters is empty, reasoning is false', () => {
+    const parser = new NousParser(nousConfig)
+
+    const result = parser.parseResponse({
+      data: [{ id: 'x', supported_parameters: [] }],
+    })
+
+    expect(result[0].reasoning).toBe(false)
+  })
+
+  it('when supported_parameters has no reasoning params, reasoning is false', () => {
+    const parser = new NousParser(nousConfig)
+
+    const result = parser.parseResponse({
+      data: [{ id: 'x', supported_parameters: ['tools', 'temperature'] }],
+    })
+
+    expect(result[0].reasoning).toBe(false)
+  })
+
+  it('when supported_parameters has reasoning params, reasoning stays null', () => {
+    const parser = new NousParser(nousConfig)
+
+    const result = parser.parseResponse({
+      data: [{ id: 'x', supported_parameters: ['reasoning'] }],
+    })
+
+    expect(result[0].reasoning).toBeNull()
+  })
+
+  it('when reasoning metadata is omitted, reasoning is null', () => {
+    const parser = new NousParser(nousConfig)
+
+    const result = parser.parseResponse({
+      data: [{ id: 'x' }],
+    })
+
+    expect(result[0].reasoning).toBeNull()
+    expect(result[0].reasoningControls).toEqual([])
+  })
+
+  it('when supported_parameters lists reasoning controls, maps them to control types', () => {
+    const parser = new NousParser(nousConfig)
+
+    const result = parser.parseResponse({
+      data: [
+        {
+          id: 'x',
+          supported_parameters: [
+            'reasoning',
+            'include_reasoning',
+            'reasoning_effort',
+            'tools',
+          ],
+        },
+      ],
+    })
+
+    expect(result[0].reasoningControls).toEqual(['toggle', 'effort'])
   })
 })

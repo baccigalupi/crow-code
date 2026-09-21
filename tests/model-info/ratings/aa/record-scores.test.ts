@@ -3,40 +3,45 @@ import { expect } from '@std/expect'
 import {
   applyScores,
   benchmarkAgentic,
+  benchmarkCoding,
   benchmarkIntelligence,
-  resolveCoding,
-} from '../../../src/model-info/ratings/record-scores.ts'
-import type { AABenchmarks, ModelInfo } from '../../../src/model-info/types.ts'
+} from '../../../../src/model-info/ratings/aa/record-scores.ts'
+import type {
+  AABenchmarks,
+  ModelInfo,
+} from '../../../../src/model-info/types.ts'
 
 describe('recordScores', () => {
-  it('when the AA benchmark has a coding score, uses it with source AA', () => {
+  it('when the AA benchmark has a coding score, returns it', () => {
     const benchmark: AABenchmarks = {
       intelligence: 40,
       coding: 60,
       agentic: 30,
+      reasoning: null,
     }
 
-    const result = resolveCoding(benchmark)
+    const result = benchmarkCoding(benchmark)
 
-    expect(result).toEqual({ coding: 60, source: 'AA' })
+    expect(result).toBe(60)
   })
 
-  it('when the benchmark is missing, returns null', () => {
-    const result = resolveCoding(undefined)
+  it('when the benchmark is missing, coding is null', () => {
+    const result = benchmarkCoding(undefined)
 
-    expect(result).toEqual({ coding: null, source: null })
+    expect(result).toBeNull()
   })
 
-  it('when the benchmark has no coding score, returns null', () => {
+  it('when the benchmark has no coding score, coding is null', () => {
     const benchmark: AABenchmarks = {
       intelligence: 40,
       coding: 0,
       agentic: 30,
+      reasoning: null,
     }
 
-    const result = resolveCoding(benchmark)
+    const result = benchmarkCoding(benchmark)
 
-    expect(result).toEqual({ coding: null, source: null })
+    expect(result).toBeNull()
   })
 
   it('when a benchmark is undefined, intelligence is null', () => {
@@ -50,6 +55,7 @@ describe('recordScores', () => {
       intelligence: 40,
       coding: 60,
       agentic: 30,
+      reasoning: null,
     }
 
     const result = benchmarkIntelligence(benchmark)
@@ -68,6 +74,7 @@ describe('recordScores', () => {
       intelligence: 40,
       coding: 60,
       agentic: 30,
+      reasoning: null,
     }
 
     const result = benchmarkAgentic(benchmark)
@@ -79,16 +86,16 @@ describe('recordScores', () => {
     const record: ModelInfo = {
       id: 'anthropic/claude-sonnet-4',
       name: 'Claude Sonnet 4',
-      providers: ['anthropic'],
+      provider: 'anthropic',
       reasoning: null,
+      reasoningControls: [],
+      intelligence: null,
       coding: null,
-      codingSource: null,
       agentic: null,
       costInput: 3,
       costOutput: 15,
       contextLength: 200000,
       modality: 'text',
-      reasoningMode: 'disabled',
       knowledgeCutoff: '2025-08-01',
       size: 'large',
     }
@@ -97,6 +104,7 @@ describe('recordScores', () => {
         intelligence: 80,
         coding: 65,
         agentic: 70,
+        reasoning: null,
       },
     }
 
@@ -105,28 +113,90 @@ describe('recordScores', () => {
     expect(result).toEqual([
       {
         ...record,
-        reasoning: 80,
+        intelligence: 80,
         coding: 65,
-        codingSource: 'AA',
         agentic: 70,
       },
     ])
+  })
+
+  it('when reasoning is still null and AA flags a reasoning model, applies the flag', () => {
+    const record: ModelInfo = {
+      id: 'anthropic/claude-sonnet-4',
+      name: 'Claude Sonnet 4',
+      provider: 'anthropic',
+      reasoning: null,
+      reasoningControls: [],
+      intelligence: null,
+      coding: null,
+      agentic: null,
+      costInput: 3,
+      costOutput: 15,
+      contextLength: 200000,
+      modality: 'text',
+      knowledgeCutoff: '2025-08-01',
+      size: 'large',
+    }
+    const benchmarks = {
+      'anthropic/claude-sonnet-4': {
+        intelligence: 80,
+        coding: 65,
+        agentic: 70,
+        reasoning: true,
+      },
+    }
+
+    const result = applyScores([record], benchmarks)
+
+    expect(result[0].reasoning).toBe(true)
+  })
+
+  it('when reasoning is already known, ignores the AA flag', () => {
+    const record: ModelInfo = {
+      id: 'anthropic/claude-sonnet-4',
+      name: 'Claude Sonnet 4',
+      provider: 'anthropic',
+      reasoning: false,
+      reasoningControls: ['toggle'],
+      intelligence: null,
+      coding: null,
+      agentic: null,
+      costInput: 3,
+      costOutput: 15,
+      contextLength: 200000,
+      modality: 'text',
+      knowledgeCutoff: '2025-08-01',
+      size: 'large',
+    }
+    const benchmarks = {
+      'anthropic/claude-sonnet-4': {
+        intelligence: 80,
+        coding: 65,
+        agentic: 70,
+        reasoning: true,
+      },
+    }
+
+    const result = applyScores([record], benchmarks)
+
+    expect(result[0].reasoning).toBe(false)
+    expect(result[0].reasoningControls).toEqual(['toggle'])
   })
 
   it('when a record has no matching benchmark, keeps all scores null', () => {
     const record: ModelInfo = {
       id: 'anthropic/claude-sonnet-4',
       name: 'Claude Sonnet 4',
-      providers: ['anthropic'],
+      provider: 'anthropic',
       reasoning: null,
+      reasoningControls: [],
+      intelligence: null,
       coding: null,
-      codingSource: null,
       agentic: null,
       costInput: 3,
       costOutput: 15,
       contextLength: 200000,
       modality: 'text',
-      reasoningMode: 'disabled',
       knowledgeCutoff: '2025-08-01',
       size: 'large',
     }
@@ -141,9 +211,8 @@ describe('recordScores', () => {
     expect(result).toEqual([
       {
         ...noMatchRecord,
-        reasoning: null,
+        intelligence: null,
         coding: null,
-        codingSource: null,
         agentic: null,
       },
     ])

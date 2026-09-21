@@ -1,4 +1,4 @@
-import type { AABenchmarks, AAModel } from '../types.ts'
+import type { AABenchmarks, AAModel } from '../../types.ts'
 import { candidateIds } from './match.ts'
 
 const toScore = (value: number | null): number => {
@@ -8,33 +8,44 @@ const toScore = (value: number | null): number => {
   return value
 }
 
+const firstNonNull = (
+  a: boolean | null,
+  b: boolean | null,
+): boolean | null => {
+  if (a !== null) {
+    return a
+  }
+  return b
+}
+
 const benchmarkScoresOrEmpty = (
   scores: AABenchmarks | undefined,
 ): AABenchmarks => {
   if (scores === undefined) {
-    return { intelligence: 0, coding: 0, agentic: 0 }
+    return { intelligence: 0, coding: 0, agentic: 0, reasoning: null }
   }
   return scores
 }
 
 const mergeBenchmarkScores = (
   current: AABenchmarks | undefined,
-  evaluations: AAModel['evaluations'],
+  model: AAModel,
 ): AABenchmarks => {
   const previous = benchmarkScoresOrEmpty(current)
   return {
     intelligence: Math.max(
       previous.intelligence,
-      toScore(evaluations.artificial_analysis_intelligence_index),
+      toScore(model.evaluations.artificial_analysis_intelligence_index),
     ),
     coding: Math.max(
       previous.coding,
-      toScore(evaluations.artificial_analysis_coding_index),
+      toScore(model.evaluations.artificial_analysis_coding_index),
     ),
     agentic: Math.max(
       previous.agentic,
-      toScore(evaluations.artificial_analysis_agentic_index),
+      toScore(model.evaluations.artificial_analysis_agentic_index),
     ),
+    reasoning: firstNonNull(previous.reasoning, model.reasoning_model ?? null),
   }
 }
 
@@ -50,7 +61,7 @@ export const matchAABenchmarks = (
     if (hit === undefined) {
       return
     }
-    scores[hit] = mergeBenchmarkScores(scores[hit], model.evaluations)
+    scores[hit] = mergeBenchmarkScores(scores[hit], model)
   })
   return scores
 }

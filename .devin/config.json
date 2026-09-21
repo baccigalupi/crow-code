@@ -7,6 +7,7 @@
       "Exec(dev/coverage)",
       "Exec(dev/loc)",
       "Exec(dev/productivity)",
+      "Exec(dev/find-models)",
       "Exec(agents/typecheck)",
       "Exec(agents/format-check)",
       "Exec(agents/pre-commit.sh)",
@@ -19,6 +20,7 @@
       "Exec(./dev/coverage)",
       "Exec(./dev/loc)",
       "Exec(./dev/productivity)",
+      "Exec(./dev/find-models)",
       "Exec(./agents/typecheck)",
       "Exec(./agents/format-check)",
       "Exec(./agents/pre-commit.sh)",
@@ -28,7 +30,9 @@
       "Exec(./agents/generate-review)",
       "Exec(git)",
       "Exec(bd)",
-      "Fetch(domain:docs.devin.ai)"
+      "Exec(chmod)",
+      "Fetch(domain:docs.devin.ai)",
+      "Exec(rm)"
     ],
     "deny": [
       "Exec(cd)",

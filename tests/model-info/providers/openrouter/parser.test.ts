@@ -37,12 +37,11 @@ describe('OpenRouterParser', () => {
     expect(result).toHaveLength(1)
     expect(result[0].id).toBe('openai/gpt-4o')
     expect(result[0].name).toBe('GPT-4o')
-    expect(result[0].providers).toEqual(['openrouter'])
+    expect(result[0].provider).toBe('openrouter')
     expect(result[0].costInput).toBe(5)
     expect(result[0].costOutput).toBe(15)
     expect(result[0].contextLength).toBe(128000)
     expect(result[0].modality).toBe('text->text')
-    expect(result[0].reasoningMode).toBe('-')
     expect(result[0].knowledgeCutoff).toBeNull()
     expect(result[0].coding).toBeNull()
   })
@@ -78,5 +77,56 @@ describe('OpenRouterParser', () => {
     const result = parser.parseResponse({ data: [{ id: 'openai/gpt-4o' }] })
 
     expect(result[0].contextLength).toBeNull()
+  })
+
+  it('when the modality is embeddings, reasoning is false', () => {
+    const parser = new OpenRouterParser(openrouterConfig)
+    const body = {
+      data: [
+        {
+          id: 'openai/text-embedding-4',
+          architecture: { modality: 'text->embeddings' },
+        },
+      ],
+    }
+
+    const result = parser.parseResponse(body)
+
+    expect(result[0].reasoning).toBe(false)
+  })
+
+  it('when supported_parameters has no reasoning params, reasoning is false', () => {
+    const parser = new OpenRouterParser(openrouterConfig)
+
+    const result = parser.parseResponse({
+      data: [{ id: 'x', supported_parameters: ['tools'] }],
+    })
+
+    expect(result[0].reasoning).toBe(false)
+  })
+
+  it('when supported_parameters has reasoning params, reasoning stays null', () => {
+    const parser = new OpenRouterParser(openrouterConfig)
+
+    const result = parser.parseResponse({
+      data: [
+        {
+          id: 'x',
+          supported_parameters: ['reasoning', 'reasoning_effort'],
+        },
+      ],
+    })
+
+    expect(result[0].reasoning).toBeNull()
+    expect(result[0].reasoningControls).toEqual(['toggle', 'effort'])
+  })
+
+  it('when reasoning metadata is omitted, reasoning is null', () => {
+    const parser = new OpenRouterParser(openrouterConfig)
+
+    const result = parser.parseResponse({ data: [{ id: 'x' }] })
+
+    expect(result[0].reasoning).toBeNull()
+    expect(result[0].reasoningControls).toEqual([])
   })
 })

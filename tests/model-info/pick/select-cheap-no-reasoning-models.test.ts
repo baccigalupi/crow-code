@@ -13,32 +13,32 @@ describe('selectCheapNoReasoningModels', () => {
     const target = {
       id: 'qwen3-coder:30b',
       name: 'qwen3-coder:30b',
-      providers: ['ollama'],
-      reasoning: null,
+      provider: 'ollama',
+      reasoning: false,
+      reasoningControls: [],
+      intelligence: null,
       coding: null,
-      codingSource: null,
       agentic: null,
       costInput: 0,
       costOutput: 0,
       contextLength: null,
       modality: 'local',
-      reasoningMode: '-',
       knowledgeCutoff: null,
       size: '',
     }
     const reasoningModel = {
       id: 'deepseek-reasoning',
       name: 'DeepSeek R1',
-      providers: ['nous'],
-      reasoning: 80,
+      provider: 'nous',
+      reasoning: true,
+      reasoningControls: [],
+      intelligence: 80,
       coding: 70,
-      codingSource: 'AA' as const,
       agentic: 60,
       costInput: 0,
       costOutput: 0,
       contextLength: 1000,
       modality: 'text->text',
-      reasoningMode: 'on',
       knowledgeCutoff: null,
       size: '',
     }
@@ -52,32 +52,32 @@ describe('selectCheapNoReasoningModels', () => {
     const target = {
       id: 'deepseek/deepseek-chat',
       name: 'DeepSeek Chat',
-      providers: ['nous'],
-      reasoning: 0,
+      provider: 'nous',
+      reasoning: false,
+      reasoningControls: [],
+      intelligence: 60,
       coding: 60,
-      codingSource: 'AA' as const,
       agentic: 30,
       costInput: 0.0005,
       costOutput: 0.0005,
       contextLength: 1000,
       modality: 'text->text',
-      reasoningMode: 'off',
       knowledgeCutoff: null,
       size: '',
     }
     const reasoningModel = {
       id: 'deepseek-reasoning',
       name: 'DeepSeek R1',
-      providers: ['nous'],
-      reasoning: 80,
+      provider: 'nous',
+      reasoning: true,
+      reasoningControls: [],
+      intelligence: 80,
       coding: 70,
-      codingSource: 'AA' as const,
       agentic: 60,
       costInput: 0,
       costOutput: 0,
       contextLength: 1000,
       modality: 'text->text',
-      reasoningMode: 'on',
       knowledgeCutoff: null,
       size: '',
     }
@@ -87,41 +87,64 @@ describe('selectCheapNoReasoningModels', () => {
     expect(result).toEqual([target])
   })
 
-  it('when input has a free model with off/avg reasoningMode, returns it', () => {
+  it('when input has a high-intelligence no-reasoning model, returns it', () => {
     const target = {
-      id: 'off-slash-model',
-      name: 'Off/Slash Model',
-      providers: ['nous'],
+      id: 'smart-cheap',
+      name: 'Smart Cheap',
+      provider: 'nous',
+      reasoning: false,
+      reasoningControls: [],
+      intelligence: 90,
+      coding: 80,
+      agentic: 70,
+      costInput: 0,
+      costOutput: 0,
+      contextLength: 1000,
+      modality: 'text->text',
+      knowledgeCutoff: null,
+      size: '',
+    }
+
+    const result = selectCheapNoReasoningModels([target])
+
+    expect(result).toEqual([target])
+  })
+
+  it('when input has a model with unknown reasoning, excludes it', () => {
+    const unknownReasoning = {
+      id: 'qwen3-coder:30b',
+      name: 'qwen3-coder:30b',
+      provider: 'ollama',
       reasoning: null,
+      reasoningControls: [],
+      intelligence: null,
       coding: null,
-      codingSource: null,
       agentic: null,
       costInput: 0,
       costOutput: 0,
       contextLength: null,
       modality: 'local',
-      reasoningMode: 'off/avg',
       knowledgeCutoff: null,
       size: '',
     }
-    const reasoningModel = {
-      id: 'deepseek-reasoning',
-      name: 'DeepSeek R1',
-      providers: ['nous'],
-      reasoning: 80,
-      coding: 70,
-      codingSource: 'AA' as const,
-      agentic: 60,
-      costInput: 0,
-      costOutput: 0,
+    const target = {
+      id: 'deepseek/deepseek-chat',
+      name: 'DeepSeek Chat',
+      provider: 'nous',
+      reasoning: false,
+      reasoningControls: [],
+      intelligence: 60,
+      coding: 60,
+      agentic: 30,
+      costInput: 0.0005,
+      costOutput: 0.0005,
       contextLength: 1000,
       modality: 'text->text',
-      reasoningMode: 'on',
       knowledgeCutoff: null,
       size: '',
     }
 
-    const result = selectCheapNoReasoningModels([reasoningModel, target])
+    const result = selectCheapNoReasoningModels([unknownReasoning, target])
 
     expect(result).toEqual([target])
   })
@@ -132,78 +155,36 @@ describe('selectCheapNoReasoningModels', () => {
     expect(result).toEqual([])
   })
 
-  it('when input has a model with reasoning, excludes it', () => {
-    const reasoningModel = {
-      id: 'deepseek-reasoning',
-      name: 'DeepSeek R1',
-      providers: ['nous'],
-      reasoning: 80,
-      coding: 70,
-      codingSource: 'AA' as const,
-      agentic: 60,
-      costInput: 0,
-      costOutput: 0,
-      contextLength: 1000,
-      modality: 'text->text',
-      reasoningMode: 'on',
-      knowledgeCutoff: null,
-      size: '',
-    }
-    const freeNoReasoning = {
-      id: 'qwen3-coder:30b',
-      name: 'qwen3-coder:30b',
-      providers: ['ollama'],
-      reasoning: null,
-      coding: null,
-      codingSource: null,
-      agentic: null,
-      costInput: 0,
-      costOutput: 0,
-      contextLength: null,
-      modality: 'local',
-      reasoningMode: '-',
-      knowledgeCutoff: null,
-      size: '',
-    }
-
-    const result = selectCheapNoReasoningModels([
-      reasoningModel,
-      freeNoReasoning,
-    ])
-
-    expect(result).toEqual([freeNoReasoning])
-  })
-
   it('when input has an expensive model, excludes it', () => {
     const expensiveNoReasoning = {
       id: 'expensive-no-reasoning',
       name: 'Expensive No-Reasoning',
-      providers: ['nous'],
-      reasoning: null,
+      provider: 'nous',
+      reasoning: false,
+      reasoningControls: [],
+      intelligence: null,
       coding: 50,
-      codingSource: null,
       agentic: null,
       costInput: 0.01,
       costOutput: 0.02,
       contextLength: 1000,
       modality: 'text->text',
-      reasoningMode: 'off',
       knowledgeCutoff: null,
       size: '',
     }
     const freeNoReasoning = {
       id: 'qwen3-coder:30b',
       name: 'qwen3-coder:30b',
-      providers: ['ollama'],
-      reasoning: null,
+      provider: 'ollama',
+      reasoning: false,
+      reasoningControls: [],
+      intelligence: null,
       coding: null,
-      codingSource: null,
       agentic: null,
       costInput: 0,
       costOutput: 0,
       contextLength: null,
       modality: 'local',
-      reasoningMode: '-',
       knowledgeCutoff: null,
       size: '',
     }
@@ -220,32 +201,32 @@ describe('selectCheapNoReasoningModels', () => {
     const freeNoReasoning = {
       id: 'qwen3-coder:30b',
       name: 'qwen3-coder:30b',
-      providers: ['ollama'],
-      reasoning: null,
+      provider: 'ollama',
+      reasoning: false,
+      reasoningControls: [],
+      intelligence: null,
       coding: null,
-      codingSource: null,
       agentic: null,
       costInput: 0,
       costOutput: 0,
       contextLength: null,
       modality: 'local',
-      reasoningMode: '-',
       knowledgeCutoff: null,
       size: '',
     }
     const reasoningModel = {
       id: 'deepseek-reasoning',
       name: 'DeepSeek R1',
-      providers: ['nous'],
-      reasoning: 80,
+      provider: 'nous',
+      reasoning: true,
+      reasoningControls: [],
+      intelligence: 80,
       coding: 70,
-      codingSource: 'AA' as const,
       agentic: 60,
       costInput: 0,
       costOutput: 0,
       contextLength: 1000,
       modality: 'text->text',
-      reasoningMode: 'on',
       knowledgeCutoff: null,
       size: '',
     }

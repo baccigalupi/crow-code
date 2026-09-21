@@ -1,5 +1,5 @@
-import type { AAModel, Logger } from '../types.ts'
-import type { Environment } from '../../env-vars.ts'
+import type { AAModel, Logger } from '../../types.ts'
+import type { Environment } from '../../../env-vars.ts'
 import { matchAABenchmarks } from './scores.ts'
 
 const aaUrl = 'https://artificialanalysis.ai/api/v2/language/models/free'

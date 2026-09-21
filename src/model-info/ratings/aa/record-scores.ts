@@ -1,9 +1,4 @@
-import type { AABenchmarks, CodingSource, ModelInfo } from '../types.ts'
-
-type CodingResult = {
-  coding: number | null
-  source: CodingSource | null
-}
+import type { AABenchmarks, ModelInfo } from '../../types.ts'
 
 export const benchmarkIntelligence = (
   benchmark: AABenchmarks | undefined,
@@ -25,28 +20,37 @@ export const benchmarkAgentic = (
   return benchmark.agentic
 }
 
-export const resolveCoding = (
+export const benchmarkCoding = (
   benchmark: AABenchmarks | undefined,
-): CodingResult => {
+): number | null => {
   if (benchmark !== undefined && benchmark.coding > 0) {
-    return { coding: benchmark.coding, source: 'AA' }
+    return benchmark.coding
   }
 
-  return { coding: null, source: null }
+  return null
+}
+
+const resolveReasoning = (
+  record: ModelInfo,
+  benchmark: AABenchmarks | undefined,
+): boolean | null => {
+  if (record.reasoning !== null || benchmark === undefined) {
+    return record.reasoning
+  }
+
+  return benchmark.reasoning
 }
 
 const applyToRecord = (
   record: ModelInfo,
   benchmark: AABenchmarks | undefined,
 ): ModelInfo => {
-  const coding = resolveCoding(benchmark)
-
   return {
     ...record,
-    reasoning: benchmarkIntelligence(benchmark),
-    coding: coding.coding,
-    codingSource: coding.source,
+    intelligence: benchmarkIntelligence(benchmark),
+    coding: benchmarkCoding(benchmark),
     agentic: benchmarkAgentic(benchmark),
+    reasoning: resolveReasoning(record, benchmark),
   }
 }
 

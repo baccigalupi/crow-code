@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { matchAABenchmarks } from '../../../src/model-info/ratings/scores.ts'
-import type { AAModel } from '../../../src/model-info/types.ts'
+import { matchAABenchmarks } from '../../../../src/model-info/ratings/aa/scores.ts'
+import type { AAModel } from '../../../../src/model-info/types.ts'
 
 describe('matchAABenchmarks', () => {
   it('when an AA model matches a catalog id, records its indices', () => {
@@ -20,8 +20,32 @@ describe('matchAABenchmarks', () => {
     const result = matchAABenchmarks(models, new Set(['deepseek/deepseek-v4']))
 
     expect(result).toEqual({
-      'deepseek/deepseek-v4': { intelligence: 40, coding: 60, agentic: 30 },
+      'deepseek/deepseek-v4': {
+        intelligence: 40,
+        coding: 60,
+        agentic: 30,
+        reasoning: null,
+      },
     })
+  })
+
+  it('when an AA model flags a reasoning model, records the flag', () => {
+    const models: AAModel[] = [
+      {
+        slug: 'deepseek-v4',
+        model_creator: { name: 'DeepSeek' },
+        reasoning_model: true,
+        evaluations: {
+          artificial_analysis_intelligence_index: 40,
+          artificial_analysis_coding_index: 60,
+          artificial_analysis_agentic_index: 30,
+        },
+      },
+    ]
+
+    const result = matchAABenchmarks(models, new Set(['deepseek/deepseek-v4']))
+
+    expect(result['deepseek/deepseek-v4'].reasoning).toBe(true)
   })
 
   it('when several AA models map to the same catalog id, keeps the max of each index', () => {
@@ -49,8 +73,42 @@ describe('matchAABenchmarks', () => {
     const result = matchAABenchmarks(models, new Set(['deepseek/deepseek-v4']))
 
     expect(result).toEqual({
-      'deepseek/deepseek-v4': { intelligence: 50, coding: 60, agentic: 45 },
+      'deepseek/deepseek-v4': {
+        intelligence: 50,
+        coding: 60,
+        agentic: 45,
+        reasoning: null,
+      },
     })
+  })
+
+  it('when a later AA model has the flag, keeps the first non-null flag', () => {
+    const models: AAModel[] = [
+      {
+        slug: 'deepseek-v4',
+        model_creator: { name: 'DeepSeek' },
+        reasoning_model: false,
+        evaluations: {
+          artificial_analysis_intelligence_index: 40,
+          artificial_analysis_coding_index: 60,
+          artificial_analysis_agentic_index: 30,
+        },
+      },
+      {
+        slug: 'deepseek-v4-high',
+        model_creator: { name: 'DeepSeek' },
+        reasoning_model: true,
+        evaluations: {
+          artificial_analysis_intelligence_index: 50,
+          artificial_analysis_coding_index: 55,
+          artificial_analysis_agentic_index: 45,
+        },
+      },
+    ]
+
+    const result = matchAABenchmarks(models, new Set(['deepseek/deepseek-v4']))
+
+    expect(result['deepseek/deepseek-v4'].reasoning).toBe(false)
   })
 
   it('when no AA model matches the catalog, returns an empty record', () => {
@@ -87,7 +145,12 @@ describe('matchAABenchmarks', () => {
     const result = matchAABenchmarks(models, new Set(['deepseek/deepseek-v4']))
 
     expect(result).toEqual({
-      'deepseek/deepseek-v4': { intelligence: 0, coding: 55, agentic: 0 },
+      'deepseek/deepseek-v4': {
+        intelligence: 0,
+        coding: 55,
+        agentic: 0,
+        reasoning: null,
+      },
     })
   })
 })

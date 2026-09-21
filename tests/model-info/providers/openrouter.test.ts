@@ -24,7 +24,7 @@ describe('openrouter', () => {
     const result = parseOpenRouterResponse(body, openrouterConfig)
 
     expect(result[0].id).toBe('openai/gpt-4o')
-    expect(result[0].providers).toEqual(['openrouter'])
+    expect(result[0].provider).toBe('openrouter')
   })
 
   it('when fetched, returns normalized records', async () => {
@@ -45,7 +45,7 @@ describe('openrouter', () => {
     )
 
     expect(result[0].id).toBe('openai/gpt-4o')
-    expect(result[0].providers).toEqual(['openrouter'])
+    expect(result[0].provider).toBe('openrouter')
   })
 
   it('when modelsUrl is not set, falls back to baseUrl', async () => {

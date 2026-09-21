@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import { fetchAABenchmarks } from '../../../src/model-info/ratings/benchmarks.ts'
-import { Environment } from '../../../src/env-vars.ts'
-import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
+import { fetchAABenchmarks } from '../../../../src/model-info/ratings/aa/benchmarks.ts'
+import { Environment } from '../../../../src/env-vars.ts'
+import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
 import pino from 'pino'
-import { createLogger } from '../../../src/logger.ts'
+import { createLogger } from '../../../../src/logger.ts'
 
 const crowDirectory = join(fixturesDirectory, 'logger', 'aa-key')
 
@@ -38,7 +38,12 @@ describe('fetchAABenchmarks', () => {
     )
 
     expect(result).toEqual({
-      'deepseek/deepseek-v4': { intelligence: 40, coding: 60, agentic: 30 },
+      'deepseek/deepseek-v4': {
+        intelligence: 40,
+        coding: 60,
+        agentic: 30,
+        reasoning: null,
+      },
     })
   })
 
@@ -73,7 +78,12 @@ describe('fetchAABenchmarks', () => {
     )
 
     expect(result).toEqual({
-      'deepseek/deepseek-v4': { intelligence: 40, coding: 60, agentic: 30 },
+      'deepseek/deepseek-v4': {
+        intelligence: 40,
+        coding: 60,
+        agentic: 30,
+        reasoning: null,
+      },
     })
   })
 

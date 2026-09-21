@@ -22,13 +22,7 @@ class CheapSummarizerFilter {
   }
 
   private isNoReasoning(model: ModelInfo) {
-    if (model.reasoning !== null && model.reasoning !== 0) {
-      return false
-    }
-    if (model.reasoningMode === '-' || model.reasoningMode === 'off') {
-      return true
-    }
-    return model.reasoningMode.startsWith('off/')
+    return model.reasoning === false
   }
 
   private isFreeOrCheap(model: ModelInfo) {
