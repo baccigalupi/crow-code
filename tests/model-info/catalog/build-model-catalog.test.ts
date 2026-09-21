@@ -39,19 +39,6 @@ describe('buildModelCatalog', () => {
       architecture: { modality: 'text->text' },
     }
     const catalogFetch = mockFetchRoutes([
-      [
-        'models.dev',
-        {
-          deepseek: {
-            models: {
-              'deepseek/deepseek-chat': {
-                reasoning: false,
-                reasoning_options: [{ type: 'toggle' }],
-              },
-            },
-          },
-        },
-      ],
       ['pile-driver', { models: [{ name: 'qwen3-coder:30b' }] }],
       ['nousresearch', { data: [nousModel] }],
     ])
@@ -66,8 +53,8 @@ describe('buildModelCatalog', () => {
         id: 'deepseek/deepseek-chat',
         name: 'DeepSeek Chat',
         provider: 'nous',
-        reasoning: false,
-        reasoningOptions: ['toggle'],
+        reasoning: true,
+        reasoningOptions: [],
         costInput: 0.5,
         costOutput: 1.5,
         contextLength: 1000,

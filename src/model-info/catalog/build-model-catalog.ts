@@ -1,6 +1,5 @@
 import { loadProviderConfig } from '../providers/load-provider-config.ts'
 import { fetchProviders } from '../providers/fetch-providers.ts'
-import { normalizeRecords } from '../ratings/normalize-records.ts'
 import { defaultModelCatalogPath, writeModelCatalog } from './model-catalog.ts'
 import type { Logger, ModelInfo } from '../types.ts'
 
@@ -23,7 +22,6 @@ class BuildModelCatalog {
   async run() {
     this.logStart()
     await this.fetchProviders()
-    await this.normalizeRecords()
     this.persistModelCatalog()
   }
 
@@ -41,14 +39,6 @@ class BuildModelCatalog {
         ),
       )
     ).flat()
-  }
-
-  private async normalizeRecords() {
-    this.records = await normalizeRecords(
-      this.records,
-      this.logger,
-      this.fetchClient,
-    )
   }
 
   private persistModelCatalog() {

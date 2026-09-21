@@ -72,10 +72,3 @@ export type OpenRouterModel = {
 }
 
 export type OpenRouterApiRecord = { data?: OpenRouterModel[] }
-
-export type ModelsDevEntry = {
-  reasoning: boolean | null
-  reasoningOptions: ReasoningOption[]
-}
-
-export type ModelsDevCatalog = Record<string, Record<string, ModelsDevEntry>>
