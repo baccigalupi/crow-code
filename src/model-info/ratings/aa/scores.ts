@@ -1,21 +1,29 @@
 import type { AABenchmarks, AAModel } from '../../types.ts'
 import { candidateIds } from './match.ts'
 
-const toScore = (value: number | null): number => {
+const toScore = (value: number | null) => {
   if (value === null) {
     return 0
   }
   return value
 }
 
-const firstNonNull = (
-  a: boolean | null,
-  b: boolean | null,
-): boolean | null => {
+const firstNonNull = (a: boolean | null, b: boolean | null) => {
   if (a !== null) {
     return a
   }
   return b
+}
+
+const toReasoning = (model: AAModel): boolean | null => {
+  if (model.reasoning_model === undefined) {
+    return null
+  }
+  return model.reasoning_model
+}
+
+const mergeScore = (current: number, value: number | null) => {
+  return Math.max(current, toScore(value))
 }
 
 const benchmarkScoresOrEmpty = (
@@ -33,26 +41,26 @@ const mergeBenchmarkScores = (
 ): AABenchmarks => {
   const previous = benchmarkScoresOrEmpty(current)
   return {
-    intelligence: Math.max(
+    intelligence: mergeScore(
       previous.intelligence,
-      toScore(model.evaluations.artificial_analysis_intelligence_index),
+      model.evaluations.artificial_analysis_intelligence_index,
     ),
-    coding: Math.max(
+    coding: mergeScore(
       previous.coding,
-      toScore(model.evaluations.artificial_analysis_coding_index),
+      model.evaluations.artificial_analysis_coding_index,
     ),
-    agentic: Math.max(
+    agentic: mergeScore(
       previous.agentic,
-      toScore(model.evaluations.artificial_analysis_agentic_index),
+      model.evaluations.artificial_analysis_agentic_index,
     ),
-    reasoning: firstNonNull(previous.reasoning, model.reasoning_model ?? null),
+    reasoning: firstNonNull(previous.reasoning, toReasoning(model)),
   }
 }
 
 export const matchAABenchmarks = (
   models: AAModel[],
   catalogIds: Set<string>,
-): Record<string, AABenchmarks> => {
+) => {
   const scores: Record<string, AABenchmarks> = {}
   models.forEach((model) => {
     const hit = candidateIds(model.slug, model.model_creator.name).find(

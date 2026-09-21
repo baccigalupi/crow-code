@@ -12,6 +12,19 @@ type AAPage = {
   pagination: { has_more: boolean }
 }
 
+const pageRequest = (key: string) => ({
+  headers: { 'x-api-key': key },
+  signal: AbortSignal.timeout(30000),
+})
+
+const parsePage = async (response: Response, logger: Logger) => {
+  if (!response.ok) {
+    logger.error(`Artificial Analysis API returned ${response.status}`)
+    return null
+  }
+  return (await response.json()) as AAPage
+}
+
 const fetchAAModelsPage = async (
   key: string,
   page: number,
@@ -19,19 +32,30 @@ const fetchAAModelsPage = async (
   fetchClient: typeof fetch = fetch,
 ) => {
   try {
-    const response = await fetchClient(`${aaUrl}?page=${page}`, {
-      headers: { 'x-api-key': key },
-      signal: AbortSignal.timeout(30000),
-    })
-    if (!response.ok) {
-      logger.error(`Artificial Analysis API returned ${response.status}`)
-      return null
-    }
-    return (await response.json()) as AAPage
+    const response = await fetchClient(
+      `${aaUrl}?page=${page}`,
+      pageRequest(key),
+    )
+    return await parsePage(response, logger)
   } catch {
     logger.error(`Artificial Analysis API unreachable at ${aaUrl}`)
     return null
   }
+}
+
+const appendPage = async (
+  allModels: AAModel[],
+  key: string,
+  page: number,
+  logger: Logger,
+  fetchClient: typeof fetch,
+) => {
+  const result = await fetchAAModelsPage(key, page, logger, fetchClient)
+  if (result === null) {
+    return false
+  }
+  allModels.push(...result.data)
+  return result.pagination.has_more
 }
 
 const collectAllAAModels = async (
@@ -41,16 +65,8 @@ const collectAllAAModels = async (
 ) => {
   const allModels: AAModel[] = []
   let page = 1
-  while (true) {
-    const pageResult = await fetchAAModelsPage(key, page, logger, fetchClient)
-    if (pageResult === null) {
-      return allModels
-    }
-    allModels.push(...pageResult.data)
-    if (!pageResult.pagination.has_more) {
-      break
-    }
-    page++
+  while (await appendPage(allModels, key, page, logger, fetchClient)) {
+    page += 1
   }
   return allModels
 }

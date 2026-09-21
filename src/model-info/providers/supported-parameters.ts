@@ -1,23 +1,17 @@
 import type { ReasoningControl } from '../types.ts'
 
-const reasoningParameters = [
-  'reasoning',
-  'include_reasoning',
-  'reasoning_effort',
-]
-
-const hasReasoningParameters = (parameters: string[]) => {
-  return parameters.some((parameter) => reasoningParameters.includes(parameter))
+const parameterControls: Record<string, ReasoningControl> = {
+  reasoning: 'toggle',
+  include_reasoning: 'toggle',
+  reasoning_effort: 'effort',
 }
 
-const controlFor = (parameter: string): ReasoningControl | null => {
-  if (parameter === 'reasoning' || parameter === 'include_reasoning') {
-    return 'toggle'
-  }
-  if (parameter === 'reasoning_effort') {
-    return 'effort'
-  }
-  return null
+const hasReasoningParameters = (parameters: string[]) => {
+  return parameters.some((parameter) => parameter in parameterControls)
+}
+
+const controlFor = (parameter: string): ReasoningControl | undefined => {
+  return parameterControls[parameter]
 }
 
 export const supportedParametersControls = (
@@ -28,8 +22,25 @@ export const supportedParametersControls = (
   }
   const controls = parameters
     .map(controlFor)
-    .filter((control) => control !== null)
+    .filter((control) => control !== undefined)
   return [...new Set(controls)]
+}
+
+const unknownUnlessNoReasoning = (parameters: string[] | undefined) => {
+  if (parameters === undefined || hasReasoningParameters(parameters)) {
+    return null
+  }
+  return false
+}
+
+const nonNativeReasoning = (
+  parameters: string[] | undefined,
+  modality: string,
+) => {
+  if (modality.endsWith('->embeddings')) {
+    return false
+  }
+  return unknownUnlessNoReasoning(parameters)
 }
 
 export const providerNativeReasoning = (
@@ -40,11 +51,5 @@ export const providerNativeReasoning = (
   if (hasReasoningObject) {
     return true
   }
-  if (modality.endsWith('->embeddings')) {
-    return false
-  }
-  if (parameters === undefined || hasReasoningParameters(parameters)) {
-    return null
-  }
-  return false
+  return nonNativeReasoning(parameters, modality)
 }

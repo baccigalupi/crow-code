@@ -15,10 +15,7 @@ class CheapSummarizerFilter {
   }
 
   private isCheapSummarizer(model: ModelInfo) {
-    if (this.isNoReasoning(model) && this.isFreeOrCheap(model)) {
-      return true
-    }
-    return false
+    return this.isNoReasoning(model) && this.isFreeOrCheap(model)
   }
 
   private isNoReasoning(model: ModelInfo) {
@@ -26,16 +23,18 @@ class CheapSummarizerFilter {
   }
 
   private isFreeOrCheap(model: ModelInfo) {
-    if (model.costInput === 0 && model.costOutput === 0) {
-      return true
-    }
-    if (
-      model.costInput >= this.cheapCostThreshold ||
-      model.costOutput >= this.cheapCostThreshold
-    ) {
-      return false
-    }
-    return true
+    return this.isFree(model) || this.isCheap(model)
+  }
+
+  private isFree(model: ModelInfo) {
+    return model.costInput === 0 && model.costOutput === 0
+  }
+
+  private isCheap(model: ModelInfo) {
+    return (
+      model.costInput < this.cheapCostThreshold &&
+      model.costOutput < this.cheapCostThreshold
+    )
   }
 }
 

@@ -2,7 +2,7 @@ import type { AABenchmarks, ModelInfo } from '../../types.ts'
 
 export const benchmarkIntelligence = (
   benchmark: AABenchmarks | undefined,
-): number | null => {
+) => {
   if (benchmark === undefined) {
     return null
   }
@@ -12,7 +12,7 @@ export const benchmarkIntelligence = (
 
 export const benchmarkAgentic = (
   benchmark: AABenchmarks | undefined,
-): number | null => {
+) => {
   if (benchmark === undefined) {
     return null
   }
@@ -22,7 +22,7 @@ export const benchmarkAgentic = (
 
 export const benchmarkCoding = (
   benchmark: AABenchmarks | undefined,
-): number | null => {
+) => {
   if (benchmark !== undefined && benchmark.coding > 0) {
     return benchmark.coding
   }
@@ -33,7 +33,7 @@ export const benchmarkCoding = (
 const resolveReasoning = (
   record: ModelInfo,
   benchmark: AABenchmarks | undefined,
-): boolean | null => {
+) => {
   if (record.reasoning !== null || benchmark === undefined) {
     return record.reasoning
   }
@@ -44,7 +44,7 @@ const resolveReasoning = (
 const applyToRecord = (
   record: ModelInfo,
   benchmark: AABenchmarks | undefined,
-): ModelInfo => {
+) => {
   return {
     ...record,
     intelligence: benchmarkIntelligence(benchmark),
@@ -57,6 +57,6 @@ const applyToRecord = (
 export const applyScores = (
   records: ModelInfo[],
   benchmarks: Record<string, AABenchmarks>,
-): ModelInfo[] => {
+) => {
   return records.map((record) => applyToRecord(record, benchmarks[record.id]))
 }

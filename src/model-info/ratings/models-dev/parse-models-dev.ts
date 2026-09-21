@@ -19,10 +19,10 @@ const toControl = (option: unknown): ReasoningControl | null => {
     return null
   }
   const type = option.type as ReasoningControl
-  if (!controlTypes.includes(type)) {
-    return null
+  if (controlTypes.includes(type)) {
+    return type
   }
-  return type
+  return null
 }
 
 const parseControls = (model: Record<string, unknown>) => {

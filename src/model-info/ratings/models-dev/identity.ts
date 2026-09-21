@@ -8,11 +8,15 @@ const servingAliases: Record<string, string> = {
   'gemma4:26b': 'google/gemma-4-26b-a4b-it',
 }
 
-export const normalizeServingId = (id: string) => {
-  let normalized = id
-  if (normalized.endsWith('~')) {
-    normalized = normalized.slice(0, -1)
+const stripTilde = (id: string) => {
+  if (id.endsWith('~')) {
+    return id.slice(0, -1)
   }
+  return id
+}
+
+export const normalizeServingId = (id: string) => {
+  const normalized = stripTilde(id)
   const suffix = servingSuffixes.find((ending) => normalized.endsWith(ending))
   if (suffix === undefined) {
     return normalized
@@ -22,4 +26,13 @@ export const normalizeServingId = (id: string) => {
 
 export const aliasFor = (id: string): string | undefined => {
   return servingAliases[id]
+}
+
+export const resolveServingId = (id: string) => {
+  const normalized = normalizeServingId(id)
+  const alias = aliasFor(normalized)
+  if (alias === undefined) {
+    return normalized
+  }
+  return alias
 }
