@@ -43,8 +43,16 @@ describe('commandAllowed', () => {
     expect(result).toBe(true)
   })
 
-  it('when command uses the canonical cat heredoc commit form, returns true', () => {
-    const command = `git commit -m "$(cat <<'EOF'\nbody\nEOF\n)"`
+  it('when command is a git commit with several -m flags, returns true', () => {
+    const command = 'git commit -m "subject" -m "body"'
+
+    const result = commandAllowed(command)
+
+    expect(result).toBe(true)
+  })
+
+  it('when command is a quoted-delimiter heredoc git commit, returns true', () => {
+    const command = "git commit -F - <<'EOF'\nsubject\n\nbody\nEOF"
 
     const result = commandAllowed(command)
 
@@ -67,12 +75,76 @@ describe('commandAllowed', () => {
     expect(result).toBe(true)
   })
 
-  it('when command chains two allowed segments, returns true', () => {
+  it('when command uses the cat heredoc substitution bypass, returns false', () => {
+    const command = `git commit -m "$(cat <<'EOF'\nbody\nEOF\n)"`
+
+    const result = commandAllowed(command)
+
+    expect(result).toBe(false)
+  })
+
+  it('when command contains command substitution, returns false', () => {
+    const command = 'echo $(whoami)'
+
+    const result = commandAllowed(command)
+
+    expect(result).toBe(false)
+  })
+
+  it('when command contains backticks, returns false', () => {
+    const command = 'echo `whoami`'
+
+    const result = commandAllowed(command)
+
+    expect(result).toBe(false)
+  })
+
+  it('when command has a redirect, returns false', () => {
+    const command = 'curl https://x > out'
+
+    const result = commandAllowed(command)
+
+    expect(result).toBe(false)
+  })
+
+  it('when command chains with &&, returns false', () => {
     const command = 'curl https://a && curl https://b'
 
     const result = commandAllowed(command)
 
-    expect(result).toBe(true)
+    expect(result).toBe(false)
+  })
+
+  it('when command chains with a semicolon, returns false', () => {
+    const command = 'git status; rm -rf /'
+
+    const result = commandAllowed(command)
+
+    expect(result).toBe(false)
+  })
+
+  it('when command has a bare newline, returns false', () => {
+    const command = 'git status\nrm -rf /'
+
+    const result = commandAllowed(command)
+
+    expect(result).toBe(false)
+  })
+
+  it('when command is an unquoted-delimiter heredoc, returns false', () => {
+    const command = 'git commit -F - <<EOF\nbody\nEOF'
+
+    const result = commandAllowed(command)
+
+    expect(result).toBe(false)
+  })
+
+  it('when heredoc body hides an early delimiter line, returns false', () => {
+    const command = "git commit -F - <<'EOF'\nEOF\nrm -rf /\nEOF"
+
+    const result = commandAllowed(command)
+
+    expect(result).toBe(false)
   })
 
   it('when command is git push, returns false', () => {
@@ -99,23 +171,7 @@ describe('commandAllowed', () => {
     expect(result).toBe(false)
   })
 
-  it('when command chains allowed and blocked segments, returns false', () => {
-    const command = 'curl https://x && rm -rf /'
-
-    const result = commandAllowed(command)
-
-    expect(result).toBe(false)
-  })
-
-  it('when command has a redirect, returns false', () => {
-    const command = 'curl https://x > out'
-
-    const result = commandAllowed(command)
-
-    expect(result).toBe(false)
-  })
-
-  it('when command has an unclosed quote, returns false', () => {
+  it('when command has an unclosed double quote, returns false', () => {
     const command = 'git commit -m "subject'
 
     const result = commandAllowed(command)

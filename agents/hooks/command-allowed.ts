@@ -1,20 +1,44 @@
-import { shellSegments } from './shell-segments.ts'
+const metacharPattern = /\$\(|`|<|>|;|\||&|\n/
 
-const hasEnvAssignment = (segment: string) =>
-  /^[A-Za-z_][A-Za-z0-9_]*=\S*\s/.test(segment)
+const heredocOpenerPattern =
+  /^git\s+commit\s+-F\s+-\s+<<'([A-Za-z0-9_.-]+)'\n([\s\S]*)$/
 
-const dropEnvAssignment = (segment: string) =>
-  segment.replace(/^[A-Za-z_][A-Za-z0-9_]*=\S*\s+/, '')
-
-const dropLeadingPrefix = (segment: string) => {
-  if (segment.startsWith('./')) {
-    return segment.slice(2)
+const terminatorIndex = (lines: string[]) => {
+  if (lines[lines.length - 1] === '') {
+    return lines.length - 2
   }
-  return segment
+  return lines.length - 1
 }
 
-const stripLeading = (segment: string) => {
-  let rest = segment.trim()
+const isHeredocCommit = (command: string) => {
+  const match = heredocOpenerPattern.exec(command)
+  if (match === null) {
+    return false
+  }
+  const lines = match[2].split('\n')
+  return lines.indexOf(match[1]) === terminatorIndex(lines)
+}
+
+const doubleQuotesBalanced = (command: string) => {
+  const count = command.split('"').length - 1
+  return count % 2 === 0
+}
+
+const hasEnvAssignment = (command: string) =>
+  /^[A-Za-z_][A-Za-z0-9_]*=\S*\s/.test(command)
+
+const dropEnvAssignment = (command: string) =>
+  command.replace(/^[A-Za-z_][A-Za-z0-9_]*=\S*\s+/, '')
+
+const dropLeadingPrefix = (command: string) => {
+  if (command.startsWith('./')) {
+    return command.slice(2)
+  }
+  return command
+}
+
+const stripLeading = (command: string) => {
+  let rest = command.trim()
   while (hasEnvAssignment(rest)) {
     rest = dropEnvAssignment(rest)
   }
@@ -50,16 +74,14 @@ const executableAllowed = (words: string[]) => {
   return false
 }
 
-const segmentAllowed = (segment: string) => {
-  const words = stripLeading(segment).split(/\s+/)
+export const commandAllowed = (command: string) => {
+  if (isHeredocCommit(command)) {
+    return true
+  }
+  if (metacharPattern.test(command) || !doubleQuotesBalanced(command)) {
+    return false
+  }
+  const words = stripLeading(command).split(/\s+/)
   const gitAllowed = words[0] === 'git' && gitSubcommand(words) !== 'push'
   return executableAllowed(words) || gitAllowed
-}
-
-export const commandAllowed = (command: string) => {
-  const segments = shellSegments(command)
-  if (segments === null) return false
-  return segments.every((segment) =>
-    segment.trim() === '' || segmentAllowed(segment)
-  )
 }
