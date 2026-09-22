@@ -19,6 +19,22 @@ describe('commandAllowed', () => {
     expect(result).toBe(true)
   })
 
+  it('when command has a leading prefix, returns true', () => {
+    const command = './agents/typecheck'
+
+    const result = commandAllowed(command)
+
+    expect(result).toBe(true)
+  })
+
+  it('when command has a leading env assignment, returns true', () => {
+    const command = 'GIT_PAGER=cat git status'
+
+    const result = commandAllowed(command)
+
+    expect(result).toBe(true)
+  })
+
   it('when command is bd, returns true', () => {
     const command = 'bd ready'
 
@@ -53,6 +69,14 @@ describe('commandAllowed', () => {
 
   it('when command is a quoted-delimiter heredoc git commit, returns true', () => {
     const command = "git commit -F - <<'EOF'\nsubject\n\nbody\nEOF"
+
+    const result = commandAllowed(command)
+
+    expect(result).toBe(true)
+  })
+
+  it('when command is a heredoc git commit ending with a newline, returns true', () => {
+    const command = "git commit -F - <<'EOF'\nsubject\n\nbody\nEOF\n"
 
     const result = commandAllowed(command)
 
@@ -149,6 +173,14 @@ describe('commandAllowed', () => {
 
   it('when command is git push, returns false', () => {
     const command = 'git push'
+
+    const result = commandAllowed(command)
+
+    expect(result).toBe(false)
+  })
+
+  it('when command is git push with a -C flag, returns false', () => {
+    const command = 'git -C dir push'
 
     const result = commandAllowed(command)
 

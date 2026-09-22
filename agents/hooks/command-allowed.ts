@@ -45,32 +45,15 @@ const stripLeading = (command: string) => {
   return dropLeadingPrefix(rest)
 }
 
-const gitTakesValue = (word: string) => {
-  return ['-C', '-c', '--git-dir', '--work-tree', '--exec-path', '--namespace']
-    .includes(word)
-}
+const gitPushPattern =
+  /^git(?:\s+(?:-[A-Za-z0-9-]+(?:\s+\S+)?|[^-\s]\S*))*\s+push\b/
 
-const flagWidth = (word: string) => {
-  if (gitTakesValue(word)) {
-    return 2
-  }
-  return 1
-}
-
-const gitSubcommand = (words: string[]) => {
-  let index = 1
-  while (index < words.length && words[index].startsWith('-')) {
-    index += flagWidth(words[index])
-  }
-  return words[index]
-}
-
-const executableAllowed = (words: string[]) => {
-  if (words[0].startsWith('agents/') || words[0].startsWith('dev/')) {
+const executableAllowed = (command: string) => {
+  if (command.startsWith('agents/') || command.startsWith('dev/')) {
     return true
   }
-  if (words[0] === 'bd') return true
-  if (words[0] === 'curl') return true
+  if (command.startsWith('bd ')) return true
+  if (command.startsWith('curl ')) return true
   return false
 }
 
@@ -81,7 +64,9 @@ export const commandAllowed = (command: string) => {
   if (metacharPattern.test(command) || !doubleQuotesBalanced(command)) {
     return false
   }
-  const words = stripLeading(command).split(/\s+/)
-  const gitAllowed = words[0] === 'git' && gitSubcommand(words) !== 'push'
-  return executableAllowed(words) || gitAllowed
+  const stripped = stripLeading(command)
+  if (stripped.startsWith('git ')) {
+    return !gitPushPattern.test(stripped)
+  }
+  return executableAllowed(stripped)
 }
