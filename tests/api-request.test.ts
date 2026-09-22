@@ -4,8 +4,8 @@ import {
   mockFetchError,
   mockFetchRejected,
   mockFetchSuccess,
-} from '../support/mock-fetch.ts'
-import { ApiRequest } from '../../src/model-info/api-request.ts'
+} from './support/mock-fetch.ts'
+import { ApiRequest } from '../src/api-request.ts'
 import pino from 'pino'
 
 describe('ApiRequest', () => {

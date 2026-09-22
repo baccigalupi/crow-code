@@ -1,7 +1,7 @@
 import { requestMessages } from './messages.ts'
 import { parse } from './parse.ts'
 import { modelRequest } from '../model-request.ts'
-import { ApiRequest } from '../api-request.ts'
+import { ApiRequest } from '../../api-request.ts'
 import { ExtractModelResponse } from '../extract-model-response.ts'
 import type { Logger } from '../../model-info/types.ts'
 import type { ModelEndpointDetails } from '../types.ts'
