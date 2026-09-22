@@ -13,6 +13,12 @@ export const loadModelsDevFixture = async () => {
   return JSON.parse(text)
 }
 
+export const loadNousFixture = async () => {
+  const path = join(fixturesDirectory, 'nous-models.json')
+  const text = await Deno.readTextFile(path)
+  return JSON.parse(text)
+}
+
 export const clearDirectory = async (path: string) => {
   await Deno.remove(path, { recursive: true }).catch(() => {})
 }

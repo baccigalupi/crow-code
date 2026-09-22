@@ -50,6 +50,41 @@ export type NousModel = {
 
 export type NousApiRecord = { data?: NousModel[] }
 
+export type NousReasoningOptions = {
+  mandatory?: boolean
+  default_enabled?: boolean
+  default_effort?: string
+  supported_efforts?: string[]
+  supports_max_tokens?: boolean
+}
+
+export type Nous2ApiModel = {
+  id: string
+  name: string
+  context_length: number
+  pricing: { prompt: string; completion: string }
+  architecture?: { modality?: string }
+  supported_parameters: string[]
+  reasoning?: NousReasoningOptions
+}
+
+export type Nous2ApiBody = {
+  data: Nous2ApiModel[]
+}
+
+export type CatalogModel = {
+  id: string
+  name: string
+  contextLength: number
+  costInput: number
+  costOutput: number
+  modality: string
+  supportedParameters: string[]
+  supportsReasoning: boolean
+  canDisableReasoning: boolean
+  reasoningOptions: NousReasoningOptions
+}
+
 export type OllamaModel = {
   name: string
   details?: { parameter_size?: string; context_length?: number }
