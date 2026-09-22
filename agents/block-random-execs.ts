@@ -3,9 +3,9 @@
 // Prints {"decision":"block","reason":...} on stdout to deny; silence means pass.
 
 import { commandAllowed } from './hooks/command-allowed.ts'
+import { DevinConfig } from './hooks/devin-config.ts'
 
-const reason =
-  'Allowed commands: scripts in agents/ or dev/, git (except push), bd, curl'
+const reason = 'Agent and dev scripts must be approved in .devin/config.json'
 
 const block = () => {
   console.log(JSON.stringify({ decision: 'block', reason }))
@@ -36,9 +36,11 @@ const extractCommand = (payload: any) => {
 
 const main = async () => {
   const command = extractCommand(await readPayload())
-  if (command === null || !commandAllowed(command)) {
-    block()
-  }
+  const projectDirectory = Deno.env.get('DEVIN_PROJECT_DIR')
+  if (command === null || projectDirectory === undefined) return block()
+  const path = `${projectDirectory}/.devin/config.json`
+  const config = new DevinConfig(await Deno.readTextFile(path))
+  if (!commandAllowed(command, config)) block()
 }
 
 await main()
