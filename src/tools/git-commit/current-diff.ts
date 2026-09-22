@@ -4,7 +4,7 @@ type DenoCommand = typeof Deno.Command
 
 class CurrentDiff {
   private command!: InstanceType<DenoCommand>
-  private commandConstructor: DenoCommand
+  private denoCommand: DenoCommand
   private logger: Logger
   private output!: Deno.CommandOutput
   private success: boolean
@@ -12,9 +12,9 @@ class CurrentDiff {
 
   constructor(
     logger: Logger,
-    commandConstructor: DenoCommand = Deno.Command,
+    denoCommand: DenoCommand = Deno.Command,
   ) {
-    this.commandConstructor = commandConstructor
+    this.denoCommand = denoCommand
     this.logger = logger
     this.success = true
   }
@@ -35,7 +35,7 @@ class CurrentDiff {
 
   private async runCommand() {
     try {
-      this.command = new this.commandConstructor('git', {
+      this.command = new this.denoCommand('git', {
         args: ['diff', 'HEAD'],
       })
       this.output = await this.command.output()
@@ -76,8 +76,8 @@ class CurrentDiff {
 
 export const getCurrentDiff = (
   logger: Logger,
-  commandConstructor: DenoCommand = Deno.Command,
+  denoCommand: DenoCommand = Deno.Command,
 ): Promise<string> => {
-  const diff = new CurrentDiff(logger, commandConstructor)
+  const diff = new CurrentDiff(logger, denoCommand)
   return diff.read()
 }
