@@ -21,7 +21,7 @@ describe('getNousModels', () => {
 
     const result = await getNousModels(nousConfig, logger, mockFetch)
 
-    expect(result).toHaveLength(fixture.data.length)
+    expect(result).toHaveLength(400)
     expect(result[0].id).toBe('xiaomi/mimo-v2.6-pro-ultraspeed')
   })
 

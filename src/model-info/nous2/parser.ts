@@ -39,7 +39,32 @@ class NousParser {
   }
 
   private supportsReasoning() {
-    return this.model.reasoning !== undefined
+    if (this.isEmbedding()) {
+      return false
+    }
+    if (this.model.reasoning !== undefined) {
+      return true
+    }
+
+    return this.hasReasoningParameter()
+  }
+
+  private isEmbedding() {
+    if (this.model.architecture === undefined) {
+      return false
+    }
+    if (this.model.architecture.modality === undefined) {
+      return false
+    }
+
+    return this.model.architecture.modality.endsWith('->embeddings')
+  }
+
+  private hasReasoningParameter() {
+    const parameters = ['reasoning', 'include_reasoning', 'reasoning_effort']
+    return this.model.supported_parameters.some((parameter) =>
+      parameters.includes(parameter)
+    )
   }
 
   private canDisableReasoning() {
