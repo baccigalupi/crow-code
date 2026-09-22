@@ -1,4 +1,4 @@
-import type { ReasoningOption } from '../types.ts'
+import type { ReasoningOption } from '../../types.ts'
 
 const reasoningOptions: Record<string, ReasoningOption> = {
   reasoning: 'toggle',

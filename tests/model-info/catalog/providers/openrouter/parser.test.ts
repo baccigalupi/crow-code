@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { OpenRouterParser } from '../../../../src/model-info/providers/openrouter/parser.ts'
-import type { ProviderConfig } from '../../../../src/model-info/types.ts'
+import { OpenRouterParser } from '../../../../../src/model-info/catalog/providers/openrouter/parser.ts'
+import type { ProviderConfig } from '../../../../../src/model-info/types.ts'
 
 const openrouterConfig: ProviderConfig = {
   name: 'openrouter',

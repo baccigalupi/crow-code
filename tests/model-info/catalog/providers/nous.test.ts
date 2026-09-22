@@ -4,11 +4,11 @@ import pino from 'pino'
 import {
   mockFetchRejected,
   mockFetchSuccess,
-} from '../../support/mock-fetch.ts'
+} from '../../../support/mock-fetch.ts'
 import {
   fetchNousModels,
   parseNousResponse,
-} from '../../../src/model-info/providers/nous.ts'
+} from '../../../../src/model-info/catalog/providers/nous.ts'
 
 describe('nous', () => {
   it('when the body has models, parseNousResponse normalizes them into records', () => {

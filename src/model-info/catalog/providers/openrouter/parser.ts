@@ -1,28 +1,32 @@
-import type { NousApiRecord, NousModel, ProviderConfig } from '../../types.ts'
+import type {
+  OpenRouterApiRecord,
+  OpenRouterModel,
+  ProviderConfig,
+} from '../../../types.ts'
 import { providerReasoning } from '../provider-reasoning.ts'
 import { reasoningOptions } from '../reasoning-options.ts'
 
-export class NousParser {
+export class OpenRouterParser {
   private config: ProviderConfig
 
   constructor(config: ProviderConfig) {
     this.config = config
   }
 
-  parseResponse(raw: NousApiRecord) {
+  parseResponse(raw: OpenRouterApiRecord) {
     if (raw.data === undefined) {
       return []
     }
     return raw.data.map((model) => this.buildRecord(model))
   }
 
-  private buildRecord(model: NousModel) {
+  private buildRecord(model: OpenRouterModel) {
     return {
       id: model.id,
       name: this.modelName(model),
       provider: this.config.name,
       reasoning: providerReasoning(
-        model.reasoning !== undefined && model.reasoning !== null,
+        false,
         model.supported_parameters,
         this.modality(model).endsWith('->embeddings'),
       ),
@@ -33,19 +37,19 @@ export class NousParser {
       costOutput: this.toMillionPrice(this.completionPrice(model.pricing)),
       contextLength: model.context_length || null,
       modality: this.modality(model),
-      knowledgeCutoff: model.knowledge_cutoff || null,
+      knowledgeCutoff: null,
       size: '',
     }
   }
 
-  private modelName(model: NousModel) {
+  private modelName(model: OpenRouterModel) {
     if (model.name === undefined) {
       return model.id
     }
     return model.name
   }
 
-  private modality(model: NousModel) {
+  private modality(model: OpenRouterModel) {
     if (
       model.architecture === undefined ||
       model.architecture.modality === undefined
@@ -55,14 +59,14 @@ export class NousParser {
     return model.architecture.modality
   }
 
-  private promptPrice(pricing: NousModel['pricing']) {
+  private promptPrice(pricing: OpenRouterModel['pricing']) {
     if (pricing === undefined) {
       return undefined
     }
     return pricing.prompt
   }
 
-  private completionPrice(pricing: NousModel['pricing']) {
+  private completionPrice(pricing: OpenRouterModel['pricing']) {
     if (pricing === undefined) {
       return undefined
     }

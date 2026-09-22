@@ -1,7 +1,7 @@
 import { fetchNousModels } from './nous.ts'
 import { fetchOllamaModels } from './ollama.ts'
 import { fetchOpenRouterModels } from './openrouter.ts'
-import type { Logger, ModelInfo, ProviderConfig } from '../types.ts'
+import type { Logger, ModelInfo, ProviderConfig } from '../../types.ts'
 
 type ProviderFetcher = (
   config: ProviderConfig,

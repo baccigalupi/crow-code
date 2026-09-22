@@ -1,4 +1,4 @@
-import type { ReasoningOption } from '../types.ts'
+import type { ReasoningOption } from '../../types.ts'
 import { lookupReasoningOption } from './lookup-reasoning-options.ts'
 
 export const reasoningOptions = (

@@ -2,7 +2,7 @@ import type {
   OllamaApiRecord,
   OllamaModel,
   ProviderConfig,
-} from '../../types.ts'
+} from '../../../types.ts'
 
 export class OllamaParser {
   private config: ProviderConfig

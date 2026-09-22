@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import { loadProviderConfig } from '../../../src/model-info/providers/load-provider-config.ts'
-import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
+import { loadProviderConfig } from '../../../../src/model-info/catalog/providers/load-provider-config.ts'
+import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
 
 const crowDirectory = join(fixturesDirectory, 'load-provider-config', '.crow')
 

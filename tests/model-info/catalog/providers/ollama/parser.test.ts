@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { OllamaParser } from '../../../../src/model-info/providers/ollama/parser.ts'
-import type { ProviderConfig } from '../../../../src/model-info/types.ts'
+import { OllamaParser } from '../../../../../src/model-info/catalog/providers/ollama/parser.ts'
+import type { ProviderConfig } from '../../../../../src/model-info/types.ts'
 
 const ollamaConfig: ProviderConfig = {
   name: 'ollama',

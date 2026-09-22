@@ -5,7 +5,7 @@ import type {
   ModelInfo,
   NousApiRecord,
   ProviderConfig,
-} from '../types.ts'
+} from '../../types.ts'
 
 export const parseNousResponse = (
   raw: NousApiRecord,

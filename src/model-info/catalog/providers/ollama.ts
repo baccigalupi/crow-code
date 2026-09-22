@@ -5,7 +5,7 @@ import type {
   ModelInfo,
   OllamaApiRecord,
   ProviderConfig,
-} from '../types.ts'
+} from '../../types.ts'
 
 const ollamaTimeoutMs = 5000
 

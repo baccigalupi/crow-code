@@ -5,7 +5,7 @@ import type {
   ModelInfo,
   OpenRouterApiRecord,
   ProviderConfig,
-} from '../types.ts'
+} from '../../types.ts'
 
 const openrouterTimeoutMs = 20000
 

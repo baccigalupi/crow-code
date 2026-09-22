@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { NousParser } from '../../../../src/model-info/providers/nous/parser.ts'
-import type { ProviderConfig } from '../../../../src/model-info/types.ts'
+import { NousParser } from '../../../../../src/model-info/catalog/providers/nous/parser.ts'
+import type { ProviderConfig } from '../../../../../src/model-info/types.ts'
 
 const nousConfig: ProviderConfig = {
   name: 'nous',

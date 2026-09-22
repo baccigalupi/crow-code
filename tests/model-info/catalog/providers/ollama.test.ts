@@ -4,11 +4,11 @@ import pino from 'pino'
 import {
   mockFetchRejected,
   mockFetchSuccess,
-} from '../../support/mock-fetch.ts'
+} from '../../../support/mock-fetch.ts'
 import {
   fetchOllamaModels,
   parseOllamaResponse,
-} from '../../../src/model-info/providers/ollama.ts'
+} from '../../../../src/model-info/catalog/providers/ollama.ts'
 
 describe('ollama', () => {
   it('when the body has models, parseOllamaResponse normalizes them into records', () => {

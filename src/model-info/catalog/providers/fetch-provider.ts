@@ -1,4 +1,4 @@
-import type { Logger } from '../types.ts'
+import type { Logger } from '../../types.ts'
 
 class FetchProvider<ApiRecord, T> {
   private url: string

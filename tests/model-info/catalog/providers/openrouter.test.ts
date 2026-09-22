@@ -4,11 +4,11 @@ import pino from 'pino'
 import {
   mockFetchRejected,
   mockFetchSuccess,
-} from '../../support/mock-fetch.ts'
+} from '../../../support/mock-fetch.ts'
 import {
   fetchOpenRouterModels,
   parseOpenRouterResponse,
-} from '../../../src/model-info/providers/openrouter.ts'
+} from '../../../../src/model-info/catalog/providers/openrouter.ts'
 
 describe('openrouter', () => {
   it('when the body has models, parseOpenRouterResponse normalizes them into records', () => {

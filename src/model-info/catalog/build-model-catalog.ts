@@ -1,5 +1,5 @@
-import { loadProviderConfig } from '../providers/load-provider-config.ts'
-import { fetchProviders } from '../providers/fetch-providers.ts'
+import { loadProviderConfig } from './providers/load-provider-config.ts'
+import { fetchProviders } from './providers/fetch-providers.ts'
 import { defaultModelCatalogPath, writeModelCatalog } from './model-catalog.ts'
 import type { Logger, ModelInfo } from '../types.ts'
 
