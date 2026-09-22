@@ -9,13 +9,12 @@ import {
 import { loadNousFixture } from '../../support/fixtures.ts'
 import { getNousModels } from '../../../src/model-info/nous2/get-nous-models.ts'
 
-const nousConfig = {
-  name: 'nous' as const,
-  baseUrl: 'https://inference-api.nousresearch.com',
-}
-
 describe('getNousModels', () => {
   it('when fetched, returns parsed records matching the fixture', async () => {
+    const nousConfig = {
+      name: 'nous' as const,
+      baseUrl: 'https://inference-api.nousresearch.com',
+    }
     const fixture = await loadNousFixture()
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess(fixture)
@@ -51,6 +50,10 @@ describe('getNousModels', () => {
   })
 
   it('when fetched, every record has a non-empty id and name', async () => {
+    const nousConfig = {
+      name: 'nous' as const,
+      baseUrl: 'https://inference-api.nousresearch.com',
+    }
     const fixture = await loadNousFixture()
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess(fixture)
@@ -62,6 +65,10 @@ describe('getNousModels', () => {
   })
 
   it('when fetched, every record has a non-empty modality', async () => {
+    const nousConfig = {
+      name: 'nous' as const,
+      baseUrl: 'https://inference-api.nousresearch.com',
+    }
     const fixture = await loadNousFixture()
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess(fixture)
@@ -72,6 +79,10 @@ describe('getNousModels', () => {
   })
 
   it('when fetched, every record has numeric costs and context length', async () => {
+    const nousConfig = {
+      name: 'nous' as const,
+      baseUrl: 'https://inference-api.nousresearch.com',
+    }
     const fixture = await loadNousFixture()
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess(fixture)
@@ -90,6 +101,10 @@ describe('getNousModels', () => {
   })
 
   it('when fetched, every record has an array of supported parameters', async () => {
+    const nousConfig = {
+      name: 'nous' as const,
+      baseUrl: 'https://inference-api.nousresearch.com',
+    }
     const fixture = await loadNousFixture()
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess(fixture)
@@ -101,6 +116,10 @@ describe('getNousModels', () => {
   })
 
   it('when the response is not ok, returns an empty list', async () => {
+    const nousConfig = {
+      name: 'nous' as const,
+      baseUrl: 'https://inference-api.nousresearch.com',
+    }
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchError(500)
 
@@ -110,6 +129,10 @@ describe('getNousModels', () => {
   })
 
   it('when the network request fails, returns an empty list', async () => {
+    const nousConfig = {
+      name: 'nous' as const,
+      baseUrl: 'https://inference-api.nousresearch.com',
+    }
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchRejected('network down')
 
