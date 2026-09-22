@@ -5,7 +5,7 @@
 import { join } from '@std/path'
 import type { Logger } from './model-info/types.ts'
 import { buildModelCatalog } from './model-info/catalog/build-model-catalog.ts'
-import { getCurrentDiff } from './tools/git-commit/diff.ts'
+import { getCurrentDiff } from './tools/git-commit/current-diff.ts'
 import { requestCommitSummary } from './tools/git-commit/request.ts'
 
 const usage = `Usage: crow <subcommand>
@@ -58,7 +58,7 @@ class Cli {
   }
 
   private async gitCommit() {
-    const diff = await this.readDiff()
+    const diff = await this.readDiff(this.logger)
     const summary = await this.requestSummary(
       this.crowDirectory(),
       diff,
