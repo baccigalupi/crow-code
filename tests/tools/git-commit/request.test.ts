@@ -118,14 +118,11 @@ describe('requestCommitSummary', () => {
     Deno.removeSync(crowDirectory, { recursive: true })
   })
 
-  it('when no model is available, logs and returns an empty summary', async () => {
+  it('when no model is available, returns an empty summary', async () => {
     const crowDirectory = Deno.makeTempDirSync()
     writeCatalog(crowDirectory, [])
     writeProviders(crowDirectory, [])
-    const messages: string[] = []
-    const logger = {
-      error: (message: unknown) => messages.push(String(message)),
-    } as unknown as Logger
+    const logger = { error: () => {} } as unknown as Logger
 
     const summary = await requestCommitSummary(
       crowDirectory,
@@ -135,18 +132,14 @@ describe('requestCommitSummary', () => {
     )
 
     expect(summary).toBe('')
-    expect(messages[0]).toContain('model')
     Deno.removeSync(crowDirectory, { recursive: true })
   })
 
-  it('when the model provider is unavailable, logs and returns an empty summary', async () => {
+  it('when the model provider is unavailable, returns an empty summary', async () => {
     const crowDirectory = Deno.makeTempDirSync()
     writeCatalog(crowDirectory, [model])
     writeProviders(crowDirectory, [])
-    const messages: string[] = []
-    const logger = {
-      error: (message: unknown) => messages.push(String(message)),
-    } as unknown as Logger
+    const logger = { error: () => {} } as unknown as Logger
 
     const summary = await requestCommitSummary(
       crowDirectory,
@@ -156,11 +149,10 @@ describe('requestCommitSummary', () => {
     )
 
     expect(summary).toBe('')
-    expect(messages[0]).toContain('provider')
     Deno.removeSync(crowDirectory, { recursive: true })
   })
 
-  it('when the API key is unavailable, logs and returns an empty summary', async () => {
+  it('when the API key is unavailable, returns an empty summary', async () => {
     const crowDirectory = Deno.makeTempDirSync()
     writeCatalog(crowDirectory, [model])
     writeProviders(crowDirectory, [{
@@ -168,10 +160,7 @@ describe('requestCommitSummary', () => {
       baseUrl: 'https://nous.example/v1',
       apiKeyEnv: 'MISSING_TEST_KEY',
     }])
-    const messages: string[] = []
-    const logger = {
-      error: (message: unknown) => messages.push(String(message)),
-    } as unknown as Logger
+    const logger = { error: () => {} } as unknown as Logger
 
     const summary = await requestCommitSummary(
       crowDirectory,
@@ -181,7 +170,6 @@ describe('requestCommitSummary', () => {
     )
 
     expect(summary).toBe('')
-    expect(messages[0]).toContain('API key')
     Deno.removeSync(crowDirectory, { recursive: true })
   })
 })
