@@ -170,7 +170,7 @@ describe('selectCheapNoReasoningModels', () => {
     expect(result).toEqual([freeNoReasoning])
   })
 
-  it('when given a model catalog path, reads models.json and filters', async () => {
+  it('when given a model count, reads, filters, and limits the catalog', async () => {
     const freeNoReasoning = {
       id: 'qwen3-coder:30b',
       name: 'qwen3-coder:30b',
@@ -200,12 +200,16 @@ describe('selectCheapNoReasoningModels', () => {
     const path = join(fixtureDir, 'cheap-summarizers-test.json')
     const catalog = {
       fetchedAt: '2026-01-01T00:00:00.000Z',
-      modelCount: 2,
-      models: [reasoningModel, freeNoReasoning],
+      modelCount: 3,
+      models: [
+        reasoningModel,
+        freeNoReasoning,
+        { ...freeNoReasoning, id: 'second-model' },
+      ],
     }
     await Deno.writeTextFile(path, JSON.stringify(catalog))
 
-    const result = getCheapNoReasoningModels(path)
+    const result = getCheapNoReasoningModels(path, 1)
 
     expect(result).toEqual([freeNoReasoning])
   })

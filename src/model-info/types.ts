@@ -2,6 +2,8 @@ import type pino from 'pino'
 
 export type Logger = pino.Logger
 
+export type EnvironmentValues = Record<string, string>
+
 export type ReasoningOption = 'toggle' | 'effort' | 'budget_tokens'
 
 export type ProviderConfig = {

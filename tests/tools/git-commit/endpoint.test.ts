@@ -53,7 +53,7 @@ describe('endpoint', () => {
 
     expect(endpoint).toEqual({ baseURL: '', apiKey: '', model: '' })
     expect(messages[0]).toBe(
-      'No API key is configured for the commit summary provider',
+      'No commit summary model has an available provider or API key',
     )
     Deno.removeSync(crowDirectory, { recursive: true })
   })

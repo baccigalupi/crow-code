@@ -43,7 +43,10 @@ export const selectCheapNoReasoningModels = (models: ModelInfo[]) => {
   return filter.select(models)
 }
 
-export const getCheapNoReasoningModels = (modelCatalogPath: string) => {
+export const getCheapNoReasoningModels = (
+  modelCatalogPath: string,
+  modelCount: number = Infinity,
+) => {
   const catalog = readModelCatalog(modelCatalogPath)
-  return selectCheapNoReasoningModels(catalog.models)
+  return selectCheapNoReasoningModels(catalog.models).slice(0, modelCount)
 }

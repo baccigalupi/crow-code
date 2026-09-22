@@ -68,6 +68,32 @@ describe('requestCommitSummary', () => {
     Deno.removeSync(crowDirectory, { recursive: true })
   })
 
+  it('when the first model is unusable, requests with the next model', async () => {
+    const crowDirectory = Deno.makeTempDirSync()
+    writeCatalog(crowDirectory, [
+      { ...model, provider: 'missing' },
+      { ...model, id: 'second-model' },
+    ])
+    writeProviders(crowDirectory, [{
+      name: 'nous',
+      baseUrl: 'https://nous.example/v1',
+      apiKeyEnv: 'NOUS_TEST_KEY',
+    }])
+    Deno.env.set('NOUS_TEST_KEY', 'secret-key')
+    const logger = { error: () => {} } as unknown as Logger
+    const fetchMock = mockFetchSuccess({
+      choices: [{ message: { content: 'Fallback summary' } }],
+    })
+
+    await requestCommitSummary(crowDirectory, 'diff', '', logger, fetchMock)
+
+    const request = fetchMock.calls[0] as Request
+    const body = await request.json()
+    expect(body.model).toBe('second-model')
+    Deno.env.delete('NOUS_TEST_KEY')
+    Deno.removeSync(crowDirectory, { recursive: true })
+  })
+
   it('when the API request fails, returns an empty summary', async () => {
     const crowDirectory = Deno.makeTempDirSync()
     writeCatalog(crowDirectory, [model])

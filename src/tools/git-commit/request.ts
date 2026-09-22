@@ -3,7 +3,7 @@ import type { Logger } from '../../model-info/types.ts'
 import { ExtractModelResponse } from '../../plan/extract-model-response.ts'
 import { modelRequest } from '../../plan/model-request.ts'
 import type { ModelEndpointDetails } from '../../plan/types.ts'
-import { isModelEndpointAvailable, resolveModelEndpoint } from './endpoint.ts'
+import { resolveModelEndpoint } from './endpoint.ts'
 import { requestMessages } from './messages.ts'
 
 const parseSummary = (content: string) => content.trim()
@@ -31,6 +31,6 @@ export const requestCommitSummary = (
   fetchClient: typeof fetch = fetch,
 ): Promise<string> => {
   const endpoint = resolveModelEndpoint(crowDirectory, logger)
-  if (!isModelEndpointAvailable(endpoint)) return Promise.resolve('')
+  if (endpoint.baseURL.length === 0) return Promise.resolve('')
   return performRequest(endpoint, diff, goal, logger, fetchClient)
 }
