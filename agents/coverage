@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Shared coverage reporter. Use --lcov to emit the machine-checked lcov file.
+set -euo pipefail
+
+coverageOptions=(--exclude="tests/" --exclude="agents/")
+
+if [[ "${1:-}" == "--lcov" ]]; then
+  exec deno coverage --lcov "${coverageOptions[@]}" --output coverage/lcov.info
+fi
+
+deno coverage "${coverageOptions[@]}" || true
