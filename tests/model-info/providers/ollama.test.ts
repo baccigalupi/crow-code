@@ -76,4 +76,76 @@ describe('ollama', () => {
 
     expect(result).toEqual([])
   })
+
+  it('when inspecting live models, reports their reasoning metadata', {
+    skip: Deno.env.get('OLLAMA_LIVE_TEST') !== '1',
+  }, async () => {
+    const models = ['qwen3-coder:30b', 'laguna-xs-2.1:latest', 'gemma4:26b']
+
+    const responses = await Promise.all(models.map(async (model) => {
+      const response = await fetch('http://pile-driver.local:11434/api/show', {
+        method: 'POST',
+        body: JSON.stringify({ model }),
+      })
+      const data = await response.json()
+      return {
+        model,
+        capabilities: data.capabilities,
+        parameters: data.parameters,
+      }
+    }))
+
+    console.log(JSON.stringify(responses, null, 2))
+    expect(responses).toHaveLength(3)
+  })
+
+  it('when changing think, reports live reasoning behavior', {
+    skip: Deno.env.get('OLLAMA_LIVE_TEST') !== '1',
+  }, async () => {
+    const models = ['laguna-xs-2.1:latest', 'gemma4:26b']
+    const settings: Array<boolean | string> = [
+      false,
+      true,
+      'low',
+      'medium',
+      'high',
+      'max',
+    ]
+    const requests = models.flatMap((model) =>
+      settings.map((think) => ({ model, think }))
+    )
+
+    const responses = await Promise.all(
+      requests.map(async ({ model, think }) => {
+        const response = await fetch(
+          'http://pile-driver.local:11434/api/chat',
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              model,
+              think,
+              stream: false,
+              messages: [{
+                role: 'user',
+                content: 'What is 2+2? Reply only 4.',
+              }],
+              options: { num_predict: 128 },
+            }),
+          },
+        )
+        const data = await response.json()
+        return {
+          model,
+          think,
+          status: response.status,
+          thinking: data.message && data.message.thinking,
+          content: data.message && data.message.content,
+          error: data.error,
+        }
+      }),
+    )
+
+    console.log(JSON.stringify(responses, null, 2))
+    expect(responses).toHaveLength(12)
+  })
 })

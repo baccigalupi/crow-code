@@ -2,8 +2,10 @@
 // PreToolUse hook: blocks exec calls outside the prescribed allowlist.
 // Prints {"decision":"block","reason":...} on stdout to deny; silence means pass.
 
+import { commandAllowed } from './hooks/command-allowed.ts'
+
 const reason =
-  'Allowed commands: scripts in agents/ or dev/, git (except push), bd'
+  'Allowed commands: scripts in agents/ or dev/, git (except push), bd, curl'
 
 const block = () => {
   console.log(JSON.stringify({ decision: 'block', reason }))
@@ -16,67 +18,6 @@ const readPayload = async () => {
   } catch {
     return null
   }
-}
-
-const hasShellMeta = (command: string) => {
-  return /\$\(|`|<|>/.test(command)
-}
-
-const stripLeading = (segment: string) => {
-  let rest = segment.trim()
-  while (/^[A-Za-z_][A-Za-z0-9_]*=\S*\s/.test(rest)) {
-    rest = rest.replace(/^[A-Za-z_][A-Za-z0-9_]*=\S*\s+/, '')
-  }
-  if (rest.startsWith('./')) {
-    rest = rest.slice(2)
-  }
-  return rest
-}
-
-const gitTakesValue = (word: string) => {
-  return ['-C', '-c', '--git-dir', '--work-tree', '--exec-path', '--namespace']
-    .includes(word)
-}
-
-const flagWidth = (word: string) => {
-  if (gitTakesValue(word)) {
-    return 2
-  }
-  return 1
-}
-
-const gitSubcommand = (words: string[]) => {
-  let index = 1
-  while (index < words.length && words[index].startsWith('-')) {
-    index += flagWidth(words[index])
-  }
-  return words[index]
-}
-
-const segmentAllowed = (segment: string) => {
-  const words = stripLeading(segment).split(/\s+/)
-  if (words[0].startsWith('agents/') || words[0].startsWith('dev/')) {
-    return true
-  }
-  if (words[0] === 'bd') {
-    return true
-  }
-  if (words[0] === 'git') {
-    return gitSubcommand(words) !== 'push'
-  }
-  return false
-}
-
-const commandAllowed = (command: string) => {
-  if (hasShellMeta(command)) {
-    return false
-  }
-  return command.split(/\|\||&&|[;|\n]/).every((segment) => {
-    if (segment.trim() === '') {
-      return true
-    }
-    return segmentAllowed(segment)
-  })
 }
 
 // deno-lint-ignore no-explicit-any

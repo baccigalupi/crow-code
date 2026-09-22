@@ -3,7 +3,10 @@
 // Usage: agents/editor-diagnostics.ts src bin tests
 
 import { relative, resolve } from '@std/path'
-import { type Diagnostic, LanguageServer } from './language-server-client.ts'
+import {
+  type Diagnostic,
+  LanguageServer,
+} from './editor/language-server-client.ts'
 
 const pollMilliseconds = 100
 const startupMilliseconds = 60000

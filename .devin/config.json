@@ -31,6 +31,7 @@
       "Exec(git)",
       "Exec(git mv)",
       "Exec(bd)",
+      "Exec(curl)",
       "Exec(chmod)",
       "Fetch(domain:docs.devin.ai)",
       "Exec(rm)"
