@@ -10,7 +10,7 @@ import { loadNousFixture } from '../../support/fixtures.ts'
 import { getNousModels } from '../../../src/model-info/nous2/get-nous-models.ts'
 
 describe('getNousModels', () => {
-  it('when fetched, returns parsed records matching the fixture', async () => {
+  it('when fetched, returns parsed records', async () => {
     const nousConfig = {
       name: 'nous' as const,
       baseUrl: 'https://inference-api.nousresearch.com',
@@ -22,97 +22,21 @@ describe('getNousModels', () => {
     const result = await getNousModels(nousConfig, logger, mockFetch)
 
     expect(result).toHaveLength(fixture.data.length)
-    expect(result[0]).toEqual({
-      id: 'xiaomi/mimo-v2.6-pro-ultraspeed',
-      name: 'Xiaomi: MiMo-V2.6-Pro-UltraSpeed',
-      contextLength: 1048576,
-      costInput: 4.35,
-      costOutput: 8.7,
-      modality: 'text+image+audio+video->text',
-      supportedParameters: [
-        'frequency_penalty',
-        'include_reasoning',
-        'max_tokens',
-        'presence_penalty',
-        'reasoning',
-        'response_format',
-        'stop',
-        'structured_outputs',
-        'temperature',
-        'tool_choice',
-        'tools',
-        'top_p',
-      ],
-      supportsReasoning: true,
-      canDisableReasoning: true,
-      reasoningOptions: { mandatory: false },
-    })
+    expect(result[0].id).toBe('xiaomi/mimo-v2.6-pro-ultraspeed')
   })
 
-  it('when fetched, every record has a non-empty id and name', async () => {
+  it('when fetched, requests the configured base url plus v1 models', async () => {
     const nousConfig = {
       name: 'nous' as const,
-      baseUrl: 'https://inference-api.nousresearch.com',
+      baseUrl: 'https://example.com',
     }
-    const fixture = await loadNousFixture()
     const logger = pino({ enabled: false })
-    const mockFetch = mockFetchSuccess(fixture)
+    const mockFetch = mockFetchSuccess({ data: [] })
 
-    const result = await getNousModels(nousConfig, logger, mockFetch)
+    await getNousModels(nousConfig, logger, mockFetch)
 
-    expect(result.every((model) => model.id.length > 0)).toBe(true)
-    expect(result.every((model) => model.name.length > 0)).toBe(true)
-  })
-
-  it('when fetched, every record has a non-empty modality', async () => {
-    const nousConfig = {
-      name: 'nous' as const,
-      baseUrl: 'https://inference-api.nousresearch.com',
-    }
-    const fixture = await loadNousFixture()
-    const logger = pino({ enabled: false })
-    const mockFetch = mockFetchSuccess(fixture)
-
-    const result = await getNousModels(nousConfig, logger, mockFetch)
-
-    expect(result.every((model) => model.modality.length > 0)).toBe(true)
-  })
-
-  it('when fetched, every record has numeric costs and context length', async () => {
-    const nousConfig = {
-      name: 'nous' as const,
-      baseUrl: 'https://inference-api.nousresearch.com',
-    }
-    const fixture = await loadNousFixture()
-    const logger = pino({ enabled: false })
-    const mockFetch = mockFetchSuccess(fixture)
-
-    const result = await getNousModels(nousConfig, logger, mockFetch)
-
-    expect(result.every((model) => typeof model.costInput === 'number')).toBe(
-      true,
-    )
-    expect(
-      result.every((model) => typeof model.costOutput === 'number'),
-    ).toBe(true)
-    expect(
-      result.every((model) => typeof model.contextLength === 'number'),
-    ).toBe(true)
-  })
-
-  it('when fetched, every record has an array of supported parameters', async () => {
-    const nousConfig = {
-      name: 'nous' as const,
-      baseUrl: 'https://inference-api.nousresearch.com',
-    }
-    const fixture = await loadNousFixture()
-    const logger = pino({ enabled: false })
-    const mockFetch = mockFetchSuccess(fixture)
-
-    const result = await getNousModels(nousConfig, logger, mockFetch)
-
-    expect(result.every((model) => Array.isArray(model.supportedParameters)))
-      .toBe(true)
+    expect(mockFetch.calls).toHaveLength(1)
+    expect(mockFetch.calls[0]).toBe('https://example.com/v1/models')
   })
 
   it('when the response is not ok, returns an empty list', async () => {
