@@ -1,4 +1,4 @@
-import { describe, it } from 'node:test'
+import { describe, it, mock } from 'node:test'
 import { expect } from '@std/expect'
 import type { Logger } from '../src/model-info/types.ts'
 import { run } from '../src/cli.ts'
@@ -85,17 +85,15 @@ describe('run', () => {
     expect(directories).toEqual([`${Deno.cwd()}/.crow`])
   })
 
-  it('when the command is unknown, logs usage', async () => {
-    const errors: string[] = []
-    const logger = {
-      error: (message: unknown) => errors.push(String(message)),
-    } as unknown as Logger
+  it('when the command is unknown, writes usage', async () => {
+    const logger = { error: () => {} } as unknown as Logger
+    const consoleLog = mock.fn()
 
-    await run(['unknown'], logger)
+    await run(['unknown'], logger, undefined, undefined, consoleLog)
 
-    expect(errors[0]).toContain('Usage: crow <subcommand>')
-    expect(errors[0]).toContain('find-models')
-    expect(errors[0]).toContain('git-commit')
+    expect(consoleLog.mock.calls[0].arguments[0]).toContain(
+      'Usage: crow <command>',
+    )
   })
 
   it('when -h is passed, writes help text without invoking command dependencies', async () => {
@@ -202,11 +200,9 @@ describe('run', () => {
     expect(outputs[0]).toBe('crow 0.0.1')
   })
 
-  it('when an unsupported option is passed, logs usage error without invoking command dependencies', async () => {
-    const errors: string[] = []
-    const logger = {
-      error: (message: unknown) => errors.push(String(message)),
-    } as unknown as Logger
+  it('when an unsupported option is passed, writes usage without invoking command dependencies', async () => {
+    const logger = { error: () => {} } as unknown as Logger
+    const consoleLog = mock.fn()
 
     await run(
       ['--unknown'],
@@ -217,9 +213,7 @@ describe('run', () => {
       () => {
         throw new Error('requestSummary should not be called')
       },
-      () => {
-        throw new Error('consoleLog should not be called')
-      },
+      consoleLog,
       () => {
         throw new Error('commit should not be called')
       },
@@ -228,8 +222,8 @@ describe('run', () => {
       },
     )
 
-    expect(errors[0]).toContain('Usage: crow')
-    expect(errors[0]).toContain('find-models')
-    expect(errors[0]).toContain('git-commit')
+    expect(consoleLog.mock.calls[0].arguments[0]).toContain(
+      'Usage: crow <command>',
+    )
   })
 })

@@ -30,5 +30,5 @@ export const run = async (
     commit,
     buildCatalog,
   )
-  await new Cli(argumentsList, logger, subcommands, consoleLog).run()
+  await new Cli(argumentsList, subcommands, consoleLog).run()
 }
