@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { recoveryPending } from '../../agents/hooks/recovery-state.ts'
+import { recoveryPending } from '../../../agents/hooks/recovery-state.ts'
 
 const config = Deno.readTextFileSync('tests/support/fixtures/devin-config.json')
 
@@ -20,7 +20,7 @@ describe('block-random-execs', () => {
         'run',
         '--allow-env',
         '--allow-read',
-        'agents/block-random-execs.ts',
+        'agents/hooks/block-random-execs.ts',
       ],
       env: { DEVIN_PROJECT_DIR: projectDirectory },
       stdin: 'piped',
@@ -58,7 +58,7 @@ describe('block-random-execs', () => {
         'run',
         '--allow-env',
         '--allow-read',
-        'agents/block-random-execs.ts',
+        'agents/hooks/block-random-execs.ts',
       ],
       env: { DEVIN_PROJECT_DIR: projectDirectory },
       stdin: 'piped',
@@ -91,7 +91,7 @@ describe('block-random-execs', () => {
       tool_input: { command: 'echo hello' },
     })
 
-    const command = new Deno.Command('./agents/block-random-execs.ts', {
+    const command = new Deno.Command('./agents/hooks/block-random-execs.ts', {
       env: { DEVIN_PROJECT_DIR: projectDirectory },
       stdin: 'piped',
       stdout: 'piped',
@@ -126,7 +126,7 @@ describe('block-random-execs', () => {
         'run',
         '--allow-env',
         '--allow-read',
-        'agents/block-random-execs.ts',
+        'agents/hooks/block-random-execs.ts',
       ],
       env: { DEVIN_PROJECT_DIR: projectDirectory },
       stdin: 'piped',

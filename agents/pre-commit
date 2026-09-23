@@ -19,7 +19,7 @@ echo ""
 echo "--> Tests with coverage (95% per-file on branches, functions, lines)"
 bash dev/test
 bash agents/coverage-report
-bash agents/check-coverage.sh
+bash agents/check-coverage
 
 echo ""
 echo "==> All checks passed."

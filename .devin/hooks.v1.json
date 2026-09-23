@@ -5,7 +5,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "\"$DEVIN_PROJECT_DIR/agents/block-random-execs.ts\"",
+          "command": "\"$DEVIN_PROJECT_DIR/agents/hooks/block-random-execs.ts\"",
           "timeout": 10
         }
       ]
@@ -17,7 +17,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "\"$DEVIN_PROJECT_DIR/agents/stop-after-blocked-tool.ts\"",
+          "command": "\"$DEVIN_PROJECT_DIR/agents/hooks/stop-after-blocked-tool.ts\"",
           "timeout": 10
         }
       ]

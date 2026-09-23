@@ -2,15 +2,15 @@
 // PreToolUse hook: blocks exec calls outside the prescribed allowlist.
 // Prints {"decision":"block","reason":...} on stdout to deny; silence means pass.
 
-import { blockReason } from './hooks/block-reason.ts'
-import { commandAllowed } from './hooks/command-allowed.ts'
-import { DevinConfig } from './hooks/devin-config.ts'
+import { blockReason } from './block-reason.ts'
+import { commandAllowed } from './command-allowed.ts'
+import { DevinConfig } from './devin-config.ts'
 import {
   type RecoveryIds,
   recoveryIds,
   tryPruneRecovery,
   tryRecordRecovery,
-} from './hooks/recovery-payload.ts'
+} from './recovery-payload.ts'
 
 const fallback = 'Agent and dev scripts must be approved in .devin/config.json'
 

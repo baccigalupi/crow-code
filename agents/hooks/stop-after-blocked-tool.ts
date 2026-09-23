@@ -1,8 +1,8 @@
 #!/usr/bin/env -S deno run --allow-env --allow-read --allow-write
 // Stop hook: keeps the turn alive while a tool-call rejection is unrecovered.
 
-import { recoveryIds, tryPruneRecovery } from './hooks/recovery-payload.ts'
-import { stopDecision } from './hooks/stop-recovery.ts'
+import { recoveryIds, tryPruneRecovery } from './recovery-payload.ts'
+import { stopDecision } from './stop-recovery.ts'
 
 const readPayload = async () => {
   const text = await new Response(Deno.stdin.readable).text()

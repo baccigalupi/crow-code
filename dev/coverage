@@ -5,4 +5,4 @@ set -euo pipefail
 
 bash dev/test "$@"
 echo "==> Coverage summary"
-bash agents/coverage
+bash agents/lib/coverage

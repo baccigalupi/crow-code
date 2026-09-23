@@ -30,4 +30,4 @@ jobs:
         run: bash agents/coverage-report
 
       - name: Per-file coverage gate
-        run: bash agents/check-coverage.sh
+        run: bash agents/check-coverage

@@ -20,7 +20,7 @@ Never create scripts there to try to circumvent permissions.
 - Coverage: `agents/coverage-report`
 - Deno formatting: `agents/format-check`
 - TS check: `agents/typecheck`
-- Full gate (format, lint, typecheck, tests, coverage): `agents/pre-commit.sh`
+- Full gate (format, lint, typecheck, tests, coverage): `agents/pre-commit`
 
 ### Gates
 

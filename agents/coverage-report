@@ -2,4 +2,4 @@
 # Export the coverage profile collected by dev/test to lcov for machine checking.
 set -euo pipefail
 
-exec bash agents/coverage --lcov
+exec bash agents/lib/coverage --lcov

@@ -232,7 +232,7 @@ describe('commandAllowed', () => {
   })
 
   it('when command is an executable listed in config, returns true', () => {
-    const command = 'chmod +x agents/stop-after-blocked-tool.ts'
+    const command = 'chmod +x agents/hooks/stop-after-blocked-tool.ts'
 
     const result = commandAllowed(command, config)
 

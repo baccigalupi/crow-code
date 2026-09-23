@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { recordRecovery } from '../../agents/hooks/recovery-state.ts'
+import { recordRecovery } from '../../../agents/hooks/recovery-state.ts'
 
 describe('stop-after-blocked-tool', () => {
   it('when a recovery marker exists, prints a block decision', async () => {
@@ -12,12 +12,15 @@ describe('stop-after-blocked-tool', () => {
       prompt_id: 'first',
     })
 
-    const command = new Deno.Command('./agents/stop-after-blocked-tool.ts', {
-      env: { DEVIN_PROJECT_DIR: projectDirectory },
-      stdin: 'piped',
-      stdout: 'piped',
-      stderr: 'piped',
-    })
+    const command = new Deno.Command(
+      './agents/hooks/stop-after-blocked-tool.ts',
+      {
+        env: { DEVIN_PROJECT_DIR: projectDirectory },
+        stdin: 'piped',
+        stdout: 'piped',
+        stderr: 'piped',
+      },
+    )
     const process = command.spawn()
     const writer = process.stdin.getWriter()
     const encoder = new TextEncoder()
@@ -40,12 +43,15 @@ describe('stop-after-blocked-tool', () => {
       prompt_id: 'first',
     })
 
-    const command = new Deno.Command('./agents/stop-after-blocked-tool.ts', {
-      env: { DEVIN_PROJECT_DIR: projectDirectory },
-      stdin: 'piped',
-      stdout: 'piped',
-      stderr: 'piped',
-    })
+    const command = new Deno.Command(
+      './agents/hooks/stop-after-blocked-tool.ts',
+      {
+        env: { DEVIN_PROJECT_DIR: projectDirectory },
+        stdin: 'piped',
+        stdout: 'piped',
+        stderr: 'piped',
+      },
+    )
     const process = command.spawn()
     const writer = process.stdin.getWriter()
     const encoder = new TextEncoder()
@@ -69,7 +75,7 @@ describe('stop-after-blocked-tool', () => {
 
     expect(
       entries.some((command: string) =>
-        command.includes('agents/stop-after-blocked-tool.ts')
+        command.includes('agents/hooks/stop-after-blocked-tool.ts')
       ),
     ).toBe(true)
   })
