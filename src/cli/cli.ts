@@ -1,23 +1,23 @@
 import type { ConsoleLog, ParsedArguments } from '../types.ts'
-import type { FindModels } from './commands/find-models.ts'
+import type { CreateModelCatalog } from './commands/create-model-catalog.ts'
 import type { GitCommit } from './commands/git-commit.ts'
 import { Help } from './commands/help.ts'
 
 export class Cli {
   private parsed: ParsedArguments
   private consoleLog: ConsoleLog
-  private findModels: FindModels
+  private createModelCatalog: CreateModelCatalog
   private gitCommit: GitCommit
   private help: Help
 
   constructor(
     parsed: ParsedArguments,
-    findModels: FindModels,
+    createModelCatalog: CreateModelCatalog,
     gitCommit: GitCommit,
     consoleLog: ConsoleLog,
   ) {
     this.parsed = parsed
-    this.findModels = findModels
+    this.createModelCatalog = createModelCatalog
     this.gitCommit = gitCommit
     this.consoleLog = consoleLog
     this.help = new Help(consoleLog)
@@ -28,24 +28,33 @@ export class Cli {
   }
 
   private dispatch() {
-    if (this.parsed.help) {
+    if (this.helpRequested()) {
       return this.help.run()
     }
-    return this.dispatchVersionOrSubcommand()
+    return this.dispatchVersionOrCommand()
   }
 
-  private dispatchVersionOrSubcommand() {
-    if (this.parsed.version) {
+  private dispatchVersionOrCommand() {
+    if (this.versionRequested()) {
       return this.showVersion()
     }
-    return this.dispatchSubcommandOrError()
+    return this.dispatchCommand()
   }
 
-  private dispatchSubcommandOrError() {
-    if (this.parsed.unsupported.length > 0) {
-      return this.help.run()
-    }
-    return this.dispatchSubcommand()
+  private helpRequested() {
+    const options = this.parsed.options
+    return options.help === true || options.h === true
+  }
+
+  private versionRequested() {
+    const options = this.parsed.options
+    return options.version === true || options.V === true
+  }
+
+  private command() {
+    const first = this.parsed.commands[0]
+    if (first === undefined) return ''
+    return first
   }
 
   private showVersion() {
@@ -57,15 +66,15 @@ export class Cli {
     return JSON.parse(Deno.readTextFileSync(url)).version
   }
 
-  private dispatchSubcommand() {
-    if (this.parsed.subcommand === 'find-models') {
-      return this.findModels.run()
+  private dispatchCommand() {
+    if (this.command() === 'create-model-catalog') {
+      return this.createModelCatalog.run()
     }
     return this.dispatchGitCommitOrError()
   }
 
   private dispatchGitCommitOrError() {
-    if (this.parsed.subcommand === 'git-commit') {
+    if (this.command() === 'git-commit') {
       return this.gitCommit.run()
     }
     return this.help.run()

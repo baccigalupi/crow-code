@@ -1,8 +1,8 @@
 import type { Logger } from '../../types.ts'
 import { buildModelCatalog } from '../../model-info/catalog/build-model-catalog.ts'
 
-export class FindModels {
-  name: string = 'find-models'
+export class CreateModelCatalog {
+  name: string = 'create-model-catalog'
   private crowDirectory: string
   private logger: Logger
   private fetchClient: typeof fetch

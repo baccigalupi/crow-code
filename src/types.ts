@@ -3,11 +3,8 @@ import type pino from 'pino'
 export type Logger = pino.Logger
 
 export type ParsedArguments = {
-  subcommand: string
-  goal: string
-  help: boolean
-  version: boolean
-  unsupported: string[]
+  commands: string[]
+  options: Record<string, unknown>
 }
 
 export type ConsoleLog = typeof console.log

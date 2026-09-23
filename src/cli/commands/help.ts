@@ -3,7 +3,7 @@ import type { ConsoleLog } from '../../types.ts'
 const usageText = `Usage: crow <command>
 
 Available commands:
-  find-models   fetch model data into the crow directory
+  create-model-catalog   build models.json from live providers
   git-commit    generate a summary and commit staged changes`
 
 export class Help {

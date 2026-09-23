@@ -53,7 +53,7 @@ bd close <id>         # Complete work
 
 ### Rules
 
-- Before starting a plan, `bd create` an issue for it and
+- Before starting a plan (not a session), `bd create` an issue for it and
   `bd update <id> --claim`
 - Close an issue when the user confirms the work is done: `bd close <id>`
 - Run `bd prime` for detailed command reference and session close protocol

@@ -1,14 +1,14 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import { FindModels } from '../../../src/cli/commands/find-models.ts'
+import { CreateModelCatalog } from '../../../src/cli/commands/create-model-catalog.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import { mockFetchRoutes } from '../../support/mock-fetch.ts'
 import pino from 'pino'
 
-const fixtureDirectory = join(fixturesDirectory, 'find-models')
+const fixtureDirectory = join(fixturesDirectory, 'create-model-catalog')
 
-describe('FindModels', () => {
+describe('CreateModelCatalog', () => {
   beforeEach(() => clearDirectory(fixtureDirectory))
   afterEach(() => clearDirectory(fixtureDirectory))
 
@@ -28,7 +28,7 @@ describe('FindModels', () => {
     const logger = pino({ enabled: false })
     const fetchMock = mockFetchRoutes([['pile-driver', { models: [] }]])
 
-    await new FindModels(crowDirectory, logger, fetchMock).run()
+    await new CreateModelCatalog(crowDirectory, logger, fetchMock).run()
 
     expect(fetchMock.calls).toHaveLength(1)
     expect(Deno.statSync(join(crowDirectory, 'models.json')).isFile).toBe(true)

@@ -4,7 +4,7 @@ import { join } from '@std/path'
 import type { Logger } from '../src/types.ts'
 import { run } from '../src/cli.ts'
 import { clearDirectory, fixturesDirectory } from './support/fixtures.ts'
-import { mockFetchRoutes } from './support/mock-fetch.ts'
+import { mockFetchRoutes, mockFetchSuccess } from './support/mock-fetch.ts'
 import pino from 'pino'
 
 const crowDirectory = join(fixturesDirectory, 'cli', '.crow')
@@ -29,7 +29,7 @@ describe('run', () => {
     expect(commits).toEqual([])
   })
 
-  it('when find-models is requested, builds the model catalog', async () => {
+  it('when create-model-catalog is requested, builds the model catalog', async () => {
     await clearDirectory(crowDirectory)
     await Deno.mkdir(crowDirectory, { recursive: true })
     await Deno.writeTextFile(
@@ -46,7 +46,7 @@ describe('run', () => {
     const fetchMock = mockFetchRoutes([['pile-driver', { models: [] }]])
 
     await run(
-      ['find-models'],
+      ['create-model-catalog'],
       crowDirectory,
       logger,
       () => {},
@@ -88,7 +88,7 @@ describe('run', () => {
     )
 
     expect(outputs[0]).toContain('Usage: crow')
-    expect(outputs[0]).toContain('find-models')
+    expect(outputs[0]).toContain('create-model-catalog')
     expect(outputs[0]).toContain('git-commit')
   })
 
@@ -110,7 +110,7 @@ describe('run', () => {
     )
 
     expect(outputs[0]).toContain('Usage: crow')
-    expect(outputs[0]).toContain('find-models')
+    expect(outputs[0]).toContain('create-model-catalog')
     expect(outputs[0]).toContain('git-commit')
   })
 
@@ -152,6 +152,71 @@ describe('run', () => {
     )
 
     expect(outputs[0]).toBe('crow 0.0.1')
+  })
+
+  it('when no arguments are passed, writes usage', async () => {
+    const logger = { error: () => {} } as unknown as Logger
+    const consoleLog = mock.fn()
+
+    await run([], crowDirectory, logger, consoleLog)
+
+    expect(consoleLog.mock.calls[0].arguments[0]).toContain(
+      'Usage: crow <command>',
+    )
+  })
+
+  it('when git-commit is passed a goal, sends the goal in the request', async () => {
+    const crowDirectory = Deno.makeTempDirSync()
+    Deno.writeTextFileSync(
+      join(crowDirectory, 'models.json'),
+      JSON.stringify({
+        fetchedAt: '',
+        modelCount: 1,
+        models: [{
+          id: 'first-model',
+          name: 'First Model',
+          provider: 'nous',
+          reasoning: false,
+          reasoningOptions: [],
+          costInput: 0,
+          costOutput: 0,
+          contextLength: 1000,
+          modality: 'text->text',
+          knowledgeCutoff: null,
+          size: '',
+        }],
+      }),
+    )
+    Deno.writeTextFileSync(
+      join(crowDirectory, 'providers.json'),
+      JSON.stringify({
+        providers: [{
+          name: 'nous',
+          baseUrl: 'https://nous.example/v1',
+          apiKeyEnv: 'NOUS_TEST_KEY',
+        }],
+      }),
+    )
+    Deno.env.set('NOUS_TEST_KEY', 'secret-key')
+    const logger = { error: () => {} } as unknown as Logger
+    const fetchMock = mockFetchSuccess({
+      choices: [{ message: { content: 'summary' } }],
+    })
+
+    await run(
+      ['--goal=ship it', 'git-commit'],
+      crowDirectory,
+      logger,
+      () => {},
+      () => Promise.resolve(true),
+      fetchMock,
+    )
+
+    const request = fetchMock.calls[0] as Request
+    const body = await request.json()
+    expect(body.messages[1].content).toContain('ship it')
+    Deno.env.delete('NOUS_TEST_KEY')
+    Deno.removeSync(crowDirectory, { recursive: true })
   })
 
   it('when an unsupported option is passed, writes usage without invoking command dependencies', async () => {
