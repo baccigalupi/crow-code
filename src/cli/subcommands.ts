@@ -3,16 +3,16 @@ import type { Logger } from '../model-info/types.ts'
 import type {
   CatalogBuilder,
   Committer,
+  ConsoleLog,
   DiffReader,
   ParsedArguments,
   SummaryRequester,
-  SummaryWriter,
 } from '../types.ts'
 
 export class Subcommands {
   private readDiff: DiffReader
   private requestSummary: SummaryRequester
-  private writeSummary: SummaryWriter
+  private consoleLog: ConsoleLog
   private commit: Committer
   private buildCatalog: CatalogBuilder
   private logger: Logger
@@ -21,14 +21,14 @@ export class Subcommands {
     logger: Logger,
     readDiff: DiffReader,
     requestSummary: SummaryRequester,
-    writeSummary: SummaryWriter,
+    consoleLog: ConsoleLog,
     commit: Committer,
     buildCatalog: CatalogBuilder,
   ) {
     this.logger = logger
     this.readDiff = readDiff
     this.requestSummary = requestSummary
-    this.writeSummary = writeSummary
+    this.consoleLog = consoleLog
     this.commit = commit
     this.buildCatalog = buildCatalog
   }
@@ -39,7 +39,7 @@ export class Subcommands {
 
   async gitCommit(parsed: ParsedArguments) {
     const summary = await this.generateSummary(parsed.goal)
-    this.writeSummary(summary)
+    this.consoleLog(summary)
     await this.commitSummary(summary)
   }
 

@@ -2,9 +2,9 @@ import type { Logger } from './model-info/types.ts'
 import type {
   CatalogBuilder,
   Committer,
+  ConsoleLog,
   DiffReader,
   SummaryRequester,
-  SummaryWriter,
 } from './types.ts'
 import { Cli } from './cli/cli.ts'
 import { Subcommands } from './cli/subcommands.ts'
@@ -18,7 +18,7 @@ export const run = async (
   logger: Logger,
   readDiff: DiffReader = getCurrentDiff,
   requestSummary: SummaryRequester = requestCommitSummary,
-  writeSummary: SummaryWriter = console.log,
+  consoleLog: ConsoleLog = console.log,
   commit: Committer = commitChanges,
   buildCatalog: CatalogBuilder = buildModelCatalog,
 ): Promise<void> => {
@@ -26,9 +26,9 @@ export const run = async (
     logger,
     readDiff,
     requestSummary,
-    writeSummary,
+    consoleLog,
     commit,
     buildCatalog,
   )
-  await new Cli(argumentsList, logger, subcommands, writeSummary).run()
+  await new Cli(argumentsList, logger, subcommands, consoleLog).run()
 }

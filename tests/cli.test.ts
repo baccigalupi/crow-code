@@ -20,7 +20,7 @@ describe('run', () => {
       return Promise.resolve('Add git commit summaries')
     }
     const summaries: string[] = []
-    const write = (summary: string) => summaries.push(summary)
+    const consoleLog = (summary: string) => summaries.push(summary)
     const commits: string[] = []
     const commit = (summary: string) => {
       commits.push(summary)
@@ -32,7 +32,7 @@ describe('run', () => {
       logger,
       getDiff,
       requestSummary,
-      write,
+      consoleLog,
       commit,
     )
 
@@ -218,7 +218,7 @@ describe('run', () => {
         throw new Error('requestSummary should not be called')
       },
       () => {
-        throw new Error('writeSummary should not be called')
+        throw new Error('consoleLog should not be called')
       },
       () => {
         throw new Error('commit should not be called')

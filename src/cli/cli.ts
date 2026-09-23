@@ -1,24 +1,24 @@
 import type { Logger } from '../model-info/types.ts'
-import type { ParsedArguments, SummaryWriter } from '../types.ts'
+import type { ConsoleLog, ParsedArguments } from '../types.ts'
 import { parseArguments } from './arguments.ts'
 import type { Subcommands } from './subcommands.ts'
 
 export class Cli {
   private argumentsList: string[]
   private logger: Logger
-  private writeSummary: SummaryWriter
+  private consoleLog: ConsoleLog
   private commands: Subcommands
 
   constructor(
     argumentsList: string[],
     logger: Logger,
     commands: Subcommands,
-    writeSummary: SummaryWriter,
+    consoleLog: ConsoleLog,
   ) {
     this.argumentsList = argumentsList
     this.logger = logger
     this.commands = commands
-    this.writeSummary = writeSummary
+    this.consoleLog = consoleLog
   }
 
   run() {
@@ -48,11 +48,11 @@ export class Cli {
   }
 
   private showHelp() {
-    this.writeSummary(this.usageText())
+    this.consoleLog(this.usageText())
   }
 
   private showVersion() {
-    this.writeSummary(`crow ${this.projectVersion()}`)
+    this.consoleLog(`crow ${this.projectVersion()}`)
   }
 
   private showUsageError() {

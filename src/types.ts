@@ -14,7 +14,7 @@ export type DiffReader =
 export type SummaryRequester =
   typeof import('./tools/git-commit/request.ts').requestCommitSummary
 
-export type SummaryWriter = (summary: string) => void
+export type ConsoleLog = (summary: string) => void
 
 export type Committer = (summary: string, logger: Logger) => Promise<boolean>
 
