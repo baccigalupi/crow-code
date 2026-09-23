@@ -15,15 +15,16 @@ class Commit {
 
   async run() {
     try {
-      const command = new this.denoCommand('git', this.commandOptions())
-      return this.handleOutput(await command.output())
+      return this.handleOutput(await this.command().output())
     } catch (error) {
       return this.fail((error as Error).message)
     }
   }
 
-  private commandOptions() {
-    return { args: ['commit', '-m', this.message] }
+  private command() {
+    return new this.denoCommand('git', {
+      args: ['commit', '-m', this.message],
+    })
   }
 
   private handleOutput(output: Deno.CommandOutput) {
