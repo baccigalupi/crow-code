@@ -2,4 +2,4 @@
 # Run the test suite with coverage. Any arguments are forwarded to deno test.
 set -euo pipefail
 
-exec deno test --coverage --allow-env --allow-read --allow-write --allow-sys=hostname "$@"
+exec deno test --coverage --allow-env --allow-read --allow-write --allow-run --allow-sys=hostname "$@"

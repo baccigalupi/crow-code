@@ -2,6 +2,10 @@ import type { DevinConfig } from './devin-config.ts'
 
 const metacharPattern = /\$\(|`|<|>|;|\||&|\n/
 
+const shellSubstitutionPattern = /\$\(|`/
+
+const literalMultilineCommitPattern = /^git\s+commit(?:\s+-m\s+"[^"]*")+\s*$/
+
 const heredocOpenerPattern =
   /^git\s+commit\s+-F\s+-\s+<<'([A-Za-z0-9_.-]+)'\n([\s\S]*)$/
 
@@ -19,6 +23,20 @@ const isHeredocCommit = (command: string) => {
   }
   const lines = match[2].split('\n')
   return lines.indexOf(match[1]) === terminatorIndex(lines)
+}
+
+const hasShellSubstitution = (command: string) =>
+  shellSubstitutionPattern.test(command)
+
+const isLiteralMultilineCommit = (command: string) => {
+  const stripped = stripLeading(command)
+  return literalMultilineCommitPattern.test(stripped)
+}
+
+const isSafeShell = (command: string) => {
+  if (hasShellSubstitution(command)) return false
+  if (isLiteralMultilineCommit(command)) return true
+  return !metacharPattern.test(command) && doubleQuotesBalanced(command)
 }
 
 const doubleQuotesBalanced = (command: string) => {
@@ -60,15 +78,9 @@ const executableAllowed = (command: string, config: DevinConfig) => {
 }
 
 export const commandAllowed = (command: string, config: DevinConfig) => {
-  if (isHeredocCommit(command)) {
-    return true
-  }
-  if (metacharPattern.test(command) || !doubleQuotesBalanced(command)) {
-    return false
-  }
+  if (isHeredocCommit(command)) return true
+  if (!isSafeShell(command)) return false
   const stripped = stripLeading(command)
-  if (stripped.startsWith('git ')) {
-    return !gitPushPattern.test(stripped)
-  }
+  if (stripped.startsWith('git ')) return !gitPushPattern.test(stripped)
   return executableAllowed(stripped, config)
 }

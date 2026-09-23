@@ -87,6 +87,22 @@ describe('commandAllowed', () => {
     expect(result).toBe(true)
   })
 
+  it('when command is a literal multiline git commit, returns true', () => {
+    const command = 'git commit -m "subject\n\nbody"'
+
+    const result = commandAllowed(command, config)
+
+    expect(result).toBe(true)
+  })
+
+  it('when command is a literal multiline git commit with several -m flags, returns true', () => {
+    const command = 'git commit -m "subject" -m "body\n\nmore body"'
+
+    const result = commandAllowed(command, config)
+
+    expect(result).toBe(true)
+  })
+
   it('when command is a plain curl request, returns true', () => {
     const command = 'curl https://api.example.com'
 
@@ -105,6 +121,30 @@ describe('commandAllowed', () => {
 
   it('when command uses the cat heredoc substitution bypass, returns false', () => {
     const command = `git commit -m "$(cat <<'EOF'\nbody\nEOF\n)"`
+
+    const result = commandAllowed(command, config)
+
+    expect(result).toBe(false)
+  })
+
+  it('when command is a multiline git commit hiding command substitution, returns false', () => {
+    const command = 'git commit -m "subject\n$(whoami)"'
+
+    const result = commandAllowed(command, config)
+
+    expect(result).toBe(false)
+  })
+
+  it('when command is a multiline git commit hiding backticks, returns false', () => {
+    const command = 'git commit -m "subject\n`whoami`"'
+
+    const result = commandAllowed(command, config)
+
+    expect(result).toBe(false)
+  })
+
+  it('when command is a multiline git commit with unquoted shell syntax, returns false', () => {
+    const command = 'git commit -m "subject\nbody"\nrm -rf /'
 
     const result = commandAllowed(command, config)
 
