@@ -1,4 +1,4 @@
-import type { Logger } from '../../model-info/types.ts'
+import type { Logger } from '../../types.ts'
 
 type DenoCommand = typeof Deno.Command
 

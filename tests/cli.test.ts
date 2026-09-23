@@ -1,6 +1,6 @@
 import { describe, it, mock } from 'node:test'
 import { expect } from '@std/expect'
-import type { Logger } from '../src/model-info/types.ts'
+import type { Logger } from '../src/types.ts'
 import { run } from '../src/cli.ts'
 
 describe('run', () => {

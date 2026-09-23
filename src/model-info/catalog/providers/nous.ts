@@ -1,11 +1,7 @@
 import { fetchProvider } from './fetch-provider.ts'
 import { NousParser } from './nous/parser.ts'
-import type {
-  Logger,
-  ModelInfo,
-  NousApiRecord,
-  ProviderConfig,
-} from '../../types.ts'
+import type { Logger } from '../../../types.ts'
+import type { ModelInfo, NousApiRecord, ProviderConfig } from '../../types.ts'
 
 export const parseNousResponse = (
   raw: NousApiRecord,

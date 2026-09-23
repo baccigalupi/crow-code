@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import type { Logger } from '../../../src/model-info/types.ts'
+import type { Logger } from '../../../src/types.ts'
 import { commitChanges } from '../../../src/tools/git-commit/commit.ts'
 
 describe('commitChanges', () => {

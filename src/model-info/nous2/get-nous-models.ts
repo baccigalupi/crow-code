@@ -1,11 +1,7 @@
 import { fetchProvider } from '../catalog/providers/fetch-provider.ts'
 import { parseNousBody } from './parser.ts'
-import type {
-  CatalogModel,
-  Logger,
-  Nous2ApiBody,
-  ProviderConfig,
-} from '../types.ts'
+import type { Logger } from '../../types.ts'
+import type { CatalogModel, Nous2ApiBody, ProviderConfig } from '../types.ts'
 
 export const getNousModels = (
   config: ProviderConfig,

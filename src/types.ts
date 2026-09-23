@@ -1,4 +1,6 @@
-import type { Logger } from './model-info/types.ts'
+import type pino from 'pino'
+
+export type Logger = pino.Logger
 
 export type ParsedArguments = {
   subcommand: string
@@ -8,13 +10,16 @@ export type ParsedArguments = {
   unsupported: string[]
 }
 
-export type DiffReader =
-  typeof import('./tools/git-commit/current-diff.ts').getCurrentDiff
+export type DiffReader = (logger: Logger) => Promise<string>
 
-export type SummaryRequester =
-  typeof import('./tools/git-commit/request.ts').requestCommitSummary
+export type SummaryRequester = (
+  crowDirectory: string,
+  diff: string,
+  goal: string,
+  logger: Logger,
+) => Promise<string>
 
-export type ConsoleLog = (summary: string) => void
+export type ConsoleLog = typeof console.log
 
 export type Committer = (summary: string, logger: Logger) => Promise<boolean>
 

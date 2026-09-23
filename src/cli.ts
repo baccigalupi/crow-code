@@ -1,9 +1,9 @@
-import type { Logger } from './model-info/types.ts'
 import type {
   CatalogBuilder,
   Committer,
   ConsoleLog,
   DiffReader,
+  Logger,
   SummaryRequester,
 } from './types.ts'
 import { Cli } from './cli/cli.ts'

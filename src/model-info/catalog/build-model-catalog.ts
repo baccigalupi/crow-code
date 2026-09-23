@@ -1,7 +1,8 @@
 import { loadProviderConfig } from './providers/load-provider-config.ts'
 import { fetchProviders } from './providers/fetch-providers.ts'
 import { defaultModelCatalogPath, writeModelCatalog } from './model-catalog.ts'
-import type { Logger, ModelInfo } from '../types.ts'
+import type { Logger } from '../../types.ts'
+import type { ModelInfo } from '../types.ts'
 
 class BuildModelCatalog {
   private crowDirectory: string

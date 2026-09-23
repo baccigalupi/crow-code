@@ -1,11 +1,7 @@
 import { fetchProvider } from './fetch-provider.ts'
 import { OllamaParser } from './ollama/parser.ts'
-import type {
-  Logger,
-  ModelInfo,
-  OllamaApiRecord,
-  ProviderConfig,
-} from '../../types.ts'
+import type { Logger } from '../../../types.ts'
+import type { ModelInfo, OllamaApiRecord, ProviderConfig } from '../../types.ts'
 
 const ollamaTimeoutMs = 5000
 

@@ -1,5 +1,5 @@
 import { ApiRequest } from '../../api-request.ts'
-import type { Logger } from '../../model-info/types.ts'
+import type { Logger } from '../../types.ts'
 import { ExtractModelResponse } from '../../plan/extract-model-response.ts'
 import { modelRequest } from '../../plan/model-request.ts'
 import type { ModelEndpointDetails } from '../../plan/types.ts'

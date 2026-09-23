@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import type { Logger } from '../../../src/model-info/types.ts'
+import type { Logger } from '../../../src/types.ts'
 import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
 import { requestCommitSummary } from '../../../src/tools/git-commit/request.ts'
 

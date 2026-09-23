@@ -1,10 +1,10 @@
 import { join } from '@std/path'
-import type { Logger } from '../model-info/types.ts'
 import type {
   CatalogBuilder,
   Committer,
   ConsoleLog,
   DiffReader,
+  Logger,
   ParsedArguments,
   SummaryRequester,
 } from '../types.ts'
