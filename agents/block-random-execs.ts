@@ -2,12 +2,13 @@
 // PreToolUse hook: blocks exec calls outside the prescribed allowlist.
 // Prints {"decision":"block","reason":...} on stdout to deny; silence means pass.
 
+import { blockReason } from './hooks/block-reason.ts'
 import { commandAllowed } from './hooks/command-allowed.ts'
 import { DevinConfig } from './hooks/devin-config.ts'
 
-const reason = 'Agent and dev scripts must be approved in .devin/config.json'
+const fallback = 'Agent and dev scripts must be approved in .devin/config.json'
 
-const block = () => {
+const block = (reason: string) => {
   console.log(JSON.stringify({ decision: 'block', reason }))
 }
 
@@ -37,10 +38,10 @@ const extractCommand = (payload: any) => {
 const main = async () => {
   const command = extractCommand(await readPayload())
   const projectDirectory = Deno.env.get('DEVIN_PROJECT_DIR')
-  if (command === null || projectDirectory === undefined) return block()
+  if (command === null || projectDirectory === undefined) return block(fallback)
   const path = `${projectDirectory}/.devin/config.json`
   const config = new DevinConfig(await Deno.readTextFile(path))
-  if (!commandAllowed(command, config)) block()
+  if (!commandAllowed(command, config)) block(blockReason(command, config))
 }
 
 await main()

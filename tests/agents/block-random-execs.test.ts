@@ -77,4 +77,41 @@ describe('block-random-execs', () => {
 
     expect(stdout).toContain('"decision":"block"')
   })
+
+  it('when a recognized guess is blocked, the reason names the approved script', async () => {
+    const projectDirectory = Deno.makeTempDirSync()
+    Deno.mkdirSync(`${projectDirectory}/.devin`)
+    Deno.writeTextFileSync(`${projectDirectory}/.devin/config.json`, config)
+
+    const payload = JSON.stringify({
+      tool_name: 'exec',
+      tool_input: { command: 'deno test tests/foo.test.ts' },
+    })
+
+    const command = new Deno.Command('deno', {
+      args: [
+        'run',
+        '--allow-env',
+        '--allow-read',
+        'agents/block-random-execs.ts',
+      ],
+      env: { DEVIN_PROJECT_DIR: projectDirectory },
+      stdin: 'piped',
+      stdout: 'piped',
+      stderr: 'piped',
+    })
+    const process = command.spawn()
+    const writer = process.stdin.getWriter()
+    const encoder = new TextEncoder()
+    await writer.write(encoder.encode(payload))
+    await writer.close()
+    const output = await process.output()
+
+    Deno.removeSync(projectDirectory, { recursive: true })
+
+    const stdout = new TextDecoder().decode(output.stdout)
+
+    expect(stdout).toContain('"decision":"block"')
+    expect(stdout).toContain('dev/test')
+  })
 })

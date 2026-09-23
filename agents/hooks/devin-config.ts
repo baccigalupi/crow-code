@@ -17,6 +17,18 @@ export class DevinConfig {
     return this.matches(command, this.file.permissions.allow)
   }
 
+  allowedExecs() {
+    return this.file.permissions.allow.flatMap(this.execPrefix)
+  }
+
+  private execPrefix(rule: string) {
+    const match = /^Exec\(([^()]+)\)$/.exec(rule)
+    if (match === null) {
+      return []
+    }
+    return [match[1]]
+  }
+
   private matches(command: string, rules: string[]) {
     return rules.some(this.ruleMatches.bind(this, command))
   }
