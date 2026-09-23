@@ -89,6 +89,7 @@ const readGitActivity = (since) => {
   if (since !== null) {
     command.push('--since', since)
   }
+  command.push('--', '.', ':(exclude)tests/support/fixtures/')
 
   let raw = ''
   try {
