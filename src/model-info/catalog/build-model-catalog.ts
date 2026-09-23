@@ -52,7 +52,7 @@ export const buildModelCatalog = async (
   crowDirectory: string,
   logger: Logger,
   fetchClient: typeof fetch = fetch,
-): Promise<void> => {
+) => {
   const builder = new BuildModelCatalog(crowDirectory, fetchClient, logger)
   return await builder.run()
 }

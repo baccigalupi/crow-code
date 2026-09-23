@@ -1,12 +1,6 @@
 Source:
 
-- new files
-  - [src/tools/git-commit/endpoint.ts](/src/tools/git-commit/endpoint.ts#L1)
-  - [src/tools/git-commit/messages.ts](/src/tools/git-commit/messages.ts#L1)
-  - [src/tools/git-commit/request.ts](/src/tools/git-commit/request.ts#L1)
-- updates
-  - [bin/crow.ts](/bin/crow.ts#L1)
-  - [src/cli.ts](/src/cli.ts#L8)
+- new files updates
   - [src/model-info/catalog/build-model-catalog.ts](/src/model-info/catalog/build-model-catalog.ts#L55)
 
 Tests:

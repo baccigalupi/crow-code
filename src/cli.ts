@@ -17,7 +17,7 @@ Available subcommands:
 type DiffReader = typeof getCurrentDiff
 type SummaryRequester = typeof requestCommitSummary
 type SummaryWriter = (summary: string) => void
-type CatalogBuilder = typeof buildModelCatalog
+type CatalogBuilder = (crowDirectory: string, logger: Logger) => Promise<void>
 
 class Cli {
   private argumentsList: string[]
