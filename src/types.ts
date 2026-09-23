@@ -10,15 +10,6 @@ export type ParsedArguments = {
   unsupported: string[]
 }
 
-export type DiffReader = (logger: Logger) => Promise<string>
-
-export type SummaryRequester = (
-  crowDirectory: string,
-  diff: string,
-  goal: string,
-  logger: Logger,
-) => Promise<string>
-
 export type ConsoleLog = typeof console.log
 export type DenoCommand = typeof Deno.Command
 

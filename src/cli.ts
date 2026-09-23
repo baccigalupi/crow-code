@@ -1,34 +1,20 @@
-import type {
-  CatalogBuilder,
-  Committer,
-  ConsoleLog,
-  DiffReader,
-  Logger,
-  SummaryRequester,
-} from './types.ts'
+import type { CatalogBuilder, Committer, ConsoleLog, Logger } from './types.ts'
+import { parseArguments } from './cli/arguments.ts'
 import { Cli } from './cli/cli.ts'
+import { GitCommit } from './cli/commands/git-commit.ts'
 import { Subcommands } from './cli/subcommands.ts'
 import { buildModelCatalog } from './model-info/catalog/build-model-catalog.ts'
 import { commitChanges } from './tools/git-commit/commit.ts'
-import { getCurrentDiff } from './tools/git-commit/current-diff.ts'
-import { requestCommitSummary } from './tools/git-commit/request.ts'
 
 export const run = async (
   argumentsList: string[],
   logger: Logger,
-  readDiff: DiffReader = getCurrentDiff,
-  requestSummary: SummaryRequester = requestCommitSummary,
   consoleLog: ConsoleLog = console.log,
   commit: Committer = commitChanges,
   buildCatalog: CatalogBuilder = buildModelCatalog,
 ): Promise<void> => {
-  const subcommands = new Subcommands(
-    logger,
-    readDiff,
-    requestSummary,
-    consoleLog,
-    commit,
-    buildCatalog,
-  )
-  await new Cli(argumentsList, subcommands, consoleLog).run()
+  const parsed = parseArguments(argumentsList)
+  const subcommands = new Subcommands(logger, buildCatalog)
+  const gitCommit = new GitCommit(parsed.goal, logger, consoleLog, commit)
+  await new Cli(parsed, subcommands, gitCommit, consoleLog).run()
 }

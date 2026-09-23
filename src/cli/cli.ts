@@ -1,49 +1,51 @@
 import type { ConsoleLog, ParsedArguments } from '../types.ts'
-import { parseArguments } from './arguments.ts'
+import type { GitCommit } from './commands/git-commit.ts'
 import { Help } from './commands/help.ts'
 import type { Subcommands } from './subcommands.ts'
 
 export class Cli {
-  private argumentsList: string[]
+  private parsed: ParsedArguments
   private consoleLog: ConsoleLog
   private commands: Subcommands
+  private gitCommit: GitCommit
   private help: Help
 
   constructor(
-    argumentsList: string[],
+    parsed: ParsedArguments,
     commands: Subcommands,
+    gitCommit: GitCommit,
     consoleLog: ConsoleLog,
   ) {
-    this.argumentsList = argumentsList
+    this.parsed = parsed
     this.commands = commands
+    this.gitCommit = gitCommit
     this.consoleLog = consoleLog
     this.help = new Help(consoleLog)
   }
 
   run() {
-    const parsed = parseArguments(this.argumentsList)
-    return this.dispatch(parsed)
+    return this.dispatch()
   }
 
-  private dispatch(parsed: ParsedArguments) {
-    if (parsed.help) {
+  private dispatch() {
+    if (this.parsed.help) {
       return this.help.run()
     }
-    return this.dispatchVersionOrSubcommand(parsed)
+    return this.dispatchVersionOrSubcommand()
   }
 
-  private dispatchVersionOrSubcommand(parsed: ParsedArguments) {
-    if (parsed.version) {
+  private dispatchVersionOrSubcommand() {
+    if (this.parsed.version) {
       return this.showVersion()
     }
-    return this.dispatchSubcommandOrError(parsed)
+    return this.dispatchSubcommandOrError()
   }
 
-  private dispatchSubcommandOrError(parsed: ParsedArguments) {
-    if (parsed.unsupported.length > 0) {
+  private dispatchSubcommandOrError() {
+    if (this.parsed.unsupported.length > 0) {
       return this.help.run()
     }
-    return this.dispatchSubcommand(parsed)
+    return this.dispatchSubcommand()
   }
 
   private showVersion() {
@@ -55,16 +57,16 @@ export class Cli {
     return JSON.parse(Deno.readTextFileSync(url)).version
   }
 
-  private dispatchSubcommand(parsed: ParsedArguments) {
-    if (parsed.subcommand === 'find-models') {
+  private dispatchSubcommand() {
+    if (this.parsed.subcommand === 'find-models') {
       return this.commands.findModels()
     }
-    return this.dispatchGitCommitOrError(parsed)
+    return this.dispatchGitCommitOrError()
   }
 
-  private dispatchGitCommitOrError(parsed: ParsedArguments) {
-    if (parsed.subcommand === 'git-commit') {
-      return this.commands.gitCommit(parsed)
+  private dispatchGitCommitOrError() {
+    if (this.parsed.subcommand === 'git-commit') {
+      return this.gitCommit.run()
     }
     return this.help.run()
   }
