@@ -6,21 +6,56 @@ import type { ModelEndpointDetails } from '../../plan/types.ts'
 import { modelEndpointInfo } from './endpoint.ts'
 import { requestMessages } from './messages.ts'
 
-const parseSummary = (content: string) => content.trim()
-const parseModelResponse = (response: Response) => {
-  return new ExtractModelResponse(response, parseSummary).extract()
-}
+class CommitSummaryRequest {
+  private crowDirectory: string
+  private endpoint!: ReturnType<typeof modelEndpointInfo>
+  private diff: string
+  private goal: string
+  private logger: Logger
+  private fetchClient: typeof fetch
 
-const performRequest = (
-  endpoint: ModelEndpointDetails,
-  diff: string,
-  goal: string,
-  logger: Logger,
-  fetchClient: typeof fetch,
-) => {
-  const request = modelRequest(endpoint, requestMessages(diff, goal))
-  return new ApiRequest(request, fetchClient, parseModelResponse, logger)
-    .perform()
+  constructor(
+    crowDirectory: string,
+    diff: string,
+    goal: string,
+    logger: Logger,
+    fetchClient: typeof fetch,
+  ) {
+    this.crowDirectory = crowDirectory
+    this.diff = diff
+    this.goal = goal
+    this.logger = logger
+    this.fetchClient = fetchClient
+  }
+
+  perform(): Promise<string> {
+    if (this.endpointIsUnavailable()) return Promise.resolve('')
+
+    return this.request(this.endpoint.value())
+  }
+
+  private endpointIsUnavailable() {
+    this.endpoint = modelEndpointInfo(this.crowDirectory)
+    return !this.endpoint.isAvailable()
+  }
+
+  private request(endpoint: ModelEndpointDetails) {
+    const request = modelRequest(
+      endpoint,
+      requestMessages(this.diff, this.goal),
+    )
+    const parseResponse = this.parseResponse.bind(this)
+    return new ApiRequest(request, this.fetchClient, parseResponse, this.logger)
+      .perform()
+  }
+
+  private parseResponse(response: Response) {
+    return new ExtractModelResponse(response, this.parseSummary).extract()
+  }
+
+  private parseSummary(content: string) {
+    return content.trim()
+  }
 }
 
 export const requestCommitSummary = (
@@ -30,7 +65,11 @@ export const requestCommitSummary = (
   logger: Logger,
   fetchClient: typeof fetch = fetch,
 ): Promise<string> => {
-  const endpoint = modelEndpointInfo(crowDirectory)
-  if (!endpoint.isAvailable()) return Promise.resolve('')
-  return performRequest(endpoint.value(), diff, goal, logger, fetchClient)
+  return new CommitSummaryRequest(
+    crowDirectory,
+    diff,
+    goal,
+    logger,
+    fetchClient,
+  ).perform()
 }
