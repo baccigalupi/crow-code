@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import type { Logger } from '../../../src/types.ts'
+import type { DenoCommand, Logger } from '../../../src/types.ts'
 import { getCurrentDiff } from '../../../src/tools/git-commit/current-diff.ts'
 
 class FakeLogger {
@@ -35,7 +35,7 @@ describe('getCurrentDiff', () => {
 
     await getCurrentDiff(
       new FakeLogger() as unknown as Logger,
-      FakeCommand as unknown as typeof Deno.Command,
+      FakeCommand as unknown as DenoCommand,
     )
 
     expect(executable).toBe('git')
@@ -57,7 +57,7 @@ describe('getCurrentDiff', () => {
 
     const diff = await getCurrentDiff(
       new FakeLogger() as unknown as Logger,
-      FakeCommand as unknown as typeof Deno.Command,
+      FakeCommand as unknown as DenoCommand,
     )
 
     expect(diff).toBe('diff --git a/file b/file')
@@ -80,7 +80,7 @@ describe('getCurrentDiff', () => {
 
     const diff = await getCurrentDiff(
       logger as unknown as Logger,
-      FakeCommand as unknown as typeof Deno.Command,
+      FakeCommand as unknown as DenoCommand,
     )
 
     expect(diff).toBe('')
@@ -98,7 +98,7 @@ describe('getCurrentDiff', () => {
 
     const diff = await getCurrentDiff(
       logger as unknown as Logger,
-      FakeCommand as unknown as typeof Deno.Command,
+      FakeCommand as unknown as DenoCommand,
     )
 
     expect(diff).toBe('')

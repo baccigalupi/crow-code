@@ -1,6 +1,4 @@
-import type { Logger } from '../../types.ts'
-
-type DenoCommand = typeof Deno.Command
+import type { DenoCommand, Logger } from '../../types.ts'
 
 class Commit {
   private message: string

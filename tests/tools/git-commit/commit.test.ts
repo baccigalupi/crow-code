@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import type { Logger } from '../../../src/types.ts'
+import type { DenoCommand, Logger } from '../../../src/types.ts'
 import { commitChanges } from '../../../src/tools/git-commit/commit.ts'
 
 describe('commitChanges', () => {
@@ -28,7 +28,7 @@ describe('commitChanges', () => {
     await commitChanges(
       'Add commit support',
       { error: () => {} } as unknown as Logger,
-      FakeCommand as unknown as typeof Deno.Command,
+      FakeCommand as unknown as DenoCommand,
     )
 
     expect(executable).toBe('git')
@@ -51,7 +51,7 @@ describe('commitChanges', () => {
     const success = await commitChanges(
       'Add commit support',
       { error: () => {} } as unknown as Logger,
-      FakeCommand as unknown as typeof Deno.Command,
+      FakeCommand as unknown as DenoCommand,
     )
 
     expect(success).toBe(true)
@@ -78,7 +78,7 @@ describe('commitChanges', () => {
     const success = await commitChanges(
       'Add commit support',
       logger,
-      FakeCommand as unknown as typeof Deno.Command,
+      FakeCommand as unknown as DenoCommand,
     )
 
     expect(success).toBe(false)
@@ -100,7 +100,7 @@ describe('commitChanges', () => {
     const success = await commitChanges(
       'Add commit support',
       logger,
-      FakeCommand as unknown as typeof Deno.Command,
+      FakeCommand as unknown as DenoCommand,
     )
 
     expect(success).toBe(false)
