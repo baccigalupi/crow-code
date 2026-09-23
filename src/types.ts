@@ -14,8 +14,3 @@ export type ConsoleLog = typeof console.log
 export type DenoCommand = typeof Deno.Command
 
 export type Committer = (summary: string, logger: Logger) => Promise<boolean>
-
-export type CatalogBuilder = (
-  crowDirectory: string,
-  logger: Logger,
-) => Promise<void>

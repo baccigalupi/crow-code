@@ -1,9 +1,12 @@
-import { describe, it } from 'node:test'
+import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import type { Logger } from '../../../src/types.ts'
+import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
 import { GitCommit } from '../../../src/cli/commands/git-commit.ts'
+
+const crowDirectory = join(fixturesDirectory, 'git-commit', '.crow')
 
 const model = {
   id: 'first-model',
@@ -26,9 +29,7 @@ const provider = {
 }
 
 const setupCrowDirectory = () => {
-  const directory = Deno.makeTempDirSync()
-  const crowDirectory = join(directory, '.crow')
-  Deno.mkdirSync(crowDirectory)
+  Deno.mkdirSync(crowDirectory, { recursive: true })
   Deno.writeTextFileSync(
     join(crowDirectory, 'models.json'),
     JSON.stringify({ fetchedAt: '', modelCount: 1, models: [model] }),
@@ -37,13 +38,14 @@ const setupCrowDirectory = () => {
     join(crowDirectory, 'providers.json'),
     JSON.stringify({ providers: [provider] }),
   )
-  return directory
 }
 
 describe('GitCommit', () => {
+  beforeEach(() => clearDirectory(crowDirectory))
+  afterEach(() => clearDirectory(crowDirectory))
+
   it('when a summary is generated, logs it and commits with it', async () => {
-    const directory = setupCrowDirectory()
-    const originalCwd = Deno.cwd()
+    setupCrowDirectory()
     Deno.env.set('NOUS_TEST_KEY', 'secret-key')
     const logger = { error: () => {} } as unknown as Logger
     const summaries: string[] = []
@@ -57,10 +59,14 @@ describe('GitCommit', () => {
       choices: [{ message: { content: 'Add commit summaries' } }],
     })
 
-    Deno.chdir(directory)
-    await new GitCommit('ship command', logger, consoleLog, commit, fetchMock)
-      .run()
-    Deno.chdir(originalCwd)
+    await new GitCommit(
+      'ship command',
+      crowDirectory,
+      logger,
+      consoleLog,
+      commit,
+      fetchMock,
+    ).run()
 
     const request = fetchMock.calls[0] as Request
     const body = await request.json()
@@ -68,12 +74,10 @@ describe('GitCommit', () => {
     expect(commits).toEqual(['Add commit summaries'])
     expect(body.messages[1].content).toContain('ship command')
     Deno.env.delete('NOUS_TEST_KEY')
-    Deno.removeSync(directory, { recursive: true })
   })
 
   it('when the summary is empty, logs it and does not commit', async () => {
-    const directory = setupCrowDirectory()
-    const originalCwd = Deno.cwd()
+    setupCrowDirectory()
     Deno.env.set('NOUS_TEST_KEY', 'secret-key')
     const logger = { error: () => {} } as unknown as Logger
     const summaries: string[] = []
@@ -85,14 +89,17 @@ describe('GitCommit', () => {
     }
     const fetchMock = mockFetchError(500)
 
-    Deno.chdir(directory)
-    await new GitCommit('ship command', logger, consoleLog, commit, fetchMock)
-      .run()
-    Deno.chdir(originalCwd)
+    await new GitCommit(
+      'ship command',
+      crowDirectory,
+      logger,
+      consoleLog,
+      commit,
+      fetchMock,
+    ).run()
 
     expect(summaries).toEqual([''])
     expect(commits).toEqual([])
     Deno.env.delete('NOUS_TEST_KEY')
-    Deno.removeSync(directory, { recursive: true })
   })
 })

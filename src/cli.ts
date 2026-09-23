@@ -1,20 +1,27 @@
-import type { CatalogBuilder, Committer, ConsoleLog, Logger } from './types.ts'
+import type { Committer, ConsoleLog, Logger } from './types.ts'
 import { parseArguments } from './cli/arguments.ts'
 import { Cli } from './cli/cli.ts'
+import { FindModels } from './cli/commands/find-models.ts'
 import { GitCommit } from './cli/commands/git-commit.ts'
-import { Subcommands } from './cli/subcommands.ts'
-import { buildModelCatalog } from './model-info/catalog/build-model-catalog.ts'
 import { commitChanges } from './tools/git-commit/commit.ts'
 
 export const run = async (
   argumentsList: string[],
+  crowDirectory: string,
   logger: Logger,
   consoleLog: ConsoleLog = console.log,
   commit: Committer = commitChanges,
-  buildCatalog: CatalogBuilder = buildModelCatalog,
+  fetchClient: typeof fetch = fetch,
 ): Promise<void> => {
   const parsed = parseArguments(argumentsList)
-  const subcommands = new Subcommands(logger, buildCatalog)
-  const gitCommit = new GitCommit(parsed.goal, logger, consoleLog, commit)
-  await new Cli(parsed, subcommands, gitCommit, consoleLog).run()
+  const findModels = new FindModels(crowDirectory, logger, fetchClient)
+  const gitCommit = new GitCommit(
+    parsed.goal,
+    crowDirectory,
+    logger,
+    consoleLog,
+    commit,
+    fetchClient,
+  )
+  await new Cli(parsed, findModels, gitCommit, consoleLog).run()
 }

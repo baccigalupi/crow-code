@@ -7,7 +7,7 @@ import { run } from '../src/cli.ts'
 const crowDirectory = join(Deno.cwd(), '.crow')
 const logger = createLogger(crowDirectory, 'debug')
 
-run(Deno.args, logger).catch((error) => {
+run(Deno.args, crowDirectory, logger).catch((error) => {
   logger.error(error)
   Deno.exit(1)
 })

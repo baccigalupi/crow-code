@@ -1,4 +1,3 @@
-import { join } from '@std/path'
 import type { Committer, ConsoleLog, Logger } from '../../types.ts'
 import { getCurrentDiff } from '../../tools/git-commit/current-diff.ts'
 import { requestCommitSummary } from '../../tools/git-commit/request.ts'
@@ -6,6 +5,7 @@ import { requestCommitSummary } from '../../tools/git-commit/request.ts'
 export class GitCommit {
   name: string = 'git-commit'
   private goal: string
+  private crowDirectory: string
   private logger: Logger
   private consoleLog: ConsoleLog
   private commit: Committer
@@ -14,12 +14,14 @@ export class GitCommit {
 
   constructor(
     goal: string,
+    crowDirectory: string,
     logger: Logger,
     consoleLog: ConsoleLog,
     commit: Committer,
     fetchClient: typeof fetch = fetch,
   ) {
     this.goal = goal
+    this.crowDirectory = crowDirectory
     this.logger = logger
     this.consoleLog = consoleLog
     this.commit = commit
@@ -36,7 +38,7 @@ export class GitCommit {
   private async generateSummary() {
     const diff = await getCurrentDiff(this.logger)
     return requestCommitSummary(
-      this.crowDirectory(),
+      this.crowDirectory,
       diff,
       this.goal,
       this.logger,
@@ -47,9 +49,5 @@ export class GitCommit {
   private async commitSummary() {
     if (this.summary.length === 0) return
     await this.commit(this.summary, this.logger)
-  }
-
-  private crowDirectory() {
-    return join(Deno.cwd(), '.crow')
   }
 }

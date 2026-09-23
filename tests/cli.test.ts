@@ -1,7 +1,13 @@
 import { describe, it, mock } from 'node:test'
 import { expect } from '@std/expect'
+import { join } from '@std/path'
 import type { Logger } from '../src/types.ts'
 import { run } from '../src/cli.ts'
+import { clearDirectory, fixturesDirectory } from './support/fixtures.ts'
+import { mockFetchRoutes } from './support/mock-fetch.ts'
+import pino from 'pino'
+
+const crowDirectory = join(fixturesDirectory, 'cli', '.crow')
 
 describe('run', () => {
   it('when the generated summary is empty, does not commit', async () => {
@@ -14,6 +20,7 @@ describe('run', () => {
 
     await run(
       ['git-commit'],
+      crowDirectory,
       logger,
       () => {},
       commit,
@@ -23,29 +30,40 @@ describe('run', () => {
   })
 
   it('when find-models is requested, builds the model catalog', async () => {
-    const logger = { error: () => {} } as unknown as Logger
-    const directories: string[] = []
-    const buildCatalog = (crowDirectory: string) => {
-      directories.push(crowDirectory)
-      return Promise.resolve()
-    }
+    await clearDirectory(crowDirectory)
+    await Deno.mkdir(crowDirectory, { recursive: true })
+    await Deno.writeTextFile(
+      join(crowDirectory, 'providers.json'),
+      JSON.stringify({
+        providers: [{
+          name: 'ollama',
+          baseUrl: 'http://pile-driver.local:11434',
+          modelsUrl: 'http://pile-driver.local:11434/api/tags',
+        }],
+      }),
+    )
+    const logger = pino({ enabled: false })
+    const fetchMock = mockFetchRoutes([['pile-driver', { models: [] }]])
 
     await run(
       ['find-models'],
+      crowDirectory,
       logger,
+      () => {},
       undefined,
-      undefined,
-      buildCatalog,
+      fetchMock,
     )
 
-    expect(directories).toEqual([`${Deno.cwd()}/.crow`])
+    expect(fetchMock.calls).toHaveLength(1)
+    expect(Deno.statSync(join(crowDirectory, 'models.json')).isFile).toBe(true)
+    await clearDirectory(crowDirectory)
   })
 
   it('when the command is unknown, writes usage', async () => {
     const logger = { error: () => {} } as unknown as Logger
     const consoleLog = mock.fn()
 
-    await run(['unknown'], logger, consoleLog)
+    await run(['unknown'], crowDirectory, logger, consoleLog)
 
     expect(consoleLog.mock.calls[0].arguments[0]).toContain(
       'Usage: crow <command>',
@@ -58,13 +76,14 @@ describe('run', () => {
 
     await run(
       ['-h'],
+      crowDirectory,
       logger,
       (summary: string) => outputs.push(summary),
       () => {
         throw new Error('commit should not be called')
       },
       () => {
-        throw new Error('buildCatalog should not be called')
+        throw new Error('fetch should not be called')
       },
     )
 
@@ -79,13 +98,14 @@ describe('run', () => {
 
     await run(
       ['--help'],
+      crowDirectory,
       logger,
       (summary: string) => outputs.push(summary),
       () => {
         throw new Error('commit should not be called')
       },
       () => {
-        throw new Error('buildCatalog should not be called')
+        throw new Error('fetch should not be called')
       },
     )
 
@@ -100,13 +120,14 @@ describe('run', () => {
 
     await run(
       ['-V'],
+      crowDirectory,
       logger,
       (summary: string) => outputs.push(summary),
       () => {
         throw new Error('commit should not be called')
       },
       () => {
-        throw new Error('buildCatalog should not be called')
+        throw new Error('fetch should not be called')
       },
     )
 
@@ -119,13 +140,14 @@ describe('run', () => {
 
     await run(
       ['--version'],
+      crowDirectory,
       logger,
       (summary: string) => outputs.push(summary),
       () => {
         throw new Error('commit should not be called')
       },
       () => {
-        throw new Error('buildCatalog should not be called')
+        throw new Error('fetch should not be called')
       },
     )
 
@@ -138,13 +160,14 @@ describe('run', () => {
 
     await run(
       ['--unknown'],
+      crowDirectory,
       logger,
       consoleLog,
       () => {
         throw new Error('commit should not be called')
       },
       () => {
-        throw new Error('buildCatalog should not be called')
+        throw new Error('fetch should not be called')
       },
     )
 
