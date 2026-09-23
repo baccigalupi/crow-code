@@ -231,16 +231,24 @@ describe('commandAllowed', () => {
     expect(result).toBe(false)
   })
 
-  it('when command is an unrelated executable, returns false', () => {
-    const command = 'echo hello'
+  it('when command is an executable listed in config, returns true', () => {
+    const command = 'chmod +x agents/stop-after-blocked-tool.ts'
 
     const result = commandAllowed(command, config)
 
-    expect(result).toBe(false)
+    expect(result).toBe(true)
   })
 
-  it('when command contains a destructive executable, returns false', () => {
-    const command = 'rm -rf /'
+  it('when command is rm listed in config, returns true', () => {
+    const command = 'rm -rf /tmp/x'
+
+    const result = commandAllowed(command, config)
+
+    expect(result).toBe(true)
+  })
+
+  it('when command is an unrelated executable, returns false', () => {
+    const command = 'echo hello'
 
     const result = commandAllowed(command, config)
 

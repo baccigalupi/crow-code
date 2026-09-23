@@ -60,3 +60,7 @@ bd close <id>         # Complete work
 - Use `bd remember` for persistent knowledge — do NOT use MEMORY.md files
 - `.beads/*.jsonl` is tracked state — always stage it with the work it records.
   Never leave it behind as "unrelated"
+- A rejected or canceled tool call is not a stopping condition — report the
+  block, then continue permitted work (retry canceled siblings individually).
+- Never batch a verification command (dev/test, agents/typecheck) in the same
+  parallel block as calls that may be rejected — one rejection cancels the rest.

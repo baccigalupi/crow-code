@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
+import { recoveryPending } from '../../agents/hooks/recovery-state.ts'
 
 const config = Deno.readTextFileSync('tests/support/fixtures/devin-config.json')
 
@@ -76,6 +77,38 @@ describe('block-random-execs', () => {
     const stdout = new TextDecoder().decode(output.stdout)
 
     expect(stdout).toContain('"decision":"block"')
+  })
+
+  it('when a denied payload carries ids, records a recovery marker', async () => {
+    const projectDirectory = Deno.makeTempDirSync()
+    Deno.mkdirSync(`${projectDirectory}/.devin`)
+    Deno.writeTextFileSync(`${projectDirectory}/.devin/config.json`, config)
+
+    const payload = JSON.stringify({
+      session_id: 'one',
+      prompt_id: 'first',
+      tool_name: 'exec',
+      tool_input: { command: 'echo hello' },
+    })
+
+    const command = new Deno.Command('./agents/block-random-execs.ts', {
+      env: { DEVIN_PROJECT_DIR: projectDirectory },
+      stdin: 'piped',
+      stdout: 'piped',
+      stderr: 'piped',
+    })
+    const process = command.spawn()
+    const writer = process.stdin.getWriter()
+    const encoder = new TextEncoder()
+    await writer.write(encoder.encode(payload))
+    await writer.close()
+    await process.output()
+
+    const exists = await recoveryPending(projectDirectory, 'one', 'first')
+
+    Deno.removeSync(projectDirectory, { recursive: true })
+
+    expect(exists).toBe(true)
   })
 
   it('when a recognized guess is blocked, the reason names the approved script', async () => {

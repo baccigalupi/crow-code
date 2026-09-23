@@ -10,6 +10,7 @@ tests/support/fixtures/env/
 tests/support/fixtures/logger/
 .env
 .env.local
+.devin/state/
 
 .vitest/
 docs/plans/

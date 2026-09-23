@@ -10,5 +10,17 @@
         }
       ]
     }
+  ],
+  "Stop": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "\"$DEVIN_PROJECT_DIR/agents/stop-after-blocked-tool.ts\"",
+          "timeout": 10
+        }
+      ]
+    }
   ]
 }

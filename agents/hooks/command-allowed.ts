@@ -68,14 +68,8 @@ const stripLeading = (command: string) => {
 const gitPushPattern =
   /^git(?:\s+(?:-[A-Za-z0-9-]+(?:\s+\S+)?|[^-\s]\S*))*\s+push\b/
 
-const executableAllowed = (command: string, config: DevinConfig) => {
-  if (command.startsWith('agents/') || command.startsWith('dev/')) {
-    return config.allowsExec(command)
-  }
-  if (command.startsWith('bd ')) return true
-  if (command.startsWith('curl ')) return true
-  return false
-}
+const executableAllowed = (command: string, config: DevinConfig) =>
+  config.allowsExec(command)
 
 export const commandAllowed = (command: string, config: DevinConfig) => {
   if (isHeredocCommit(command)) return true

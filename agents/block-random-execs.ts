@@ -1,16 +1,18 @@
-#!/usr/bin/env -S deno run
+#!/usr/bin/env -S deno run --allow-env --allow-read --allow-write
 // PreToolUse hook: blocks exec calls outside the prescribed allowlist.
 // Prints {"decision":"block","reason":...} on stdout to deny; silence means pass.
 
 import { blockReason } from './hooks/block-reason.ts'
 import { commandAllowed } from './hooks/command-allowed.ts'
 import { DevinConfig } from './hooks/devin-config.ts'
+import {
+  type RecoveryIds,
+  recoveryIds,
+  tryPruneRecovery,
+  tryRecordRecovery,
+} from './hooks/recovery-payload.ts'
 
 const fallback = 'Agent and dev scripts must be approved in .devin/config.json'
-
-const block = (reason: string) => {
-  console.log(JSON.stringify({ decision: 'block', reason }))
-}
 
 const readPayload = async () => {
   const text = await new Response(Deno.stdin.readable).text()
@@ -35,13 +37,37 @@ const extractCommand = (payload: any) => {
   return payload.tool_input.command
 }
 
-const main = async () => {
-  const command = extractCommand(await readPayload())
-  const projectDirectory = Deno.env.get('DEVIN_PROJECT_DIR')
-  if (command === null || projectDirectory === undefined) return block(fallback)
+const loadConfig = async (projectDirectory: string) => {
   const path = `${projectDirectory}/.devin/config.json`
-  const config = new DevinConfig(await Deno.readTextFile(path))
-  if (!commandAllowed(command, config)) block(blockReason(command, config))
+  return new DevinConfig(await Deno.readTextFile(path))
+}
+
+const decide = async (
+  command: string | null,
+  projectDirectory: string | undefined,
+) => {
+  if (command === null || projectDirectory === undefined) return fallback
+  const config = await loadConfig(projectDirectory)
+  if (commandAllowed(command, config)) return null
+  return blockReason(command, config)
+}
+
+const block = async (
+  reason: string,
+  projectDirectory: string | undefined,
+  ids: RecoveryIds,
+) => {
+  await tryRecordRecovery(projectDirectory, ids)
+  console.log(JSON.stringify({ decision: 'block', reason }))
+}
+
+const main = async () => {
+  const payload = await readPayload()
+  const projectDirectory = Deno.env.get('DEVIN_PROJECT_DIR')
+  const ids = recoveryIds(payload)
+  await tryPruneRecovery(projectDirectory, ids)
+  const reason = await decide(extractCommand(payload), projectDirectory)
+  if (reason !== null) await block(reason, projectDirectory, ids)
 }
 
 await main()
