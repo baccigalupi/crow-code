@@ -21,6 +21,11 @@ describe('run', () => {
     }
     const summaries: string[] = []
     const write = (summary: string) => summaries.push(summary)
+    const commits: string[] = []
+    const commit = (summary: string) => {
+      commits.push(summary)
+      return Promise.resolve(true)
+    }
 
     await run(
       ['git-commit', 'ship', 'the', 'command'],
@@ -28,11 +33,35 @@ describe('run', () => {
       getDiff,
       requestSummary,
       write,
+      commit,
     )
 
     expect(requests).toEqual([['current diff', 'ship the command']])
     expect(summaries).toEqual(['Add git commit summaries'])
+    expect(commits).toEqual(['Add git commit summaries'])
     expect(errors).toEqual([])
+  })
+
+  it('when the generated summary is empty, does not commit', async () => {
+    const logger = { error: () => {} } as unknown as Logger
+    const getDiff = () => Promise.resolve('current diff')
+    const requestSummary = () => Promise.resolve('')
+    const commits: string[] = []
+    const commit = (summary: string) => {
+      commits.push(summary)
+      return Promise.resolve(true)
+    }
+
+    await run(
+      ['git-commit'],
+      logger,
+      getDiff,
+      requestSummary,
+      () => {},
+      commit,
+    )
+
+    expect(commits).toEqual([])
   })
 
   it('when find-models is requested, builds the model catalog', async () => {
@@ -46,6 +75,7 @@ describe('run', () => {
     await run(
       ['find-models'],
       logger,
+      undefined,
       undefined,
       undefined,
       undefined,

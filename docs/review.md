@@ -1,14 +1,13 @@
 Source:
 
-- new files updates
-  - [src/model-info/catalog/build-model-catalog.ts](/src/model-info/catalog/build-model-catalog.ts#L55)
+- new files
+  - [src/tools/git-commit/commit.ts](/src/tools/git-commit/commit.ts#L1)
+- updates
+  - [src/cli.ts](/src/cli.ts#L1)
 
 Tests:
 
 - new files
-  - [tests/cli.test.ts](/tests/cli.test.ts#L1)
-  - [tests/tools/git-commit/current-diff.test.ts](/tests/tools/git-commit/current-diff.test.ts#L1)
-  - [tests/tools/git-commit/messages.test.ts](/tests/tools/git-commit/messages.test.ts#L1)
-  - [tests/tools/git-commit/request.test.ts](/tests/tools/git-commit/request.test.ts#L1)
+  - [tests/tools/git-commit/commit.test.ts](/tests/tools/git-commit/commit.test.ts#L1)
 - updates
-  - _none_
+  - [tests/cli.test.ts](/tests/cli.test.ts#L24)
