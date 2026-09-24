@@ -2,4 +2,4 @@
 # Regenerate .crow/models.json from live provider
 set -euo pipefail
 
-exec deno run --allow-read --allow-write --allow-env --allow-net --allow-sys=hostname bin/crow.ts create-model-catalog
+exec bin/crow create-model-catalog

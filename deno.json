@@ -6,7 +6,7 @@
     ".": "./src/cli.ts"
   },
   "bin": {
-    "crow": "bin/crow.ts"
+    "crow": "bin/crow"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1.0.19",
