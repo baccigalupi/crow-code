@@ -8,6 +8,7 @@ import type {
 } from '../../types.ts'
 
 export abstract class Command {
+  protected data: CommandApplicationData
   protected crowDirectory: string
   protected logger: Logger
   protected consoleLog: ConsoleLog
@@ -17,6 +18,7 @@ export abstract class Command {
   protected options: ParsedArgumentsOptions
 
   constructor(data: CommandApplicationData, options: ParsedArgumentsOptions) {
+    this.data = data
     this.crowDirectory = data.crowDirectory
     this.logger = data.logger
     this.consoleLog = data.consoleLog

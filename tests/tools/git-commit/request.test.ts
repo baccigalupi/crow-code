@@ -3,6 +3,7 @@ import { expect } from '@std/expect'
 import { join } from '@std/path'
 import type { Logger } from '../../../src/types.ts'
 import { Environment } from '../../../src/env-vars.ts'
+import { mockFetchRejected } from '../../support/mock-fetch.ts'
 import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
 import { requestCommitSummary } from '../../../src/tools/git-commit/request.ts'
 
@@ -50,12 +51,16 @@ describe('requestCommitSummary', () => {
     })
 
     const summary = await requestCommitSummary(
-      crowDirectory,
       'diff contents',
       'ship command',
-      logger,
-      environment,
-      fetchMock,
+      {
+        crowDirectory,
+        logger,
+        consoleLog: () => {},
+        fetchClient: fetchMock,
+        denoCommand: Deno.Command,
+        environment,
+      },
     )
 
     const request = fetchMock.calls[0] as Request
@@ -86,14 +91,14 @@ describe('requestCommitSummary', () => {
       choices: [{ message: { content: 'Fallback summary' } }],
     })
 
-    await requestCommitSummary(
+    await requestCommitSummary('diff', '', {
       crowDirectory,
-      'diff',
-      '',
       logger,
+      consoleLog: () => {},
+      fetchClient: fetchMock,
+      denoCommand: Deno.Command,
       environment,
-      fetchMock,
-    )
+    })
 
     const request = fetchMock.calls[0] as Request
     const body = await request.json()
@@ -112,14 +117,14 @@ describe('requestCommitSummary', () => {
     const environment = new Environment({ NOUS_TEST_KEY: 'secret-key' })
     const logger = { error: () => {} } as unknown as Logger
 
-    const summary = await requestCommitSummary(
+    const summary = await requestCommitSummary('diff contents', '', {
       crowDirectory,
-      'diff contents',
-      '',
       logger,
+      consoleLog: () => {},
+      fetchClient: mockFetchError(500),
+      denoCommand: Deno.Command,
       environment,
-      mockFetchError(500),
-    )
+    })
 
     expect(summary).toBe('')
     Deno.removeSync(crowDirectory, { recursive: true })
@@ -131,13 +136,14 @@ describe('requestCommitSummary', () => {
     writeProviders(crowDirectory, [])
     const logger = { error: () => {} } as unknown as Logger
 
-    const summary = await requestCommitSummary(
+    const summary = await requestCommitSummary('diff', '', {
       crowDirectory,
-      'diff',
-      '',
       logger,
-      new Environment({}),
-    )
+      consoleLog: () => {},
+      fetchClient: mockFetchRejected('fetch should not be called'),
+      denoCommand: Deno.Command,
+      environment: new Environment({}),
+    })
 
     expect(summary).toBe('')
     Deno.removeSync(crowDirectory, { recursive: true })
@@ -149,13 +155,14 @@ describe('requestCommitSummary', () => {
     writeProviders(crowDirectory, [])
     const logger = { error: () => {} } as unknown as Logger
 
-    const summary = await requestCommitSummary(
+    const summary = await requestCommitSummary('diff', '', {
       crowDirectory,
-      'diff',
-      '',
       logger,
-      new Environment({}),
-    )
+      consoleLog: () => {},
+      fetchClient: mockFetchRejected('fetch should not be called'),
+      denoCommand: Deno.Command,
+      environment: new Environment({}),
+    })
 
     expect(summary).toBe('')
     Deno.removeSync(crowDirectory, { recursive: true })
@@ -171,13 +178,14 @@ describe('requestCommitSummary', () => {
     }])
     const logger = { error: () => {} } as unknown as Logger
 
-    const summary = await requestCommitSummary(
+    const summary = await requestCommitSummary('diff', '', {
       crowDirectory,
-      'diff',
-      '',
       logger,
-      new Environment({}),
-    )
+      consoleLog: () => {},
+      fetchClient: mockFetchRejected('fetch should not be called'),
+      denoCommand: Deno.Command,
+      environment: new Environment({}),
+    })
 
     expect(summary).toBe('')
     Deno.removeSync(crowDirectory, { recursive: true })

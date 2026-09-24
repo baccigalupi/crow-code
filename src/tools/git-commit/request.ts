@@ -1,6 +1,5 @@
 import { ApiRequest } from '../../api-request.ts'
-import type { Environment } from '../../env-vars.ts'
-import type { Logger } from '../../types.ts'
+import type { CommandApplicationData } from '../../types.ts'
 import { ExtractModelResponse } from '../../plan/extract-model-response.ts'
 import { modelRequest } from '../../plan/model-request.ts'
 import type { ModelEndpointDetails } from '../../plan/types.ts'
@@ -8,28 +7,15 @@ import { modelEndpointInfo } from './endpoint.ts'
 import { requestMessages } from './messages.ts'
 
 class CommitSummaryRequest {
-  private crowDirectory: string
   private endpoint!: ReturnType<typeof modelEndpointInfo>
   private diff: string
   private goal: string
-  private logger: Logger
-  private environment: Environment
-  private fetchClient: typeof fetch
+  private data: CommandApplicationData
 
-  constructor(
-    crowDirectory: string,
-    diff: string,
-    goal: string,
-    logger: Logger,
-    environment: Environment,
-    fetchClient: typeof fetch,
-  ) {
-    this.crowDirectory = crowDirectory
+  constructor(diff: string, goal: string, data: CommandApplicationData) {
     this.diff = diff
     this.goal = goal
-    this.logger = logger
-    this.environment = environment
-    this.fetchClient = fetchClient
+    this.data = data
   }
 
   perform(): Promise<string> {
@@ -39,7 +25,10 @@ class CommitSummaryRequest {
   }
 
   private endpointIsUnavailable() {
-    this.endpoint = modelEndpointInfo(this.crowDirectory, this.environment)
+    this.endpoint = modelEndpointInfo(
+      this.data.crowDirectory,
+      this.data.environment,
+    )
     return !this.endpoint.isAvailable()
   }
 
@@ -49,8 +38,12 @@ class CommitSummaryRequest {
       requestMessages(this.diff, this.goal),
     )
     const parseResponse = this.parseResponse.bind(this)
-    return new ApiRequest(request, this.fetchClient, parseResponse, this.logger)
-      .perform()
+    return new ApiRequest(
+      request,
+      this.data.fetchClient,
+      parseResponse,
+      this.data.logger,
+    ).perform()
   }
 
   private parseResponse(response: Response) {
@@ -63,19 +56,9 @@ class CommitSummaryRequest {
 }
 
 export const requestCommitSummary = (
-  crowDirectory: string,
   diff: string,
   goal: string,
-  logger: Logger,
-  environment: Environment,
-  fetchClient: typeof fetch = fetch,
+  data: CommandApplicationData,
 ): Promise<string> => {
-  return new CommitSummaryRequest(
-    crowDirectory,
-    diff,
-    goal,
-    logger,
-    environment,
-    fetchClient,
-  ).perform()
+  return new CommitSummaryRequest(diff, goal, data).perform()
 }
