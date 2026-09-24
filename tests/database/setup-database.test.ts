@@ -20,7 +20,7 @@ describe('setupDatabase', () => {
     expect(Deno.statSync(defaultDatabasePath(crowDirectory)).isFile).toBe(true)
   })
 
-  it('when called, creates only the migration tracking tables', async () => {
+  it('when called, creates the providers table', async () => {
     const logger = pino({ enabled: false })
     await setupDatabase(crowDirectory, logger)
 
@@ -29,14 +29,10 @@ describe('setupDatabase', () => {
       connection: { filename: defaultDatabasePath(crowDirectory) },
       useNullAsDefault: true,
     })
-    const rows = await database.raw(`
-      SELECT name FROM sqlite_master
-      WHERE type = 'table' AND name NOT LIKE 'knex_%'
-        AND name NOT LIKE 'sqlite_%'
-    `)
+    const hasProviders = await database.schema.hasTable('providers')
     await database.destroy()
 
-    expect(rows).toEqual([])
+    expect(hasProviders).toBe(true)
   })
 
   it('when called twice, is idempotent', async () => {

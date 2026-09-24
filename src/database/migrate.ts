@@ -1,7 +1,8 @@
 import type { Knex } from 'knex'
 import type { Logger, Migration } from '../types.ts'
+import { createProviders } from './migrations/create-providers.ts'
 
-export const migrations: Migration[] = []
+export const migrations: Migration[] = [createProviders]
 
 const migrationSource = (
   migrationList: Migration[],
