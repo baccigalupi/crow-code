@@ -83,6 +83,14 @@ describe('run', () => {
     expect(Deno.statSync(join(crowDirectory, 'models.json')).isFile).toBe(true)
   })
 
+  it('when setup is requested, creates the crow database', async () => {
+    const logger = pino({ enabled: false })
+
+    await run(['setup'], crowDirectory, logger, () => {})
+
+    expect(Deno.statSync(join(crowDirectory, 'crow.db')).isFile).toBe(true)
+  })
+
   it('when the command is unknown, writes usage', async () => {
     const logger = { error: () => {} } as unknown as Logger
     const consoleLog = mock.fn()

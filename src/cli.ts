@@ -5,6 +5,7 @@ import type { Command } from './cli/commands/command.ts'
 import { CreateModelCatalog } from './cli/commands/create-model-catalog.ts'
 import { GitCommit } from './cli/commands/git-commit.ts'
 import { Help } from './cli/commands/help.ts'
+import { Setup } from './cli/commands/setup.ts'
 import { Version } from './cli/commands/version.ts'
 
 class Cli {
@@ -23,6 +24,7 @@ class Cli {
       new Version(this.data),
       new CreateModelCatalog(this.data),
       new GitCommit(this.data),
+      new Setup(this.data),
       new Help(this.data),
     ]
   }

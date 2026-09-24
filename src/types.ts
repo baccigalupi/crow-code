@@ -1,7 +1,10 @@
+import type { Knex } from 'knex'
 import type pino from 'pino'
 import type { Environment } from './env-vars.ts'
 
 export type Logger = pino.Logger
+
+export type Migration = Knex.Migration & { name: string }
 
 export type ParsedArgumentsOptions = Record<string, unknown>
 

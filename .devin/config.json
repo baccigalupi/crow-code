@@ -34,7 +34,8 @@
       "Exec(curl)",
       "Exec(chmod)",
       "Exec(rm)",
-      "Exec(deno doc)"
+      "Exec(deno doc)",
+      "Exec(bin/crow)"
     ],
     "deny": [
       "Exec(cd)",
