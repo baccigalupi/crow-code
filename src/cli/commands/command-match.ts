@@ -1,8 +1,8 @@
-import type { ParsedArguments } from '../../types.ts'
+import type { ParsedArguments, ParsedArgumentsOptions } from '../../types.ts'
 
 export abstract class CommandMatch {
   protected commands: string[]
-  protected options: ParsedArguments['options']
+  protected options: ParsedArgumentsOptions
 
   constructor(parsedArguments: ParsedArguments) {
     this.commands = parsedArguments.commands
@@ -10,4 +10,5 @@ export abstract class CommandMatch {
   }
 
   abstract isMatch(): boolean
+  abstract extractOptions(): ParsedArgumentsOptions
 }

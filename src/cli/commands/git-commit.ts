@@ -1,31 +1,34 @@
-import type { Committer, ConsoleLog, Logger } from '../../types.ts'
+import type {
+  CommandApplicationData,
+  Committer,
+  ConsoleLog,
+  Logger,
+} from '../../types.ts'
 import { getCurrentDiff } from '../../tools/git-commit/current-diff.ts'
 import { requestCommitSummary } from '../../tools/git-commit/request.ts'
+import { CommandMatch } from './command-match.ts'
 
 export class GitCommit {
   name: string = 'git-commit'
-  private goal: string
   private crowDirectory: string
   private logger: Logger
   private consoleLog: ConsoleLog
-  private commit: Committer
   private fetchClient: typeof fetch
+  private goal: string
+  private commit: Committer
   private summary: string
 
   constructor(
+    data: CommandApplicationData,
     goal: string,
-    crowDirectory: string,
-    logger: Logger,
-    consoleLog: ConsoleLog,
     commit: Committer,
-    fetchClient: typeof fetch = fetch,
   ) {
+    this.crowDirectory = data.crowDirectory
+    this.logger = data.logger
+    this.consoleLog = data.consoleLog
+    this.fetchClient = data.fetchClient
     this.goal = goal
-    this.crowDirectory = crowDirectory
-    this.logger = logger
-    this.consoleLog = consoleLog
     this.commit = commit
-    this.fetchClient = fetchClient
     this.summary = ''
   }
 
@@ -49,5 +52,15 @@ export class GitCommit {
   private async commitSummary() {
     if (this.summary.length === 0) return
     await this.commit(this.summary, this.logger)
+  }
+}
+
+export class GitCommitMatch extends CommandMatch {
+  isMatch() {
+    return this.commands[0] === 'git-commit'
+  }
+
+  extractOptions() {
+    return { goal: this.options.goal }
   }
 }

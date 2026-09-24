@@ -1,5 +1,6 @@
-import type { Logger } from '../../types.ts'
+import type { CommandApplicationData, Logger } from '../../types.ts'
 import { buildModelCatalog } from '../../model-info/catalog/build-model-catalog.ts'
+import { CommandMatch } from './command-match.ts'
 
 export class CreateModelCatalog {
   name: string = 'create-model-catalog'
@@ -7,14 +8,10 @@ export class CreateModelCatalog {
   private logger: Logger
   private fetchClient: typeof fetch
 
-  constructor(
-    crowDirectory: string,
-    logger: Logger,
-    fetchClient: typeof fetch = fetch,
-  ) {
-    this.crowDirectory = crowDirectory
-    this.logger = logger
-    this.fetchClient = fetchClient
+  constructor(data: CommandApplicationData) {
+    this.crowDirectory = data.crowDirectory
+    this.logger = data.logger
+    this.fetchClient = data.fetchClient
   }
 
   run() {
@@ -23,5 +20,15 @@ export class CreateModelCatalog {
       this.logger,
       this.fetchClient,
     )
+  }
+}
+
+export class CreateModelCatalogMatch extends CommandMatch {
+  isMatch() {
+    return this.commands[0] === 'create-model-catalog'
+  }
+
+  extractOptions() {
+    return {}
   }
 }

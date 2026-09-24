@@ -2,12 +2,21 @@ import type pino from 'pino'
 
 export type Logger = pino.Logger
 
+export type ParsedArgumentsOptions = Record<string, unknown>
+
 export type ParsedArguments = {
   commands: string[]
-  options: Record<string, unknown>
+  options: ParsedArgumentsOptions
 }
 
 export type ConsoleLog = typeof console.log
 export type DenoCommand = typeof Deno.Command
 
 export type Committer = (summary: string, logger: Logger) => Promise<boolean>
+
+export type CommandApplicationData = {
+  crowDirectory: string
+  logger: Logger
+  consoleLog: ConsoleLog
+  fetchClient: typeof fetch
+}

@@ -1,4 +1,10 @@
-import type { Committer, ConsoleLog, Logger, ParsedArguments } from './types.ts'
+import type {
+  CommandApplicationData,
+  Committer,
+  ConsoleLog,
+  Logger,
+  ParsedArguments,
+} from './types.ts'
 import { parseArguments } from './cli/arguments.ts'
 import { Cli } from './cli/cli.ts'
 import { CreateModelCatalog } from './cli/commands/create-model-catalog.ts'
@@ -19,18 +25,17 @@ export const run = async (
   fetchClient: typeof fetch = fetch,
 ): Promise<void> => {
   const parsed = parseArguments(argumentsList)
-  const createModelCatalog = new CreateModelCatalog(
-    crowDirectory,
-    logger,
-    fetchClient,
-  )
-  const gitCommit = new GitCommit(
-    goalFrom(parsed),
+  const commandData: CommandApplicationData = {
     crowDirectory,
     logger,
     consoleLog,
-    commit,
     fetchClient,
+  }
+  const createModelCatalog = new CreateModelCatalog(commandData)
+  const gitCommit = new GitCommit(
+    commandData,
+    goalFrom(parsed),
+    commit,
   )
-  await new Cli(parsed, createModelCatalog, gitCommit, consoleLog).run()
+  await new Cli(parsed, createModelCatalog, gitCommit, commandData).run()
 }

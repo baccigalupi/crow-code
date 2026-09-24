@@ -4,7 +4,10 @@ import { join } from '@std/path'
 import type { Logger } from '../../../src/types.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
-import { GitCommit } from '../../../src/cli/commands/git-commit.ts'
+import {
+  GitCommit,
+  GitCommitMatch,
+} from '../../../src/cli/commands/git-commit.ts'
 
 const crowDirectory = join(fixturesDirectory, 'git-commit', '.crow')
 
@@ -60,12 +63,14 @@ describe('GitCommit', () => {
     })
 
     await new GitCommit(
+      {
+        crowDirectory,
+        logger,
+        consoleLog,
+        fetchClient: fetchMock,
+      },
       'ship command',
-      crowDirectory,
-      logger,
-      consoleLog,
       commit,
-      fetchMock,
     ).run()
 
     const request = fetchMock.calls[0] as Request
@@ -90,16 +95,47 @@ describe('GitCommit', () => {
     const fetchMock = mockFetchError(500)
 
     await new GitCommit(
+      {
+        crowDirectory,
+        logger,
+        consoleLog,
+        fetchClient: fetchMock,
+      },
       'ship command',
-      crowDirectory,
-      logger,
-      consoleLog,
       commit,
-      fetchMock,
     ).run()
 
     expect(summaries).toEqual([''])
     expect(commits).toEqual([])
     Deno.env.delete('NOUS_TEST_KEY')
+  })
+})
+
+describe('GitCommitMatch', () => {
+  it('when the command is git-commit, returns true', () => {
+    const match = new GitCommitMatch({
+      commands: ['git-commit'],
+      options: {},
+    })
+
+    expect(match.isMatch()).toBe(true)
+  })
+
+  it('when the command is something else, returns false', () => {
+    const match = new GitCommitMatch({
+      commands: ['create-model-catalog'],
+      options: {},
+    })
+
+    expect(match.isMatch()).toBe(false)
+  })
+
+  it('extracts the goal option', () => {
+    const match = new GitCommitMatch({
+      commands: ['git-commit'],
+      options: { goal: 'ship it' },
+    })
+
+    expect(match.extractOptions()).toEqual({ goal: 'ship it' })
   })
 })

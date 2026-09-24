@@ -1,11 +1,11 @@
-import type { ConsoleLog, ParsedArguments } from '../types.ts'
+import type { CommandApplicationData, ParsedArguments } from '../types.ts'
 import type { CreateModelCatalog } from './commands/create-model-catalog.ts'
 import type { GitCommit } from './commands/git-commit.ts'
 import { Help } from './commands/help.ts'
 
 export class Cli {
   private parsed: ParsedArguments
-  private consoleLog: ConsoleLog
+  private commandData: CommandApplicationData
   private createModelCatalog: CreateModelCatalog
   private gitCommit: GitCommit
   private help: Help
@@ -14,13 +14,13 @@ export class Cli {
     parsed: ParsedArguments,
     createModelCatalog: CreateModelCatalog,
     gitCommit: GitCommit,
-    consoleLog: ConsoleLog,
+    commandData: CommandApplicationData,
   ) {
     this.parsed = parsed
     this.createModelCatalog = createModelCatalog
     this.gitCommit = gitCommit
-    this.consoleLog = consoleLog
-    this.help = new Help(consoleLog)
+    this.commandData = commandData
+    this.help = new Help(commandData)
   }
 
   run() {
@@ -58,7 +58,7 @@ export class Cli {
   }
 
   private showVersion() {
-    this.consoleLog(`crow ${this.projectVersion()}`)
+    this.commandData.consoleLog(`crow ${this.projectVersion()}`)
   }
 
   private projectVersion() {
