@@ -1,32 +1,12 @@
-import type {
-  CommandApplicationData,
-  Logger,
-  ParsedArgumentsOptions,
-} from '../../types.ts'
 import { buildModelCatalog } from '../../model-info/catalog/build-model-catalog.ts'
+import { Command } from './command.ts'
 import { CommandMatch } from './command-match.ts'
 
-export class CreateModelCatalog {
+export class CreateModelCatalog extends Command {
   name: string = 'create-model-catalog'
-  private crowDirectory: string
-  private logger: Logger
-  private fetchClient: typeof fetch
 
-  constructor(
-    data: CommandApplicationData,
-    _options: ParsedArgumentsOptions,
-  ) {
-    this.crowDirectory = data.crowDirectory
-    this.logger = data.logger
-    this.fetchClient = data.fetchClient
-  }
-
-  run() {
-    return buildModelCatalog(
-      this.crowDirectory,
-      this.logger,
-      this.fetchClient,
-    )
+  async run() {
+    await buildModelCatalog(this.crowDirectory, this.logger, this.fetchClient)
   }
 }
 

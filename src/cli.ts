@@ -19,7 +19,7 @@ export const run = async (
   environment: Environment = loadEnvironmentalVariables(),
 ): Promise<void> => {
   const parsed = parseArguments(argumentsList)
-  const commandData: CommandApplicationData = {
+  const data: CommandApplicationData = {
     crowDirectory,
     logger,
     consoleLog,
@@ -27,17 +27,14 @@ export const run = async (
     denoCommand,
     environment,
   }
-  const createModelCatalog = new CreateModelCatalog(
-    commandData,
-    new CreateModelCatalogMatch(parsed).extractOptions(),
-  )
-  const gitCommit = new GitCommit(
-    commandData,
-    new GitCommitMatch(parsed).extractOptions(),
-  )
-  const help = new Help(
-    commandData,
-    new HelpMatch(parsed).extractOptions(),
-  )
-  await new Cli(parsed, createModelCatalog, gitCommit, help, commandData).run()
+  await new Cli(
+    parsed,
+    new CreateModelCatalog(
+      data,
+      new CreateModelCatalogMatch(parsed).extractOptions(),
+    ),
+    new GitCommit(data, new GitCommitMatch(parsed).extractOptions()),
+    new Help(data, new HelpMatch(parsed).extractOptions()),
+    data,
+  ).run()
 }

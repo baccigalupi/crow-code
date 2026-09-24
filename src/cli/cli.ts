@@ -1,20 +1,18 @@
 import type { CommandApplicationData, ParsedArguments } from '../types.ts'
-import type { CreateModelCatalog } from './commands/create-model-catalog.ts'
-import type { GitCommit } from './commands/git-commit.ts'
-import type { Help } from './commands/help.ts'
+import type { Command } from './commands/command.ts'
 
 export class Cli {
   private parsed: ParsedArguments
   private commandData: CommandApplicationData
-  private createModelCatalog: CreateModelCatalog
-  private gitCommit: GitCommit
-  private help: Help
+  private createModelCatalog: Command
+  private gitCommit: Command
+  private help: Command
 
   constructor(
     parsed: ParsedArguments,
-    createModelCatalog: CreateModelCatalog,
-    gitCommit: GitCommit,
-    help: Help,
+    createModelCatalog: Command,
+    gitCommit: Command,
+    help: Command,
     commandData: CommandApplicationData,
   ) {
     this.parsed = parsed
@@ -60,6 +58,7 @@ export class Cli {
 
   private showVersion() {
     this.commandData.consoleLog(`crow ${this.projectVersion()}`)
+    return Promise.resolve()
   }
 
   private projectVersion() {

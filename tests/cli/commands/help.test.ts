@@ -5,7 +5,7 @@ import { Help, HelpMatch } from '../../../src/cli/commands/help.ts'
 import { Environment } from '../../../src/env-vars.ts'
 
 describe('help', () => {
-  it('when run, writes the usage text', () => {
+  it('when run, writes the usage text', async () => {
     const consoleLog = mock.fn()
     const help = new Help(
       {
@@ -19,7 +19,7 @@ describe('help', () => {
       {},
     )
 
-    help.run()
+    await help.run()
 
     expect(consoleLog.mock.calls[0].arguments[0]).toContain(
       'Usage: crow <command>',

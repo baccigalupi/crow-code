@@ -1,8 +1,4 @@
-import type {
-  CommandApplicationData,
-  ConsoleLog,
-  ParsedArgumentsOptions,
-} from '../../types.ts'
+import { Command } from './command.ts'
 import { CommandMatch } from './command-match.ts'
 
 const usageText = `Usage: crow <command>
@@ -11,20 +7,13 @@ Available commands:
   create-model-catalog   build models.json from live providers
   git-commit    generate a summary and commit staged changes`
 
-export class Help {
+export class Help extends Command {
   name: string = 'help'
   alias: string = 'h'
-  private consoleLog: ConsoleLog
-
-  constructor(
-    data: CommandApplicationData,
-    _options: ParsedArgumentsOptions,
-  ) {
-    this.consoleLog = data.consoleLog
-  }
 
   run() {
     this.consoleLog(usageText)
+    return Promise.resolve()
   }
 }
 
