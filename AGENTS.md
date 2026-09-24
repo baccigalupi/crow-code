@@ -37,6 +37,13 @@ Never create scripts there to try to circumvent permissions.
 - When asked to commit, stage everything `git status` shows — modified and
   untracked — unless the user says to commit only specific work.
 
+## Planning
+
+- Invoke `/planning` whenever creating, researching, or revising a plan.
+- Never ask planning questions in chat; record all unknowns in the plan's
+  Assumptions table and resolve them through research or mark them as requiring
+  a user decision.
+
 ## Beads Issue Tracker
 
 This project uses **bd (beads)** for issue tracking. Run `bd prime` to see full
