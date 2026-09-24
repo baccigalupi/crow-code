@@ -8,9 +8,6 @@ Available commands:
   git-commit    generate a summary and commit staged changes`
 
 export class Help extends Command {
-  name: string = 'help'
-  alias: string = 'h'
-
   run() {
     this.consoleLog(usageText)
     return Promise.resolve()

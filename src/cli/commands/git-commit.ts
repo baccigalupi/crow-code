@@ -3,8 +3,6 @@ import { Command } from './command.ts'
 import { CommandMatch } from './command-match.ts'
 
 export class GitCommit extends Command {
-  name: string = 'git-commit'
-
   async run() {
     await commitWithSummary(this.options.goal as string, this.data)
   }
