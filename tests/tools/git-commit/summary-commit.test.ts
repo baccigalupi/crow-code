@@ -62,6 +62,7 @@ describe('commitWithSummary', () => {
     } as unknown as DenoCommand
 
     await commitWithSummary('ship command', {
+      parsedArguments: { commands: ['git-commit'], options: {} },
       crowDirectory,
       logger,
       consoleLog: (summary: string) => summaries.push(summary),
@@ -89,6 +90,7 @@ describe('commitWithSummary', () => {
     } as unknown as DenoCommand
 
     await commitWithSummary('ship command', {
+      parsedArguments: { commands: ['git-commit'], options: {} },
       crowDirectory,
       logger,
       consoleLog: (summary: string) => summaries.push(summary),

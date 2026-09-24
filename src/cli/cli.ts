@@ -1,25 +1,22 @@
-import type { CommandApplicationData, ParsedArguments } from '../types.ts'
+import type { CommandApplicationData } from '../types.ts'
 import type { Command } from './commands/command.ts'
 
 export class Cli {
-  private parsed: ParsedArguments
-  private commandData: CommandApplicationData
+  private data: CommandApplicationData
   private createModelCatalog: Command
   private gitCommit: Command
   private help: Command
 
   constructor(
-    parsed: ParsedArguments,
     createModelCatalog: Command,
     gitCommit: Command,
     help: Command,
-    commandData: CommandApplicationData,
+    data: CommandApplicationData,
   ) {
-    this.parsed = parsed
     this.createModelCatalog = createModelCatalog
     this.gitCommit = gitCommit
     this.help = help
-    this.commandData = commandData
+    this.data = data
   }
 
   run() {
@@ -27,7 +24,7 @@ export class Cli {
   }
 
   private dispatch() {
-    if (this.helpRequested()) {
+    if (this.help.isMatch()) {
       return this.help.run()
     }
     return this.dispatchVersionOrCommand()
@@ -40,24 +37,13 @@ export class Cli {
     return this.dispatchCommand()
   }
 
-  private helpRequested() {
-    const options = this.parsed.options
-    return options.help === true || options.h === true
-  }
-
   private versionRequested() {
-    const options = this.parsed.options
+    const options = this.data.parsedArguments.options
     return options.version === true || options.V === true
   }
 
-  private command() {
-    const first = this.parsed.commands[0]
-    if (first === undefined) return ''
-    return first
-  }
-
   private showVersion() {
-    this.commandData.consoleLog(`crow ${this.projectVersion()}`)
+    this.data.consoleLog(`crow ${this.projectVersion()}`)
     return Promise.resolve()
   }
 
@@ -67,14 +53,14 @@ export class Cli {
   }
 
   private dispatchCommand() {
-    if (this.command() === 'create-model-catalog') {
+    if (this.createModelCatalog.isMatch()) {
       return this.createModelCatalog.run()
     }
     return this.dispatchGitCommitOrError()
   }
 
   private dispatchGitCommitOrError() {
-    if (this.command() === 'git-commit') {
+    if (this.gitCommit.isMatch()) {
       return this.gitCommit.run()
     }
     return this.help.run()

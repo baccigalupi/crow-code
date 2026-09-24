@@ -1,16 +1,72 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import type { DenoCommand, Logger } from '../../../src/types.ts'
+import pino from 'pino'
+import type { DenoCommand } from '../../../src/types.ts'
 import { Environment } from '../../../src/env-vars.ts'
 import { mockFetchError } from '../../support/mock-fetch.ts'
-import {
-  GitCommit,
-  GitCommitMatch,
-} from '../../../src/cli/commands/git-commit.ts'
+import { GitCommit } from '../../../src/cli/commands/git-commit.ts'
 
-describe('git-commit', () => {
+describe('GitCommit', () => {
+  it('when the command is git-commit, matches', () => {
+    const command = new GitCommit({
+      parsedArguments: { commands: ['git-commit'], options: {} },
+      crowDirectory: '',
+      logger: pino({ enabled: false }),
+      consoleLog: () => {},
+      fetchClient: fetch,
+      denoCommand: Deno.Command,
+      environment: new Environment({}),
+    })
+
+    expect(command.isMatch()).toBe(true)
+  })
+
+  it('when the command is something else, does not match', () => {
+    const command = new GitCommit({
+      parsedArguments: { commands: ['create-model-catalog'], options: {} },
+      crowDirectory: '',
+      logger: pino({ enabled: false }),
+      consoleLog: () => {},
+      fetchClient: fetch,
+      denoCommand: Deno.Command,
+      environment: new Environment({}),
+    })
+
+    expect(command.isMatch()).toBe(false)
+  })
+
+  it('when a goal option is passed, extracts it', () => {
+    const command = new GitCommit({
+      parsedArguments: {
+        commands: ['git-commit'],
+        options: { goal: 'ship it' },
+      },
+      crowDirectory: '',
+      logger: pino({ enabled: false }),
+      consoleLog: () => {},
+      fetchClient: fetch,
+      denoCommand: Deno.Command,
+      environment: new Environment({}),
+    })
+
+    expect(command.extractOptions()).toEqual({ goal: 'ship it' })
+  })
+
+  it('when no goal option is passed, extracts an empty goal', () => {
+    const command = new GitCommit({
+      parsedArguments: { commands: ['git-commit'], options: {} },
+      crowDirectory: '',
+      logger: pino({ enabled: false }),
+      consoleLog: () => {},
+      fetchClient: fetch,
+      denoCommand: Deno.Command,
+      environment: new Environment({}),
+    })
+
+    expect(command.extractOptions()).toEqual({ goal: '' })
+  })
+
   it('when run, logs the generated summary', async () => {
-    const logger = { error: () => {} } as unknown as Logger
     const summaries: string[] = []
     const mockDenoCommand = class {
       output() {
@@ -18,56 +74,19 @@ describe('git-commit', () => {
       }
     } as unknown as DenoCommand
 
-    await new GitCommit(
-      {
-        crowDirectory: Deno.makeTempDirSync(),
-        logger,
-        consoleLog: (summary: string) => summaries.push(summary),
-        fetchClient: mockFetchError(500),
-        denoCommand: mockDenoCommand,
-        environment: new Environment({}),
+    await new GitCommit({
+      parsedArguments: {
+        commands: ['git-commit'],
+        options: { goal: 'ship command' },
       },
-      { goal: 'ship command' },
-    ).run()
+      crowDirectory: Deno.makeTempDirSync(),
+      logger: pino({ enabled: false }),
+      consoleLog: (summary: string) => summaries.push(summary),
+      fetchClient: mockFetchError(500),
+      denoCommand: mockDenoCommand,
+      environment: new Environment({}),
+    }).run()
 
     expect(summaries).toEqual([''])
-  })
-
-  describe('GitCommitMatch', () => {
-    it('when the command is git-commit, returns true', () => {
-      const match = new GitCommitMatch({
-        commands: ['git-commit'],
-        options: {},
-      })
-
-      expect(match.isMatch()).toBe(true)
-    })
-
-    it('when the command is something else, returns false', () => {
-      const match = new GitCommitMatch({
-        commands: ['create-model-catalog'],
-        options: {},
-      })
-
-      expect(match.isMatch()).toBe(false)
-    })
-
-    it('when a goal option is passed, extracts it', () => {
-      const match = new GitCommitMatch({
-        commands: ['git-commit'],
-        options: { goal: 'ship it' },
-      })
-
-      expect(match.extractOptions()).toEqual({ goal: 'ship it' })
-    })
-
-    it('when no goal option is passed, extracts an empty goal', () => {
-      const match = new GitCommitMatch({
-        commands: ['git-commit'],
-        options: {},
-      })
-
-      expect(match.extractOptions()).toEqual({ goal: '' })
-    })
   })
 })

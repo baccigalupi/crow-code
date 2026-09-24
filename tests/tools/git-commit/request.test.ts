@@ -54,6 +54,7 @@ describe('requestCommitSummary', () => {
       'diff contents',
       'ship command',
       {
+        parsedArguments: { commands: ['git-commit'], options: {} },
         crowDirectory,
         logger,
         consoleLog: () => {},
@@ -92,6 +93,7 @@ describe('requestCommitSummary', () => {
     })
 
     await requestCommitSummary('diff', '', {
+      parsedArguments: { commands: ['git-commit'], options: {} },
       crowDirectory,
       logger,
       consoleLog: () => {},
@@ -118,6 +120,7 @@ describe('requestCommitSummary', () => {
     const logger = { error: () => {} } as unknown as Logger
 
     const summary = await requestCommitSummary('diff contents', '', {
+      parsedArguments: { commands: ['git-commit'], options: {} },
       crowDirectory,
       logger,
       consoleLog: () => {},
@@ -137,6 +140,7 @@ describe('requestCommitSummary', () => {
     const logger = { error: () => {} } as unknown as Logger
 
     const summary = await requestCommitSummary('diff', '', {
+      parsedArguments: { commands: ['git-commit'], options: {} },
       crowDirectory,
       logger,
       consoleLog: () => {},
@@ -156,6 +160,7 @@ describe('requestCommitSummary', () => {
     const logger = { error: () => {} } as unknown as Logger
 
     const summary = await requestCommitSummary('diff', '', {
+      parsedArguments: { commands: ['git-commit'], options: {} },
       crowDirectory,
       logger,
       consoleLog: () => {},
@@ -179,6 +184,7 @@ describe('requestCommitSummary', () => {
     const logger = { error: () => {} } as unknown as Logger
 
     const summary = await requestCommitSummary('diff', '', {
+      parsedArguments: { commands: ['git-commit'], options: {} },
       crowDirectory,
       logger,
       consoleLog: () => {},

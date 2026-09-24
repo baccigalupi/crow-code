@@ -1,10 +1,7 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import {
-  CreateModelCatalog,
-  CreateModelCatalogMatch,
-} from '../../../src/cli/commands/create-model-catalog.ts'
+import { CreateModelCatalog } from '../../../src/cli/commands/create-model-catalog.ts'
 import { Environment } from '../../../src/env-vars.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import { mockFetchRoutes } from '../../support/mock-fetch.ts'
@@ -12,9 +9,54 @@ import pino from 'pino'
 
 const fixtureDirectory = join(fixturesDirectory, 'create-model-catalog')
 
-describe('create-model-catalog', () => {
+describe('CreateModelCatalog', () => {
   beforeEach(() => clearDirectory(fixtureDirectory))
   afterEach(() => clearDirectory(fixtureDirectory))
+
+  it('when the command is create-model-catalog, matches', () => {
+    const command = new CreateModelCatalog({
+      parsedArguments: { commands: ['create-model-catalog'], options: {} },
+      crowDirectory: '',
+      logger: pino({ enabled: false }),
+      consoleLog: () => {},
+      fetchClient: fetch,
+      denoCommand: Deno.Command,
+      environment: new Environment({}),
+    })
+
+    expect(command.isMatch()).toBe(true)
+  })
+
+  it('when the command is something else, does not match', () => {
+    const command = new CreateModelCatalog({
+      parsedArguments: { commands: ['git-commit'], options: {} },
+      crowDirectory: '',
+      logger: pino({ enabled: false }),
+      consoleLog: () => {},
+      fetchClient: fetch,
+      denoCommand: Deno.Command,
+      environment: new Environment({}),
+    })
+
+    expect(command.isMatch()).toBe(false)
+  })
+
+  it('when options are passed, extracts none of them', () => {
+    const command = new CreateModelCatalog({
+      parsedArguments: {
+        commands: ['create-model-catalog'],
+        options: { verbose: true },
+      },
+      crowDirectory: '',
+      logger: pino({ enabled: false }),
+      consoleLog: () => {},
+      fetchClient: fetch,
+      denoCommand: Deno.Command,
+      environment: new Environment({}),
+    })
+
+    expect(command.extractOptions()).toEqual({})
+  })
 
   it('when run, builds the catalog into the injected crow directory', async () => {
     const crowDirectory = join(fixtureDirectory, '.crow')
@@ -29,50 +71,18 @@ describe('create-model-catalog', () => {
         }],
       }),
     )
-    const logger = pino({ enabled: false })
     const fetchMock = mockFetchRoutes([['pile-driver', { models: [] }]])
 
-    await new CreateModelCatalog(
-      {
-        crowDirectory,
-        logger,
-        consoleLog: () => {},
-        fetchClient: fetchMock,
-        denoCommand: Deno.Command,
-        environment: new Environment({}),
-      },
-      {},
-    ).run()
+    await new CreateModelCatalog({
+      parsedArguments: { commands: ['create-model-catalog'], options: {} },
+      crowDirectory,
+      logger: pino({ enabled: false }),
+      consoleLog: () => {},
+      fetchClient: fetchMock,
+      denoCommand: Deno.Command,
+      environment: new Environment({}),
+    }).run()
 
     expect(Deno.statSync(join(crowDirectory, 'models.json')).isFile).toBe(true)
-  })
-
-  describe('CreateModelCatalogMatch', () => {
-    it('when the command is create-model-catalog, returns true', () => {
-      const match = new CreateModelCatalogMatch({
-        commands: ['create-model-catalog'],
-        options: {},
-      })
-
-      expect(match.isMatch()).toBe(true)
-    })
-
-    it('when the command is something else, returns false', () => {
-      const match = new CreateModelCatalogMatch({
-        commands: ['git-commit'],
-        options: {},
-      })
-
-      expect(match.isMatch()).toBe(false)
-    })
-
-    it('when options are passed, extracts none of them', () => {
-      const match = new CreateModelCatalogMatch({
-        commands: ['create-model-catalog'],
-        options: { verbose: true },
-      })
-
-      expect(match.extractOptions()).toEqual({})
-    })
   })
 })

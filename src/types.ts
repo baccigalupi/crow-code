@@ -16,6 +16,7 @@ export type DenoCommand = typeof Deno.Command
 export type Committer = (summary: string, logger: Logger) => Promise<boolean>
 
 export type CommandApplicationData = {
+  parsedArguments: ParsedArguments
   crowDirectory: string
   logger: Logger
   consoleLog: ConsoleLog

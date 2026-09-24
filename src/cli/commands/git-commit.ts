@@ -1,14 +1,7 @@
 import { commitWithSummary } from '../../tools/git-commit/summary-commit.ts'
 import { Command } from './command.ts'
-import { CommandMatch } from './command-match.ts'
 
 export class GitCommit extends Command {
-  async run() {
-    await commitWithSummary(this.options.goal as string, this.data)
-  }
-}
-
-export class GitCommitMatch extends CommandMatch {
   isMatch() {
     return this.commands[0] === 'git-commit'
   }
@@ -19,5 +12,9 @@ export class GitCommitMatch extends CommandMatch {
     } else {
       return { goal: '' }
     }
+  }
+
+  async run() {
+    await commitWithSummary(this.extractOptions().goal, this.data)
   }
 }

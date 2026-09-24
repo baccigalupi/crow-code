@@ -2,12 +2,9 @@ import { type Environment, loadEnvironmentalVariables } from './env-vars.ts'
 import type { CommandApplicationData, ConsoleLog, Logger } from './types.ts'
 import { parseArguments } from './cli/arguments.ts'
 import { Cli } from './cli/cli.ts'
-import {
-  CreateModelCatalog,
-  CreateModelCatalogMatch,
-} from './cli/commands/create-model-catalog.ts'
-import { GitCommit, GitCommitMatch } from './cli/commands/git-commit.ts'
-import { Help, HelpMatch } from './cli/commands/help.ts'
+import { CreateModelCatalog } from './cli/commands/create-model-catalog.ts'
+import { GitCommit } from './cli/commands/git-commit.ts'
+import { Help } from './cli/commands/help.ts'
 
 export const run = async (
   argumentsList: string[],
@@ -18,8 +15,8 @@ export const run = async (
   denoCommand: typeof Deno.Command = Deno.Command,
   environment: Environment = loadEnvironmentalVariables(),
 ): Promise<void> => {
-  const parsed = parseArguments(argumentsList)
   const data: CommandApplicationData = {
+    parsedArguments: parseArguments(argumentsList),
     crowDirectory,
     logger,
     consoleLog,
@@ -28,13 +25,9 @@ export const run = async (
     environment,
   }
   await new Cli(
-    parsed,
-    new CreateModelCatalog(
-      data,
-      new CreateModelCatalogMatch(parsed).extractOptions(),
-    ),
-    new GitCommit(data, new GitCommitMatch(parsed).extractOptions()),
-    new Help(data, new HelpMatch(parsed).extractOptions()),
+    new CreateModelCatalog(data),
+    new GitCommit(data),
+    new Help(data),
     data,
   ).run()
 }

@@ -9,24 +9,28 @@ import type {
 
 export abstract class Command {
   protected data: CommandApplicationData
+  protected commands: string[]
+  protected options: ParsedArgumentsOptions
   protected crowDirectory: string
   protected logger: Logger
   protected consoleLog: ConsoleLog
   protected fetchClient: typeof fetch
   protected denoCommand: DenoCommand
   protected environment: Environment
-  protected options: ParsedArgumentsOptions
 
-  constructor(data: CommandApplicationData, options: ParsedArgumentsOptions) {
+  constructor(data: CommandApplicationData) {
     this.data = data
+    this.commands = data.parsedArguments.commands
+    this.options = data.parsedArguments.options
     this.crowDirectory = data.crowDirectory
     this.logger = data.logger
     this.consoleLog = data.consoleLog
     this.fetchClient = data.fetchClient
     this.denoCommand = data.denoCommand
     this.environment = data.environment
-    this.options = options
   }
 
+  abstract isMatch(): boolean
+  abstract extractOptions(): ParsedArgumentsOptions
   abstract run(): Promise<void>
 }

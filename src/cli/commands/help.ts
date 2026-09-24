@@ -1,5 +1,4 @@
 import { Command } from './command.ts'
-import { CommandMatch } from './command-match.ts'
 
 const usageText = `Usage: crow <command>
 
@@ -8,18 +7,16 @@ Available commands:
   git-commit    generate a summary and commit staged changes`
 
 export class Help extends Command {
-  run() {
-    this.consoleLog(usageText)
-    return Promise.resolve()
-  }
-}
-
-export class HelpMatch extends CommandMatch {
   isMatch() {
     return this.options.help === true || this.options.h === true
   }
 
   extractOptions() {
     return {}
+  }
+
+  run() {
+    this.consoleLog(usageText)
+    return Promise.resolve()
   }
 }
