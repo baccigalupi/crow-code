@@ -1,22 +1,21 @@
-import type { CommandApplicationData } from '../types.ts'
 import type { Command } from './commands/command.ts'
 
 export class Cli {
-  private data: CommandApplicationData
   private createModelCatalog: Command
   private gitCommit: Command
   private help: Command
+  private version: Command
 
   constructor(
     createModelCatalog: Command,
     gitCommit: Command,
     help: Command,
-    data: CommandApplicationData,
+    version: Command,
   ) {
     this.createModelCatalog = createModelCatalog
     this.gitCommit = gitCommit
     this.help = help
-    this.data = data
+    this.version = version
   }
 
   run() {
@@ -31,25 +30,10 @@ export class Cli {
   }
 
   private dispatchVersionOrCommand() {
-    if (this.versionRequested()) {
-      return this.showVersion()
+    if (this.version.isMatch()) {
+      return this.version.run()
     }
     return this.dispatchCommand()
-  }
-
-  private versionRequested() {
-    const options = this.data.parsedArguments.options
-    return options.version === true || options.V === true
-  }
-
-  private showVersion() {
-    this.data.consoleLog(`crow ${this.projectVersion()}`)
-    return Promise.resolve()
-  }
-
-  private projectVersion() {
-    const url = new URL('../../deno.json', import.meta.url)
-    return JSON.parse(Deno.readTextFileSync(url)).version
   }
 
   private dispatchCommand() {

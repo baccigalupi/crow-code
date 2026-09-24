@@ -5,6 +5,7 @@ import { Cli } from './cli/cli.ts'
 import { CreateModelCatalog } from './cli/commands/create-model-catalog.ts'
 import { GitCommit } from './cli/commands/git-commit.ts'
 import { Help } from './cli/commands/help.ts'
+import { Version } from './cli/commands/version.ts'
 
 export const run = async (
   argumentsList: string[],
@@ -28,6 +29,6 @@ export const run = async (
     new CreateModelCatalog(data),
     new GitCommit(data),
     new Help(data),
-    data,
+    new Version(data),
   ).run()
 }
