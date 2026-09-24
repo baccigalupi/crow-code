@@ -1,118 +1,12 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { loadNousFixture } from '../../support/fixtures.ts'
-import { parseNousBody } from '../../../src/model-info/nous2/parser.ts'
+import {
+  loadNousFixture,
+  loadOpenRouterFixture,
+} from '../../../support/fixtures.ts'
+import { ReasoningParser } from '../../../../src/model-info/catalog/providers/reasoning-parser.ts'
 
-describe('parseNousBody', () => {
-  it('maps id and name through', () => {
-    const model = {
-      id: 'test/model',
-      name: 'Test Model',
-      context_length: 128000,
-      pricing: { prompt: '0.000001', completion: '0.000002' },
-      architecture: { modality: 'text->text' },
-      supported_parameters: ['temperature', 'top_p'],
-    }
-
-    const result = parseNousBody({ data: [model] })[0]
-
-    expect(result.id).toBe('test/model')
-    expect(result.name).toBe('Test Model')
-  })
-
-  it('parses contextLength from context_length', () => {
-    const model = {
-      id: 'test/model',
-      name: 'Test Model',
-      context_length: 128000,
-      pricing: { prompt: '0.000001', completion: '0.000002' },
-      architecture: { modality: 'text->text' },
-      supported_parameters: ['temperature', 'top_p'],
-    }
-
-    const result = parseNousBody({ data: [model] })[0]
-
-    expect(result.contextLength).toBe(128000)
-  })
-
-  it('multiplies prompt and completion prices by one million', () => {
-    const model = {
-      id: 'test/model',
-      name: 'Test Model',
-      context_length: 128000,
-      pricing: { prompt: '0.000001', completion: '0.000002' },
-      architecture: { modality: 'text->text' },
-      supported_parameters: ['temperature', 'top_p'],
-    }
-
-    const result = parseNousBody({ data: [model] })[0]
-
-    expect(result.costInput).toBe(1)
-    expect(result.costOutput).toBe(2)
-  })
-
-  it('passes supported_parameters through', () => {
-    const model = {
-      id: 'test/model',
-      name: 'Test Model',
-      context_length: 128000,
-      pricing: { prompt: '0.000001', completion: '0.000002' },
-      architecture: { modality: 'text->text' },
-      supported_parameters: ['temperature', 'top_p'],
-    }
-
-    const result = parseNousBody({ data: [model] })[0]
-
-    expect(result.supportedParameters).toEqual(['temperature', 'top_p'])
-  })
-
-  describe('modality', () => {
-    it('when architecture.modality is present, uses the raw value', () => {
-      const model = {
-        id: 'test/model',
-        name: 'Test Model',
-        context_length: 128000,
-        pricing: { prompt: '0.000001', completion: '0.000002' },
-        architecture: { modality: 'text->text' },
-        supported_parameters: ['temperature', 'top_p'],
-      }
-
-      const result = parseNousBody({ data: [model] })[0]
-
-      expect(result.modality).toBe('text->text')
-    })
-
-    it('when architecture is empty, is unknown', () => {
-      const model = {
-        id: 'test/model',
-        name: 'Test Model',
-        context_length: 128000,
-        pricing: { prompt: '0.000001', completion: '0.000002' },
-        architecture: {},
-        supported_parameters: ['temperature', 'top_p'],
-      }
-
-      const result = parseNousBody({ data: [model] })[0]
-
-      expect(result.modality).toBe('unknown')
-    })
-
-    it('when architecture is missing, is unknown', () => {
-      const model = {
-        id: 'test/model',
-        name: 'Test Model',
-        context_length: 128000,
-        pricing: { prompt: '0.000001', completion: '0.000002' },
-        architecture: undefined,
-        supported_parameters: ['temperature', 'top_p'],
-      }
-
-      const result = parseNousBody({ data: [model] })[0]
-
-      expect(result.modality).toBe('unknown')
-    })
-  })
-
+describe('ReasoningParser', () => {
   describe('supportsReasoning', () => {
     it('when reasoning object is present, is true', () => {
       const model = {
@@ -125,9 +19,9 @@ describe('parseNousBody', () => {
         reasoning: { mandatory: false },
       }
 
-      const result = parseNousBody({ data: [model] })[0]
+      const result = new ReasoningParser(model).supportsReasoning()
 
-      expect(result.supportsReasoning).toBe(true)
+      expect(result).toBe(true)
     })
 
     it('when reasoning object is absent and no reasoning params, is false', () => {
@@ -141,9 +35,9 @@ describe('parseNousBody', () => {
         reasoning: undefined,
       }
 
-      const result = parseNousBody({ data: [model] })[0]
+      const result = new ReasoningParser(model).supportsReasoning()
 
-      expect(result.supportsReasoning).toBe(false)
+      expect(result).toBe(false)
     })
 
     it('when supported_parameters contains reasoning, is true', () => {
@@ -157,9 +51,9 @@ describe('parseNousBody', () => {
         reasoning: undefined,
       }
 
-      const result = parseNousBody({ data: [model] })[0]
+      const result = new ReasoningParser(model).supportsReasoning()
 
-      expect(result.supportsReasoning).toBe(true)
+      expect(result).toBe(true)
     })
 
     it('when supported_parameters contains include_reasoning, is true', () => {
@@ -173,9 +67,9 @@ describe('parseNousBody', () => {
         reasoning: undefined,
       }
 
-      const result = parseNousBody({ data: [model] })[0]
+      const result = new ReasoningParser(model).supportsReasoning()
 
-      expect(result.supportsReasoning).toBe(true)
+      expect(result).toBe(true)
     })
 
     it('when supported_parameters contains reasoning_effort, is true', () => {
@@ -189,9 +83,9 @@ describe('parseNousBody', () => {
         reasoning: undefined,
       }
 
-      const result = parseNousBody({ data: [model] })[0]
+      const result = new ReasoningParser(model).supportsReasoning()
 
-      expect(result.supportsReasoning).toBe(true)
+      expect(result).toBe(true)
     })
 
     it('when modality is embeddings, is false', () => {
@@ -205,9 +99,9 @@ describe('parseNousBody', () => {
         reasoning: undefined,
       }
 
-      const result = parseNousBody({ data: [model] })[0]
+      const result = new ReasoningParser(model).supportsReasoning()
 
-      expect(result.supportsReasoning).toBe(false)
+      expect(result).toBe(false)
     })
 
     it('when fixture model has no reasoning object, is false', async () => {
@@ -216,9 +110,9 @@ describe('parseNousBody', () => {
         model.id === 'unbiased/pareto'
       )
 
-      const result = parseNousBody({ data: [model] })[0]
+      const result = new ReasoningParser(model).supportsReasoning()
 
-      expect(result.supportsReasoning).toBe(false)
+      expect(result).toBe(false)
     })
   })
 
@@ -234,9 +128,9 @@ describe('parseNousBody', () => {
         reasoning: { mandatory: true },
       }
 
-      const result = parseNousBody({ data: [model] })[0]
+      const result = new ReasoningParser(model).canDisableReasoning()
 
-      expect(result.canDisableReasoning).toBe(false)
+      expect(result).toBe(false)
     })
 
     it('when reasoning object is present and mandatory is false, is true', () => {
@@ -250,9 +144,9 @@ describe('parseNousBody', () => {
         reasoning: { mandatory: false },
       }
 
-      const result = parseNousBody({ data: [model] })[0]
+      const result = new ReasoningParser(model).canDisableReasoning()
 
-      expect(result.canDisableReasoning).toBe(true)
+      expect(result).toBe(true)
     })
 
     it('when reasoning object is present without mandatory, is true', () => {
@@ -266,9 +160,9 @@ describe('parseNousBody', () => {
         reasoning: {},
       }
 
-      const result = parseNousBody({ data: [model] })[0]
+      const result = new ReasoningParser(model).canDisableReasoning()
 
-      expect(result.canDisableReasoning).toBe(true)
+      expect(result).toBe(true)
     })
 
     it('when reasoning object is absent, is false', () => {
@@ -282,9 +176,9 @@ describe('parseNousBody', () => {
         reasoning: undefined,
       }
 
-      const result = parseNousBody({ data: [model] })[0]
+      const result = new ReasoningParser(model).canDisableReasoning()
 
-      expect(result.canDisableReasoning).toBe(false)
+      expect(result).toBe(false)
     })
 
     it('when fixture model has reasoning mandatory false, is true', async () => {
@@ -293,9 +187,9 @@ describe('parseNousBody', () => {
         model.id === 'xiaomi/mimo-v2.6-pro-ultraspeed'
       )
 
-      const result = parseNousBody({ data: [model] })[0]
+      const result = new ReasoningParser(model).canDisableReasoning()
 
-      expect(result.canDisableReasoning).toBe(true)
+      expect(result).toBe(true)
     })
 
     it('when fixture model has reasoning mandatory true, is false', async () => {
@@ -304,9 +198,20 @@ describe('parseNousBody', () => {
         model.id === 'z-ai/glm-5.3-flashx'
       )
 
-      const result = parseNousBody({ data: [model] })[0]
+      const result = new ReasoningParser(model).canDisableReasoning()
 
-      expect(result.canDisableReasoning).toBe(false)
+      expect(result).toBe(false)
+    })
+
+    it('when openrouter fixture model has reasoning mandatory true, is false', async () => {
+      const fixture = await loadOpenRouterFixture()
+      const model = fixture.data.find((model: { id: string }) =>
+        model.id === 'moonshotai/kimi-k2.7-code'
+      )
+
+      const result = new ReasoningParser(model).canDisableReasoning()
+
+      expect(result).toBe(false)
     })
   })
 
@@ -329,9 +234,9 @@ describe('parseNousBody', () => {
         reasoning,
       }
 
-      const result = parseNousBody({ data: [model] })[0]
+      const result = new ReasoningParser(model).reasoningOptions()
 
-      expect(result.reasoningOptions).toEqual(reasoning)
+      expect(result).toEqual(reasoning)
     })
 
     it('when reasoning object is absent, is empty', () => {
@@ -345,9 +250,9 @@ describe('parseNousBody', () => {
         reasoning: undefined,
       }
 
-      const result = parseNousBody({ data: [model] })[0]
+      const result = new ReasoningParser(model).reasoningOptions()
 
-      expect(result.reasoningOptions).toEqual({})
+      expect(result).toEqual({})
     })
 
     it('when fixture model has rich reasoning, are preserved', async () => {
@@ -356,21 +261,13 @@ describe('parseNousBody', () => {
         model.id === 'prism-ml/ternary-bonsai-2-27b'
       )
 
-      const result = parseNousBody({ data: [model] })[0]
+      const result = new ReasoningParser(model).reasoningOptions()
 
-      expect(result.reasoningOptions.supported_efforts).toEqual([
+      expect(result.supported_efforts).toEqual([
         'xhigh',
         'medium',
       ])
-      expect(result.reasoningOptions.default_effort).toBe('xhigh')
+      expect(result.default_effort).toBe('xhigh')
     })
-  })
-
-  it('when body has models, maps every record', async () => {
-    const fixture = await loadNousFixture()
-
-    const result = parseNousBody(fixture)
-
-    expect(result).toHaveLength(400)
   })
 })

@@ -5,9 +5,9 @@ import {
   mockFetchError,
   mockFetchRejected,
   mockFetchSuccess,
-} from '../../support/mock-fetch.ts'
-import { loadNousFixture } from '../../support/fixtures.ts'
-import { getNousModels } from '../../../src/model-info/nous2/get-nous-models.ts'
+} from '../../../../support/mock-fetch.ts'
+import { loadNousFixture } from '../../../../support/fixtures.ts'
+import { getNousModels } from '../../../../../src/model-info/catalog/providers/nous2/get-nous-models.ts'
 
 describe('getNousModels', () => {
   it('when fetched, returns parsed records', async () => {
@@ -23,6 +23,7 @@ describe('getNousModels', () => {
 
     expect(result).toHaveLength(400)
     expect(result[0].id).toBe('xiaomi/mimo-v2.6-pro-ultraspeed')
+    expect(result[0].provider).toBe('nous')
   })
 
   it('when fetched, requests the configured base url plus v1 models', async () => {

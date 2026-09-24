@@ -48,12 +48,18 @@ export type NousModel = {
 
 export type NousApiRecord = { data?: NousModel[] }
 
-export type NousReasoningOptions = {
+export type DefaultReasoning = {
   mandatory?: boolean
   default_enabled?: boolean
   default_effort?: string
   supported_efforts?: string[]
   supports_max_tokens?: boolean
+}
+
+export type ReasoningSource = {
+  architecture?: { modality?: string }
+  supported_parameters: string[]
+  reasoning?: DefaultReasoning
 }
 
 export type Nous2ApiModel = {
@@ -63,24 +69,40 @@ export type Nous2ApiModel = {
   pricing: { prompt: string; completion: string }
   architecture?: { modality?: string }
   supported_parameters: string[]
-  reasoning?: NousReasoningOptions
+  reasoning?: DefaultReasoning
 }
 
 export type Nous2ApiBody = {
   data: Nous2ApiModel[]
 }
 
+export type OpenRouter2ApiModel = {
+  id: string
+  name: string
+  context_length: number
+  pricing: { prompt: string; completion: string }
+  architecture?: { modality?: string }
+  supported_parameters: string[]
+  reasoning?: DefaultReasoning
+}
+
+export type OpenRouter2ApiBody = {
+  data: OpenRouter2ApiModel[]
+}
+
 export type CatalogModel = {
   id: string
   name: string
+  provider: string
   contextLength: number
-  costInput: number
-  costOutput: number
+  costInput: number | null
+  costOutput: number | null
+  dynamicDelegation: boolean
   modality: string
   supportedParameters: string[]
   supportsReasoning: boolean
   canDisableReasoning: boolean
-  reasoningOptions: NousReasoningOptions
+  reasoningOptions: DefaultReasoning
 }
 
 export type OllamaModel = {
