@@ -1,4 +1,4 @@
-import { describe, it, mock } from 'node:test'
+import { afterEach, beforeEach, describe, it, mock } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import type { Logger } from '../src/types.ts'
@@ -9,24 +9,51 @@ import pino from 'pino'
 
 const crowDirectory = join(fixturesDirectory, 'cli', '.crow')
 
+class FakeCommand {
+  command: string
+  options: Deno.CommandOptions
+
+  constructor(command: string, options: Deno.CommandOptions) {
+    this.command = command
+    this.options = options
+  }
+
+  output() {
+    if (this.options.args?.[0] === 'diff') {
+      return Promise.resolve({
+        success: true,
+        code: 0,
+        signal: null,
+        stdout: new TextEncoder().encode('fake diff'),
+        stderr: new Uint8Array(),
+      })
+    }
+    return Promise.resolve({
+      success: true,
+      code: 0,
+      signal: null,
+      stdout: new Uint8Array(),
+      stderr: new Uint8Array(),
+    })
+  }
+}
+
 describe('run', () => {
+  let originalCommand: typeof Deno.Command
+
+  beforeEach(() => {
+    originalCommand = Deno.Command
+    Deno.Command = FakeCommand as never
+  })
+
+  afterEach(() => {
+    Deno.Command = originalCommand
+  })
+
   it('when the generated summary is empty, does not commit', async () => {
     const logger = { error: () => {} } as unknown as Logger
-    const commits: string[] = []
-    const commit = (summary: string) => {
-      commits.push(summary)
-      return Promise.resolve(true)
-    }
 
-    await run(
-      ['git-commit'],
-      crowDirectory,
-      logger,
-      () => {},
-      commit,
-    )
-
-    expect(commits).toEqual([])
+    await run(['git-commit'], crowDirectory, logger, () => {})
   })
 
   it('when create-model-catalog is requested, builds the model catalog', async () => {
@@ -50,7 +77,6 @@ describe('run', () => {
       crowDirectory,
       logger,
       () => {},
-      undefined,
       fetchMock,
     )
 
@@ -80,9 +106,6 @@ describe('run', () => {
       logger,
       (summary: string) => outputs.push(summary),
       () => {
-        throw new Error('commit should not be called')
-      },
-      () => {
         throw new Error('fetch should not be called')
       },
     )
@@ -101,9 +124,6 @@ describe('run', () => {
       crowDirectory,
       logger,
       (summary: string) => outputs.push(summary),
-      () => {
-        throw new Error('commit should not be called')
-      },
       () => {
         throw new Error('fetch should not be called')
       },
@@ -124,9 +144,6 @@ describe('run', () => {
       logger,
       (summary: string) => outputs.push(summary),
       () => {
-        throw new Error('commit should not be called')
-      },
-      () => {
         throw new Error('fetch should not be called')
       },
     )
@@ -143,9 +160,6 @@ describe('run', () => {
       crowDirectory,
       logger,
       (summary: string) => outputs.push(summary),
-      () => {
-        throw new Error('commit should not be called')
-      },
       () => {
         throw new Error('fetch should not be called')
       },
@@ -208,7 +222,6 @@ describe('run', () => {
       crowDirectory,
       logger,
       () => {},
-      () => Promise.resolve(true),
       fetchMock,
     )
 
@@ -228,9 +241,6 @@ describe('run', () => {
       crowDirectory,
       logger,
       consoleLog,
-      () => {
-        throw new Error('commit should not be called')
-      },
       () => {
         throw new Error('fetch should not be called')
       },

@@ -1,6 +1,5 @@
 import type {
   CommandApplicationData,
-  Committer,
   ConsoleLog,
   Logger,
   ParsedArguments,
@@ -9,7 +8,6 @@ import { parseArguments } from './cli/arguments.ts'
 import { Cli } from './cli/cli.ts'
 import { CreateModelCatalog } from './cli/commands/create-model-catalog.ts'
 import { GitCommit } from './cli/commands/git-commit.ts'
-import { commitChanges } from './tools/git-commit/commit.ts'
 
 const goalFrom = (parsed: ParsedArguments) => {
   if (typeof parsed.options.goal === 'string') return parsed.options.goal
@@ -21,7 +19,6 @@ export const run = async (
   crowDirectory: string,
   logger: Logger,
   consoleLog: ConsoleLog = console.log,
-  commit: Committer = commitChanges,
   fetchClient: typeof fetch = fetch,
 ): Promise<void> => {
   const parsed = parseArguments(argumentsList)
@@ -32,10 +29,6 @@ export const run = async (
     fetchClient,
   }
   const createModelCatalog = new CreateModelCatalog(commandData)
-  const gitCommit = new GitCommit(
-    commandData,
-    goalFrom(parsed),
-    commit,
-  )
+  const gitCommit = new GitCommit(commandData, goalFrom(parsed))
   await new Cli(parsed, createModelCatalog, gitCommit, commandData).run()
 }

@@ -11,6 +11,35 @@ import {
 
 const crowDirectory = join(fixturesDirectory, 'git-commit', '.crow')
 
+class FakeCommand {
+  command: string
+  options: Deno.CommandOptions
+
+  constructor(command: string, options: Deno.CommandOptions) {
+    this.command = command
+    this.options = options
+  }
+
+  output() {
+    if (this.options.args?.[0] === 'diff') {
+      return Promise.resolve({
+        success: true,
+        code: 0,
+        signal: null,
+        stdout: new TextEncoder().encode('fake diff'),
+        stderr: new Uint8Array(),
+      })
+    }
+    return Promise.resolve({
+      success: true,
+      code: 0,
+      signal: null,
+      stdout: new Uint8Array(),
+      stderr: new Uint8Array(),
+    })
+  }
+}
+
 const model = {
   id: 'first-model',
   name: 'First Model',
@@ -44,8 +73,18 @@ const setupCrowDirectory = () => {
 }
 
 describe('GitCommit', () => {
-  beforeEach(() => clearDirectory(crowDirectory))
-  afterEach(() => clearDirectory(crowDirectory))
+  let originalCommand: typeof Deno.Command
+
+  beforeEach(async () => {
+    originalCommand = Deno.Command
+    Deno.Command = FakeCommand as never
+    await clearDirectory(crowDirectory)
+  })
+
+  afterEach(async () => {
+    Deno.Command = originalCommand
+    await clearDirectory(crowDirectory)
+  })
 
   it('when a summary is generated, logs it and commits with it', async () => {
     setupCrowDirectory()
@@ -53,11 +92,6 @@ describe('GitCommit', () => {
     const logger = { error: () => {} } as unknown as Logger
     const summaries: string[] = []
     const consoleLog = (summary: string) => summaries.push(summary)
-    const commits: string[] = []
-    const commit = (summary: string) => {
-      commits.push(summary)
-      return Promise.resolve(true)
-    }
     const fetchMock = mockFetchSuccess({
       choices: [{ message: { content: 'Add commit summaries' } }],
     })
@@ -70,13 +104,11 @@ describe('GitCommit', () => {
         fetchClient: fetchMock,
       },
       'ship command',
-      commit,
     ).run()
 
     const request = fetchMock.calls[0] as Request
     const body = await request.json()
     expect(summaries).toEqual(['Add commit summaries'])
-    expect(commits).toEqual(['Add commit summaries'])
     expect(body.messages[1].content).toContain('ship command')
     Deno.env.delete('NOUS_TEST_KEY')
   })
@@ -87,11 +119,6 @@ describe('GitCommit', () => {
     const logger = { error: () => {} } as unknown as Logger
     const summaries: string[] = []
     const consoleLog = (summary: string) => summaries.push(summary)
-    const commits: string[] = []
-    const commit = (summary: string) => {
-      commits.push(summary)
-      return Promise.resolve(true)
-    }
     const fetchMock = mockFetchError(500)
 
     await new GitCommit(
@@ -102,11 +129,9 @@ describe('GitCommit', () => {
         fetchClient: fetchMock,
       },
       'ship command',
-      commit,
     ).run()
 
     expect(summaries).toEqual([''])
-    expect(commits).toEqual([])
     Deno.env.delete('NOUS_TEST_KEY')
   })
 })

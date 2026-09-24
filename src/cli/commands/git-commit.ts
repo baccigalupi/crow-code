@@ -1,9 +1,5 @@
-import type {
-  CommandApplicationData,
-  Committer,
-  ConsoleLog,
-  Logger,
-} from '../../types.ts'
+import type { CommandApplicationData, ConsoleLog, Logger } from '../../types.ts'
+import { commitChanges } from '../../tools/git-commit/commit.ts'
 import { getCurrentDiff } from '../../tools/git-commit/current-diff.ts'
 import { requestCommitSummary } from '../../tools/git-commit/request.ts'
 import { CommandMatch } from './command-match.ts'
@@ -15,20 +11,17 @@ export class GitCommit {
   private consoleLog: ConsoleLog
   private fetchClient: typeof fetch
   private goal: string
-  private commit: Committer
   private summary: string
 
   constructor(
     data: CommandApplicationData,
     goal: string,
-    commit: Committer,
   ) {
     this.crowDirectory = data.crowDirectory
     this.logger = data.logger
     this.consoleLog = data.consoleLog
     this.fetchClient = data.fetchClient
     this.goal = goal
-    this.commit = commit
     this.summary = ''
   }
 
@@ -51,7 +44,7 @@ export class GitCommit {
 
   private async commitSummary() {
     if (this.summary.length === 0) return
-    await this.commit(this.summary, this.logger)
+    await commitChanges(this.summary, this.logger)
   }
 }
 
