@@ -8,7 +8,7 @@ Available commands:
 
 export class Help extends Command {
   isMatch() {
-    return this.options.help === true || this.options.h === true
+    return true
   }
 
   extractOptions() {

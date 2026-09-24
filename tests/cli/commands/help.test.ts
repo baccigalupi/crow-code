@@ -5,9 +5,9 @@ import { Help } from '../../../src/cli/commands/help.ts'
 import { Environment } from '../../../src/env-vars.ts'
 
 describe('Help', () => {
-  it('when --help is passed, matches', () => {
+  it('when any arguments are passed, matches', () => {
     const command = new Help({
-      parsedArguments: { commands: [], options: { help: true } },
+      parsedArguments: { commands: ['unknown'], options: {} },
       crowDirectory: '',
       logger: pino({ enabled: false }),
       consoleLog: () => {},
@@ -17,34 +17,6 @@ describe('Help', () => {
     })
 
     expect(command.isMatch()).toBe(true)
-  })
-
-  it('when -h is passed, matches', () => {
-    const command = new Help({
-      parsedArguments: { commands: [], options: { h: true } },
-      crowDirectory: '',
-      logger: pino({ enabled: false }),
-      consoleLog: () => {},
-      fetchClient: fetch,
-      denoCommand: Deno.Command,
-      environment: new Environment({}),
-    })
-
-    expect(command.isMatch()).toBe(true)
-  })
-
-  it('when no help option is passed, does not match', () => {
-    const command = new Help({
-      parsedArguments: { commands: [], options: {} },
-      crowDirectory: '',
-      logger: pino({ enabled: false }),
-      consoleLog: () => {},
-      fetchClient: fetch,
-      denoCommand: Deno.Command,
-      environment: new Environment({}),
-    })
-
-    expect(command.isMatch()).toBe(false)
   })
 
   it('when options are passed, extracts none of them', () => {
