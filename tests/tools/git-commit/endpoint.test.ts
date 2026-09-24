@@ -38,7 +38,7 @@ describe('modelEndpointInfo', () => {
     writeCatalog(crowDirectory, [model])
     writeProviders(crowDirectory, [{
       name: 'nous',
-      baseUrl: 'https://nous.example/v1',
+      baseUrl: 'https://nous.example',
       apiKeyEnv: 'NOUS_TEST_KEY',
     }])
     const environment = new Environment({ NOUS_TEST_KEY: 'secret-key' })

@@ -19,9 +19,14 @@ class CommitSummaryRequest {
   }
 
   perform(): Promise<string> {
-    if (this.endpointIsUnavailable()) return Promise.resolve('')
+    if (this.endpointIsUnavailable()) return this.unavailable()
 
     return this.request(this.endpoint.value())
+  }
+
+  private unavailable() {
+    this.data.logger.error('No usable model endpoint; skipping commit summary')
+    return Promise.resolve('')
   }
 
   private endpointIsUnavailable() {

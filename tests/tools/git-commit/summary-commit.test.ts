@@ -40,7 +40,7 @@ describe('commitWithSummary', () => {
       JSON.stringify({
         providers: [{
           name: 'nous',
-          baseUrl: 'https://nous.example/v1',
+          baseUrl: 'https://nous.example',
           apiKeyEnv: 'NOUS_TEST_KEY',
         }],
       }),
@@ -75,8 +75,11 @@ describe('commitWithSummary', () => {
     expect(commands[1]).toEqual(['commit', '-m', 'Add commit summaries'])
   })
 
-  it('when the summary is empty, logs an empty string and does not commit', async () => {
-    const logger = { error: () => {} } as unknown as Logger
+  it('when the summary is empty, logs a message and does not commit', async () => {
+    const errors: string[] = []
+    const logger = {
+      error: (message: string) => errors.push(message),
+    } as unknown as Logger
     const summaries: string[] = []
     const commands: string[][] = []
     const mockDenoCommand = class {
@@ -99,7 +102,11 @@ describe('commitWithSummary', () => {
       environment: new Environment({}),
     })
 
-    expect(summaries).toEqual([''])
+    expect(summaries).toEqual(['No summary generated; nothing committed'])
+    expect(errors).toEqual([
+      'No usable model endpoint; skipping commit summary',
+      'No summary generated; nothing committed',
+    ])
     expect(commands).toEqual([['diff', 'HEAD']])
   })
 })

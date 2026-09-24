@@ -87,6 +87,6 @@ describe('GitCommit', () => {
       environment: new Environment({}),
     }).run()
 
-    expect(summaries).toEqual([''])
+    expect(summaries).toEqual(['No summary generated; nothing committed'])
   })
 })

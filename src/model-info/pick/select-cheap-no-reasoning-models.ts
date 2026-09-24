@@ -19,7 +19,7 @@ class CheapSummarizerFilter {
   }
 
   private isNoReasoning(model: ModelInfo) {
-    return model.reasoning === false
+    return model.reasoning !== true
   }
 
   private isFreeOrCheap(model: ModelInfo) {

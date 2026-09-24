@@ -95,7 +95,7 @@ describe('selectCheapNoReasoningModels', () => {
     expect(result).toEqual([target])
   })
 
-  it('when input has a model with unknown reasoning, excludes it', () => {
+  it('when input has a model with unknown reasoning, includes it', () => {
     const unknownReasoning = {
       id: 'qwen3-coder:30b',
       name: 'qwen3-coder:30b',
@@ -125,7 +125,7 @@ describe('selectCheapNoReasoningModels', () => {
 
     const result = selectCheapNoReasoningModels([unknownReasoning, target])
 
-    expect(result).toEqual([target])
+    expect(result).toEqual([unknownReasoning, target])
   })
 
   it('when input is empty, returns []', () => {

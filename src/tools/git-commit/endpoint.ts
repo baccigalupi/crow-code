@@ -13,7 +13,7 @@ class EndpointInfo {
   }
 
   isAvailable() {
-    return this.foundModels().all().length > 0
+    return this.foundModels().firstEndpoint().baseURL !== ''
   }
 
   value() {

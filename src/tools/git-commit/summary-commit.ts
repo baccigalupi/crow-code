@@ -14,9 +14,20 @@ class SummaryCommit {
   }
 
   async run() {
-    this.summary = await this.generateSummary()
+    if (await this.summaryIsEmpty()) return this.noSummary()
     this.data.consoleLog(this.summary)
     await this.commitSummary()
+  }
+
+  private async summaryIsEmpty() {
+    this.summary = await this.generateSummary()
+    return this.summary.length === 0
+  }
+
+  private noSummary() {
+    const message = 'No summary generated; nothing committed'
+    this.data.logger.error(message)
+    this.data.consoleLog(message)
   }
 
   private async generateSummary() {
@@ -25,7 +36,6 @@ class SummaryCommit {
   }
 
   private async commitSummary() {
-    if (this.summary.length === 0) return
     await commitChanges(this.summary, this.data.logger, this.data.denoCommand)
   }
 }

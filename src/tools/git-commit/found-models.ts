@@ -1,7 +1,6 @@
 import type { Environment } from '../../env-vars.ts'
 import { loadProviderConfig } from '../../model-info/catalog/providers/load-provider-config.ts'
 import type { ModelInfo, ProviderConfig } from '../../model-info/types.ts'
-import { ValidateModel } from './validate-model.ts'
 
 export class FoundModels {
   private models: ModelInfo[]
@@ -19,7 +18,7 @@ export class FoundModels {
   }
 
   all() {
-    return this.models.filter((model) => this.validate(model))
+    return this.models
   }
 
   first() {
@@ -27,11 +26,17 @@ export class FoundModels {
   }
 
   firstEndpoint() {
-    if (this.all().length === 0) {
+    const model = this.first()
+    if (model === undefined) {
       return this.emptyEndpoint()
     }
 
-    return this.endpoint(this.first())
+    const provider = this.provider(model)
+    if (provider === undefined) {
+      return this.emptyEndpoint()
+    }
+
+    return this.endpoint(model, provider)
   }
 
   private loadProviders(crowDirectory: string) {
@@ -46,19 +51,17 @@ export class FoundModels {
     return { baseURL: '', apiKey: '', model: '' }
   }
 
-  private endpoint(model: ModelInfo) {
-    const provider = this.provider(model)
-    const apiKey = this.environment.value(provider.apiKeyEnv as string)
-    return { baseURL: provider.baseUrl, apiKey, model: model.id }
+  private endpoint(model: ModelInfo, provider: ProviderConfig) {
+    const apiKey = this.apiKey(provider)
+    return { baseURL: `${provider.baseUrl}/v1`, apiKey, model: model.id }
+  }
+
+  private apiKey(provider: ProviderConfig) {
+    if (provider.apiKeyEnv === undefined) return ''
+    return this.environment.value(provider.apiKeyEnv)
   }
 
   private provider(model: ModelInfo) {
-    return this.providers.find(({ name }) =>
-      name === model.provider
-    ) as ProviderConfig
-  }
-
-  private validate(model: ModelInfo) {
-    return new ValidateModel(model, this.providers, this.environment).validate()
+    return this.providers.find(({ name }) => name === model.provider)
   }
 }

@@ -41,7 +41,7 @@ describe('requestCommitSummary', () => {
     writeCatalog(crowDirectory, [model, { ...model, id: 'second-model' }])
     writeProviders(crowDirectory, [{
       name: 'nous',
-      baseUrl: 'https://nous.example/v1',
+      baseUrl: 'https://nous.example',
       apiKeyEnv: 'NOUS_TEST_KEY',
     }])
     const environment = new Environment({ NOUS_TEST_KEY: 'secret-key' })
@@ -75,24 +75,20 @@ describe('requestCommitSummary', () => {
     Deno.removeSync(crowDirectory, { recursive: true })
   })
 
-  it('when the first model is unusable, requests with the next model', async () => {
+  it('when the provider is keyless, requests without an API key', async () => {
     const crowDirectory = Deno.makeTempDirSync()
-    writeCatalog(crowDirectory, [
-      { ...model, provider: 'missing' },
-      { ...model, id: 'second-model' },
-    ])
+    writeCatalog(crowDirectory, [{ ...model, provider: 'ollama' }])
     writeProviders(crowDirectory, [{
-      name: 'nous',
-      baseUrl: 'https://nous.example/v1',
-      apiKeyEnv: 'NOUS_TEST_KEY',
+      name: 'ollama',
+      baseUrl: 'http://ollama.example',
     }])
-    const environment = new Environment({ NOUS_TEST_KEY: 'secret-key' })
+    const environment = new Environment({})
     const logger = { error: () => {} } as unknown as Logger
     const fetchMock = mockFetchSuccess({
-      choices: [{ message: { content: 'Fallback summary' } }],
+      choices: [{ message: { content: 'Keyless summary' } }],
     })
 
-    await requestCommitSummary('diff', '', {
+    const summary = await requestCommitSummary('diff', '', {
       parsedArguments: { commands: ['git-commit'], options: {} },
       crowDirectory,
       logger,
@@ -104,7 +100,10 @@ describe('requestCommitSummary', () => {
 
     const request = fetchMock.calls[0] as Request
     const body = await request.json()
-    expect(body.model).toBe('second-model')
+
+    expect(summary).toBe('Keyless summary')
+    expect(request.url).toBe('http://ollama.example/v1/chat/completions')
+    expect(body.model).toBe('first-model')
     Deno.removeSync(crowDirectory, { recursive: true })
   })
 
@@ -113,7 +112,7 @@ describe('requestCommitSummary', () => {
     writeCatalog(crowDirectory, [model])
     writeProviders(crowDirectory, [{
       name: 'nous',
-      baseUrl: 'https://nous.example/v1',
+      baseUrl: 'https://nous.example',
       apiKeyEnv: 'NOUS_TEST_KEY',
     }])
     const environment = new Environment({ NOUS_TEST_KEY: 'secret-key' })
@@ -137,7 +136,10 @@ describe('requestCommitSummary', () => {
     const crowDirectory = Deno.makeTempDirSync()
     writeCatalog(crowDirectory, [])
     writeProviders(crowDirectory, [])
-    const logger = { error: () => {} } as unknown as Logger
+    const errors: string[] = []
+    const logger = {
+      error: (message: string) => errors.push(message),
+    } as unknown as Logger
 
     const summary = await requestCommitSummary('diff', '', {
       parsedArguments: { commands: ['git-commit'], options: {} },
@@ -150,6 +152,9 @@ describe('requestCommitSummary', () => {
     })
 
     expect(summary).toBe('')
+    expect(errors).toEqual([
+      'No usable model endpoint; skipping commit summary',
+    ])
     Deno.removeSync(crowDirectory, { recursive: true })
   })
 
@@ -157,7 +162,10 @@ describe('requestCommitSummary', () => {
     const crowDirectory = Deno.makeTempDirSync()
     writeCatalog(crowDirectory, [model])
     writeProviders(crowDirectory, [])
-    const logger = { error: () => {} } as unknown as Logger
+    const errors: string[] = []
+    const logger = {
+      error: (message: string) => errors.push(message),
+    } as unknown as Logger
 
     const summary = await requestCommitSummary('diff', '', {
       parsedArguments: { commands: ['git-commit'], options: {} },
@@ -170,30 +178,9 @@ describe('requestCommitSummary', () => {
     })
 
     expect(summary).toBe('')
-    Deno.removeSync(crowDirectory, { recursive: true })
-  })
-
-  it('when the API key is unavailable, returns an empty summary', async () => {
-    const crowDirectory = Deno.makeTempDirSync()
-    writeCatalog(crowDirectory, [model])
-    writeProviders(crowDirectory, [{
-      name: 'nous',
-      baseUrl: 'https://nous.example/v1',
-      apiKeyEnv: 'MISSING_TEST_KEY',
-    }])
-    const logger = { error: () => {} } as unknown as Logger
-
-    const summary = await requestCommitSummary('diff', '', {
-      parsedArguments: { commands: ['git-commit'], options: {} },
-      crowDirectory,
-      logger,
-      consoleLog: () => {},
-      fetchClient: mockFetchRejected('fetch should not be called'),
-      denoCommand: Deno.Command,
-      environment: new Environment({}),
-    })
-
-    expect(summary).toBe('')
+    expect(errors).toEqual([
+      'No usable model endpoint; skipping commit summary',
+    ])
     Deno.removeSync(crowDirectory, { recursive: true })
   })
 })

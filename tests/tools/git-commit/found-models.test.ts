@@ -22,31 +22,20 @@ const model: ModelInfo = {
 const providers = {
   providers: [{
     name: 'nous',
-    baseUrl: 'https://nous.example/v1',
+    baseUrl: 'https://nous.example',
     apiKeyEnv: 'NOUS_TEST_KEY',
   }],
 }
 
 describe('FoundModels', () => {
-  it('when the first model is not setup, returns the next setup model', () => {
-    const crowDirectory = Deno.makeTempDirSync()
-    const providersPath = join(crowDirectory, 'providers.json')
-    Deno.writeTextFileSync(providersPath, JSON.stringify(providers))
-    const models = [model, { ...model, id: 'second-model', provider: 'nous' }]
-    const environment = new Environment({ NOUS_TEST_KEY: 'secret-key' })
-
-    const firstModel = new FoundModels(models, crowDirectory, environment)
-      .first()
-
-    expect(firstModel).toEqual(models[1])
-    Deno.removeSync(crowDirectory, { recursive: true })
-  })
-
   it('when a model is setup, firstEndpoint returns its endpoint', () => {
     const crowDirectory = Deno.makeTempDirSync()
     const providersPath = join(crowDirectory, 'providers.json')
     Deno.writeTextFileSync(providersPath, JSON.stringify(providers))
-    const models = [model, { ...model, id: 'second-model', provider: 'nous' }]
+    const models = [{ ...model, provider: 'nous' }, {
+      ...model,
+      id: 'second-model',
+    }]
     const environment = new Environment({ NOUS_TEST_KEY: 'secret-key' })
 
     const endpoint = new FoundModels(models, crowDirectory, environment)
@@ -55,7 +44,7 @@ describe('FoundModels', () => {
     expect(endpoint).toEqual({
       baseURL: 'https://nous.example/v1',
       apiKey: 'secret-key',
-      model: 'second-model',
+      model: 'first-model',
     })
     Deno.removeSync(crowDirectory, { recursive: true })
   })
