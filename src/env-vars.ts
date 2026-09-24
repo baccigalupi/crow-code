@@ -20,11 +20,11 @@ export class Environment {
     this.values = values
   }
 
-  hasValue(name: string) {
+  hasValue(name: string): boolean {
     return this.values[name] !== undefined
   }
 
-  value(name: string) {
+  value(name: string): string {
     if (!this.hasValue(name)) {
       return ''
     }

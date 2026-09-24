@@ -2,16 +2,22 @@ import { describe, it, mock } from 'node:test'
 import { expect } from '@std/expect'
 import pino from 'pino'
 import { Help, HelpMatch } from '../../../src/cli/commands/help.ts'
+import { Environment } from '../../../src/env-vars.ts'
 
-describe('Help', () => {
+describe('help', () => {
   it('when run, writes the usage text', () => {
     const consoleLog = mock.fn()
-    const help = new Help({
-      crowDirectory: '',
-      logger: pino({ enabled: false }),
-      consoleLog,
-      fetchClient: fetch,
-    })
+    const help = new Help(
+      {
+        crowDirectory: '',
+        logger: pino({ enabled: false }),
+        consoleLog,
+        fetchClient: fetch,
+        denoCommand: Deno.Command,
+        environment: new Environment({}),
+      },
+      {},
+    )
 
     help.run()
 
@@ -19,33 +25,33 @@ describe('Help', () => {
       'Usage: crow <command>',
     )
   })
-})
 
-describe('HelpMatch', () => {
-  it('when --help is passed, returns true', () => {
-    const match = new HelpMatch({ commands: [], options: { help: true } })
+  describe('HelpMatch', () => {
+    it('when --help is passed, returns true', () => {
+      const match = new HelpMatch({ commands: [], options: { help: true } })
 
-    expect(match.isMatch()).toBe(true)
-  })
-
-  it('when -h is passed, returns true', () => {
-    const match = new HelpMatch({ commands: [], options: { h: true } })
-
-    expect(match.isMatch()).toBe(true)
-  })
-
-  it('when no help option is passed, returns false', () => {
-    const match = new HelpMatch({ commands: [], options: {} })
-
-    expect(match.isMatch()).toBe(false)
-  })
-
-  it('returns no extracted options', () => {
-    const match = new HelpMatch({
-      commands: [],
-      options: { help: true, verbose: true },
+      expect(match.isMatch()).toBe(true)
     })
 
-    expect(match.extractOptions()).toEqual({})
+    it('when -h is passed, returns true', () => {
+      const match = new HelpMatch({ commands: [], options: { h: true } })
+
+      expect(match.isMatch()).toBe(true)
+    })
+
+    it('when no help option is passed, returns false', () => {
+      const match = new HelpMatch({ commands: [], options: {} })
+
+      expect(match.isMatch()).toBe(false)
+    })
+
+    it('when options are passed, extracts none of them', () => {
+      const match = new HelpMatch({
+        commands: [],
+        options: { help: true, verbose: true },
+      })
+
+      expect(match.extractOptions()).toEqual({})
+    })
   })
 })

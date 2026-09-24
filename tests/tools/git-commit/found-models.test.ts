@@ -2,6 +2,7 @@ import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import type { ModelInfo } from '../../../src/model-info/types.ts'
+import { Environment } from '../../../src/env-vars.ts'
 import { FoundModels } from '../../../src/tools/git-commit/found-models.ts'
 
 const model: ModelInfo = {
@@ -31,13 +32,13 @@ describe('FoundModels', () => {
     const crowDirectory = Deno.makeTempDirSync()
     const providersPath = join(crowDirectory, 'providers.json')
     Deno.writeTextFileSync(providersPath, JSON.stringify(providers))
-    Deno.env.set('NOUS_TEST_KEY', 'secret-key')
     const models = [model, { ...model, id: 'second-model', provider: 'nous' }]
+    const environment = new Environment({ NOUS_TEST_KEY: 'secret-key' })
 
-    const firstModel = new FoundModels(models, crowDirectory).first()
+    const firstModel = new FoundModels(models, crowDirectory, environment)
+      .first()
 
     expect(firstModel).toEqual(models[1])
-    Deno.env.delete('NOUS_TEST_KEY')
     Deno.removeSync(crowDirectory, { recursive: true })
   })
 
@@ -45,17 +46,17 @@ describe('FoundModels', () => {
     const crowDirectory = Deno.makeTempDirSync()
     const providersPath = join(crowDirectory, 'providers.json')
     Deno.writeTextFileSync(providersPath, JSON.stringify(providers))
-    Deno.env.set('NOUS_TEST_KEY', 'secret-key')
     const models = [model, { ...model, id: 'second-model', provider: 'nous' }]
+    const environment = new Environment({ NOUS_TEST_KEY: 'secret-key' })
 
-    const endpoint = new FoundModels(models, crowDirectory).firstEndpoint()
+    const endpoint = new FoundModels(models, crowDirectory, environment)
+      .firstEndpoint()
 
     expect(endpoint).toEqual({
       baseURL: 'https://nous.example/v1',
       apiKey: 'secret-key',
       model: 'second-model',
     })
-    Deno.env.delete('NOUS_TEST_KEY')
     Deno.removeSync(crowDirectory, { recursive: true })
   })
 
@@ -63,7 +64,8 @@ describe('FoundModels', () => {
     const crowDirectory = Deno.makeTempDirSync()
     const models = [{ ...model, provider: 'nous' }]
 
-    const endpoint = new FoundModels(models, crowDirectory).firstEndpoint()
+    const endpoint = new FoundModels(models, crowDirectory, new Environment({}))
+      .firstEndpoint()
 
     expect(endpoint).toEqual({ baseURL: '', apiKey: '', model: '' })
     Deno.removeSync(crowDirectory, { recursive: true })

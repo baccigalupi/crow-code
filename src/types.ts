@@ -1,4 +1,5 @@
 import type pino from 'pino'
+import type { Environment } from './env-vars.ts'
 
 export type Logger = pino.Logger
 
@@ -19,4 +20,6 @@ export type CommandApplicationData = {
   logger: Logger
   consoleLog: ConsoleLog
   fetchClient: typeof fetch
+  denoCommand: DenoCommand
+  environment: Environment
 }

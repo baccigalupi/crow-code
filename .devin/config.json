@@ -33,8 +33,8 @@
       "Exec(bd)",
       "Exec(curl)",
       "Exec(chmod)",
-      "Fetch(domain:docs.devin.ai)",
-      "Exec(rm)"
+      "Exec(rm)",
+      "Exec(deno doc)"
     ],
     "deny": [
       "Exec(cd)",

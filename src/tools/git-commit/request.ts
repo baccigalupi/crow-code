@@ -1,4 +1,5 @@
 import { ApiRequest } from '../../api-request.ts'
+import type { Environment } from '../../env-vars.ts'
 import type { Logger } from '../../types.ts'
 import { ExtractModelResponse } from '../../plan/extract-model-response.ts'
 import { modelRequest } from '../../plan/model-request.ts'
@@ -12,6 +13,7 @@ class CommitSummaryRequest {
   private diff: string
   private goal: string
   private logger: Logger
+  private environment: Environment
   private fetchClient: typeof fetch
 
   constructor(
@@ -19,12 +21,14 @@ class CommitSummaryRequest {
     diff: string,
     goal: string,
     logger: Logger,
+    environment: Environment,
     fetchClient: typeof fetch,
   ) {
     this.crowDirectory = crowDirectory
     this.diff = diff
     this.goal = goal
     this.logger = logger
+    this.environment = environment
     this.fetchClient = fetchClient
   }
 
@@ -35,7 +39,7 @@ class CommitSummaryRequest {
   }
 
   private endpointIsUnavailable() {
-    this.endpoint = modelEndpointInfo(this.crowDirectory)
+    this.endpoint = modelEndpointInfo(this.crowDirectory, this.environment)
     return !this.endpoint.isAvailable()
   }
 
@@ -63,6 +67,7 @@ export const requestCommitSummary = (
   diff: string,
   goal: string,
   logger: Logger,
+  environment: Environment,
   fetchClient: typeof fetch = fetch,
 ): Promise<string> => {
   return new CommitSummaryRequest(
@@ -70,6 +75,7 @@ export const requestCommitSummary = (
     diff,
     goal,
     logger,
+    environment,
     fetchClient,
   ).perform()
 }

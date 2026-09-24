@@ -1,4 +1,8 @@
-import type { CommandApplicationData, ConsoleLog } from '../../types.ts'
+import type {
+  CommandApplicationData,
+  ConsoleLog,
+  ParsedArgumentsOptions,
+} from '../../types.ts'
 import { CommandMatch } from './command-match.ts'
 
 const usageText = `Usage: crow <command>
@@ -12,7 +16,10 @@ export class Help {
   alias: string = 'h'
   private consoleLog: ConsoleLog
 
-  constructor(data: CommandApplicationData) {
+  constructor(
+    data: CommandApplicationData,
+    _options: ParsedArgumentsOptions,
+  ) {
     this.consoleLog = data.consoleLog
   }
 

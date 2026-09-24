@@ -2,6 +2,7 @@ import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import type { Logger } from '../../../src/types.ts'
+import { Environment } from '../../../src/env-vars.ts'
 import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
 import { requestCommitSummary } from '../../../src/tools/git-commit/request.ts'
 
@@ -42,7 +43,7 @@ describe('requestCommitSummary', () => {
       baseUrl: 'https://nous.example/v1',
       apiKeyEnv: 'NOUS_TEST_KEY',
     }])
-    Deno.env.set('NOUS_TEST_KEY', 'secret-key')
+    const environment = new Environment({ NOUS_TEST_KEY: 'secret-key' })
     const logger = { error: () => {} } as unknown as Logger
     const fetchMock = mockFetchSuccess({
       choices: [{ message: { content: '  Add commit summaries  \n' } }],
@@ -53,6 +54,7 @@ describe('requestCommitSummary', () => {
       'diff contents',
       'ship command',
       logger,
+      environment,
       fetchMock,
     )
 
@@ -64,7 +66,6 @@ describe('requestCommitSummary', () => {
     expect(body.model).toBe('first-model')
     expect(body.messages[1].content).toContain('diff contents')
     expect(body.messages[1].content).toContain('ship command')
-    Deno.env.delete('NOUS_TEST_KEY')
     Deno.removeSync(crowDirectory, { recursive: true })
   })
 
@@ -79,18 +80,24 @@ describe('requestCommitSummary', () => {
       baseUrl: 'https://nous.example/v1',
       apiKeyEnv: 'NOUS_TEST_KEY',
     }])
-    Deno.env.set('NOUS_TEST_KEY', 'secret-key')
+    const environment = new Environment({ NOUS_TEST_KEY: 'secret-key' })
     const logger = { error: () => {} } as unknown as Logger
     const fetchMock = mockFetchSuccess({
       choices: [{ message: { content: 'Fallback summary' } }],
     })
 
-    await requestCommitSummary(crowDirectory, 'diff', '', logger, fetchMock)
+    await requestCommitSummary(
+      crowDirectory,
+      'diff',
+      '',
+      logger,
+      environment,
+      fetchMock,
+    )
 
     const request = fetchMock.calls[0] as Request
     const body = await request.json()
     expect(body.model).toBe('second-model')
-    Deno.env.delete('NOUS_TEST_KEY')
     Deno.removeSync(crowDirectory, { recursive: true })
   })
 
@@ -102,7 +109,7 @@ describe('requestCommitSummary', () => {
       baseUrl: 'https://nous.example/v1',
       apiKeyEnv: 'NOUS_TEST_KEY',
     }])
-    Deno.env.set('NOUS_TEST_KEY', 'secret-key')
+    const environment = new Environment({ NOUS_TEST_KEY: 'secret-key' })
     const logger = { error: () => {} } as unknown as Logger
 
     const summary = await requestCommitSummary(
@@ -110,11 +117,11 @@ describe('requestCommitSummary', () => {
       'diff contents',
       '',
       logger,
+      environment,
       mockFetchError(500),
     )
 
     expect(summary).toBe('')
-    Deno.env.delete('NOUS_TEST_KEY')
     Deno.removeSync(crowDirectory, { recursive: true })
   })
 
@@ -129,6 +136,7 @@ describe('requestCommitSummary', () => {
       'diff',
       '',
       logger,
+      new Environment({}),
     )
 
     expect(summary).toBe('')
@@ -146,6 +154,7 @@ describe('requestCommitSummary', () => {
       'diff',
       '',
       logger,
+      new Environment({}),
     )
 
     expect(summary).toBe('')
@@ -167,6 +176,7 @@ describe('requestCommitSummary', () => {
       'diff',
       '',
       logger,
+      new Environment({}),
     )
 
     expect(summary).toBe('')

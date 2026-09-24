@@ -1,4 +1,8 @@
-import type { CommandApplicationData, Logger } from '../../types.ts'
+import type {
+  CommandApplicationData,
+  Logger,
+  ParsedArgumentsOptions,
+} from '../../types.ts'
 import { buildModelCatalog } from '../../model-info/catalog/build-model-catalog.ts'
 import { CommandMatch } from './command-match.ts'
 
@@ -8,7 +12,10 @@ export class CreateModelCatalog {
   private logger: Logger
   private fetchClient: typeof fetch
 
-  constructor(data: CommandApplicationData) {
+  constructor(
+    data: CommandApplicationData,
+    _options: ParsedArgumentsOptions,
+  ) {
     this.crowDirectory = data.crowDirectory
     this.logger = data.logger
     this.fetchClient = data.fetchClient

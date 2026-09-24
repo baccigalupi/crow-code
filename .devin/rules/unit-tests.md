@@ -29,7 +29,8 @@ Apply when creating or changing tests in this repo.
 8. Most test descriptions should be "when X, Y happens"
 9. Don't extract Arrange into helpers without first getting user permissions.
    That bans helpers in a test/support or helpers in the test file itself.
-10. Avoid putting arrange in beforeEach
+10. Avoid putting arrange in beforeEach. Clearing fixture directories is the one
+    exception.
 11. Only mock dependents when it makes the tests clearer
 12. Only test what logic is in the module, not what's in the dependencies.
 

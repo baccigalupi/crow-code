@@ -1,12 +1,15 @@
 import { join } from '@std/path'
+import type { Environment } from '../../env-vars.ts'
 import { getCheapNoReasoningModels } from '../../model-info/pick/select-cheap-no-reasoning-models.ts'
 import { FoundModels } from './found-models.ts'
 
 class EndpointInfo {
   private crowDirectory: string
+  private environment: Environment
 
-  constructor(crowDirectory: string) {
+  constructor(crowDirectory: string, environment: Environment) {
     this.crowDirectory = crowDirectory
+    this.environment = environment
   }
 
   isAvailable() {
@@ -18,7 +21,11 @@ class EndpointInfo {
   }
 
   private foundModels() {
-    return new FoundModels(this.loadModels(), this.crowDirectory)
+    return new FoundModels(
+      this.loadModels(),
+      this.crowDirectory,
+      this.environment,
+    )
   }
 
   private loadModels() {
@@ -33,6 +40,9 @@ class EndpointInfo {
   }
 }
 
-export const modelEndpointInfo = (crowDirectory: string) => {
-  return new EndpointInfo(crowDirectory)
+export const modelEndpointInfo = (
+  crowDirectory: string,
+  environment: Environment,
+) => {
+  return new EndpointInfo(crowDirectory, environment)
 }

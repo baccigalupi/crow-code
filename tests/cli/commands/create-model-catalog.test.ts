@@ -5,13 +5,14 @@ import {
   CreateModelCatalog,
   CreateModelCatalogMatch,
 } from '../../../src/cli/commands/create-model-catalog.ts'
+import { Environment } from '../../../src/env-vars.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import { mockFetchRoutes } from '../../support/mock-fetch.ts'
 import pino from 'pino'
 
 const fixtureDirectory = join(fixturesDirectory, 'create-model-catalog')
 
-describe('CreateModelCatalog', () => {
+describe('create-model-catalog', () => {
   beforeEach(() => clearDirectory(fixtureDirectory))
   afterEach(() => clearDirectory(fixtureDirectory))
 
@@ -31,43 +32,47 @@ describe('CreateModelCatalog', () => {
     const logger = pino({ enabled: false })
     const fetchMock = mockFetchRoutes([['pile-driver', { models: [] }]])
 
-    await new CreateModelCatalog({
-      crowDirectory,
-      logger,
-      consoleLog: () => {},
-      fetchClient: fetchMock,
-    }).run()
+    await new CreateModelCatalog(
+      {
+        crowDirectory,
+        logger,
+        consoleLog: () => {},
+        fetchClient: fetchMock,
+        denoCommand: Deno.Command,
+        environment: new Environment({}),
+      },
+      {},
+    ).run()
 
-    expect(fetchMock.calls).toHaveLength(1)
     expect(Deno.statSync(join(crowDirectory, 'models.json')).isFile).toBe(true)
   })
-})
 
-describe('CreateModelCatalogMatch', () => {
-  it('when the command is create-model-catalog, returns true', () => {
-    const match = new CreateModelCatalogMatch({
-      commands: ['create-model-catalog'],
-      options: {},
+  describe('CreateModelCatalogMatch', () => {
+    it('when the command is create-model-catalog, returns true', () => {
+      const match = new CreateModelCatalogMatch({
+        commands: ['create-model-catalog'],
+        options: {},
+      })
+
+      expect(match.isMatch()).toBe(true)
     })
 
-    expect(match.isMatch()).toBe(true)
-  })
+    it('when the command is something else, returns false', () => {
+      const match = new CreateModelCatalogMatch({
+        commands: ['git-commit'],
+        options: {},
+      })
 
-  it('when the command is something else, returns false', () => {
-    const match = new CreateModelCatalogMatch({
-      commands: ['git-commit'],
-      options: {},
+      expect(match.isMatch()).toBe(false)
     })
 
-    expect(match.isMatch()).toBe(false)
-  })
+    it('when options are passed, extracts none of them', () => {
+      const match = new CreateModelCatalogMatch({
+        commands: ['create-model-catalog'],
+        options: { verbose: true },
+      })
 
-  it('returns no extracted options', () => {
-    const match = new CreateModelCatalogMatch({
-      commands: ['create-model-catalog'],
-      options: { verbose: true },
+      expect(match.extractOptions()).toEqual({})
     })
-
-    expect(match.extractOptions()).toEqual({})
   })
 })

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, it, mock } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import type { Logger } from '../src/types.ts'
+import { Environment } from '../src/env-vars.ts'
 import { run } from '../src/cli.ts'
 import { clearDirectory, fixturesDirectory } from './support/fixtures.ts'
 import { mockFetchRoutes, mockFetchSuccess } from './support/mock-fetch.ts'
@@ -39,25 +40,23 @@ class FakeCommand {
 }
 
 describe('run', () => {
-  let originalCommand: typeof Deno.Command
-
-  beforeEach(() => {
-    originalCommand = Deno.Command
-    Deno.Command = FakeCommand as never
-  })
-
-  afterEach(() => {
-    Deno.Command = originalCommand
-  })
+  beforeEach(() => clearDirectory(crowDirectory))
+  afterEach(() => clearDirectory(crowDirectory))
 
   it('when the generated summary is empty, does not commit', async () => {
     const logger = { error: () => {} } as unknown as Logger
 
-    await run(['git-commit'], crowDirectory, logger, () => {})
+    await run(
+      ['git-commit'],
+      crowDirectory,
+      logger,
+      () => {},
+      undefined,
+      FakeCommand as never,
+    )
   })
 
   it('when create-model-catalog is requested, builds the model catalog', async () => {
-    await clearDirectory(crowDirectory)
     await Deno.mkdir(crowDirectory, { recursive: true })
     await Deno.writeTextFile(
       join(crowDirectory, 'providers.json'),
@@ -82,7 +81,6 @@ describe('run', () => {
 
     expect(fetchMock.calls).toHaveLength(1)
     expect(Deno.statSync(join(crowDirectory, 'models.json')).isFile).toBe(true)
-    await clearDirectory(crowDirectory)
   })
 
   it('when the command is unknown, writes usage', async () => {
@@ -211,7 +209,7 @@ describe('run', () => {
         }],
       }),
     )
-    Deno.env.set('NOUS_TEST_KEY', 'secret-key')
+    const environment = new Environment({ NOUS_TEST_KEY: 'secret-key' })
     const logger = { error: () => {} } as unknown as Logger
     const fetchMock = mockFetchSuccess({
       choices: [{ message: { content: 'summary' } }],
@@ -223,12 +221,13 @@ describe('run', () => {
       logger,
       () => {},
       fetchMock,
+      FakeCommand as never,
+      environment,
     )
 
     const request = fetchMock.calls[0] as Request
     const body = await request.json()
     expect(body.messages[1].content).toContain('ship it')
-    Deno.env.delete('NOUS_TEST_KEY')
     Deno.removeSync(crowDirectory, { recursive: true })
   })
 

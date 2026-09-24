@@ -1,7 +1,7 @@
 import type { CommandApplicationData, ParsedArguments } from '../types.ts'
 import type { CreateModelCatalog } from './commands/create-model-catalog.ts'
 import type { GitCommit } from './commands/git-commit.ts'
-import { Help } from './commands/help.ts'
+import type { Help } from './commands/help.ts'
 
 export class Cli {
   private parsed: ParsedArguments
@@ -14,13 +14,14 @@ export class Cli {
     parsed: ParsedArguments,
     createModelCatalog: CreateModelCatalog,
     gitCommit: GitCommit,
+    help: Help,
     commandData: CommandApplicationData,
   ) {
     this.parsed = parsed
     this.createModelCatalog = createModelCatalog
     this.gitCommit = gitCommit
+    this.help = help
     this.commandData = commandData
-    this.help = new Help(commandData)
   }
 
   run() {

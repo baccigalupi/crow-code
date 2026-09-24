@@ -1,4 +1,4 @@
-import { type Environment, loadEnvironmentalVariables } from '../../env-vars.ts'
+import type { Environment } from '../../env-vars.ts'
 import { loadProviderConfig } from '../../model-info/catalog/providers/load-provider-config.ts'
 import type { ModelInfo, ProviderConfig } from '../../model-info/types.ts'
 import { ValidateModel } from './validate-model.ts'
@@ -8,10 +8,14 @@ export class FoundModels {
   private providers: ProviderConfig[]
   private environment: Environment
 
-  constructor(models: ModelInfo[], crowDirectory: string) {
+  constructor(
+    models: ModelInfo[],
+    crowDirectory: string,
+    environment: Environment,
+  ) {
     this.models = models
     this.providers = this.loadProviders(crowDirectory)
-    this.environment = loadEnvironmentalVariables()
+    this.environment = environment
   }
 
   all() {

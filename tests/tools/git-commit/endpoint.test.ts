@@ -2,6 +2,7 @@ import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { modelEndpointInfo } from '../../../src/tools/git-commit/endpoint.ts'
+import { Environment } from '../../../src/env-vars.ts'
 
 const model = {
   id: 'first-model',
@@ -40,9 +41,9 @@ describe('modelEndpointInfo', () => {
       baseUrl: 'https://nous.example/v1',
       apiKeyEnv: 'NOUS_TEST_KEY',
     }])
-    Deno.env.set('NOUS_TEST_KEY', 'secret-key')
+    const environment = new Environment({ NOUS_TEST_KEY: 'secret-key' })
 
-    const endpoint = modelEndpointInfo(crowDirectory)
+    const endpoint = modelEndpointInfo(crowDirectory, environment)
 
     expect(endpoint.isAvailable()).toBe(true)
     expect(endpoint.value()).toEqual({
@@ -50,14 +51,13 @@ describe('modelEndpointInfo', () => {
       apiKey: 'secret-key',
       model: 'first-model',
     })
-    Deno.env.delete('NOUS_TEST_KEY')
     Deno.removeSync(crowDirectory, { recursive: true })
   })
 
   it('when no model is available, value returns an empty endpoint and is not available', () => {
     const crowDirectory = Deno.makeTempDirSync()
 
-    const endpoint = modelEndpointInfo(crowDirectory)
+    const endpoint = modelEndpointInfo(crowDirectory, new Environment({}))
 
     expect(endpoint.isAvailable()).toBe(false)
     expect(endpoint.value()).toEqual({ baseURL: '', apiKey: '', model: '' })
