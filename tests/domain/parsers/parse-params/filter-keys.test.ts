@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { filterKeys } from '../../../src/domain/parsers/filter-keys.ts'
+import { filterKeys } from '../../../../src/domain/parsers/parse-params/filter-keys.ts'
 
 describe('filterKeys', () => {
   it('when keys are not in the allowed list, removes them', () => {

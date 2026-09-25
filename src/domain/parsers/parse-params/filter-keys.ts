@@ -1,4 +1,4 @@
-import type { ParsedArgumentsOptions } from '../../types.ts'
+import type { ParsedArgumentsOptions } from '../../../types.ts'
 
 const addAllowedKey = (
   result: ParsedArgumentsOptions,

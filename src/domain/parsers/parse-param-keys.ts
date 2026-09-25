@@ -1,6 +1,6 @@
 import type { ParsedArgumentsOptions } from '../../types.ts'
-import { filterKeys } from './filter-keys.ts'
-import { normalizeRecordKeys } from './normalize-record-keys.ts'
+import { filterKeys } from './parse-params/filter-keys.ts'
+import { normalizeRecordKeys } from './parse-params/normalize-record-keys.ts'
 
 export const parseParamKeys = (
   options: ParsedArgumentsOptions,

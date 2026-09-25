@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { normalizeRecordKeys } from '../../../src/domain/parsers/normalize-record-keys.ts'
+import { normalizeRecordKeys } from '../../../../src/domain/parsers/parse-params/normalize-record-keys.ts'
 
 describe('normalizeRecordKeys', () => {
   it('when keys are mixed case, returns snake_case keys with values preserved', () => {

@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { normalize } from '../../../src/domain/parsers/normalize-keys.ts'
+import { normalize } from '../../../../src/domain/parsers/parse-params/normalize-keys.ts'
 
 describe('normalize', () => {
   it('when the key is kebab-case, returns the snake_case key', () => {
