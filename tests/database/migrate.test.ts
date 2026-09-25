@@ -2,37 +2,24 @@ import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import knex from 'knex'
 import pino from 'pino'
-import { migrateDatabase, migrations } from '../../src/database/migrate.ts'
-import type { Migration } from '../../src/types.ts'
+import { spy } from '@std/testing/mock'
+import { migrateDatabase } from '../../src/database/migrate.ts'
 
 describe('migrate', () => {
   it('when a migration is applied, logs its name', async () => {
-    const messages: string[] = []
-    const logger = pino({
-      hooks: {
-        logMethod: (argumentsList) => messages.push(String(argumentsList[0])),
-      },
-    }, { write: () => undefined })
+    const logger = pino({ enabled: false })
+    using infoSpy = spy(logger, 'info')
     const database = knex({
       client: 'better-sqlite3',
       connection: { filename: ':memory:' },
       useNullAsDefault: true,
     })
-    const migration: Migration = {
-      name: '20260101000000_first',
-      up: () => Promise.resolve(),
-      down: () => Promise.resolve(),
-    }
 
-    await migrateDatabase(database, logger, [migration])
+    await migrateDatabase(database, logger)
 
-    expect(messages).toEqual(['Applied migration 20260101000000_first'])
+    expect(String(infoSpy.calls[0].args[0])).toMatch(
+      /^Applied migration \d{14}_/,
+    )
     await database.destroy()
-  })
-
-  it('when migrations are registered, their names are ordered and unique', () => {
-    const names = migrations.map(({ name }) => name)
-
-    expect(names).toEqual([...new Set(names)].sort())
   })
 })

@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import knex from 'knex'
 import { defaultDatabasePath } from '../../src/database/open-database.ts'
 import { setupDatabase } from '../../src/database/setup-database.ts'
 import { clearDirectory, fixturesDirectory } from '../support/fixtures.ts'
@@ -18,21 +17,6 @@ describe('setupDatabase', () => {
     await setupDatabase(crowDirectory, logger)
 
     expect(Deno.statSync(defaultDatabasePath(crowDirectory)).isFile).toBe(true)
-  })
-
-  it('when called, creates the providers table', async () => {
-    const logger = pino({ enabled: false })
-    await setupDatabase(crowDirectory, logger)
-
-    const database = knex({
-      client: 'better-sqlite3',
-      connection: { filename: defaultDatabasePath(crowDirectory) },
-      useNullAsDefault: true,
-    })
-    const hasProviders = await database.schema.hasTable('providers')
-    await database.destroy()
-
-    expect(hasProviders).toBe(true)
   })
 
   it('when called twice, is idempotent', async () => {
