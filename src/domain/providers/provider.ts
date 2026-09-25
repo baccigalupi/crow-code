@@ -2,7 +2,7 @@ import type { ProviderRecord } from '../types.ts'
 import { normalizeModelKeys } from '../parsers/normalize-model-keys.ts'
 import type { Environment } from '../../env-vars.ts'
 
-type ProviderModelRecord = {
+type NormalizedModelRecord = {
   id: number
   name: string
   baseUrl: string
@@ -11,10 +11,10 @@ type ProviderModelRecord = {
 }
 
 export class ProviderModel {
-  private record: ProviderModelRecord
+  private record: NormalizedModelRecord
   private environment: Environment
 
-  constructor(record: ProviderModelRecord, environment: Environment) {
+  constructor(record: NormalizedModelRecord, environment: Environment) {
     this.record = record
     this.environment = environment
   }
@@ -55,7 +55,7 @@ export const providerModel = (
   environment: Environment,
 ) => {
   return new ProviderModel(
-    normalizeModelKeys(record) as ProviderModelRecord,
+    normalizeModelKeys<NormalizedModelRecord>(record),
     environment,
   )
 }

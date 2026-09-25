@@ -2,18 +2,20 @@ const camelizeKey = (key: string) => {
   return key.replace(/_([a-z0-9])/g, (_, letter) => letter.toUpperCase())
 }
 
-const addCamelizedKey = <T>(
-  result: Record<string, T>,
+const addCamelizedKey = <Output extends Record<string, unknown>>(
+  result: Output,
   key: string,
-  value: T,
+  value: unknown,
 ) => {
-  result[camelizeKey(key)] = value
+  result[camelizeKey(key) as keyof Output] = value as Output[keyof Output]
   return result
 }
 
-export const normalizeModelKeys = <T>(record: Record<string, T>) => {
+export const normalizeModelKeys = <Output extends Record<string, unknown>>(
+  record: Record<string, unknown>,
+): Output => {
   return Object.entries(record).reduce(
     (result, [key, value]) => addCamelizedKey(result, key, value),
-    {} as Record<string, T>,
+    {} as Output,
   )
 }
