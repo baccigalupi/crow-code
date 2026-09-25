@@ -7,7 +7,7 @@ export type StopInput = {
 }
 
 export const recoveryReason =
-  'A tool call was rejected and its parallel siblings were canceled. Report the block, then retry each permitted call individually — do not end your turn.'
+  'A tool call was rejected and its parallel siblings were canceled. Retry each permitted call individually — do not end your turn.'
 
 export const stopDecision = async (
   input: StopInput,

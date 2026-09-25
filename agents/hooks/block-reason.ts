@@ -1,7 +1,7 @@
 import type { DevinConfig } from './devin-config.ts'
 
 const correction =
-  'Run the approved command now, do not retry variants, and do not end your turn without reporting the block.'
+  'Run the approved command now, do not retry variants, and do not end your turn.'
 
 const mappings = [
   { pattern: /^deno\s+test\b/, script: 'dev/test' },

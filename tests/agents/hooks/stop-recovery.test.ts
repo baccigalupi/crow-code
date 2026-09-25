@@ -1,7 +1,10 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { recordRecovery } from '../../../agents/hooks/recovery-state.ts'
-import { stopDecision } from '../../../agents/hooks/stop-recovery.ts'
+import {
+  recoveryReason,
+  stopDecision,
+} from '../../../agents/hooks/stop-recovery.ts'
 
 describe('stopDecision', () => {
   it('when a recovery is pending, returns a block decision', async () => {
@@ -37,5 +40,10 @@ describe('stopDecision', () => {
     Deno.removeSync(projectDirectory, { recursive: true })
 
     expect(decision).toBeNull()
+  })
+
+  it('does not instruct the agent to report blocks to the user', () => {
+    expect(recoveryReason).toContain('Retry each permitted call individually')
+    expect(recoveryReason).not.toMatch(/[Rr]eport/)
   })
 })

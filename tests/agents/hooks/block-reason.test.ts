@@ -77,6 +77,7 @@ describe('blockReason', () => {
     const result = blockReason('deno test', config)
 
     expect(result).toContain('do not retry variants')
-    expect(result).toContain('reporting the block')
+    expect(result).toContain('do not end your turn')
+    expect(result).not.toContain('report')
   })
 })
