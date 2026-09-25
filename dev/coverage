@@ -6,5 +6,6 @@ set -euo pipefail
 
 bash dev/test "$@"
 bash agents/coverage-report
+bash agents/lib/coverage --html
 echo "==> Coverage summary"
 bash agents/lib/coverage

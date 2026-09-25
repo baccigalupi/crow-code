@@ -2,10 +2,14 @@
 # Shared coverage reporter. Use --lcov to emit the machine-checked lcov file.
 set -euo pipefail
 
-coverageOptions=(--exclude="tests/" --exclude="agents/")
+coverageOptions=(--exclude="tests/" --exclude="agents/" --exclude="src/database/migrations/")
 
 if [[ "${1:-}" == "--lcov" ]]; then
   exec deno coverage --lcov "${coverageOptions[@]}" --output coverage/lcov.info
+fi
+
+if [[ "${1:-}" == "--html" ]]; then
+  exec deno coverage --html "${coverageOptions[@]}"
 fi
 
 deno coverage "${coverageOptions[@]}" || true
