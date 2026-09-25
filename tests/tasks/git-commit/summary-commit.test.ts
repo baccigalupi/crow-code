@@ -5,7 +5,7 @@ import type { DenoCommand, Logger } from '../../../src/types.ts'
 import { Environment } from '../../../src/env-vars.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
-import { commitWithSummary } from '../../../src/tools/git-commit/summary-commit.ts'
+import { commitWithSummary } from '../../../src/tasks/git-commit/summary-commit.ts'
 
 const crowDirectory = join(fixturesDirectory, 'summary-commit', '.crow')
 

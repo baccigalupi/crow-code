@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import { modelEndpointInfo } from '../../../src/tools/git-commit/endpoint.ts'
+import { modelEndpointInfo } from '../../../src/tasks/git-commit/endpoint.ts'
 import { Environment } from '../../../src/env-vars.ts'
 
 const model = {

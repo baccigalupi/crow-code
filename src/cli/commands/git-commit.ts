@@ -1,4 +1,4 @@
-import { commitWithSummary } from '../../tools/git-commit/summary-commit.ts'
+import { commitWithSummary } from '../../tasks/git-commit/summary-commit.ts'
 import { Command } from './command.ts'
 
 export class GitCommit extends Command {

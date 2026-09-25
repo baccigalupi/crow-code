@@ -3,7 +3,7 @@ import { expect } from '@std/expect'
 import { join } from '@std/path'
 import type { ModelInfo } from '../../../src/model-info/types.ts'
 import { Environment } from '../../../src/env-vars.ts'
-import { FoundModels } from '../../../src/tools/git-commit/found-models.ts'
+import { FoundModels } from '../../../src/tasks/git-commit/found-models.ts'
 
 const model: ModelInfo = {
   id: 'first-model',

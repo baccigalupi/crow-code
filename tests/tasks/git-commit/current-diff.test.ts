@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import type { DenoCommand, Logger } from '../../../src/types.ts'
-import { getCurrentDiff } from '../../../src/tools/git-commit/current-diff.ts'
+import { getCurrentDiff } from '../../../src/tasks/git-commit/current-diff.ts'
 
 class FakeLogger {
   errorMessage = ''

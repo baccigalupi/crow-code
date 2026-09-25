@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import type { DenoCommand, Logger } from '../../../src/types.ts'
-import { commitChanges } from '../../../src/tools/git-commit/commit.ts'
+import { commitChanges } from '../../../src/tasks/git-commit/commit.ts'
 
 describe('commitChanges', () => {
   it('when called, runs git commit with the message', async () => {

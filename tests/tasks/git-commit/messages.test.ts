@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { requestMessages } from '../../../src/tools/git-commit/messages.ts'
+import { requestMessages } from '../../../src/tasks/git-commit/messages.ts'
 
 describe('requestMessages', () => {
   it('when messages are requested, asks for one concise summary without prose', () => {

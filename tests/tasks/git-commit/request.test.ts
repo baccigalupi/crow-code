@@ -5,7 +5,7 @@ import type { Logger } from '../../../src/types.ts'
 import { Environment } from '../../../src/env-vars.ts'
 import { mockFetchRejected } from '../../support/mock-fetch.ts'
 import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
-import { requestCommitSummary } from '../../../src/tools/git-commit/request.ts'
+import { requestCommitSummary } from '../../../src/tasks/git-commit/request.ts'
 
 const model = {
   id: 'first-model',
