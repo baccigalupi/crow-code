@@ -13,6 +13,7 @@
     "jsr:@std/path@1.1.6": "1.1.6",
     "jsr:@std/path@^1.1.5": "1.1.6",
     "jsr:@std/path@^1.1.6": "1.1.6",
+    "jsr:@std/testing@1.0.19": "1.0.19",
     "npm:better-sqlite3@13.0.3": "13.0.3",
     "npm:knex@3.3.0": "3.3.0",
     "npm:openai@7.15.0": "7.15.0",
@@ -53,6 +54,12 @@
       "integrity": "c68485c2a4dfbb5ae3cc74fae4e8c4e5d874cf8a8ed12927917235c758b46cbe",
       "dependencies": [
         "jsr:@std/internal@^1.0.14"
+      ]
+    },
+    "@std/testing@1.0.19": {
+      "integrity": "f4236172365b216728dc3cc8b5e80a9f4c33083d1e4ede7613d5b25b4014898e",
+      "dependencies": [
+        "jsr:@std/assert@^1.0.19"
       ]
     }
   },
@@ -248,6 +255,7 @@
       "jsr:@std/expect@1.0.20",
       "jsr:@std/fs@1.0.24",
       "jsr:@std/path@1.1.6",
+      "jsr:@std/testing@1.0.19",
       "npm:better-sqlite3@13.0.3",
       "npm:knex@3.3.0",
       "npm:openai@7.15.0",

@@ -1,0 +1,56 @@
+{
+  "models": [
+    {
+      "name": "qwen3-coder:30b",
+      "model": "qwen3-coder:30b",
+      "modified_at": "2026-08-19T20:14:16.454318564-07:00",
+      "size": 18556700761,
+      "digest": "06c1097efce0431c2045fe7b2e5108366e43bee1b4603a7aded8f21689e90bca",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "qwen3moe",
+        "families": ["qwen3moe"],
+        "parameter_size": "30.5B",
+        "quantization_level": "Q4_K_M",
+        "context_length": 262144,
+        "embedding_length": 2048
+      },
+      "capabilities": ["completion", "tools"]
+    },
+    {
+      "name": "laguna-xs-2.1:latest",
+      "model": "laguna-xs-2.1:latest",
+      "modified_at": "2026-08-19T20:04:31.697573592-07:00",
+      "size": 20274303147,
+      "digest": "0175be1e57f44bb4a96779d1840dbadd84399ab87bf70688c321ecadeadd757f",
+      "details": {
+        "parent_model": "laguna-xs-2.1:q4_K_M",
+        "format": "gguf",
+        "family": "laguna",
+        "families": ["laguna"],
+        "parameter_size": "33.4B",
+        "quantization_level": "Q4_K_M",
+        "context_length": 262144,
+        "embedding_length": 2048
+      },
+      "capabilities": ["completion", "tools", "thinking"]
+    },
+    {
+      "name": "gemma4:26b",
+      "model": "gemma4:26b",
+      "modified_at": "2026-08-19T16:39:53.029196685-07:00",
+      "size": 17987581215,
+      "digest": "5571076f3d70050487b26b341705799e0ab29b808164f90d20d4cf84f699d251",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "gemma4",
+        "families": ["gemma4"],
+        "parameter_size": "25.8B",
+        "quantization_level": "Q4_K_M"
+      },
+      "capabilities": ["completion", "tools", "thinking"]
+    }
+  ]
+}

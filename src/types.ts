@@ -6,7 +6,7 @@ export type Logger = pino.Logger
 
 export type Migration = Knex.Migration & { name: string }
 
-export type ParsedArgumentsOptions = Record<string, unknown>
+export type ParsedArgumentsOptions = Record<string, string | boolean>
 
 export type ParsedArguments = {
   commands: string[]
