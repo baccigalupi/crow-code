@@ -4,4 +4,6 @@
 # report; dev/coverage and agents/coverage-report generate the filtered reports.
 set -euo pipefail
 
-exec deno test --coverage --coverage-raw-data-only --allow-env --allow-read --allow-write --allow-ffi --allow-run --allow-sys=hostname "$@"
+# --clean empties the coverage directory before collecting profiles so stale
+# lcov/raw files do not accumulate across runs.
+exec deno test --clean --coverage --coverage-raw-data-only --allow-env --allow-read --allow-write --allow-ffi --allow-run --allow-sys=hostname "$@"
