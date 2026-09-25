@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Run the test suite with coverage. Any arguments are forwarded to deno test.
+# Use --coverage-raw-data-only so Deno does not emit an unfiltered summary/lcov
+# report; dev/coverage and agents/coverage-report generate the filtered reports.
 set -euo pipefail
 
-exec deno test --coverage --allow-env --allow-read --allow-write --allow-ffi --allow-run --allow-sys=hostname "$@"
+exec deno test --coverage --coverage-raw-data-only --allow-env --allow-read --allow-write --allow-ffi --allow-run --allow-sys=hostname "$@"

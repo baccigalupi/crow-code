@@ -94,7 +94,7 @@ export type CatalogModel = {
   id: string
   name: string
   provider: string
-  contextLength: number
+  contextLength: number | null
   costInput: number | null
   costOutput: number | null
   dynamicDelegation: boolean
@@ -103,6 +103,31 @@ export type CatalogModel = {
   supportsReasoning: boolean
   canDisableReasoning: boolean
   reasoningOptions: DefaultReasoning
+}
+
+export type Ollama2ApiModel = {
+  name: string
+  model: string
+  modified_at: string
+  size: number
+  digest: string
+  details: {
+    parent_model: string
+    format: string
+    family: string
+    families: string[] | null
+    parameter_size: string
+    quantization_level: string
+    context_length?: number
+    embedding_length?: number
+  }
+  remote_model?: string
+  remote_host?: string
+  capabilities?: string[]
+}
+
+export type Ollama2ApiBody = {
+  models: Ollama2ApiModel[]
 }
 
 export type OllamaModel = {

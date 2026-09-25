@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-# Run the test suite with coverage, then print a human-readable coverage summary.
-# Any arguments are forwarded to dev/test (which forwards them to deno test).
+# Run the test suite with coverage, then export an lcov report and print a
+# human-readable coverage summary. Any arguments are forwarded to dev/test
+# (which forwards them to deno test).
 set -euo pipefail
 
 bash dev/test "$@"
+bash agents/coverage-report
 echo "==> Coverage summary"
 bash agents/lib/coverage
