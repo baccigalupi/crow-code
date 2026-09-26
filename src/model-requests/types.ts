@@ -10,3 +10,20 @@ export type ModelEndpoint = {
 }
 
 export type RequestMessages<T> = (input: T) => ModelMessages[]
+
+type ChatChoices = {
+  message: {
+    content: string
+    [key: string]: unknown
+  }
+  [key: string]: unknown
+}[]
+
+export type ChatCompletionJson = {
+  choices: ChatChoices
+  usage: {
+    cost?: number
+    [key: string]: unknown
+  }
+  [key: string]: unknown
+}
