@@ -1,9 +1,13 @@
 import type { CommandApplicationData } from '../../types.ts'
 import type { ModelEndpoint, ModelMessages } from '../types.ts'
+import { type CallApi, callApi } from '../framework/call-api.ts'
+import { modelRequestObject } from '../framework/model-request-object.ts'
 import { requestMessages } from './messages.ts'
 
 export class GetGoals {
   messages: ModelMessages[] = []
+  requestObject!: Request
+  apiRequest!: CallApi
   private modelEndpoint: ModelEndpoint
   private applicationData: CommandApplicationData
   private goalText: string
@@ -31,10 +35,15 @@ export class GetGoals {
   }
 
   private makeModelRequestObject() {
+    this.requestObject = modelRequestObject(this.modelEndpoint, this.messages)
   }
 
-  private callApi() {
-    return Promise.resolve()
+  private async callApi() {
+    this.apiRequest = await callApi(
+      this.requestObject,
+      this.applicationData.fetchClient,
+      this.applicationData.logger,
+    )
   }
 
   private parseResponseAsJson() {
