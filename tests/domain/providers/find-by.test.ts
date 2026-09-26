@@ -31,7 +31,7 @@ describe('providerFindBy', () => {
       await database.destroy()
     })
 
-    it('returns null when the provider does not exist', async () => {
+    it('returns undefined when the provider does not exist', async () => {
       const environment = new Environment({})
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
@@ -39,7 +39,7 @@ describe('providerFindBy', () => {
       const provider = await providerFindBy(environment, database, logger)
         .getByName('missing')
 
-      expect(provider).toBeNull()
+      expect(provider).toBeUndefined()
       await database.destroy()
     })
   })
@@ -65,7 +65,7 @@ describe('providerFindBy', () => {
       await database.destroy()
     })
 
-    it('returns null when the provider does not exist', async () => {
+    it('returns undefined when the provider does not exist', async () => {
       const environment = new Environment({})
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
@@ -73,7 +73,7 @@ describe('providerFindBy', () => {
       const provider = await providerFindBy(environment, database, logger)
         .getById(999)
 
-      expect(provider).toBeNull()
+      expect(provider).toBeUndefined()
       await database.destroy()
     })
   })

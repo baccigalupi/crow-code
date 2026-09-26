@@ -17,7 +17,7 @@ export type DenoCommand = typeof Deno.Command
 export type Committer = (summary: string, logger: Logger) => Promise<boolean>
 
 export type DatabaseQuerySerializer<Result, Serialized> = (
-  result: Result | null,
+  result: Result | undefined,
 ) => Serialized
 
 export type CommandApplicationData = {

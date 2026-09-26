@@ -2,10 +2,10 @@ import type { DatabaseQuerySerializer, Logger } from '../types.ts'
 
 const defaultSerializer = <T>(value: T): T => value // passes values through unchanged
 
-export class DatabaseQuery<Result, Serialized = Result | null> {
+export class DatabaseQuery<Result, Serialized = Result | undefined> {
   private query: PromiseLike<Result>
   private logger: Logger
-  private queryResult: Result | null
+  private queryResult: Result | undefined
   private succeeded: boolean
   private resultSerializer: DatabaseQuerySerializer<Result, Serialized>
 
@@ -17,7 +17,7 @@ export class DatabaseQuery<Result, Serialized = Result | null> {
   ) {
     this.query = query
     this.logger = logger
-    this.queryResult = null
+    this.queryResult = undefined
     this.succeeded = false
     this.resultSerializer = resultSerializer
   }
@@ -49,7 +49,7 @@ export class DatabaseQuery<Result, Serialized = Result | null> {
   }
 }
 
-export const databaseQuery = async <Result, Serialized = Result | null>(
+export const databaseQuery = async <Result, Serialized = Result | undefined>(
   query: PromiseLike<Result>,
   logger: Logger,
   resultSerializer: DatabaseQuerySerializer<Result, Serialized> =

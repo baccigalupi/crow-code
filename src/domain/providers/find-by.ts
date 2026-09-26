@@ -33,7 +33,7 @@ export class ProviderFindBy {
 
   private serializer(): DatabaseQuerySerializer<
     ProviderRecord | undefined,
-    ProviderModel | null
+    ProviderModel | undefined
   > {
     return (result) => providerModel(result, this.environment)
   }

@@ -50,24 +50,12 @@ export class ProviderModel {
   }
 }
 
-export function providerModel(
-  record: ProviderRecord,
+export const providerModel = (
+  record: ProviderRecord | undefined,
   environment: Environment,
-): ProviderModel
-export function providerModel(
-  record: undefined | null,
-  environment: Environment,
-): null
-export function providerModel(
-  record: ProviderRecord | undefined | null,
-  environment: Environment,
-): ProviderModel | null
-export function providerModel(
-  record: ProviderRecord | undefined | null,
-  environment: Environment,
-): ProviderModel | null {
+) => {
   if (!record) {
-    return null
+    return undefined
   }
   return new ProviderModel(
     normalizeModelKeys<NormalizedModelRecord>(record),

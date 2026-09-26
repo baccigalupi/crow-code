@@ -17,7 +17,7 @@ describe('databaseQuery', () => {
     expect(query.result()).toBe('result')
   })
 
-  it('when the query fails, logs the error and returns null', async () => {
+  it('when the query fails, logs the error and returns undefined', async () => {
     const logger = pino({ enabled: false })
     using loggerErrorSpy = spy(logger, 'error')
 
@@ -27,7 +27,7 @@ describe('databaseQuery', () => {
     )
 
     expect(query.success()).toBe(false)
-    expect(query.result()).toBeNull()
+    expect(query.result()).toBeUndefined()
     assertSpyCall(loggerErrorSpy, 0, { args: ['query failed'] })
   })
 
@@ -51,8 +51,8 @@ describe('databaseQuery', () => {
 
     it('uses the constructor custom serializer when one is provided', async () => {
       const logger = pino({ enabled: false })
-      const serializer = (result: string | null) =>
-        result === null ? 'missing' : `serialized-${result}`
+      const serializer = (result: string | undefined) =>
+        result === undefined ? 'missing' : `serialized-${result}`
 
       const query = await new DatabaseQuery(
         Promise.resolve('result'),
@@ -63,20 +63,20 @@ describe('databaseQuery', () => {
       expect(query.result()).toBe('serialized-result')
     })
 
-    it('uses the default serializer to pass through a null result', async () => {
+    it('uses the default serializer to pass through an undefined result', async () => {
       const logger = pino({ enabled: false })
 
-      const query = await databaseQuery(Promise.resolve(null), logger)
+      const query = await databaseQuery(Promise.resolve(undefined), logger)
 
-      expect(query.result()).toBeNull()
+      expect(query.result()).toBeUndefined()
     })
 
     it('applies a custom serializer to the query result', async () => {
       const logger = pino({ enabled: false })
-      const serializer = (result: string | null) =>
-        result === null ? 'missing' : `serialized-${result}`
+      const serializer = (result: string | undefined) =>
+        result === undefined ? 'missing' : `serialized-${result}`
 
-      const query = await databaseQuery<string | null, string>(
+      const query = await databaseQuery<string | undefined, string>(
         Promise.resolve('result'),
         logger,
         serializer,
@@ -85,13 +85,13 @@ describe('databaseQuery', () => {
       expect(query.result()).toBe('serialized-result')
     })
 
-    it('applies a custom serializer to a null result', async () => {
+    it('applies a custom serializer to an undefined result', async () => {
       const logger = pino({ enabled: false })
-      const serializer = (result: string | null) =>
-        result === null ? 'missing' : `serialized-${result}`
+      const serializer = (result: string | undefined) =>
+        result === undefined ? 'missing' : `serialized-${result}`
 
-      const query = await databaseQuery<string | null, string>(
-        Promise.resolve(null),
+      const query = await databaseQuery<string | undefined, string>(
+        Promise.resolve(undefined),
         logger,
         serializer,
       )
