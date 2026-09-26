@@ -1,5 +1,6 @@
 import { describe, it, mock } from 'node:test'
 import { expect } from '@std/expect'
+import knex from 'knex'
 import pino from 'pino'
 import { Environment } from '../../../src/env-vars.ts'
 import { Command } from '../../../src/cli/commands/command.ts'
@@ -24,6 +25,11 @@ describe('Command', () => {
       parsedArguments: { commands: ['first'], options: {} },
       crowDirectory: '',
       logger: pino({ enabled: false }),
+      database: knex({
+        client: 'better-sqlite3',
+        connection: ':memory:',
+        useNullAsDefault: true,
+      }),
       consoleLog: () => {},
       fetchClient: fetch,
       denoCommand: Deno.Command,
@@ -52,6 +58,11 @@ describe('Command', () => {
       parsedArguments: { commands: [], options: { goal: 'ship' } },
       crowDirectory: '',
       logger: pino({ enabled: false }),
+      database: knex({
+        client: 'better-sqlite3',
+        connection: ':memory:',
+        useNullAsDefault: true,
+      }),
       consoleLog: () => {},
       fetchClient: fetch,
       denoCommand: Deno.Command,
@@ -79,10 +90,16 @@ describe('Command', () => {
       }
     }
 
+    const database = knex({
+      client: 'better-sqlite3',
+      connection: ':memory:',
+      useNullAsDefault: true,
+    })
     await new EchoDirectory({
       parsedArguments: { commands: [], options: {} },
       crowDirectory: '/tmp/crow',
       logger: pino({ enabled: false }),
+      database,
       consoleLog,
       fetchClient: fetch,
       denoCommand: Deno.Command,
@@ -90,5 +107,6 @@ describe('Command', () => {
     }).run()
 
     expect(consoleLog.mock.calls[0].arguments[0]).toBe('/tmp/crow')
+    await database.destroy()
   })
 })

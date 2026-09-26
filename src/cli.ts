@@ -1,11 +1,12 @@
 import { type Environment, loadEnvironmentalVariables } from './env-vars.ts'
+import { openAndMigrateDatabase } from './database/open-and-migrate-database.ts'
 import type { CommandApplicationData, ConsoleLog, Logger } from './types.ts'
 import { parseArguments } from './cli/arguments.ts'
 import type { Command } from './cli/commands/command.ts'
+import { AddProvider } from './cli/commands/add-provider.ts'
 import { CreateModelCatalog } from './cli/commands/create-model-catalog.ts'
 import { GitCommit } from './cli/commands/git-commit.ts'
 import { Help } from './cli/commands/help.ts'
-import { Setup } from './cli/commands/setup.ts'
 import { Version } from './cli/commands/version.ts'
 
 class Cli {
@@ -24,7 +25,7 @@ class Cli {
       new Version(this.data),
       new CreateModelCatalog(this.data),
       new GitCommit(this.data),
-      new Setup(this.data),
+      new AddProvider(this.data),
       new Help(this.data),
     ]
   }
@@ -43,13 +44,19 @@ export const run = async (
   denoCommand: typeof Deno.Command = Deno.Command,
   environment: Environment = loadEnvironmentalVariables(),
 ): Promise<void> => {
-  await new Cli({
-    parsedArguments: parseArguments(argumentsList),
-    crowDirectory,
-    logger,
-    consoleLog,
-    fetchClient,
-    denoCommand,
-    environment,
-  }).run()
+  const database = await openAndMigrateDatabase(crowDirectory, logger)
+  try {
+    await new Cli({
+      parsedArguments: parseArguments(argumentsList),
+      crowDirectory,
+      logger,
+      database,
+      consoleLog,
+      fetchClient,
+      denoCommand,
+      environment,
+    }).run()
+  } finally {
+    await database.destroy()
+  }
 }

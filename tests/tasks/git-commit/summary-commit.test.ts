@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
+import knex from 'knex'
 import type { DenoCommand, Logger } from '../../../src/types.ts'
 import { Environment } from '../../../src/env-vars.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
@@ -65,6 +66,11 @@ describe('commitWithSummary', () => {
       parsedArguments: { commands: ['git-commit'], options: {} },
       crowDirectory,
       logger,
+      database: knex({
+        client: 'better-sqlite3',
+        connection: ':memory:',
+        useNullAsDefault: true,
+      }),
       consoleLog: (summary: string) => summaries.push(summary),
       fetchClient: fetchMock,
       denoCommand: mockDenoCommand,
@@ -96,6 +102,11 @@ describe('commitWithSummary', () => {
       parsedArguments: { commands: ['git-commit'], options: {} },
       crowDirectory,
       logger,
+      database: knex({
+        client: 'better-sqlite3',
+        connection: ':memory:',
+        useNullAsDefault: true,
+      }),
       consoleLog: (summary: string) => summaries.push(summary),
       fetchClient: mockFetchError(500),
       denoCommand: mockDenoCommand,

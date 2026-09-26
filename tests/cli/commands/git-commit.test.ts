@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
+import knex from 'knex'
 import pino from 'pino'
 import type { DenoCommand } from '../../../src/types.ts'
 import { Environment } from '../../../src/env-vars.ts'
@@ -12,6 +13,11 @@ describe('GitCommit', () => {
       parsedArguments: { commands: ['git-commit'], options: {} },
       crowDirectory: '',
       logger: pino({ enabled: false }),
+      database: knex({
+        client: 'better-sqlite3',
+        connection: ':memory:',
+        useNullAsDefault: true,
+      }),
       consoleLog: () => {},
       fetchClient: fetch,
       denoCommand: Deno.Command,
@@ -26,6 +32,11 @@ describe('GitCommit', () => {
       parsedArguments: { commands: ['create-model-catalog'], options: {} },
       crowDirectory: '',
       logger: pino({ enabled: false }),
+      database: knex({
+        client: 'better-sqlite3',
+        connection: ':memory:',
+        useNullAsDefault: true,
+      }),
       consoleLog: () => {},
       fetchClient: fetch,
       denoCommand: Deno.Command,
@@ -43,6 +54,11 @@ describe('GitCommit', () => {
       },
       crowDirectory: '',
       logger: pino({ enabled: false }),
+      database: knex({
+        client: 'better-sqlite3',
+        connection: ':memory:',
+        useNullAsDefault: true,
+      }),
       consoleLog: () => {},
       fetchClient: fetch,
       denoCommand: Deno.Command,
@@ -57,6 +73,11 @@ describe('GitCommit', () => {
       parsedArguments: { commands: ['git-commit'], options: {} },
       crowDirectory: '',
       logger: pino({ enabled: false }),
+      database: knex({
+        client: 'better-sqlite3',
+        connection: ':memory:',
+        useNullAsDefault: true,
+      }),
       consoleLog: () => {},
       fetchClient: fetch,
       denoCommand: Deno.Command,
@@ -73,6 +94,11 @@ describe('GitCommit', () => {
         return Promise.resolve({ success: true, stdout: new Uint8Array() })
       }
     } as unknown as DenoCommand
+    const database = knex({
+      client: 'better-sqlite3',
+      connection: ':memory:',
+      useNullAsDefault: true,
+    })
 
     await new GitCommit({
       parsedArguments: {
@@ -81,6 +107,7 @@ describe('GitCommit', () => {
       },
       crowDirectory: Deno.makeTempDirSync(),
       logger: pino({ enabled: false }),
+      database,
       consoleLog: (summary: string) => summaries.push(summary),
       fetchClient: mockFetchError(500),
       denoCommand: mockDenoCommand,
@@ -88,5 +115,6 @@ describe('GitCommit', () => {
     }).run()
 
     expect(summaries).toEqual(['No summary generated; nothing committed'])
+    await database.destroy()
   })
 })

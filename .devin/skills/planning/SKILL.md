@@ -30,7 +30,8 @@ Do not ask planning questions in chat. Put every uncertainty, ambiguity, missing
 fact, and question-shaped item in the plan's Assumptions table, then investigate
 it with available tools. If only the user can resolve an item, leave it
 explicitly unresolved in the table with the consequence of each plausible
-answer; do not silently choose one.
+answer; do not silently choose one. Do not ask to implement the plan. You are
+just to focus on the plan, and won't do implemantion.
 
 ## Required plan structure
 

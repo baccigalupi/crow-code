@@ -1,3 +1,4 @@
+import type { Knex } from 'knex'
 import type { Environment } from '../../env-vars.ts'
 import type {
   CommandApplicationData,
@@ -13,6 +14,7 @@ export abstract class Command {
   protected options: ParsedArgumentsOptions
   protected crowDirectory: string
   protected logger: Logger
+  protected database: Knex
   protected consoleLog: ConsoleLog
   protected fetchClient: typeof fetch
   protected denoCommand: DenoCommand
@@ -24,6 +26,7 @@ export abstract class Command {
     this.options = data.parsedArguments.options
     this.crowDirectory = data.crowDirectory
     this.logger = data.logger
+    this.database = data.database
     this.consoleLog = data.consoleLog
     this.fetchClient = data.fetchClient
     this.denoCommand = data.denoCommand

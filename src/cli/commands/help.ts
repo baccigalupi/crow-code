@@ -3,9 +3,9 @@ import { Command } from './command.ts'
 const usageText = `Usage: crow <command>
 
 Available commands:
+  add-provider   add a provider (--name= --base-url= [--models-path=] [--api-key-env-var=])
   create-model-catalog   build models.json from live providers
-  git-commit    generate a summary and commit staged changes
-  setup         create and migrate the crow database in .crow`
+  git-commit    generate a summary and commit staged changes`
 
 export class Help extends Command {
   isMatch() {

@@ -3,21 +3,21 @@ import { expect } from '@std/expect'
 import { join } from '@std/path'
 import {
   defaultDatabasePath,
-  openDatabase,
-} from '../../src/database/open-database.ts'
+  openAndMigrateDatabase,
+} from '../../src/database/open-and-migrate-database.ts'
 import { clearDirectory, fixturesDirectory } from '../support/fixtures.ts'
 import { cleanDatabase, createTestDatabase } from '../support/test-database.ts'
 import pino from 'pino'
 
 const crowDirectory = join(fixturesDirectory, 'open-database', '.crow')
 
-describe('openDatabase', () => {
+describe('openAndMigrateDatabase', () => {
   beforeEach(() => clearDirectory(crowDirectory))
   afterEach(() => clearDirectory(crowDirectory))
 
   it('when opened, creates the crow directory and database file', async () => {
     const logger = pino({ enabled: false })
-    const database = await openDatabase(crowDirectory, logger)
+    const database = await openAndMigrateDatabase(crowDirectory, logger)
 
     expect(Deno.statSync(defaultDatabasePath(crowDirectory)).isFile).toBe(true)
     await database.destroy()
@@ -25,7 +25,7 @@ describe('openDatabase', () => {
 
   it('when opened, returns a writable database', async () => {
     const logger = pino({ enabled: false })
-    const database = await openDatabase(crowDirectory, logger)
+    const database = await openAndMigrateDatabase(crowDirectory, logger)
 
     await database.schema.createTable('notes', (table) => {
       table.text('content')
@@ -39,14 +39,14 @@ describe('openDatabase', () => {
 
   it('when opened twice, keeps existing data', async () => {
     const logger = pino({ enabled: false })
-    const first = await openDatabase(crowDirectory, logger)
+    const first = await openAndMigrateDatabase(crowDirectory, logger)
     await first.schema.createTable('notes', (table) => {
       table.text('content')
     })
     await first('notes').insert({ content: 'persisted' })
     await first.destroy()
 
-    const second = await openDatabase(crowDirectory, logger)
+    const second = await openAndMigrateDatabase(crowDirectory, logger)
     const rows = await second('notes').select('content')
     await second.destroy()
 
@@ -55,7 +55,7 @@ describe('openDatabase', () => {
 
   it('when cleaned, drops all tables', async () => {
     const logger = pino({ enabled: false })
-    const database = await openDatabase(crowDirectory, logger)
+    const database = await openAndMigrateDatabase(crowDirectory, logger)
     await database.schema.createTable('notes', (table) => {
       table.text('content')
     })

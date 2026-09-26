@@ -7,7 +7,7 @@ export const defaultDatabasePath = (crowDirectory: string) => {
   return join(crowDirectory, 'crow.db')
 }
 
-export const openDatabase = async (
+export const openAndMigrateDatabase = async (
   crowDirectory: string,
   logger: Logger,
 ) => {

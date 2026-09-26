@@ -1,3 +1,4 @@
+import type { Knex } from 'knex'
 import type pino from 'pino'
 import type { Environment } from './env-vars.ts'
 
@@ -23,6 +24,7 @@ export type CommandApplicationData = {
   parsedArguments: ParsedArguments
   crowDirectory: string
   logger: Logger
+  database: Knex
   consoleLog: ConsoleLog
   fetchClient: typeof fetch
   denoCommand: DenoCommand

@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
+import knex from 'knex'
 import { CreateModelCatalog } from '../../../src/cli/commands/create-model-catalog.ts'
 import { Environment } from '../../../src/env-vars.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
@@ -18,6 +19,11 @@ describe('CreateModelCatalog', () => {
       parsedArguments: { commands: ['create-model-catalog'], options: {} },
       crowDirectory: '',
       logger: pino({ enabled: false }),
+      database: knex({
+        client: 'better-sqlite3',
+        connection: ':memory:',
+        useNullAsDefault: true,
+      }),
       consoleLog: () => {},
       fetchClient: fetch,
       denoCommand: Deno.Command,
@@ -32,6 +38,11 @@ describe('CreateModelCatalog', () => {
       parsedArguments: { commands: ['git-commit'], options: {} },
       crowDirectory: '',
       logger: pino({ enabled: false }),
+      database: knex({
+        client: 'better-sqlite3',
+        connection: ':memory:',
+        useNullAsDefault: true,
+      }),
       consoleLog: () => {},
       fetchClient: fetch,
       denoCommand: Deno.Command,
@@ -49,6 +60,11 @@ describe('CreateModelCatalog', () => {
       },
       crowDirectory: '',
       logger: pino({ enabled: false }),
+      database: knex({
+        client: 'better-sqlite3',
+        connection: ':memory:',
+        useNullAsDefault: true,
+      }),
       consoleLog: () => {},
       fetchClient: fetch,
       denoCommand: Deno.Command,
@@ -72,11 +88,17 @@ describe('CreateModelCatalog', () => {
       }),
     )
     const fetchMock = mockFetchRoutes([['pile-driver', { models: [] }]])
+    const database = knex({
+      client: 'better-sqlite3',
+      connection: ':memory:',
+      useNullAsDefault: true,
+    })
 
     await new CreateModelCatalog({
       parsedArguments: { commands: ['create-model-catalog'], options: {} },
       crowDirectory,
       logger: pino({ enabled: false }),
+      database,
       consoleLog: () => {},
       fetchClient: fetchMock,
       denoCommand: Deno.Command,
@@ -84,5 +106,6 @@ describe('CreateModelCatalog', () => {
     }).run()
 
     expect(Deno.statSync(join(crowDirectory, 'models.json')).isFile).toBe(true)
+    await database.destroy()
   })
 })
