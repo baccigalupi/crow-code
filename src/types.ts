@@ -38,7 +38,7 @@ export type DatabaseQuerySerializer<Result, Serialized> = (
   result: Result,
 ) => Serialized
 
-export type CommandApplicationData = {
+export type ApplicationData = {
   parsedArguments: ParsedArguments
   crowDirectory: string
   logger: Logger

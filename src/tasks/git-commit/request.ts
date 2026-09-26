@@ -1,5 +1,5 @@
 import { ApiRequest } from '../../api-request.ts'
-import type { CommandApplicationData } from '../../types.ts'
+import type { ApplicationData } from '../../types.ts'
 import { ExtractModelResponse } from '../../plan/extract-model-response.ts'
 import { modelRequestObject } from '../../model-requests/framework/model-request-object.ts'
 import type { ModelEndpointDetails } from '../../plan/types.ts'
@@ -10,9 +10,9 @@ class CommitSummaryRequest {
   private endpoint!: ReturnType<typeof modelEndpointInfo>
   private diff: string
   private goal: string
-  private data: CommandApplicationData
+  private data: ApplicationData
 
-  constructor(diff: string, goal: string, data: CommandApplicationData) {
+  constructor(diff: string, goal: string, data: ApplicationData) {
     this.diff = diff
     this.goal = goal
     this.data = data
@@ -63,7 +63,7 @@ class CommitSummaryRequest {
 export const requestCommitSummary = (
   diff: string,
   goal: string,
-  data: CommandApplicationData,
+  data: ApplicationData,
 ): Promise<string> => {
   return new CommitSummaryRequest(diff, goal, data).perform()
 }

@@ -1,6 +1,6 @@
 import { type Environment, loadEnvironmentalVariables } from './env-vars.ts'
 import { openAndMigrateDatabase } from './database/open-and-migrate-database.ts'
-import type { CommandApplicationData, ConsoleLog, Logger } from './types.ts'
+import type { ApplicationData, ConsoleLog, Logger } from './types.ts'
 import { parseArguments } from './cli/arguments.ts'
 import type { Command } from './cli/commands/command.ts'
 import { AddProvider } from './cli/commands/add-provider.ts'
@@ -10,9 +10,9 @@ import { Help } from './cli/commands/help.ts'
 import { Version } from './cli/commands/version.ts'
 
 class Cli {
-  private data: CommandApplicationData
+  private data: ApplicationData
 
-  constructor(data: CommandApplicationData) {
+  constructor(data: ApplicationData) {
     this.data = data
   }
 

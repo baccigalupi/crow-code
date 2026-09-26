@@ -2,11 +2,11 @@ const createFetchMock = (
   respond: (input: string | URL | Request) => Promise<Response>,
 ) => {
   const calls: (string | URL | Request)[] = []
-  const fetchMock = (input: string | URL | Request) => {
+  const fetchMock = (input: RequestInfo | URL) => {
     calls.push(input)
     return respond(input)
   }
-  return Object.assign(fetchMock, { calls })
+  return Object.assign(fetchMock as typeof fetch, { calls })
 }
 
 export const mockFetchSuccess = <T>(body: T) => {

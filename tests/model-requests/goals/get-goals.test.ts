@@ -2,7 +2,8 @@ import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { GetGoals } from '../../../src/model-requests/goals/get-goals.ts'
 import { CallApi } from '../../../src/model-requests/framework/call-api.ts'
-import type { CommandApplicationData } from '../../../src/types.ts'
+import { mockApplicationData } from '../../support/mock-application-data.ts'
+import { mockFetchSuccess } from '../../support/mock-fetch.ts'
 
 describe('GetGoals', () => {
   it('when perform is called, writes the request messages onto the class', async () => {
@@ -11,9 +12,9 @@ describe('GetGoals', () => {
       apiKey: 'test-key',
       model: 'test-model',
     }
-    const applicationData = {
-      fetchClient: () => Promise.resolve(new Response('{}')),
-    } as unknown as CommandApplicationData
+    const applicationData = mockApplicationData({
+      fetchClient: mockFetchSuccess({}),
+    })
     const getGoals = new GetGoals(modelEndpoint, applicationData, 'build a cli')
 
     await getGoals.perform()
@@ -30,9 +31,9 @@ describe('GetGoals', () => {
       apiKey: 'test-key',
       model: 'test-model',
     }
-    const applicationData = {
-      fetchClient: () => Promise.resolve(new Response('{}')),
-    } as unknown as CommandApplicationData
+    const applicationData = mockApplicationData({
+      fetchClient: mockFetchSuccess({}),
+    })
     const getGoals = new GetGoals(modelEndpoint, applicationData, 'build a cli')
 
     await getGoals.perform()
@@ -49,9 +50,9 @@ describe('GetGoals', () => {
       apiKey: 'test-key',
       model: 'test-model',
     }
-    const applicationData = {
-      fetchClient: () => Promise.resolve(new Response('{}')),
-    } as unknown as CommandApplicationData
+    const applicationData = mockApplicationData({
+      fetchClient: mockFetchSuccess({}),
+    })
     const getGoals = new GetGoals(modelEndpoint, applicationData, 'build a cli')
 
     await getGoals.perform()

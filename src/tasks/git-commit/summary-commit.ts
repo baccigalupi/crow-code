@@ -1,14 +1,14 @@
-import type { CommandApplicationData } from '../../types.ts'
+import type { ApplicationData } from '../../types.ts'
 import { commitChanges } from './commit.ts'
 import { getCurrentDiff } from './current-diff.ts'
 import { requestCommitSummary } from './request.ts'
 
 class SummaryCommit {
   private goal: string
-  private data: CommandApplicationData
+  private data: ApplicationData
   private summary: string = ''
 
-  constructor(goal: string, data: CommandApplicationData) {
+  constructor(goal: string, data: ApplicationData) {
     this.goal = goal
     this.data = data
   }
@@ -42,7 +42,7 @@ class SummaryCommit {
 
 export const commitWithSummary = (
   goal: string,
-  data: CommandApplicationData,
+  data: ApplicationData,
 ) => {
   return new SummaryCommit(goal, data).run()
 }

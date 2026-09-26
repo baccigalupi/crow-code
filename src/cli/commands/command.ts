@@ -1,7 +1,7 @@
 import type { Knex } from 'knex'
 import type { Environment } from '../../env-vars.ts'
 import type {
-  CommandApplicationData,
+  ApplicationData,
   ConsoleLog,
   DenoCommand,
   Logger,
@@ -9,7 +9,7 @@ import type {
 } from '../../types.ts'
 
 export abstract class Command {
-  protected data: CommandApplicationData
+  protected data: ApplicationData
   protected commands: string[]
   protected options: ParsedArgumentsOptions
   protected crowDirectory: string
@@ -20,7 +20,7 @@ export abstract class Command {
   protected denoCommand: DenoCommand
   protected environment: Environment
 
-  constructor(data: CommandApplicationData) {
+  constructor(data: ApplicationData) {
     this.data = data
     this.commands = data.parsedArguments.commands
     this.options = data.parsedArguments.options

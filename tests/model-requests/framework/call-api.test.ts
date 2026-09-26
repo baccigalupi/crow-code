@@ -17,7 +17,7 @@ describe('CallApi', () => {
     const logger = pino({ enabled: false })
     const fetchMock = mockFetchSuccess({ value: 'hello' })
 
-    const callApi = new CallApi(request, fetchMock as typeof fetch, logger)
+    const callApi = new CallApi(request, fetchMock, logger)
     const response = await callApi.perform()
 
     expect(callApi.success()).toBe(true)
@@ -29,7 +29,7 @@ describe('CallApi', () => {
     const logger = pino({ enabled: false })
     const fetchMock = mockFetchError(500)
 
-    const callApi = new CallApi(request, fetchMock as typeof fetch, logger)
+    const callApi = new CallApi(request, fetchMock, logger)
     const response = await callApi.perform()
 
     expect(callApi.success()).toBe(false)
@@ -45,7 +45,7 @@ describe('CallApi', () => {
       )
     }
 
-    const callApi = new CallApi(request, fetchMock as typeof fetch, logger)
+    const callApi = new CallApi(request, fetchMock, logger)
     await callApi.perform()
 
     expect(callApi.success()).toBe(false)
@@ -59,7 +59,7 @@ describe('CallApi', () => {
       return Promise.resolve(new Response('not json', { status: 500 }))
     }
 
-    const callApi = new CallApi(request, fetchMock as typeof fetch, logger)
+    const callApi = new CallApi(request, fetchMock, logger)
     await callApi.perform()
 
     expect(callApi.success()).toBe(false)
@@ -71,7 +71,7 @@ describe('CallApi', () => {
     const logger = pino({ enabled: false })
     const fetchMock = mockFetchRejected('network down')
 
-    const callApi = new CallApi(request, fetchMock as typeof fetch, logger)
+    const callApi = new CallApi(request, fetchMock, logger)
     await callApi.perform()
 
     expect(callApi.success()).toBe(false)
@@ -83,7 +83,7 @@ describe('CallApi', () => {
     const logger = pino({ enabled: false })
     const fetchMock = mockFetchSuccess({ value: 'hello' })
 
-    const caller = await callApi(request, fetchMock as typeof fetch, logger)
+    const caller = await callApi(request, fetchMock, logger)
 
     expect(caller).toBeInstanceOf(CallApi)
     expect(caller.success()).toBe(true)
@@ -94,7 +94,7 @@ describe('CallApi', () => {
     const logger = pino({ enabled: false })
     const fetchMock = mockFetchSuccess({ value: 'hello' })
 
-    await new CallApi(request, fetchMock as typeof fetch, logger).perform()
+    await new CallApi(request, fetchMock, logger).perform()
 
     expect(fetchMock.calls[0]).toBe(request)
   })

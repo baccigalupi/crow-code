@@ -1,4 +1,4 @@
-import type { CommandApplicationData } from '../../types.ts'
+import type { ApplicationData } from '../../types.ts'
 import type { ModelEndpoint, ModelMessages } from '../types.ts'
 import { type CallApi, callApi } from '../framework/call-api.ts'
 import { modelRequestObject } from '../framework/model-request-object.ts'
@@ -9,12 +9,12 @@ export class GetGoals {
   requestObject!: Request
   apiRequest!: CallApi
   private modelEndpoint: ModelEndpoint
-  private applicationData: CommandApplicationData
+  private applicationData: ApplicationData
   private goalText: string
 
   constructor(
     modelEndpoint: ModelEndpoint,
-    applicationData: CommandApplicationData,
+    applicationData: ApplicationData,
     goalText: string,
   ) {
     this.modelEndpoint = modelEndpoint
@@ -56,7 +56,7 @@ export class GetGoals {
 
 export const getGoals = (
   modelEndpoint: ModelEndpoint,
-  applicationData: CommandApplicationData,
+  applicationData: ApplicationData,
   goalText: string,
 ) => {
   new GetGoals(modelEndpoint, applicationData, goalText).perform()
