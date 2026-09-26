@@ -1,15 +1,15 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { chatResponse } from '../../../src/model-requests/framework/chat-response.ts'
+import { modelAnswer } from '../../../src/model-requests/framework/model-answer.ts'
 import { loadFixture } from '../../support/fixtures.ts'
 
-describe('ChatResponse', () => {
+describe('model-answer', () => {
   it('when the response has a usage cost, returns the cost', async () => {
     const json = await loadFixture(
       'model-requests/openrouter-goals-response.json',
     )
 
-    const response = chatResponse(json)
+    const response = modelAnswer(json)
 
     expect(response.cost()).toBe(0.0000288)
   })
@@ -19,7 +19,7 @@ describe('ChatResponse', () => {
       'model-requests/ollama-goals-response.json',
     )
 
-    const response = chatResponse(json)
+    const response = modelAnswer(json)
 
     expect(response.cost()).toBe(0)
   })
@@ -29,7 +29,7 @@ describe('ChatResponse', () => {
       'model-requests/openrouter-goals-response.json',
     )
 
-    const response = chatResponse(json)
+    const response = modelAnswer(json)
 
     expect(response.rawAnswer()).toBe(json.choices[0].message.content)
   })
@@ -39,7 +39,7 @@ describe('ChatResponse', () => {
       'model-requests/ollama-goals-response.json',
     )
 
-    const response = chatResponse(json)
+    const response = modelAnswer(json)
 
     expect(response.answerAsJson()).toEqual([
       'Create API response fixtures for all three providers used in the app',
@@ -56,7 +56,7 @@ describe('ChatResponse', () => {
       'model-requests/openrouter-goals-response.json',
     )
 
-    const response = chatResponse(json)
+    const response = modelAnswer(json)
 
     expect(response.answerAsJson()).toEqual([
       'Create test fixtures for API responses from all three providers used in the app',

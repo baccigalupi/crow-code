@@ -1,6 +1,6 @@
 import type { ChatCompletionJson } from '../types.ts'
 
-export class ChatResponse {
+export class ModelAnswer {
   private json: ChatCompletionJson
 
   constructor(json: ChatCompletionJson) {
@@ -25,6 +25,6 @@ export class ChatResponse {
   }
 }
 
-export const chatResponse = (json: ChatCompletionJson) => {
-  return new ChatResponse(json)
+export const modelAnswer = (json: ChatCompletionJson) => {
+  return new ModelAnswer(json)
 }

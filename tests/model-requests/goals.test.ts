@@ -1,15 +1,12 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import {
-  GetGoals,
-  getGoals,
-} from '../../../src/model-requests/goals/get-goals.ts'
-import type { ChatCompletionJson } from '../../../src/model-requests/types.ts'
-import { loadFixture } from '../../support/fixtures.ts'
-import { mockApplicationData } from '../../support/mock-application-data.ts'
-import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
+import { GetGoals, getGoals } from '../../src/model-requests/goals.ts'
+import type { ChatCompletionJson } from '../../src/model-requests/types.ts'
+import { loadFixture } from '../support/fixtures.ts'
+import { mockApplicationData } from '../support/mock-application-data.ts'
+import { mockFetchError, mockFetchSuccess } from '../support/mock-fetch.ts'
 
-describe('get-goals', () => {
+describe('goals', () => {
   it('when perform is called, writes the goal request messages onto the class', async () => {
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',

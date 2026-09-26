@@ -5,7 +5,7 @@ import type {
   ModelMessages,
 } from '../types.ts'
 import { type CallApi, callApi } from './call-api.ts'
-import { chatResponse } from './chat-response.ts'
+import { modelAnswer } from './model-answer.ts'
 import { modelRequestObject } from './model-request-object.ts'
 
 export abstract class ModelApiRequest<TRequest, TResponse> {
@@ -72,12 +72,12 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
   private async parseJsonResponse(): Promise<TResponse> {
     if (!this.apiRequest.success()) return this.jsonErrorResponse()
     const json = await this.apiRequest.json() as ChatCompletionJson
-    return chatResponse(json).answerAsJson() as TResponse
+    return modelAnswer(json).answerAsJson() as TResponse
   }
 
   private async parseRawResponse(): Promise<TResponse> {
     if (!this.apiRequest.success()) return '' as TResponse
     const json = await this.apiRequest.json() as ChatCompletionJson
-    return chatResponse(json).rawAnswer() as TResponse
+    return modelAnswer(json).rawAnswer() as TResponse
   }
 }
