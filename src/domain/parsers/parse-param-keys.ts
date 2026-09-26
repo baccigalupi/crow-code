@@ -1,11 +1,11 @@
-import type { ParsedArgumentsOptions } from '../../types.ts'
+import type { RecordParams } from '../../types.ts'
 import { filterKeys } from './parse-params/filter-keys.ts'
-import { normalizeRecordKeys } from './parse-params/normalize-record-keys.ts'
+import { normalizeParamKeys } from './parse-params/normalize-param-keys.ts'
 
 export const parseParamKeys = (
-  options: ParsedArgumentsOptions,
+  options: RecordParams,
   allowedKeys: string[],
 ) => {
-  const normalizedOptions = normalizeRecordKeys(options)
+  const normalizedOptions = normalizeParamKeys(options)
   return filterKeys(normalizedOptions, allowedKeys)
 }

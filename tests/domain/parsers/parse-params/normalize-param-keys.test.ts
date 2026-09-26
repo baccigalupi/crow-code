@@ -1,8 +1,8 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { normalizeRecordKeys } from '../../../../src/domain/parsers/parse-params/normalize-record-keys.ts'
+import { normalizeParamKeys } from '../../../../src/domain/parsers/parse-params/normalize-param-keys.ts'
 
-describe('normalizeRecordKeys', () => {
+describe('normalizeParamKeys', () => {
   it('when keys are mixed case, returns snake_case keys with values preserved', () => {
     const params = {
       'base-url': 'https://www.example.com',
@@ -10,7 +10,7 @@ describe('normalizeRecordKeys', () => {
       name: 'provider-name',
     }
 
-    const result = normalizeRecordKeys(params)
+    const result = normalizeParamKeys(params)
 
     expect(result).toEqual({
       base_url: 'https://www.example.com',

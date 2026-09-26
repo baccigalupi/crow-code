@@ -11,92 +11,73 @@ describe('databaseQuery', () => {
   it('when the query succeeds, returns its result', async () => {
     const logger = pino({ enabled: false })
 
-    const query = await databaseQuery(Promise.resolve('result'), logger)
+    const query = await databaseQuery(Promise.resolve(['result']), logger)
 
     expect(query.success()).toBe(true)
-    expect(query.result()).toBe('result')
+    expect(query.result()).toEqual(['result'])
   })
 
-  it('when the query fails, logs the error and returns undefined', async () => {
+  it('when the query fails, logs the error and returns an empty array', async () => {
     const logger = pino({ enabled: false })
     using loggerErrorSpy = spy(logger, 'error')
 
-    const query = await databaseQuery(
+    const query = await databaseQuery<string>(
       Promise.reject(new Error('query failed')),
       logger,
     )
 
     expect(query.success()).toBe(false)
-    expect(query.result()).toBeUndefined()
+    expect(query.result()).toEqual([])
     assertSpyCall(loggerErrorSpy, 0, { args: ['query failed'] })
   })
 
   describe('resultSerializer', () => {
-    it('uses the default serializer to pass through the query result', async () => {
-      const logger = pino({ enabled: false })
-
-      const query = await databaseQuery(Promise.resolve('result'), logger)
-
-      expect(query.result()).toBe('result')
-    })
-
     it('uses the constructor default serializer when none is provided', async () => {
       const logger = pino({ enabled: false })
 
-      const query = await new DatabaseQuery(Promise.resolve('result'), logger)
+      const query = await new DatabaseQuery(Promise.resolve(['result']), logger)
         .run()
 
-      expect(query.result()).toBe('result')
+      expect(query.result()).toEqual(['result'])
     })
 
     it('uses the constructor custom serializer when one is provided', async () => {
       const logger = pino({ enabled: false })
-      const serializer = (result: string | undefined) =>
-        result === undefined ? 'missing' : `serialized-${result}`
+      const serializer = (result: string[]) => result.join(',')
 
       const query = await new DatabaseQuery(
-        Promise.resolve('result'),
+        Promise.resolve(['first', 'second']),
         logger,
         serializer,
       ).run()
 
-      expect(query.result()).toBe('serialized-result')
-    })
-
-    it('uses the default serializer to pass through an undefined result', async () => {
-      const logger = pino({ enabled: false })
-
-      const query = await databaseQuery(Promise.resolve(undefined), logger)
-
-      expect(query.result()).toBeUndefined()
+      expect(query.result()).toBe('first,second')
     })
 
     it('applies a custom serializer to the query result', async () => {
       const logger = pino({ enabled: false })
-      const serializer = (result: string | undefined) =>
-        result === undefined ? 'missing' : `serialized-${result}`
+      const serializer = (result: string[]) => result.join(',')
 
-      const query = await databaseQuery<string | undefined, string>(
-        Promise.resolve('result'),
+      const query = await databaseQuery(
+        Promise.resolve(['first', 'second']),
         logger,
         serializer,
       )
 
-      expect(query.result()).toBe('serialized-result')
+      expect(query.result()).toBe('first,second')
     })
 
-    it('applies a custom serializer to an undefined result', async () => {
+    it('applies a custom serializer to an empty error result', async () => {
       const logger = pino({ enabled: false })
-      const serializer = (result: string | undefined) =>
-        result === undefined ? 'missing' : `serialized-${result}`
+      const serializer = (result: string[]) => result.join(',')
 
-      const query = await databaseQuery<string | undefined, string>(
-        Promise.resolve(undefined),
+      const query = await databaseQuery<string, string>(
+        Promise.reject(new Error('query failed')),
         logger,
         serializer,
       )
 
-      expect(query.result()).toBe('missing')
+      expect(query.result()).toBe('')
     })
   })
 })

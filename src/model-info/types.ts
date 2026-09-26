@@ -1,3 +1,5 @@
+import type { DefaultReasoning } from '../types.ts'
+
 export type EnvironmentValues = Record<string, string>
 
 export type ReasoningOption = 'toggle' | 'effort' | 'budget_tokens'
@@ -47,14 +49,6 @@ export type NousModel = {
 }
 
 export type NousApiRecord = { data?: NousModel[] }
-
-export type DefaultReasoning = {
-  mandatory?: boolean
-  default_enabled?: boolean
-  default_effort?: string
-  supported_efforts?: string[]
-  supports_max_tokens?: boolean
-}
 
 export type ReasoningSource = {
   architecture?: { modality?: string }

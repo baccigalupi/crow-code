@@ -1,10 +1,10 @@
-import type { ParsedArgumentsOptions } from '../../../types.ts'
+import type { RecordParams, RecordParamValue } from '../../../types.ts'
 
 const addAllowedKey = (
-  result: ParsedArgumentsOptions,
+  result: RecordParams,
   allowedKeys: string[],
   key: string,
-  value: string | boolean,
+  value: RecordParamValue,
 ) => {
   if (allowedKeys.includes(key)) {
     result[key] = value
@@ -13,7 +13,7 @@ const addAllowedKey = (
 }
 
 export const filterKeys = (
-  options: ParsedArgumentsOptions,
+  options: RecordParams,
   allowedKeys: string[],
 ) => {
   return Object.entries(options).reduce(

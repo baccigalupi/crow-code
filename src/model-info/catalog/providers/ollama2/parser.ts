@@ -1,6 +1,6 @@
+import type { DefaultReasoning } from '../../../../types.ts'
 import type {
   CatalogModel,
-  DefaultReasoning,
   Ollama2ApiBody,
   Ollama2ApiModel,
 } from '../../../types.ts'

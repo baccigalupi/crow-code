@@ -19,26 +19,24 @@ export class ProviderFindBy {
 
   getByName(name: string) {
     const query = this.database<ProviderRecord>('providers').where({ name })
-      .first()
 
     return this.runQuery(query)
   }
 
   getById(id: number) {
     const query = this.database<ProviderRecord>('providers').where({ id })
-      .first()
 
     return this.runQuery(query)
   }
 
   private serializer(): DatabaseQuerySerializer<
-    ProviderRecord | undefined,
+    ProviderRecord[],
     ProviderModel | undefined
   > {
-    return (result) => providerModel(result, this.environment)
+    return (result) => providerModel(result[0], this.environment)
   }
 
-  private async runQuery(query: PromiseLike<ProviderRecord | undefined>) {
+  private async runQuery(query: PromiseLike<ProviderRecord[]>) {
     const databaseQueryResult = await databaseQuery(
       query,
       this.logger,

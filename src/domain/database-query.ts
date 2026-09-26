@@ -2,22 +2,22 @@ import type { DatabaseQuerySerializer, Logger } from '../types.ts'
 
 const defaultSerializer = <T>(value: T): T => value // passes values through unchanged
 
-export class DatabaseQuery<Result, Serialized = Result | undefined> {
-  private query: PromiseLike<Result>
+export class DatabaseQuery<Result, Serialized = Result[]> {
+  private query: PromiseLike<Result[]>
   private logger: Logger
-  private queryResult: Result | undefined
+  private queryResult: Result[]
   private succeeded: boolean
-  private resultSerializer: DatabaseQuerySerializer<Result, Serialized>
+  private resultSerializer: DatabaseQuerySerializer<Result[], Serialized>
 
   constructor(
-    query: PromiseLike<Result>,
+    query: PromiseLike<Result[]>,
     logger: Logger,
-    resultSerializer: DatabaseQuerySerializer<Result, Serialized> =
-      defaultSerializer as DatabaseQuerySerializer<Result, Serialized>,
+    resultSerializer: DatabaseQuerySerializer<Result[], Serialized> =
+      defaultSerializer as DatabaseQuerySerializer<Result[], Serialized>,
   ) {
     this.query = query
     this.logger = logger
-    this.queryResult = undefined
+    this.queryResult = []
     this.succeeded = false
     this.resultSerializer = resultSerializer
   }
@@ -49,9 +49,9 @@ export class DatabaseQuery<Result, Serialized = Result | undefined> {
   }
 }
 
-export const databaseQuery = async <Result, Serialized = Result | undefined>(
-  query: PromiseLike<Result>,
+export const databaseQuery = async <Result, Serialized = Result[]>(
+  query: PromiseLike<Result[]>,
   logger: Logger,
-  resultSerializer: DatabaseQuerySerializer<Result, Serialized> =
-    defaultSerializer as DatabaseQuerySerializer<Result, Serialized>,
+  resultSerializer: DatabaseQuerySerializer<Result[], Serialized> =
+    defaultSerializer as DatabaseQuerySerializer<Result[], Serialized>,
 ) => await new DatabaseQuery(query, logger, resultSerializer).run()
