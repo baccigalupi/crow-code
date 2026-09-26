@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Open the crow SQLite database in a sql console. The database is
+# .crow/crow.db in the current directory, the same path bin/crow uses.
+# Any arguments are forwarded to sqlite3, so `dev/db 'select * from providers'`
+# runs a one-off query and `dev/db -version` prints the sqlite3 version.
+set -euo pipefail
+
+db='.crow/crow.db'
+
+if [[ ! -f "$db" ]]; then
+  echo "dev/db: $db does not exist; run bin/crow once to create and migrate it." >&2
+  exit 1
+fi
+
+# foreign_keys mirrors the pragma set by src/database/open-and-migrate-database.ts.
+if [[ $# -eq 0 ]]; then
+  exec sqlite3 -header -column -cmd 'PRAGMA foreign_keys = ON' "$db"
+fi
+exec sqlite3 -cmd 'PRAGMA foreign_keys = ON' "$db" "$@"
