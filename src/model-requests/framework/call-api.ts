@@ -34,6 +34,10 @@ export class CallApi {
     return this.succeeded
   }
 
+  async json() {
+    return await this.response.json()
+  }
+
   private async fetch() {
     this.response = await this.fetchClient(this.request)
   }

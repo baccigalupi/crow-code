@@ -1,7 +1,9 @@
 import type { ApplicationData } from '../../types.ts'
 import type { ModelEndpoint, ModelMessages } from '../types.ts'
 import { type CallApi, callApi } from '../framework/call-api.ts'
+import { chatResponse } from '../framework/chat-response.ts'
 import { modelRequestObject } from '../framework/model-request-object.ts'
+import type { ChatCompletionJson } from '../types.ts'
 import { requestMessages } from './messages.ts'
 
 export class GetGoals {
@@ -10,16 +12,16 @@ export class GetGoals {
   apiRequest!: CallApi
   private modelEndpoint: ModelEndpoint
   private applicationData: ApplicationData
-  private goalText: string
+  private requestData: string
 
   constructor(
     modelEndpoint: ModelEndpoint,
     applicationData: ApplicationData,
-    goalText: string,
+    requestData: string,
   ) {
     this.modelEndpoint = modelEndpoint
     this.applicationData = applicationData
-    this.goalText = goalText
+    this.requestData = requestData
   }
 
   async perform() {
@@ -27,11 +29,11 @@ export class GetGoals {
     this.makeModelRequestObject()
     await this.callApi()
 
-    this.parseResponseAsJson()
+    return await this.parseResponse()
   }
 
   private constructMessages() {
-    this.messages = requestMessages(this.goalText)
+    this.messages = requestMessages(this.requestData)
   }
 
   private makeModelRequestObject() {
@@ -46,7 +48,13 @@ export class GetGoals {
     )
   }
 
-  private parseResponseAsJson() {
+  private async parseResponse(): Promise<string[]> {
+    if (!this.apiRequest.success()) {
+      return []
+    }
+
+    const json = await this.apiRequest.json() as ChatCompletionJson
+    return chatResponse(json).answerAsJson() as string[]
   }
 
   async performVerbose() {
@@ -57,7 +65,7 @@ export class GetGoals {
 export const getGoals = (
   modelEndpoint: ModelEndpoint,
   applicationData: ApplicationData,
-  goalText: string,
+  requestData: string,
 ) => {
-  new GetGoals(modelEndpoint, applicationData, goalText).perform()
+  new GetGoals(modelEndpoint, applicationData, requestData).perform()
 }
