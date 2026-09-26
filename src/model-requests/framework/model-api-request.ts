@@ -1,0 +1,63 @@
+import type { ApplicationData } from '../../types.ts'
+import type {
+  ChatCompletionJson,
+  ModelEndpoint,
+  ModelMessages,
+} from '../types.ts'
+import { type CallApi, callApi } from './call-api.ts'
+import { chatResponse } from './chat-response.ts'
+import { modelRequestObject } from './model-request-object.ts'
+
+export abstract class ModelApiRequest<TRequest, TResponse> {
+  messages: ModelMessages[] = []
+  requestObject!: Request
+  apiRequest!: CallApi
+  private modelEndpoint: ModelEndpoint
+  private applicationData: ApplicationData
+  protected requestData: TRequest
+
+  constructor(
+    modelEndpoint: ModelEndpoint,
+    applicationData: ApplicationData,
+    requestData: TRequest,
+  ) {
+    this.modelEndpoint = modelEndpoint
+    this.applicationData = applicationData
+    this.requestData = requestData
+  }
+
+  async perform() {
+    this.constructMessages()
+    this.makeModelRequestObject()
+    await this.callApi()
+
+    return await this.parseResponse()
+  }
+
+  protected abstract getMessages(): ModelMessages[]
+
+  constructMessages() {
+    this.messages = this.getMessages()
+  }
+
+  private makeModelRequestObject() {
+    this.requestObject = modelRequestObject(this.modelEndpoint, this.messages)
+  }
+
+  private async callApi() {
+    this.apiRequest = await callApi(
+      this.requestObject,
+      this.applicationData.fetchClient,
+      this.applicationData.logger,
+    )
+  }
+
+  private async parseResponse(): Promise<TResponse> {
+    if (!this.apiRequest.success()) {
+      return [] as TResponse
+    }
+
+    const json = await this.apiRequest.json() as ChatCompletionJson
+    return chatResponse(json).answerAsJson() as TResponse
+  }
+}
