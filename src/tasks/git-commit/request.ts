@@ -1,7 +1,7 @@
 import { ApiRequest } from '../../api-request.ts'
 import type { CommandApplicationData } from '../../types.ts'
 import { ExtractModelResponse } from '../../plan/extract-model-response.ts'
-import { modelRequest } from '../../plan/model-request.ts'
+import { modelRequestObject } from '../../model-requests/model-request-object.ts'
 import type { ModelEndpointDetails } from '../../plan/types.ts'
 import { modelEndpointInfo } from './endpoint.ts'
 import { requestMessages } from './messages.ts'
@@ -38,7 +38,7 @@ class CommitSummaryRequest {
   }
 
   private request(endpoint: ModelEndpointDetails) {
-    const request = modelRequest(
+    const request = modelRequestObject(
       endpoint,
       requestMessages(this.diff, this.goal),
     )

@@ -1,0 +1,46 @@
+{
+  "id": "gen-1790449757-wCGOuDbx4FqqJhuC6bpX",
+  "object": "chat.completion",
+  "created": 1790449757,
+  "model": "upstage/solar-mini4",
+  "provider": "Upstage",
+  "system_fingerprint": null,
+  "service_tier": null,
+  "choices": [
+    {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "stop",
+      "message": {
+        "role": "assistant",
+        "content": "```json\n[\n  \"Create test fixtures for API responses from all three providers used in the app\",\n  \"Get available models from .crow/models.json\",\n  \"Select a low-cost or free model from the ollama providers\",\n  \"Make a chat completion request using the selected model with a prompt\",\n  \"Capture the unfiltered JSON payload from each fetch request\",\n  \"Create test fixtures based on the captured JSON payloads\"\n]\n```",
+        "refusal": null,
+        "reasoning": null
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 216,
+    "completion_tokens": 90,
+    "total_tokens": 306,
+    "cost": 0.0000288,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.0000288,
+      "upstream_inference_prompt_cost": 0.0000108,
+      "upstream_inference_completions_cost": 0.000018
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "id": "chatcmpl-89",
+  "object": "chat.completion",
+  "created": 1790449749,
+  "model": "qwen3-coder:30b",
+  "system_fingerprint": "fp_ollama",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "[\"Create API response fixtures for all three providers used in the app\", \"Extract unfiltered JSON payloads from fetch requests for each provider\", \"Use ollama models for free low-cost options\", \"Include the exact JSON responses as they appear in the fetch calls\", \"Generate fixtures using the specified prompt in chat completion requests\", \"Reference .crow/models.json to identify available models\"]"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 169,
+    "completion_tokens": 77,
+    "total_tokens": 246
+  }
+}

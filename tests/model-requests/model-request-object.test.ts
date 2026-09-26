@@ -1,8 +1,8 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { modelRequest } from '../../src/plan/model-request.ts'
+import { modelRequestObject } from '../../src/model-requests/model-request-object.ts'
 
-describe('modelRequest', () => {
+describe('modelRequestObject', () => {
   it('when given an endpoint and messages, returns a POST request to the chat completions endpoint', () => {
     const modelEndpoint = {
       baseURL: 'https://openrouter.ai/api/v1',
@@ -14,7 +14,7 @@ describe('modelRequest', () => {
       { role: 'user', content: 'build me a cli' },
     ]
 
-    const request = modelRequest(modelEndpoint, messages)
+    const request = modelRequestObject(modelEndpoint, messages)
 
     expect(request.method).toBe('POST')
     expect(request.url).toBe('https://openrouter.ai/api/v1/chat/completions')
@@ -31,7 +31,7 @@ describe('modelRequest', () => {
       { role: 'user', content: 'build me a cli' },
     ]
 
-    const request = modelRequest(modelEndpoint, messages)
+    const request = modelRequestObject(modelEndpoint, messages)
 
     expect(request.headers.get('authorization')).toBe('Bearer test-key')
     expect(request.headers.get('content-type')).toBe('application/json')
@@ -48,7 +48,7 @@ describe('modelRequest', () => {
       { role: 'user', content: 'build me a cli' },
     ]
 
-    const request = modelRequest(modelEndpoint, messages)
+    const request = modelRequestObject(modelEndpoint, messages)
 
     const body = await request.json()
     expect(body.model).toBe('qwen3-coder:30b')

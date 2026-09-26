@@ -1,6 +1,6 @@
 import { requestMessages } from './messages.ts'
 import { parse } from './parse.ts'
-import { modelRequest } from '../model-request.ts'
+import { modelRequestObject } from '../../model-requests/model-request-object.ts'
 import { ApiRequest } from '../../api-request.ts'
 import { ExtractModelResponse } from '../extract-model-response.ts'
 import type { Logger } from '../../types.ts'
@@ -16,7 +16,7 @@ export const requestGoals = (
   logger: Logger,
   fetchClient: typeof fetch = fetch,
 ) => {
-  const request = modelRequest(modelEndpoint, requestMessages(userText))
+  const request = modelRequestObject(modelEndpoint, requestMessages(userText))
   return new ApiRequest(request, fetchClient, parseModelResponse, logger)
     .perform()
 }

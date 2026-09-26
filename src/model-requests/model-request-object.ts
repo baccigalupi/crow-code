@@ -1,12 +1,12 @@
-import type { Messages, ModelEndpointDetails } from './types.ts'
+import type { ModelEndpoint, ModelMessages } from './types.ts'
 
 const modelRequestTimeoutMs = 20000
 
-class ModelRequest {
-  private modelEndpoint: ModelEndpointDetails
-  private messages: Messages
+class ModelRequestObject {
+  private modelEndpoint: ModelEndpoint
+  private messages: ModelMessages[]
 
-  constructor(modelEndpoint: ModelEndpointDetails, messages: Messages) {
+  constructor(modelEndpoint: ModelEndpoint, messages: ModelMessages[]) {
     this.modelEndpoint = modelEndpoint
     this.messages = messages
   }
@@ -35,9 +35,9 @@ class ModelRequest {
   }
 }
 
-export const modelRequest = (
-  modelEndpoint: ModelEndpointDetails,
-  messages: Messages,
+export const modelRequestObject = (
+  modelEndpoint: ModelEndpoint,
+  messages: ModelMessages[],
 ) => {
-  return new ModelRequest(modelEndpoint, messages).build()
+  return new ModelRequestObject(modelEndpoint, messages).build()
 }
