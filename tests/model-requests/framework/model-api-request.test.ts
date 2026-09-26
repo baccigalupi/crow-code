@@ -70,7 +70,32 @@ describe('ModelApiRequest', () => {
     )
   })
 
-  it('when perform is called, writes the api request onto the class', async () => {
+  it('when perform has not been called, reports failure', () => {
+    const modelEndpoint = {
+      baseURL: 'https://example.com/api/v1',
+      apiKey: 'test-key',
+      model: 'test-model',
+    }
+    const applicationData = mockApplicationData()
+    const modelApiRequest = new class
+      extends ModelApiRequest<string, string[]> {
+      protected parseAsJson = false
+
+      protected override jsonErrorResponse() {
+        return []
+      }
+
+      protected getMessages(): ModelMessages[] {
+        return [{ role: 'user', content: this.requestData }]
+      }
+    }(modelEndpoint, applicationData, 'build a cli')
+
+    const succeeded = modelApiRequest.success()
+
+    expect(succeeded).toBe(false)
+  })
+
+  it('when perform succeeds, writes the api request and reports success', async () => {
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
@@ -98,6 +123,7 @@ describe('ModelApiRequest', () => {
 
     expect(modelApiRequest.apiRequest).toBeInstanceOf(CallApi)
     expect(modelApiRequest.apiRequest.success()).toBe(true)
+    expect(modelApiRequest.success()).toBe(true)
   })
 
   it('when parseAsJson is false, returns the raw response', async () => {
@@ -181,6 +207,7 @@ describe('ModelApiRequest', () => {
     const response = await modelApiRequest.perform()
 
     expect(response).toBe('')
+    expect(modelApiRequest.success()).toBe(false)
   })
 
   it('when a json api call fails, returns an empty array', async () => {

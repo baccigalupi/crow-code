@@ -14,6 +14,7 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
   apiRequest!: CallApi
   private modelEndpoint: ModelEndpoint
   private applicationData: ApplicationData
+  private succeeded: boolean
   protected requestData: TRequest
 
   constructor(
@@ -24,6 +25,7 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
     this.modelEndpoint = modelEndpoint
     this.applicationData = applicationData
     this.requestData = requestData
+    this.succeeded = false
   }
 
   async perform() {
@@ -32,6 +34,10 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
     await this.callApi()
 
     return await this.parseResponse()
+  }
+
+  success() {
+    return this.succeeded
   }
 
   protected abstract parseAsJson: boolean
@@ -52,6 +58,7 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
       this.applicationData.fetchClient,
       this.applicationData.logger,
     )
+    this.succeeded = this.apiRequest.success()
   }
 
   private async parseResponse(): Promise<TResponse> {
