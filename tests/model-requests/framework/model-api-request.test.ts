@@ -20,6 +20,12 @@ describe('ModelApiRequest', () => {
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
+      protected parseAsJson = false
+
+      protected override jsonErrorResponse() {
+        return []
+      }
+
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
@@ -45,6 +51,12 @@ describe('ModelApiRequest', () => {
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
+      protected parseAsJson = false
+
+      protected override jsonErrorResponse() {
+        return []
+      }
+
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
@@ -71,6 +83,12 @@ describe('ModelApiRequest', () => {
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
+      protected parseAsJson = false
+
+      protected override jsonErrorResponse() {
+        return []
+      }
+
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
@@ -82,7 +100,35 @@ describe('ModelApiRequest', () => {
     expect(modelApiRequest.apiRequest.success()).toBe(true)
   })
 
-  it('when the api call succeeds, returns the parsed response', async () => {
+  it('when parseAsJson is false, returns the raw response', async () => {
+    const modelEndpoint = {
+      baseURL: 'https://example.com/api/v1',
+      apiKey: 'test-key',
+      model: 'test-model',
+    }
+    const applicationData = mockApplicationData({
+      fetchClient: mockFetchSuccess({
+        choices: [{ message: { content: 'raw response' } }],
+      }),
+    })
+    const modelApiRequest = new class extends ModelApiRequest<string, string> {
+      protected parseAsJson = false
+
+      protected override jsonErrorResponse() {
+        return ''
+      }
+
+      protected getMessages(): ModelMessages[] {
+        return [{ role: 'user', content: this.requestData }]
+      }
+    }(modelEndpoint, applicationData, 'build a cli')
+
+    const response = await modelApiRequest.perform()
+
+    expect(response).toBe('raw response')
+  })
+
+  it('when parseAsJson is true, returns the parsed response', async () => {
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
@@ -95,6 +141,12 @@ describe('ModelApiRequest', () => {
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
+      protected parseAsJson = true
+
+      protected override jsonErrorResponse() {
+        return []
+      }
+
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
@@ -105,7 +157,33 @@ describe('ModelApiRequest', () => {
     expect(response).toEqual(['first goal'])
   })
 
-  it('when the api call fails, returns an empty response', async () => {
+  it('when a raw api call fails, returns an empty string', async () => {
+    const modelEndpoint = {
+      baseURL: 'https://example.com/api/v1',
+      apiKey: 'test-key',
+      model: 'test-model',
+    }
+    const applicationData = mockApplicationData({
+      fetchClient: mockFetchError(500),
+    })
+    const modelApiRequest = new class extends ModelApiRequest<string, string> {
+      protected parseAsJson = false
+
+      protected override jsonErrorResponse() {
+        return ''
+      }
+
+      protected getMessages(): ModelMessages[] {
+        return [{ role: 'user', content: this.requestData }]
+      }
+    }(modelEndpoint, applicationData, 'build a cli')
+
+    const response = await modelApiRequest.perform()
+
+    expect(response).toBe('')
+  })
+
+  it('when a json api call fails, returns an empty array', async () => {
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
@@ -116,6 +194,12 @@ describe('ModelApiRequest', () => {
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
+      protected parseAsJson = true
+
+      protected override jsonErrorResponse() {
+        return []
+      }
+
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }

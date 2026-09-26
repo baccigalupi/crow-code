@@ -4,6 +4,12 @@ import type { ModelEndpoint } from '../types.ts'
 import { requestMessages } from './messages.ts'
 
 export class GetGoals extends ModelApiRequest<string, string[]> {
+  protected parseAsJson = true
+
+  protected override jsonErrorResponse() {
+    return []
+  }
+
   protected getMessages() {
     return requestMessages(this.requestData)
   }

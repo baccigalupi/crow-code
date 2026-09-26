@@ -7,7 +7,7 @@ import {
 import type { ChatCompletionJson } from '../../../src/model-requests/types.ts'
 import { loadFixture } from '../../support/fixtures.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
-import { mockFetchSuccess } from '../../support/mock-fetch.ts'
+import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
 
 describe('get-goals', () => {
   it('when perform is called, writes the goal request messages onto the class', async () => {
@@ -29,6 +29,22 @@ describe('get-goals', () => {
     expect(getGoals.messages[0].content).toContain('extracting goals')
     expect(getGoals.messages[1].role).toBe('user')
     expect(getGoals.messages[1].content).toContain('build a cli')
+  })
+
+  it('when the api call fails, returns an empty goals list', async () => {
+    const modelEndpoint = {
+      baseURL: 'https://example.com/api/v1',
+      apiKey: 'test-key',
+      model: 'test-model',
+    }
+    const applicationData = mockApplicationData({
+      fetchClient: mockFetchError(500),
+    })
+    const getGoals = new GetGoals(modelEndpoint, applicationData, 'build a cli')
+
+    const goals = await getGoals.perform()
+
+    expect(goals).toEqual([])
   })
 
   it('when called through getGoals, returns the parsed goals', async () => {

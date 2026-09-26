@@ -34,6 +34,8 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
     return await this.parseResponse()
   }
 
+  protected abstract parseAsJson: boolean
+  protected abstract jsonErrorResponse(): TResponse
   protected abstract getMessages(): ModelMessages[]
 
   constructMessages() {
@@ -53,11 +55,22 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
   }
 
   private async parseResponse(): Promise<TResponse> {
-    if (!this.apiRequest.success()) {
-      return [] as TResponse
+    if (this.parseAsJson) {
+      return await this.parseJsonResponse()
+    } else {
+      return await this.parseRawResponse()
     }
+  }
 
+  private async parseJsonResponse(): Promise<TResponse> {
+    if (!this.apiRequest.success()) return this.jsonErrorResponse()
     const json = await this.apiRequest.json() as ChatCompletionJson
     return chatResponse(json).answerAsJson() as TResponse
+  }
+
+  private async parseRawResponse(): Promise<TResponse> {
+    if (!this.apiRequest.success()) return '' as TResponse
+    const json = await this.apiRequest.json() as ChatCompletionJson
+    return chatResponse(json).rawAnswer() as TResponse
   }
 }
