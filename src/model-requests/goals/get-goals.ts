@@ -6,18 +6,18 @@ import { modelRequestObject } from '../framework/model-request-object.ts'
 import type { ChatCompletionJson } from '../types.ts'
 import { requestMessages } from './messages.ts'
 
-export class GetGoals<T> {
+export class GetGoals<TRequest, TResponse> {
   messages: ModelMessages[] = []
   requestObject!: Request
   apiRequest!: CallApi
   private modelEndpoint: ModelEndpoint
   private applicationData: ApplicationData
-  private requestData: T
+  private requestData: TRequest
 
   constructor(
     modelEndpoint: ModelEndpoint,
     applicationData: ApplicationData,
-    requestData: T,
+    requestData: TRequest,
   ) {
     this.modelEndpoint = modelEndpoint
     this.applicationData = applicationData
@@ -33,7 +33,9 @@ export class GetGoals<T> {
   }
 
   private constructMessages() {
-    this.messages = (requestMessages as RequestMessages<T>)(this.requestData)
+    this.messages = (requestMessages as RequestMessages<TRequest>)(
+      this.requestData,
+    )
   }
 
   private makeModelRequestObject() {
@@ -48,13 +50,13 @@ export class GetGoals<T> {
     )
   }
 
-  private async parseResponse(): Promise<string[]> {
+  private async parseResponse(): Promise<TResponse> {
     if (!this.apiRequest.success()) {
-      return []
+      return [] as TResponse
     }
 
     const json = await this.apiRequest.json() as ChatCompletionJson
-    return chatResponse(json).answerAsJson() as string[]
+    return chatResponse(json).answerAsJson() as TResponse
   }
 }
 
@@ -63,6 +65,10 @@ export const getGoals = (
   applicationData: ApplicationData,
   requestData: string,
 ) => {
-  return new GetGoals<string>(modelEndpoint, applicationData, requestData)
+  return new GetGoals<string, string[]>(
+    modelEndpoint,
+    applicationData,
+    requestData,
+  )
     .perform()
 }
