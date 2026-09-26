@@ -1,6 +1,9 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { GetGoals } from '../../../src/model-requests/goals/get-goals.ts'
+import {
+  GetGoals,
+  getGoals,
+} from '../../../src/model-requests/goals/get-goals.ts'
 import { CallApi } from '../../../src/model-requests/framework/call-api.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
@@ -104,5 +107,25 @@ describe('GetGoals', () => {
     const goals = await getGoals.perform()
 
     expect(goals).toEqual([])
+  })
+})
+
+describe('getGoals', () => {
+  it('returns the parsed goals through the helper', async () => {
+    const modelEndpoint = {
+      baseURL: 'https://example.com/api/v1',
+      apiKey: 'test-key',
+      model: 'test-model',
+    }
+    const fixture = await loadFixture(
+      'model-requests/ollama-goals-response.json',
+    ) as ChatCompletionJson
+    const applicationData = mockApplicationData({
+      fetchClient: mockFetchSuccess(fixture),
+    })
+
+    const goals = await getGoals(modelEndpoint, applicationData, 'build a cli')
+
+    expect(goals).toEqual(JSON.parse(fixture.choices[0].message.content))
   })
 })
