@@ -1,12 +1,15 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import pino from 'pino'
-import { CallApi, callApi } from '../../src/model-requests/call-api.ts'
+import {
+  CallApi,
+  callApi,
+} from '../../../src/model-requests/framework/call-api.ts'
 import {
   mockFetchError,
   mockFetchRejected,
   mockFetchSuccess,
-} from '../support/mock-fetch.ts'
+} from '../../support/mock-fetch.ts'
 
 describe('CallApi', () => {
   it('when the response is ok, returns the response and reports success', async () => {

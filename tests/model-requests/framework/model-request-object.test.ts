@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { modelRequestObject } from '../../src/model-requests/model-request-object.ts'
+import { modelRequestObject } from '../../../src/model-requests/framework/model-request-object.ts'
 
 describe('modelRequestObject', () => {
   it('when given an endpoint and messages, returns a POST request to the chat completions endpoint', () => {

@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { chatResponse } from '../../src/model-requests/chat-response.ts'
-import { loadFixture } from '../support/fixtures.ts'
+import { chatResponse } from '../../../src/model-requests/framework/chat-response.ts'
+import { loadFixture } from '../../support/fixtures.ts'
 
 describe('ChatResponse', () => {
   it('when the response has a usage cost, returns the cost', async () => {

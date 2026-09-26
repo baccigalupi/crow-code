@@ -1,4 +1,4 @@
-import type { ModelEndpoint, ModelMessages } from './types.ts'
+import type { ModelEndpoint, ModelMessages } from '../types.ts'
 
 const modelRequestTimeoutMs = 20000
 

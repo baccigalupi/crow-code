@@ -1,4 +1,4 @@
-import type { ChatCompletionJson } from './types.ts'
+import type { ChatCompletionJson } from '../types.ts'
 
 export class ChatResponse {
   private json: ChatCompletionJson

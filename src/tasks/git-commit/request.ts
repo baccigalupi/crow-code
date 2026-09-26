@@ -1,7 +1,7 @@
 import { ApiRequest } from '../../api-request.ts'
 import type { CommandApplicationData } from '../../types.ts'
 import { ExtractModelResponse } from '../../plan/extract-model-response.ts'
-import { modelRequestObject } from '../../model-requests/model-request-object.ts'
+import { modelRequestObject } from '../../model-requests/framework/model-request-object.ts'
 import type { ModelEndpointDetails } from '../../plan/types.ts'
 import { modelEndpointInfo } from './endpoint.ts'
 import { requestMessages } from './messages.ts'

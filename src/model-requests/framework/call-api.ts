@@ -1,4 +1,4 @@
-import type { Logger } from '../types.ts'
+import type { Logger } from '../../types.ts'
 
 export class CallApi {
   private request: Request
