@@ -22,7 +22,7 @@ class FetchProvider<ApiRecord, T> {
     this.fetchClient = fetchClient
   }
 
-  async perform() {
+  async run() {
     try {
       await this.send()
     } catch {
@@ -74,5 +74,5 @@ export const fetchProvider = async <ApiRecord, T>(
     timeoutMs,
     logger,
     fetchClient,
-  ).perform()
+  ).run()
 }

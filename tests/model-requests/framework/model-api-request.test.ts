@@ -1,13 +1,13 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { CallApi } from '../../../src/model-requests/framework/call-api.ts'
+import { FetchRequest } from '../../../src/model-requests/framework/fetch-request.ts'
 import { ModelApiRequest } from '../../../src/model-requests/framework/model-api-request.ts'
 import type { ModelMessages } from '../../../src/model-requests/types.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
 
 describe('ModelApiRequest', () => {
-  it('when perform is called, writes the request messages onto the class', async () => {
+  it('when run is called, writes the request messages onto the class', async () => {
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
@@ -31,14 +31,14 @@ describe('ModelApiRequest', () => {
       }
     }(modelEndpoint, applicationData, 'build a cli')
 
-    await modelApiRequest.perform()
+    await modelApiRequest.run()
 
     expect(modelApiRequest.messages).toEqual([
       { role: 'user', content: 'build a cli' },
     ])
   })
 
-  it('when perform is called, writes the request object onto the class', async () => {
+  it('when run is called, writes the request object onto the class', async () => {
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
@@ -62,7 +62,7 @@ describe('ModelApiRequest', () => {
       }
     }(modelEndpoint, applicationData, 'build a cli')
 
-    await modelApiRequest.perform()
+    await modelApiRequest.run()
 
     expect(modelApiRequest.requestObject).toBeInstanceOf(Request)
     expect(modelApiRequest.requestObject.headers.get('authorization')).toBe(
@@ -70,7 +70,7 @@ describe('ModelApiRequest', () => {
     )
   })
 
-  it('when perform has not been called, reports failure', () => {
+  it('when run has not been called, reports failure', () => {
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
@@ -95,7 +95,7 @@ describe('ModelApiRequest', () => {
     expect(succeeded).toBe(false)
   })
 
-  it('when perform succeeds, writes the api request and reports success', async () => {
+  it('when run succeeds, writes the api request and reports success', async () => {
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
@@ -119,9 +119,9 @@ describe('ModelApiRequest', () => {
       }
     }(modelEndpoint, applicationData, 'build a cli')
 
-    await modelApiRequest.perform()
+    await modelApiRequest.run()
 
-    expect(modelApiRequest.apiRequest).toBeInstanceOf(CallApi)
+    expect(modelApiRequest.apiRequest).toBeInstanceOf(FetchRequest)
     expect(modelApiRequest.apiRequest.success()).toBe(true)
     expect(modelApiRequest.success()).toBe(true)
   })
@@ -149,7 +149,7 @@ describe('ModelApiRequest', () => {
       }
     }(modelEndpoint, applicationData, 'build a cli')
 
-    const response = await modelApiRequest.perform()
+    const response = await modelApiRequest.run()
 
     expect(response).toBe('raw response')
   })
@@ -178,7 +178,7 @@ describe('ModelApiRequest', () => {
       }
     }(modelEndpoint, applicationData, 'build a cli')
 
-    const response = await modelApiRequest.perform()
+    const response = await modelApiRequest.run()
 
     expect(response).toEqual(['first goal'])
   })
@@ -204,7 +204,7 @@ describe('ModelApiRequest', () => {
       }
     }(modelEndpoint, applicationData, 'build a cli')
 
-    const response = await modelApiRequest.perform()
+    const response = await modelApiRequest.run()
 
     expect(response).toBe('')
     expect(modelApiRequest.success()).toBe(false)
@@ -232,7 +232,7 @@ describe('ModelApiRequest', () => {
       }
     }(modelEndpoint, applicationData, 'build a cli')
 
-    const response = await modelApiRequest.perform()
+    const response = await modelApiRequest.run()
 
     expect(response).toEqual([])
   })

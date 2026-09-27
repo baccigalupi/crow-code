@@ -4,14 +4,14 @@ import type {
   ModelEndpoint,
   ModelMessages,
 } from '../types.ts'
-import { type CallApi, callApi } from './call-api.ts'
+import { type FetchRequest, fetchRequest } from './fetch-request.ts'
 import { modelAnswer } from './model-answer.ts'
 import { modelRequestObject } from './model-request-object.ts'
 
 export abstract class ModelApiRequest<TRequest, TResponse> {
   messages: ModelMessages[] = []
   requestObject!: Request
-  apiRequest!: CallApi
+  apiRequest!: FetchRequest
   private modelEndpoint: ModelEndpoint
   private applicationData: ApplicationData
   private succeeded: boolean
@@ -28,10 +28,10 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
     this.succeeded = false
   }
 
-  async perform() {
+  async run() {
     this.constructMessages()
     this.makeModelRequestObject()
-    await this.callApi()
+    await this.fetchRequest()
 
     return await this.parseResponse()
   }
@@ -52,8 +52,8 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
     this.requestObject = modelRequestObject(this.modelEndpoint, this.messages)
   }
 
-  private async callApi() {
-    this.apiRequest = await callApi(
+  private async fetchRequest() {
+    this.apiRequest = await fetchRequest(
       this.requestObject,
       this.applicationData.fetchClient,
       this.applicationData.logger,

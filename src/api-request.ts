@@ -20,7 +20,7 @@ export class ApiRequest<T> {
     this.response = Response.error()
   }
 
-  async perform() {
+  async run() {
     try {
       await this.send()
     } catch {

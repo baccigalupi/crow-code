@@ -1,6 +1,6 @@
 import type { Logger } from '../../types.ts'
 
-export class CallApi {
+export class FetchRequest {
   private request: Request
   private fetchClient: typeof fetch
   private logger: Logger
@@ -22,7 +22,7 @@ export class CallApi {
     this.succeeded = false
   }
 
-  async perform() {
+  async run() {
     try {
       await this.send()
     } catch (error) {
@@ -86,12 +86,12 @@ export class CallApi {
   }
 }
 
-export const callApi = async (
+export const fetchRequest = async (
   request: Request,
   fetchClient: typeof fetch,
   logger: Logger,
 ) => {
-  const caller = new CallApi(request, fetchClient, logger)
-  await caller.perform()
+  const caller = new FetchRequest(request, fetchClient, logger)
+  await caller.run()
   return caller
 }

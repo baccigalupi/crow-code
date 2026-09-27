@@ -18,7 +18,7 @@ class CommitSummaryRequest {
     this.data = data
   }
 
-  perform(): Promise<string> {
+  run(): Promise<string> {
     if (this.endpointIsUnavailable()) return this.unavailable()
 
     return this.request(this.endpoint.value())
@@ -48,7 +48,7 @@ class CommitSummaryRequest {
       this.data.fetchClient,
       parseResponse,
       this.data.logger,
-    ).perform()
+    ).run()
   }
 
   private parseResponse(response: Response) {
@@ -65,5 +65,5 @@ export const requestCommitSummary = (
   goal: string,
   data: ApplicationData,
 ): Promise<string> => {
-  return new CommitSummaryRequest(diff, goal, data).perform()
+  return new CommitSummaryRequest(diff, goal, data).run()
 }

@@ -41,5 +41,5 @@ export const getGoals = (
     modelEndpoint,
     applicationData,
     requestData,
-  ).perform()
+  ).run()
 }

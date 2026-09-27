@@ -2,25 +2,25 @@ import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import pino from 'pino'
 import {
-  CallApi,
-  callApi,
-} from '../../../src/model-requests/framework/call-api.ts'
+  FetchRequest,
+  fetchRequest,
+} from '../../../src/model-requests/framework/fetch-request.ts'
 import {
   mockFetchError,
   mockFetchRejected,
   mockFetchSuccess,
 } from '../../support/mock-fetch.ts'
 
-describe('CallApi', () => {
+describe('fetch-request', () => {
   it('when the response is ok, returns the response and reports success', async () => {
     const request = new Request('https://example.com/api')
     const logger = pino({ enabled: false })
     const fetchMock = mockFetchSuccess({ value: 'hello' })
 
-    const callApi = new CallApi(request, fetchMock, logger)
-    const response = await callApi.perform()
+    const fetchRequest = new FetchRequest(request, fetchMock, logger)
+    const response = await fetchRequest.run()
 
-    expect(callApi.success()).toBe(true)
+    expect(fetchRequest.success()).toBe(true)
     expect(await response.json()).toEqual({ value: 'hello' })
   })
 
@@ -29,10 +29,10 @@ describe('CallApi', () => {
     const logger = pino({ enabled: false })
     const fetchMock = mockFetchError(500)
 
-    const callApi = new CallApi(request, fetchMock, logger)
-    const response = await callApi.perform()
+    const fetchRequest = new FetchRequest(request, fetchMock, logger)
+    const response = await fetchRequest.run()
 
-    expect(callApi.success()).toBe(false)
+    expect(fetchRequest.success()).toBe(false)
     expect(response.status).toBe(500)
   })
 
@@ -45,11 +45,11 @@ describe('CallApi', () => {
       )
     }
 
-    const callApi = new CallApi(request, fetchMock, logger)
-    await callApi.perform()
+    const fetchRequest = new FetchRequest(request, fetchMock, logger)
+    await fetchRequest.run()
 
-    expect(callApi.success()).toBe(false)
-    expect(callApi.error).toBeUndefined()
+    expect(fetchRequest.success()).toBe(false)
+    expect(fetchRequest.error).toBeUndefined()
   })
 
   it('when the error response has a non-JSON body, records a syntax error', async () => {
@@ -59,11 +59,11 @@ describe('CallApi', () => {
       return Promise.resolve(new Response('not json', { status: 500 }))
     }
 
-    const callApi = new CallApi(request, fetchMock, logger)
-    await callApi.perform()
+    const fetchRequest = new FetchRequest(request, fetchMock, logger)
+    await fetchRequest.run()
 
-    expect(callApi.success()).toBe(false)
-    expect(callApi.error).toBeInstanceOf(SyntaxError)
+    expect(fetchRequest.success()).toBe(false)
+    expect(fetchRequest.error).toBeInstanceOf(SyntaxError)
   })
 
   it('when the fetch rejects, records the error and reports failure', async () => {
@@ -71,30 +71,30 @@ describe('CallApi', () => {
     const logger = pino({ enabled: false })
     const fetchMock = mockFetchRejected('network down')
 
-    const callApi = new CallApi(request, fetchMock, logger)
-    await callApi.perform()
+    const fetchRequest = new FetchRequest(request, fetchMock, logger)
+    await fetchRequest.run()
 
-    expect(callApi.success()).toBe(false)
-    expect(callApi.error?.message).toBe('network down')
+    expect(fetchRequest.success()).toBe(false)
+    expect(fetchRequest.error?.message).toBe('network down')
   })
 
-  it('when called through callApi, performs and returns the caller', async () => {
+  it('when called through fetchRequest, runs and returns the caller', async () => {
     const request = new Request('https://example.com/api')
     const logger = pino({ enabled: false })
     const fetchMock = mockFetchSuccess({ value: 'hello' })
 
-    const caller = await callApi(request, fetchMock, logger)
+    const caller = await fetchRequest(request, fetchMock, logger)
 
-    expect(caller).toBeInstanceOf(CallApi)
+    expect(caller).toBeInstanceOf(FetchRequest)
     expect(caller.success()).toBe(true)
   })
 
-  it('when performing the request, sends the request to the fetch client', async () => {
+  it('when running the request, sends the request to the fetch client', async () => {
     const request = new Request('https://example.com/api')
     const logger = pino({ enabled: false })
     const fetchMock = mockFetchSuccess({ value: 'hello' })
 
-    await new CallApi(request, fetchMock, logger).perform()
+    await new FetchRequest(request, fetchMock, logger).run()
 
     expect(fetchMock.calls[0]).toBe(request)
   })

@@ -18,7 +18,7 @@ describe('ApiRequest', () => {
     const fetchMock = mockFetchSuccess({ value: 'hello' })
 
     const result = await new ApiRequest(request, fetchMock, parseBody, logger)
-      .perform()
+      .run()
 
     expect(result).toBe('hello')
   })
@@ -30,7 +30,7 @@ describe('ApiRequest', () => {
     const fetchMock = mockFetchError(500)
 
     const result = await new ApiRequest(request, fetchMock, parseBody, logger)
-      .perform()
+      .run()
 
     expect(result).toBe('empty')
   })
@@ -42,7 +42,7 @@ describe('ApiRequest', () => {
     const fetchMock = mockFetchRejected('network down')
 
     const result = await new ApiRequest(request, fetchMock, parseBody, logger)
-      .perform()
+      .run()
 
     expect(result).toBe('empty')
   })
@@ -55,7 +55,7 @@ describe('ApiRequest', () => {
     }
     const fetchMock = mockFetchSuccess({ value: 'hello' })
 
-    await new ApiRequest(request, fetchMock, parseBody, logger).perform()
+    await new ApiRequest(request, fetchMock, parseBody, logger).run()
 
     expect(fetchMock.calls[0]).toBe(request)
   })

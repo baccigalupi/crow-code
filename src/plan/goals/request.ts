@@ -18,5 +18,5 @@ export const requestGoals = (
 ) => {
   const request = modelRequestObject(modelEndpoint, requestMessages(userText))
   return new ApiRequest(request, fetchClient, parseModelResponse, logger)
-    .perform()
+    .run()
 }

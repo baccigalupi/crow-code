@@ -7,7 +7,7 @@ import { mockApplicationData } from '../support/mock-application-data.ts'
 import { mockFetchError, mockFetchSuccess } from '../support/mock-fetch.ts'
 
 describe('goals', () => {
-  it('when perform is called, writes the goal request messages onto the class', async () => {
+  it('when run is called, writes the goal request messages onto the class', async () => {
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
@@ -20,7 +20,7 @@ describe('goals', () => {
     })
     const getGoals = new GetGoals(modelEndpoint, applicationData, 'build a cli')
 
-    await getGoals.perform()
+    await getGoals.run()
 
     expect(getGoals.messages[0].role).toBe('system')
     expect(getGoals.messages[0].content).toContain('extracting goals')
@@ -39,7 +39,7 @@ describe('goals', () => {
     })
     const getGoals = new GetGoals(modelEndpoint, applicationData, 'build a cli')
 
-    const goals = await getGoals.perform()
+    const goals = await getGoals.run()
 
     expect(goals).toEqual([])
   })
