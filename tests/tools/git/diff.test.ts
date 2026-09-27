@@ -29,4 +29,26 @@ describe('gitDiff', () => {
       'diff --git a/tests/tools/git/diff/files/parser.test.ts b/tests/tools/git/diff/files/parser.test.ts',
     ])
   })
+
+  it('when a filter is present, limits the diff to those files', async () => {
+    const commandSpy = spy()
+    const applicationData = mockApplicationData({
+      denoCommand: mockDenoCommand({ commandSpy }),
+    })
+
+    const diff = gitDiff({
+      applicationData,
+      commandArguments: {
+        filter: ['src/a.ts', 'tests/a.test.ts'],
+      },
+    })
+    await diff.run()
+
+    assertSpyCall(commandSpy, 0, {
+      args: [
+        'git',
+        { args: ['diff', '--', 'src/a.ts', 'tests/a.test.ts'] },
+      ],
+    })
+  })
 })

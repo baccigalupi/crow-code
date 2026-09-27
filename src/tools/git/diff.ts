@@ -16,7 +16,9 @@ export class GitDiff extends ExecCommand<CommandArguments, string> {
   executable = 'git'
 
   executableOptions() {
-    return { args: ['diff'] }
+    if (!this.commandArguments.filter) return { args: ['diff'] }
+
+    return { args: ['diff', '--', ...this.commandArguments.filter] }
   }
 
   parse() {
