@@ -19,11 +19,13 @@ import { mockDenoCommand } from '../../../../tests/support/mock-deno-command.ts'
 describe('gitDiffFiles', () => {
   it('when filter is null, returns all files in the current uncommitted diff', async () => {
     const stdout = await loadTextFixture('tools/git/git-diff-files.txt')
-    const files = await gitDiffFiles({
+    const gitDiff = gitDiffFiles({
       denoCommand: mockDenoCommand({ stdout }),
-    }).run()
+    })
+    await gitDiff.run()
 
-    expect(files).toEqual([
+    expect(gitDiff.success()).toBe(true)
+    expect(gitDiff.result).toEqual([
       'src/tools/git/diff/files.ts',
       'tests/support/fixtures.ts',
       'tests/support/fixtures/model-info/catalog/providers/models-dev-api.json',
@@ -33,5 +35,17 @@ describe('gitDiffFiles', () => {
       'tests/tools/git/diff/files.test.ts',
       'tests/support/fixtures/tools/',
     ])
+  })
+
+  it('when git cannot be executed, returns an empty array', async () => {
+    const gitDiff = gitDiffFiles({
+      denoCommand: mockDenoCommand({
+        outputError: 'No such file or directory (os error 2): git',
+      }),
+    })
+    await gitDiff.run()
+
+    expect(gitDiff.success()).toBe(false)
+    expect(gitDiff.result).toEqual([])
   })
 })

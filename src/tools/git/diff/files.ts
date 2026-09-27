@@ -12,19 +12,41 @@ export class GitDiffFiles {
   private command!: Deno.Command
   private response!: Deno.CommandOutput
   private responseText!: string
+  result!: string[]
+  private succeeded = false
 
   constructor(
     { denoCommand = Deno.Command, filter = null }: GitDiffArguments = {},
   ) {
     this.denoCommand = denoCommand
     this.filter = filter
+    this.setEmptyResult()
+  }
+
+  success() {
+    return this.succeeded
   }
 
   async run() {
-    this.setCommand()
-    await this.setResponse()
-    this.getResponseText()
-    return this.parse(this.responseText)
+    try {
+      this.setCommand()
+      await this.setResponse()
+      this.getResponseText()
+      this.setResult()
+      this.succeeded = true
+    } catch {
+      // failure is reported via success()
+    }
+
+    return this
+  }
+
+  private setEmptyResult() {
+    this.result = []
+  }
+
+  private setResult() {
+    this.result = this.parse(this.responseText)
   }
 
   private parse(text: string) {
