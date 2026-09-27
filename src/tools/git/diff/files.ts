@@ -8,8 +8,10 @@ type CommandArguments = {
 
 type GitDiffArguments = {
   applicationData: ApplicationData
-  commandArguments?: CommandArguments
+  commandArguments: CommandArguments
 }
+
+type OptionalGitDiffArguments = Pick<GitDiffArguments, 'applicationData'>
 
 export class GitDiffFiles extends ExecCommand<CommandArguments, string[]> {
   executable = 'git'
@@ -33,6 +35,9 @@ export class GitDiffFiles extends ExecCommand<CommandArguments, string[]> {
   }
 }
 
-export const gitDiffFiles = (args: GitDiffArguments) => {
-  return new GitDiffFiles(args)
+export const gitDiffFiles = (
+  args: GitDiffArguments | OptionalGitDiffArguments,
+) => {
+  const classArguments = { commandArguments: {}, ...args }
+  return new GitDiffFiles(classArguments)
 }

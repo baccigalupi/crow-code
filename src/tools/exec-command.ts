@@ -2,7 +2,7 @@ import type { ApplicationData, DenoCommand, Logger } from '../types.ts'
 
 type ExecCommandArguments<T extends Record<string, unknown>> = {
   applicationData: ApplicationData
-  commandArguments?: T
+  commandArguments: T
 }
 
 export abstract class ExecCommand<
@@ -19,7 +19,7 @@ export abstract class ExecCommand<
   private succeeded = false
 
   constructor(
-    { applicationData, commandArguments = {} as T }: ExecCommandArguments<T>,
+    { applicationData, commandArguments }: ExecCommandArguments<T>,
   ) {
     this.applicationData = applicationData
     this.commandArguments = commandArguments
