@@ -9,7 +9,7 @@ describe('model-answer', () => {
       'model-requests/openrouter-goals-response.json',
     )
 
-    const response = modelAnswer(json)
+    const response = modelAnswer(json, { startTime: 10, endTime: 25 })
 
     expect(response.cost()).toBe(0.0000288)
   })
@@ -19,7 +19,7 @@ describe('model-answer', () => {
       'model-requests/ollama-goals-response.json',
     )
 
-    const response = modelAnswer(json)
+    const response = modelAnswer(json, { startTime: 10, endTime: 25 })
 
     expect(response.cost()).toBe(0)
   })
@@ -30,7 +30,8 @@ describe('model-answer', () => {
     )
     json.usage.completion_tokens_details.reasoning_tokens = 12
 
-    const score = modelAnswer(json).tokenEffortScore()
+    const score = modelAnswer(json, { startTime: 10, endTime: 25 })
+      .tokenEffortScore()
 
     expect(score).toBe(102)
   })
@@ -40,9 +41,21 @@ describe('model-answer', () => {
       'model-requests/ollama-goals-response.json',
     )
 
-    const score = modelAnswer(json).tokenEffortScore()
+    const score = modelAnswer(json, { startTime: 10, endTime: 25 })
+      .tokenEffortScore()
 
     expect(score).toBe(77)
+  })
+
+  it('when benchmarked, returns the request duration', async () => {
+    const json = await loadFixture(
+      'model-requests/ollama-goals-response.json',
+    )
+    const answer = modelAnswer(json, { startTime: 10, endTime: 25 })
+
+    const duration = answer.requestDuration()
+
+    expect(duration).toBe(15)
   })
 
   it('when the raw answer is requested, returns the unparsed json', async () => {
@@ -50,7 +63,7 @@ describe('model-answer', () => {
       'model-requests/openrouter-goals-response.json',
     )
 
-    const response = modelAnswer(json)
+    const response = modelAnswer(json, { startTime: 10, endTime: 25 })
 
     expect(response.rawAnswer()).toBe(json.choices[0].message.content)
   })
@@ -60,7 +73,7 @@ describe('model-answer', () => {
       'model-requests/ollama-goals-response.json',
     )
 
-    const response = modelAnswer(json)
+    const response = modelAnswer(json, { startTime: 10, endTime: 25 })
 
     expect(response.answerAsJson()).toEqual([
       'Create API response fixtures for all three providers used in the app',
@@ -77,7 +90,7 @@ describe('model-answer', () => {
       'model-requests/openrouter-goals-response.json',
     )
 
-    const response = modelAnswer(json)
+    const response = modelAnswer(json, { startTime: 10, endTime: 25 })
 
     expect(response.answerAsJson()).toEqual([
       'Create test fixtures for API responses from all three providers used in the app',

@@ -36,6 +36,10 @@ export class CallApi {
     return this.succeeded
   }
 
+  benchmark() {
+    return { startTime: this.startTime, endTime: this.endTime }
+  }
+
   async json() {
     return await this.response.json()
   }

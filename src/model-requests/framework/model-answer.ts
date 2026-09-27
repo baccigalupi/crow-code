@@ -1,10 +1,12 @@
-import type { ChatCompletionJson } from '../types.ts'
+import type { ChatCompletionJson, Timespan } from '../types.ts'
 
 export class ModelAnswer {
   private json: ChatCompletionJson
+  private benchmark: Timespan
 
-  constructor(json: ChatCompletionJson) {
+  constructor(json: ChatCompletionJson, benchmark: Timespan) {
     this.json = json
+    this.benchmark = benchmark
   }
 
   cost() {
@@ -14,6 +16,10 @@ export class ModelAnswer {
 
   tokenEffortScore() {
     return this.completionTokens() + this.reasoningTokens()
+  }
+
+  requestDuration() {
+    return this.benchmark.endTime - this.benchmark.startTime
   }
 
   rawAnswer() {
@@ -38,6 +44,9 @@ export class ModelAnswer {
   }
 }
 
-export const modelAnswer = (json: ChatCompletionJson) => {
-  return new ModelAnswer(json)
+export const modelAnswer = (
+  json: ChatCompletionJson,
+  benchmark: Timespan,
+) => {
+  return new ModelAnswer(json, benchmark)
 }

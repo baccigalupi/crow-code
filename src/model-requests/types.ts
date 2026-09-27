@@ -11,6 +11,11 @@ export type ModelEndpoint = {
 
 export type RequestMessages<T> = (input: T) => ModelMessages[]
 
+export type Timespan = {
+  startTime: number
+  endTime: number
+}
+
 type ChatChoices = {
   message: {
     content: string

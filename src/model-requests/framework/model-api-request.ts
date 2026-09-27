@@ -72,12 +72,14 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
   private async parseJsonResponse(): Promise<TResponse> {
     if (!this.apiRequest.success()) return this.jsonErrorResponse()
     const json = await this.apiRequest.json() as ChatCompletionJson
-    return modelAnswer(json).answerAsJson() as TResponse
+    return modelAnswer(json, this.apiRequest.benchmark())
+      .answerAsJson() as TResponse
   }
 
   private async parseRawResponse(): Promise<TResponse> {
     if (!this.apiRequest.success()) return '' as TResponse
     const json = await this.apiRequest.json() as ChatCompletionJson
-    return modelAnswer(json).rawAnswer() as TResponse
+    return modelAnswer(json, this.apiRequest.benchmark())
+      .rawAnswer() as TResponse
   }
 }
