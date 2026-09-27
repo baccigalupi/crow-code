@@ -15,7 +15,6 @@ export class GitDiffFiles {
   private response!: Deno.CommandOutput
   private responseText!: string
   private logger: Logger
-  private parser: FileDiffParser
   private succeeded = false
 
   constructor(
@@ -24,7 +23,6 @@ export class GitDiffFiles {
     this.denoCommand = denoCommand
     this.filter = filter
     this.logger = logger
-    this.parser = new FileDiffParser()
   }
 
   success() {
@@ -43,7 +41,7 @@ export class GitDiffFiles {
 
   result() {
     if (this.success()) {
-      return this.parser.parse(this.responseText)
+      return new FileDiffParser(this.responseText).parse()
     } else {
       return this.emptyResult()
     }
