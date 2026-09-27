@@ -1,0 +1,178 @@
+diff --git a/src/tools/git/diff/files.ts b/src/tools/git/diff/files.ts
+index 7f16ef5..f7cf9bd 100644
+--- a/src/tools/git/diff/files.ts
++++ b/src/tools/git/diff/files.ts
+@@ -15,7 +15,6 @@ export class GitDiffFiles {
+   private response!: Deno.CommandOutput
+   private responseText!: string
+   private logger: Logger
+-  private parser: FileDiffParser
+   private succeeded = false
+ 
+   constructor(
+@@ -24,7 +23,6 @@ export class GitDiffFiles {
+     this.denoCommand = denoCommand
+     this.filter = filter
+     this.logger = logger
+-    this.parser = new FileDiffParser()
+   }
+ 
+   success() {
+@@ -43,7 +41,7 @@ export class GitDiffFiles {
+ 
+   result() {
+     if (this.success()) {
+-      return this.parser.parse(this.responseText)
++      return new FileDiffParser(this.responseText).parse()
+     } else {
+       return this.emptyResult()
+     }
+diff --git a/src/tools/git/diff/files/parser.ts b/src/tools/git/diff/files/parser.ts
+index 9f905b1..3a22b5d 100644
+--- a/src/tools/git/diff/files/parser.ts
++++ b/src/tools/git/diff/files/parser.ts
+@@ -1,25 +1,50 @@
+ export class FileDiffParser {
+-  parse(text: string): string[] {
+-    return text.split('\n')
+-      .filter((line) => line.length > 0)
+-      .map((line) =>
+-        this.unquote(line.replace(/^.../, '').replace(/.* -> /, ''))
+-      )
++  private output: string
++  parts!: string[]
++
++  constructor(output: string) {
++    this.output = output
++  }
++
++  parse() {
++    this.split()
++
++    return this.parts
++      .filter(this.lineHasContent)
++      .map(this.removeStatusCode)
++      .map(this.removeRenameSource)
++      .map((line) => this.unquote(line))
++  }
++
++  private split() {
++    this.parts = this.output.split('\n')
++  }
++
++  private lineHasContent(line: string) {
++    return line.trim().length > 0
++  }
++
++  private removeStatusCode(line: string) {
++    return line.replace(/^.../, '')
+   }
+ 
+-  private unquote(path: string): string {
+-    if (
+-      path.length < 2 || !path.startsWith('"') || !path.endsWith('"')
+-    ) {
+-      return path
+-    }
++  private removeRenameSource(line: string) {
++    return line.replace(/.* -> /, '')
++  }
++
++  private unquote(path: string) {
++    if (this.pathIsWrappedInQuotes(path)) return path
+ 
+     return path.slice(1, -1)
+       .replace(/\\\\/g, '\\')
+       .replace(/\\"/g, '"')
+   }
++
++  private pathIsWrappedInQuotes(path: string) {
++    return path.length < 2 || !path.startsWith('"') || !path.endsWith('"')
++  }
+ }
+ 
+-export const fileDiffParser = () => {
+-  return new FileDiffParser()
++export const fileDiffParser = (output: string) => {
++  return new FileDiffParser(output)
+ }
+diff --git a/tests/tools/git/diff/files/parser.test.ts b/tests/tools/git/diff/files/parser.test.ts
+index 360ad85..a821c6b 100644
+--- a/tests/tools/git/diff/files/parser.test.ts
++++ b/tests/tools/git/diff/files/parser.test.ts
+@@ -1,5 +1,4 @@
+ // Porcelain-specific edge cases:
+-// 6. quoted paths (spaces/special characters) — parser must unquote
+ // 7. rename lines with "old -> new" — parser must keep the new path
+ // 8. untracked directories — git emits the directory path, not files inside
+ 
+@@ -12,49 +11,57 @@ import {
+ 
+ describe('FileDiffParser', () => {
+   it('when text is empty, returns an empty array', () => {
+-    const parser = new FileDiffParser()
++    const parser = new FileDiffParser('')
+ 
+-    const result = parser.parse('')
++    const result = parser.parse()
+ 
+     expect(result).toEqual([])
+   })
+ 
+   it('when text has lines, strips the status prefix and returns paths', () => {
+-    const parser = new FileDiffParser()
++    const parser = new FileDiffParser(` M src/a.ts\n?? src/b.ts\n`)
+ 
+-    const result = parser.parse(` M src/a.ts\n?? src/b.ts\n`)
++    const result = parser.parse()
+ 
+     expect(result).toEqual(['src/a.ts', 'src/b.ts'])
+   })
+ 
+   it('when a line is a rename, keeps the new path', () => {
+-    const parser = new FileDiffParser()
++    const parser = new FileDiffParser('R  old/path.ts -> new/path.ts')
+ 
+-    const result = parser.parse('R  old/path.ts -> new/path.ts')
++    const result = parser.parse()
+ 
+     expect(result).toEqual(['new/path.ts'])
+   })
+ 
+   it('when a path is quoted, removes the quotes', () => {
+-    const parser = new FileDiffParser()
++    const parser = new FileDiffParser('?? "path/with spaces/file.txt"')
+ 
+-    const result = parser.parse('?? "path/with spaces/file.txt"')
++    const result = parser.parse()
+ 
+     expect(result).toEqual(['path/with spaces/file.txt'])
+   })
+ 
+   it('when a quoted path contains escaped quotes, unescapes them', () => {
+-    const parser = new FileDiffParser()
++    const parser = new FileDiffParser('?? "path/with\\"quotes\\".txt"')
+ 
+-    const result = parser.parse('?? "path/with\\"quotes\\".txt"')
++    const result = parser.parse()
+ 
+     expect(result).toEqual(['path/with"quotes".txt'])
+   })
+ 
++  it('when a line contains only whitespace, it is ignored', () => {
++    const parser = new FileDiffParser('\t   \n M file.ts\n')
++
++    const result = parser.parse()
++
++    expect(result).toEqual(['file.ts'])
++  })
++
+   it('fileDiffParser returns a parser that can parse text', () => {
+-    const parser = fileDiffParser()
++    const parser = fileDiffParser(' M file.ts')
+ 
+-    const result = parser.parse(' M file.ts')
++    const result = parser.parse()
+ 
+     expect(result).toEqual(['file.ts'])
+   })

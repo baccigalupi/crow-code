@@ -1,24 +1,40 @@
-import type { DenoCommand } from '../../types.ts'
+import type { ApplicationData } from '../../types.ts'
+import { ExecCommand } from '../exec-command.ts'
 
-type GitDiffArguments = {
-  denoCommand?: DenoCommand
-  filter?: string[] | null
+type CommandArguments = {
+  filter?: string[]
 }
 
-export class GitDiff {
-  denoCommand: DenoCommand
-  filter: string[] | null
+type GitDiffArguments = {
+  applicationData: ApplicationData
+  commandArguments: CommandArguments
+}
 
-  constructor(
-    { denoCommand = Deno.Command, filter = null }: GitDiffArguments = {},
-  ) {
-    this.denoCommand = denoCommand
-    this.filter = filter
+type OptionalGitDiffArguments = Pick<GitDiffArguments, 'applicationData'>
+
+export class GitDiff extends ExecCommand<CommandArguments, string> {
+  executable = 'git'
+
+  executableOptions() {
+    return { args: ['diff'] }
+  }
+
+  parse() {
+    return this.responseText
+  }
+
+  emptyResult() {
+    return ''
+  }
+
+  errorPrefix() {
+    return 'Git error:'
   }
 }
 
 export const gitDiff = (
-  { denoCommand = Deno.Command, filter = null }: GitDiffArguments = {},
+  args: GitDiffArguments | OptionalGitDiffArguments,
 ) => {
-  return new GitDiff({ denoCommand, filter })
+  const classArguments = { commandArguments: {}, ...args }
+  return new GitDiff(classArguments)
 }

@@ -1,17 +1,31 @@
+type CommandSpy = (
+  command: string,
+  options: Deno.CommandOptions,
+) => void
+
 type MockDenoCommandOptions = {
   stdout?: string
   stderr?: string
   success?: boolean
   code?: number
   outputError?: string
+  commandSpy?: CommandSpy
 }
 
 export const mockDenoCommand = (
-  { stdout = '', stderr = '', success = true, code = 0, outputError }:
-    MockDenoCommandOptions = {},
+  {
+    stdout = '',
+    stderr = '',
+    success = true,
+    code = 0,
+    outputError,
+    commandSpy,
+  }: MockDenoCommandOptions = {},
 ) => {
   return class MockCommand {
-    constructor(_command: string, _options: Deno.CommandOptions) {}
+    constructor(command: string, options: Deno.CommandOptions) {
+      if (commandSpy) commandSpy(command, options)
+    }
 
     output() {
       if (outputError !== undefined) {
