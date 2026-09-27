@@ -1,103 +1,38 @@
-import type { DenoCommand, Logger } from '../../../types.ts'
+import type { ApplicationData } from '../../../types.ts'
+import { ExecCommand } from '../../exec-command.ts'
 import { FileDiffParser } from './files/parser.ts'
 
-type GitDiffArguments = {
-  denoCommand?: DenoCommand
-  filter?: string[] | null
-  logger: Logger
+type CommandArguments = {
+  filter?: string[]
 }
 
-export class GitDiffFiles {
-  denoCommand: DenoCommand
-  filter: string[] | null
+type GitDiffArguments = {
+  applicationData: ApplicationData
+  commandArguments?: CommandArguments
+}
+
+export class GitDiffFiles extends ExecCommand<CommandArguments, string[]> {
   executable = 'git'
-  private command!: Deno.Command
-  private response!: Deno.CommandOutput
-  private responseText!: string
-  private logger: Logger
-  private succeeded = false
 
-  constructor(
-    { denoCommand = Deno.Command, filter = null, logger }: GitDiffArguments,
-  ) {
-    this.denoCommand = denoCommand
-    this.filter = filter
-    this.logger = logger
-  }
-
-  success() {
-    return this.succeeded
-  }
-
-  async run() {
-    try {
-      await this.runCommand()
-    } catch (error) {
-      this.handleError((error as Error).message)
-    }
-
-    return this
-  }
-
-  result() {
-    if (this.success()) {
-      return new FileDiffParser(this.responseText).parse()
-    } else {
-      return this.emptyResult()
-    }
-  }
-
-  private async runCommand() {
-    this.setCommand()
-    await this.setResponse()
-    this.getResponseText()
-    this.handleResponse()
-  }
-
-  private handleResponse() {
-    this.succeeded = this.response.success
-    this.handleErrors()
-  }
-
-  private handleErrors() {
-    if (this.success()) return
-
-    const errorMessage = new TextDecoder().decode(this.response.stderr)
-    this.handleError(errorMessage)
-  }
-
-  private handleError(errorMessage: string) {
-    this.logger.error(`Git error: ${errorMessage}`)
-  }
-
-  private emptyResult() {
-    return []
-  }
-
-  private setCommand() {
-    this.command = new this.denoCommand(
-      this.executable,
-      this.executableOptions(),
-    )
-  }
-
-  private executableOptions() {
+  executableOptions() {
     return {
       args: ['status', '--porcelain'],
     }
   }
 
-  private async setResponse() {
-    this.response = await this.command.output()
+  parse() {
+    return new FileDiffParser(this.responseText).parse()
   }
 
-  private getResponseText() {
-    this.responseText = new TextDecoder().decode(this.response.stdout)
+  emptyResult() {
+    return []
+  }
+
+  errorPrefix() {
+    return 'Git error:'
   }
 }
 
-export const gitDiffFiles = (
-  { denoCommand = Deno.Command, filter = null, logger }: GitDiffArguments,
-) => {
-  return new GitDiffFiles({ denoCommand, filter, logger })
+export const gitDiffFiles = (args: GitDiffArguments) => {
+  return new GitDiffFiles(args)
 }
