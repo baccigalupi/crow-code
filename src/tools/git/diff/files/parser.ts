@@ -1,9 +1,11 @@
 export class FileDiffParser {
   private output: string
+  private filter?: Set<string>
   parts!: string[]
 
-  constructor(output: string) {
+  constructor(output: string, filter?: string[]) {
     this.output = output
+    this.filter = filter ? new Set(filter) : undefined
   }
 
   parse() {
@@ -14,6 +16,13 @@ export class FileDiffParser {
       .map(this.removeStatusCode)
       .map(this.removeRenameSource)
       .map((line) => this.unquote(line))
+      .filter((path) => this.pathMatchesFilter(path))
+  }
+
+  private pathMatchesFilter(path: string) {
+    if (!this.filter) return true
+
+    return this.filter.has(path)
   }
 
   private split() {
@@ -45,6 +54,6 @@ export class FileDiffParser {
   }
 }
 
-export const fileDiffParser = (output: string) => {
-  return new FileDiffParser(output)
+export const fileDiffParser = (output: string, filter?: string[]) => {
+  return new FileDiffParser(output, filter)
 }

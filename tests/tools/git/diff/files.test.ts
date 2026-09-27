@@ -25,8 +25,50 @@ describe('gitDiffFiles', () => {
       'tests/support/fixtures/model-info/catalog/providers/ollama-models.json',
       'tests/support/fixtures/model-info/catalog/providers/openrouter-models.json',
       'tests/tools/git/diff/files.test.ts',
-      'tests/support/fixtures/tools/',
+      'tests/support/fixtures/tools/git/git-diff-files.txt',
     ])
+  })
+
+  it('when filter is provided, returns only files in the filter', async () => {
+    const stdout = await loadTextFixture('tools/git/git-diff-files.txt')
+    const applicationData = mockApplicationData({
+      denoCommand: mockDenoCommand({ stdout }),
+    })
+
+    const gitDiff = gitDiffFiles({
+      applicationData,
+      commandArguments: {
+        filter: [
+          'src/tools/git/diff/files.ts',
+          'tests/tools/git/diff/files.test.ts',
+        ],
+      },
+    })
+    await gitDiff.run()
+
+    expect(gitDiff.success()).toBe(true)
+    expect(gitDiff.result()).toEqual([
+      'src/tools/git/diff/files.ts',
+      'tests/tools/git/diff/files.test.ts',
+    ])
+  })
+
+  it('when filter is provided and no files match, returns an empty array', async () => {
+    const stdout = await loadTextFixture('tools/git/git-diff-files.txt')
+    const applicationData = mockApplicationData({
+      denoCommand: mockDenoCommand({ stdout }),
+    })
+
+    const gitDiff = gitDiffFiles({
+      applicationData,
+      commandArguments: {
+        filter: ['nonexistent/file.ts'],
+      },
+    })
+    await gitDiff.run()
+
+    expect(gitDiff.success()).toBe(true)
+    expect(gitDiff.result()).toEqual([])
   })
 
   it('when git cannot be executed, returns an empty array', async () => {

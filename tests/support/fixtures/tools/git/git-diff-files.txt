@@ -5,4 +5,4 @@ R  tests/support/fixtures/nous-models.json -> tests/support/fixtures/model-info/
 R  tests/support/fixtures/ollama-models.json -> tests/support/fixtures/model-info/catalog/providers/ollama-models.json
 R  tests/support/fixtures/openrouter-models.json -> tests/support/fixtures/model-info/catalog/providers/openrouter-models.json
  M tests/tools/git/diff/files.test.ts
-?? tests/support/fixtures/tools/
+?? tests/support/fixtures/tools/git/git-diff-files.txt

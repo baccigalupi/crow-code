@@ -22,6 +22,36 @@ describe('FileDiffParser', () => {
     expect(result).toEqual(['src/a.ts', 'src/b.ts'])
   })
 
+  it('when a filter is provided, returns only paths in the filter', () => {
+    const parser = new FileDiffParser(
+      ` M src/a.ts\n?? src/b.ts\n M src/c.ts`,
+      ['src/a.ts', 'src/c.ts'],
+    )
+
+    const result = parser.parse()
+
+    expect(result).toEqual(['src/a.ts', 'src/c.ts'])
+  })
+
+  it('when a filter is provided and no paths match, returns an empty array', () => {
+    const parser = new FileDiffParser(
+      ` M src/a.ts\n?? src/b.ts`,
+      ['src/d.ts'],
+    )
+
+    const result = parser.parse()
+
+    expect(result).toEqual([])
+  })
+
+  it('when filter contains a file inside a new directory, returns the file path', () => {
+    const parser = new FileDiffParser('?? newdir/file.ts', ['newdir/file.ts'])
+
+    const result = parser.parse()
+
+    expect(result).toEqual(['newdir/file.ts'])
+  })
+
   it('when a line is a rename, keeps the new path', () => {
     const parser = new FileDiffParser('R  old/path.ts -> new/path.ts')
 

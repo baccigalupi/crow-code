@@ -18,12 +18,15 @@ export class GitDiffFiles extends ExecCommand<CommandArguments, string[]> {
 
   executableOptions() {
     return {
-      args: ['status', '--porcelain'],
+      args: ['status', '--porcelain', '-uall'],
     }
   }
 
   parse() {
-    return new FileDiffParser(this.responseText).parse()
+    return new FileDiffParser(
+      this.responseText,
+      this.commandArguments.filter,
+    ).parse()
   }
 
   emptyResult() {
