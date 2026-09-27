@@ -24,6 +24,27 @@ describe('model-answer', () => {
     expect(response.cost()).toBe(0)
   })
 
+  it('when reasoning tokens are present, sums them with completion tokens', async () => {
+    const json = await loadFixture(
+      'model-requests/openrouter-goals-response.json',
+    )
+    json.usage.completion_tokens_details.reasoning_tokens = 12
+
+    const score = modelAnswer(json).tokenEffortScore()
+
+    expect(score).toBe(102)
+  })
+
+  it('when reasoning tokens are absent, returns the completion tokens', async () => {
+    const json = await loadFixture(
+      'model-requests/ollama-goals-response.json',
+    )
+
+    const score = modelAnswer(json).tokenEffortScore()
+
+    expect(score).toBe(77)
+  })
+
   it('when the raw answer is requested, returns the unparsed json', async () => {
     const json = await loadFixture(
       'model-requests/openrouter-goals-response.json',

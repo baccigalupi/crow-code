@@ -12,6 +12,10 @@ export class ModelAnswer {
     return this.json.usage.cost
   }
 
+  tokenEffortScore() {
+    return this.completionTokens() + this.reasoningTokens()
+  }
+
   rawAnswer() {
     return this.json.choices[0].message.content
   }
@@ -22,6 +26,15 @@ export class ModelAnswer {
       .replace(/```$/, '')
       .trim()
     return JSON.parse(stripped)
+  }
+
+  private completionTokens() {
+    return this.json.usage.completion_tokens
+  }
+
+  private reasoningTokens() {
+    if (this.json.usage.completion_tokens_details === undefined) return 0
+    return this.json.usage.completion_tokens_details.reasoning_tokens
   }
 }
 

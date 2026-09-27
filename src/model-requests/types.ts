@@ -22,6 +22,11 @@ type ChatChoices = {
 export type ChatCompletionJson = {
   choices: ChatChoices
   usage: {
+    completion_tokens: number
+    completion_tokens_details?: {
+      reasoning_tokens: number
+      [key: string]: unknown
+    }
     cost?: number
     [key: string]: unknown
   }
