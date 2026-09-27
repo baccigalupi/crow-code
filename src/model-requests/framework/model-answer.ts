@@ -14,12 +14,20 @@ export class ModelAnswer {
     return this.json.usage.cost
   }
 
-  tokenEffortScore() {
+  tokenEffort() {
     return this.completionTokens() + this.reasoningTokens()
   }
 
   requestDuration() {
     return this.benchmark.endTime - this.benchmark.startTime
+  }
+
+  metaData() {
+    return {
+      cost: this.cost(),
+      requestDuration: this.requestDuration(),
+      tokenEffort: this.tokenEffort(),
+    }
   }
 
   rawAnswer() {

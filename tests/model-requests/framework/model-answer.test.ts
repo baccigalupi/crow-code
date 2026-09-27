@@ -31,7 +31,7 @@ describe('model-answer', () => {
     json.usage.completion_tokens_details.reasoning_tokens = 12
 
     const score = modelAnswer(json, { startTime: 10, endTime: 25 })
-      .tokenEffortScore()
+      .tokenEffort()
 
     expect(score).toBe(102)
   })
@@ -42,7 +42,7 @@ describe('model-answer', () => {
     )
 
     const score = modelAnswer(json, { startTime: 10, endTime: 25 })
-      .tokenEffortScore()
+      .tokenEffort()
 
     expect(score).toBe(77)
   })
@@ -56,6 +56,22 @@ describe('model-answer', () => {
     const duration = answer.requestDuration()
 
     expect(duration).toBe(15)
+  })
+
+  it('when metadata is requested, returns cost, duration, and token effort', async () => {
+    const json = await loadFixture(
+      'model-requests/openrouter-goals-response.json',
+    )
+    json.usage.completion_tokens_details.reasoning_tokens = 12
+    const answer = modelAnswer(json, { startTime: 10, endTime: 25 })
+
+    const metaData = answer.metaData()
+
+    expect(metaData).toEqual({
+      cost: 0.0000288,
+      requestDuration: 15,
+      tokenEffort: 102,
+    })
   })
 
   it('when the raw answer is requested, returns the unparsed json', async () => {

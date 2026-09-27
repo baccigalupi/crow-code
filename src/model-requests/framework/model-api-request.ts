@@ -5,7 +5,7 @@ import type {
   ModelMessages,
 } from '../types.ts'
 import { type FetchRequest, fetchRequest } from './fetch-request.ts'
-import { modelAnswer } from './model-answer.ts'
+import { type ModelAnswer, modelAnswer } from './model-answer.ts'
 import { modelRequestObject } from './model-request-object.ts'
 
 export abstract class ModelApiRequest<TRequest, TResponse> {
@@ -15,6 +15,7 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
   private modelEndpoint: ModelEndpoint
   private applicationData: ApplicationData
   private succeeded: boolean
+  private answer!: ModelAnswer
   protected requestData: TRequest
 
   constructor(
@@ -38,6 +39,10 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
 
   success() {
     return this.succeeded
+  }
+
+  metaData() {
+    return this.answer.metaData()
   }
 
   protected abstract parseAsJson: boolean
@@ -72,14 +77,14 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
   private async parseJsonResponse(): Promise<TResponse> {
     if (!this.apiRequest.success()) return this.jsonErrorResponse()
     const json = await this.apiRequest.json() as ChatCompletionJson
-    return modelAnswer(json, this.apiRequest.benchmark())
-      .answerAsJson() as TResponse
+    this.answer = modelAnswer(json, this.apiRequest.benchmark())
+    return this.answer.answerAsJson() as TResponse
   }
 
   private async parseRawResponse(): Promise<TResponse> {
     if (!this.apiRequest.success()) return '' as TResponse
     const json = await this.apiRequest.json() as ChatCompletionJson
-    return modelAnswer(json, this.apiRequest.benchmark())
-      .rawAnswer() as TResponse
+    this.answer = modelAnswer(json, this.apiRequest.benchmark())
+    return this.answer.rawAnswer() as TResponse
   }
 }

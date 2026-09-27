@@ -163,6 +163,10 @@ describe('ModelApiRequest', () => {
     const applicationData = mockApplicationData({
       fetchClient: mockFetchSuccess({
         choices: [{ message: { content: '["first goal"]' } }],
+        usage: {
+          completion_tokens: 3,
+          cost: 0.25,
+        },
       }),
     })
     const modelApiRequest = new class
@@ -181,6 +185,11 @@ describe('ModelApiRequest', () => {
     const response = await modelApiRequest.run()
 
     expect(response).toEqual(['first goal'])
+    expect(modelApiRequest.metaData()).toEqual({
+      cost: 0.25,
+      requestDuration: expect.any(Number),
+      tokenEffort: 3,
+    })
   })
 
   it('when a raw api call fails, returns an empty string', async () => {
