@@ -1,4 +1,5 @@
 import type { DenoCommand, Logger } from '../../../types.ts'
+import { FileDiffParser } from './files/parser.ts'
 
 type GitDiffArguments = {
   denoCommand?: DenoCommand
@@ -14,6 +15,7 @@ export class GitDiffFiles {
   private response!: Deno.CommandOutput
   private responseText!: string
   private logger: Logger
+  private parser: FileDiffParser
   private succeeded = false
 
   constructor(
@@ -22,6 +24,7 @@ export class GitDiffFiles {
     this.denoCommand = denoCommand
     this.filter = filter
     this.logger = logger
+    this.parser = new FileDiffParser()
   }
 
   success() {
@@ -40,7 +43,7 @@ export class GitDiffFiles {
 
   result() {
     if (this.success()) {
-      return this.parse(this.responseText)
+      return this.parser.parse(this.responseText)
     } else {
       return this.emptyResult()
     }
@@ -71,12 +74,6 @@ export class GitDiffFiles {
 
   private emptyResult() {
     return []
-  }
-
-  private parse(text: string) {
-    return text.split('\n')
-      .filter((line) => line.length > 0)
-      .map((line) => line.replace(/^.../, '').replace(/.* -> /, ''))
   }
 
   private setCommand() {
