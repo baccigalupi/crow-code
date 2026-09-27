@@ -21,7 +21,7 @@ describe('gitDiff', () => {
     )
 
     assertSpyCall(commandSpy, 0, {
-      args: ['git', { args: ['diff'] }],
+      args: ['git', { args: ['diff', 'HEAD'] }],
     })
     expect(fileDiffLines).toEqual([
       'diff --git a/src/tools/git/diff/files.ts b/src/tools/git/diff/files.ts',
@@ -47,7 +47,7 @@ describe('gitDiff', () => {
     assertSpyCall(commandSpy, 0, {
       args: [
         'git',
-        { args: ['diff', '--', 'src/a.ts', 'tests/a.test.ts'] },
+        { args: ['diff', 'HEAD', '--', 'src/a.ts', 'tests/a.test.ts'] },
       ],
     })
   })
