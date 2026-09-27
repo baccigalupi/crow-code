@@ -1,22 +1,17 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { spy } from '@std/testing/mock'
-import pino from 'pino'
-import type { ApplicationData } from '../../../../src/types.ts'
 import { gitDiffFiles } from '../../../../src/tools/git/diff/files.ts'
 import { loadTextFixture } from '../../../../tests/support/fixtures.ts'
+import { mockApplicationData } from '../../../../tests/support/mock-application-data.ts'
 import { mockDenoCommand } from '../../../../tests/support/mock-deno-command.ts'
 
 describe('gitDiffFiles', () => {
   it('when filter is null, returns all files in the current uncommitted diff', async () => {
-    const logger = pino({ enabled: false })
     const stdout = await loadTextFixture('tools/git/git-diff-files.txt')
-    const applicationData = {
-      parsedArguments: { commands: [], options: {} },
-      crowDirectory: '',
-      logger,
+    const applicationData = mockApplicationData({
       denoCommand: mockDenoCommand({ stdout }),
-    } as unknown as ApplicationData
+    })
 
     const gitDiff = gitDiffFiles({ applicationData })
     await gitDiff.run()
@@ -35,16 +30,12 @@ describe('gitDiffFiles', () => {
   })
 
   it('when git cannot be executed, returns an empty array', async () => {
-    const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
-    const applicationData = {
-      parsedArguments: { commands: [], options: {} },
-      crowDirectory: '',
-      logger,
+    const applicationData = mockApplicationData({
       denoCommand: mockDenoCommand({
         outputError: 'No such file or directory (os error 2): git',
       }),
-    } as unknown as ApplicationData
+    })
+    using loggerErrorSpy = spy(applicationData.logger, 'error')
 
     const gitDiff = gitDiffFiles({ applicationData })
     await gitDiff.run()
@@ -57,18 +48,14 @@ describe('gitDiffFiles', () => {
   })
 
   it('when git exits non-zero, returns an empty array', async () => {
-    const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
-    const applicationData = {
-      parsedArguments: { commands: [], options: {} },
-      crowDirectory: '',
-      logger,
+    const applicationData = mockApplicationData({
       denoCommand: mockDenoCommand({
         stderr: 'fatal: not a git repository',
         success: false,
         code: 128,
       }),
-    } as unknown as ApplicationData
+    })
+    using loggerErrorSpy = spy(applicationData.logger, 'error')
 
     const gitDiff = gitDiffFiles({ applicationData })
     await gitDiff.run()
