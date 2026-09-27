@@ -32,14 +32,12 @@ export class GetGoals extends ModelApiRequest<string, string[]> {
   }
 }
 
-export const getGoals = (
+export const getGoals = async (
   modelEndpoint: ModelEndpoint,
   applicationData: ApplicationData,
   requestData: string,
 ) => {
-  return new GetGoals(
-    modelEndpoint,
-    applicationData,
-    requestData,
-  ).run()
+  const request = new GetGoals(modelEndpoint, applicationData, requestData)
+  await request.run()
+  return request
 }

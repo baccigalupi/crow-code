@@ -44,7 +44,7 @@ describe('goals', () => {
     expect(goals).toEqual([])
   })
 
-  it('when called through getGoals, returns the parsed goals', async () => {
+  it('when called through getGoals, runs and returns the request', async () => {
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
@@ -57,8 +57,13 @@ describe('goals', () => {
       fetchClient: mockFetchSuccess(fixture),
     })
 
-    const goals = await getGoals(modelEndpoint, applicationData, 'build a cli')
+    const request = await getGoals(
+      modelEndpoint,
+      applicationData,
+      'build a cli',
+    )
 
-    expect(goals).toEqual(JSON.parse(fixture.choices[0].message.content))
+    expect(request).toBeInstanceOf(GetGoals)
+    expect(request.success()).toBe(true)
   })
 })
