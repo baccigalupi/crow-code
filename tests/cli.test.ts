@@ -6,7 +6,7 @@ import { Environment } from '../src/env-vars.ts'
 import { run } from '../src/cli.ts'
 import { openAndMigrateDatabase } from '../src/database/open-and-migrate-database.ts'
 import { clearDirectory, fixturesDirectory } from './support/fixtures.ts'
-import { FakeCommand } from './support/fake-command.ts'
+import { mockDenoCommand } from './support/mock-deno-command.ts'
 import { mockFetchRoutes, mockFetchSuccess } from './support/mock-fetch.ts'
 import pino from 'pino'
 
@@ -25,7 +25,7 @@ describe('run', () => {
       logger,
       () => {},
       undefined,
-      FakeCommand as never,
+      mockDenoCommand() as never,
     )
   })
 
@@ -223,7 +223,7 @@ describe('run', () => {
       logger,
       () => {},
       fetchMock,
-      FakeCommand as never,
+      mockDenoCommand() as never,
       environment,
     )
 
