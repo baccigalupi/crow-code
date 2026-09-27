@@ -1,7 +1,3 @@
-// Porcelain-specific edge cases:
-// 7. rename lines with "old -> new" — parser must keep the new path
-// 8. untracked directories — git emits the directory path, not files inside
-
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import {
@@ -32,6 +28,14 @@ describe('FileDiffParser', () => {
     const result = parser.parse()
 
     expect(result).toEqual(['new/path.ts'])
+  })
+
+  it('when a rename has quoted paths, keeps the new path unquoted', () => {
+    const parser = new FileDiffParser('R  "old name.txt" -> "new name.txt"')
+
+    const result = parser.parse()
+
+    expect(result).toEqual(['new name.txt'])
   })
 
   it('when a path is quoted, removes the quotes', () => {
