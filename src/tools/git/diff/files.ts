@@ -14,7 +14,6 @@ export class GitDiffFiles {
   private response!: Deno.CommandOutput
   private responseText!: string
   private logger: Logger
-  result!: string[]
   private succeeded = false
 
   constructor(
@@ -23,7 +22,6 @@ export class GitDiffFiles {
     this.denoCommand = denoCommand
     this.filter = filter
     this.logger = logger
-    this.setEmptyResult()
   }
 
   success() {
@@ -32,28 +30,47 @@ export class GitDiffFiles {
 
   async run() {
     try {
-      this.setCommand()
-      await this.setResponse()
-      this.getResponseText()
-      this.setResult()
-      this.succeeded = true
+      await this.runCommand()
     } catch (error) {
-      this.handleError(error)
+      this.handleError((error as Error).message)
     }
 
     return this
   }
 
-  private handleError(error: unknown) {
-    this.logger.error(`Git error: ${(error as Error).message}`)
+  result() {
+    if (this.success()) {
+      return this.parse(this.responseText)
+    } else {
+      return this.emptyResult()
+    }
   }
 
-  private setEmptyResult() {
-    this.result = []
+  private async runCommand() {
+    this.setCommand()
+    await this.setResponse()
+    this.getResponseText()
+    this.handleResponse()
   }
 
-  private setResult() {
-    this.result = this.parse(this.responseText)
+  private handleResponse() {
+    this.succeeded = this.response.success
+    this.handleErrors()
+  }
+
+  private handleErrors() {
+    if (this.success()) return
+
+    const errorMessage = new TextDecoder().decode(this.response.stderr)
+    this.handleError(errorMessage)
+  }
+
+  private handleError(errorMessage: string) {
+    this.logger.error(`Git error: ${errorMessage}`)
+  }
+
+  private emptyResult() {
+    return []
   }
 
   private parse(text: string) {

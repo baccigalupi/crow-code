@@ -1,5 +1,4 @@
 // Error conditions to cover:
-// 1. git executable not found (command construction or output throws)
 // 2. not inside a git repository (git exits non-zero)
 // 3. git exits non-zero for any other reason (corrupt index, permissions, etc.)
 // 4. git exists but cannot be executed (output returns success: false or throws)
@@ -12,7 +11,7 @@
 
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { assertSpyCall, spy } from '@std/testing/mock'
+import { spy } from '@std/testing/mock'
 import pino from 'pino'
 import { gitDiffFiles } from '../../../../src/tools/git/diff/files.ts'
 import { loadTextFixture } from '../../../../tests/support/fixtures.ts'
@@ -29,7 +28,7 @@ describe('gitDiffFiles', () => {
     await gitDiff.run()
 
     expect(gitDiff.success()).toBe(true)
-    expect(gitDiff.result).toEqual([
+    expect(gitDiff.result()).toEqual([
       'src/tools/git/diff/files.ts',
       'tests/support/fixtures.ts',
       'tests/support/fixtures/model-info/catalog/providers/models-dev-api.json',
@@ -53,10 +52,29 @@ describe('gitDiffFiles', () => {
     await gitDiff.run()
 
     expect(gitDiff.success()).toBe(false)
-    expect(gitDiff.result).toEqual([])
-    assertSpyCall(loggerErrorSpy, 0)
+    expect(gitDiff.result()).toEqual([])
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
       'Git error: No such file or directory (os error 2): git',
+    )
+  })
+
+  it('when git exits non-zero, returns an empty array', async () => {
+    const logger = pino({ enabled: false })
+    using loggerErrorSpy = spy(logger, 'error')
+    const gitDiff = gitDiffFiles({
+      denoCommand: mockDenoCommand({
+        stderr: 'fatal: not a git repository',
+        success: false,
+        code: 128,
+      }),
+      logger,
+    })
+    await gitDiff.run()
+
+    expect(gitDiff.success()).toBe(false)
+    expect(gitDiff.result()).toEqual([])
+    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+      'Git error: fatal: not a git repository',
     )
   })
 })
