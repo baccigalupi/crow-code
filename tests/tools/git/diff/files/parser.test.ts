@@ -35,6 +35,22 @@ describe('FileDiffParser', () => {
     expect(result).toEqual(['new/path.ts'])
   })
 
+  it('when a path is quoted, removes the quotes', () => {
+    const parser = new FileDiffParser()
+
+    const result = parser.parse('?? "path/with spaces/file.txt"')
+
+    expect(result).toEqual(['path/with spaces/file.txt'])
+  })
+
+  it('when a quoted path contains escaped quotes, unescapes them', () => {
+    const parser = new FileDiffParser()
+
+    const result = parser.parse('?? "path/with\\"quotes\\".txt"')
+
+    expect(result).toEqual(['path/with"quotes".txt'])
+  })
+
   it('fileDiffParser returns a parser that can parse text', () => {
     const parser = fileDiffParser()
 
