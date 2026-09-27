@@ -6,6 +6,8 @@ export class CallApi {
   private logger: Logger
   private response: Response
   private succeeded: boolean
+  private startTime!: number
+  private endTime!: number
   error?: Error
 
   constructor(
@@ -43,8 +45,11 @@ export class CallApi {
   }
 
   private async send() {
+    this.startTime = performance.now()
+    this.endTime = performance.now()
     await this.fetch()
     if (this.response.ok) {
+      this.endTime = performance.now()
       this.succeeded = true
     } else {
       await this.logApiError()
