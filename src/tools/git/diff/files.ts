@@ -28,7 +28,9 @@ export class GitDiffFiles {
   }
 
   private parse(text: string) {
-    return text.split('\n').filter((line) => line.length > 0)
+    return text.split('\n')
+      .filter((line) => line.length > 0)
+      .map((line) => line.replace(/^.../, '').replace(/.* -> /, ''))
   }
 
   private setCommand() {
@@ -40,7 +42,7 @@ export class GitDiffFiles {
 
   private executableOptions() {
     return {
-      args: ['diff', 'HEAD', '--name-only'],
+      args: ['status', '--porcelain'],
     }
   }
 

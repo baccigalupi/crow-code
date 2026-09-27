@@ -8,21 +8,26 @@ export const fixturesDirectory = join(
 )
 
 export const loadFixture = async (subpath: string) => {
-  const path = join(fixturesDirectory, subpath)
-  const text = await Deno.readTextFile(path)
+  const text = await loadTextFixture(subpath)
   return JSON.parse(text)
 }
 
-export const loadModelsDevFixture = async () =>
-  await loadFixture('models-dev-api.json')
+export const loadTextFixture = async (subpath: string) => {
+  const path = join(fixturesDirectory, subpath)
+  return await Deno.readTextFile(path)
+}
 
-export const loadNousFixture = async () => await loadFixture('nous-models.json')
+export const loadModelsDevFixture = async () =>
+  await loadFixture('model-info/catalog/providers/models-dev-api.json')
+
+export const loadNousFixture = async () =>
+  await loadFixture('model-info/catalog/providers/nous-models.json')
 
 export const loadOpenRouterFixture = async () =>
-  await loadFixture('openrouter-models.json')
+  await loadFixture('model-info/catalog/providers/openrouter-models.json')
 
 export const loadOllamaFixture = async () =>
-  await loadFixture('ollama-models.json')
+  await loadFixture('model-info/catalog/providers/ollama-models.json')
 
 export const clearDirectory = async (path: string) => {
   await Deno.remove(path, { recursive: true }).catch(() => {})
