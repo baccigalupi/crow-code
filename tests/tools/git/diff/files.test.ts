@@ -18,14 +18,33 @@ describe('gitDiffFiles', () => {
 
     expect(gitDiff.success()).toBe(true)
     expect(gitDiff.result()).toEqual([
-      'src/tools/git/diff/files.ts',
-      'tests/support/fixtures.ts',
-      'tests/support/fixtures/model-info/catalog/providers/models-dev-api.json',
-      'tests/support/fixtures/model-info/catalog/providers/nous-models.json',
-      'tests/support/fixtures/model-info/catalog/providers/ollama-models.json',
-      'tests/support/fixtures/model-info/catalog/providers/openrouter-models.json',
-      'tests/tools/git/diff/files.test.ts',
-      'tests/support/fixtures/tools/git/git-diff-files.txt',
+      { path: 'src/tools/git/diff/files.ts', changeType: ' M' },
+      { path: 'tests/support/fixtures.ts', changeType: ' M' },
+      {
+        path:
+          'tests/support/fixtures/model-info/catalog/providers/models-dev-api.json',
+        changeType: 'R ',
+      },
+      {
+        path:
+          'tests/support/fixtures/model-info/catalog/providers/nous-models.json',
+        changeType: 'R ',
+      },
+      {
+        path:
+          'tests/support/fixtures/model-info/catalog/providers/ollama-models.json',
+        changeType: 'R ',
+      },
+      {
+        path:
+          'tests/support/fixtures/model-info/catalog/providers/openrouter-models.json',
+        changeType: 'R ',
+      },
+      { path: 'tests/tools/git/diff/files.test.ts', changeType: ' M' },
+      {
+        path: 'tests/support/fixtures/tools/git/git-diff-files.txt',
+        changeType: '??',
+      },
     ])
   })
 
@@ -48,8 +67,8 @@ describe('gitDiffFiles', () => {
 
     expect(gitDiff.success()).toBe(true)
     expect(gitDiff.result()).toEqual([
-      'src/tools/git/diff/files.ts',
-      'tests/tools/git/diff/files.test.ts',
+      { path: 'src/tools/git/diff/files.ts', changeType: ' M' },
+      { path: 'tests/tools/git/diff/files.test.ts', changeType: ' M' },
     ])
   })
 

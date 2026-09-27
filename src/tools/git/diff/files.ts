@@ -1,6 +1,6 @@
 import type { ApplicationData } from '../../../types.ts'
 import { ExecCommand } from '../../exec-command.ts'
-import { FileDiffParser } from './files/parser.ts'
+import { type ChangedFile, FileDiffParser } from './files/parser.ts'
 
 type CommandArguments = {
   filter?: string[]
@@ -13,7 +13,7 @@ type GitDiffArguments = {
 
 type OptionalGitDiffArguments = Pick<GitDiffArguments, 'applicationData'>
 
-export class GitDiffFiles extends ExecCommand<CommandArguments, string[]> {
+export class GitDiffFiles extends ExecCommand<CommandArguments, ChangedFile[]> {
   executable = 'git'
 
   executableOptions() {

@@ -5,14 +5,17 @@ type CommandArguments = {
   filter?: string[]
 }
 
-type GitDiffArguments = {
+type GitTrackedChangesArguments = {
   applicationData: ApplicationData
   commandArguments: CommandArguments
 }
 
-type OptionalGitDiffArguments = Pick<GitDiffArguments, 'applicationData'>
+type OptionalGitTrackedChangesArguments = Pick<
+  GitTrackedChangesArguments,
+  'applicationData'
+>
 
-export class GitDiff extends ExecCommand<CommandArguments, string> {
+export class GitTrackedChanges extends ExecCommand<CommandArguments, string> {
   executable = 'git'
 
   executableOptions() {
@@ -34,9 +37,9 @@ export class GitDiff extends ExecCommand<CommandArguments, string> {
   }
 }
 
-export const gitDiff = (
-  args: GitDiffArguments | OptionalGitDiffArguments,
+export const gitTrackedChanges = (
+  args: GitTrackedChangesArguments | OptionalGitTrackedChangesArguments,
 ) => {
   const classArguments = { commandArguments: {}, ...args }
-  return new GitDiff(classArguments)
+  return new GitTrackedChanges(classArguments)
 }

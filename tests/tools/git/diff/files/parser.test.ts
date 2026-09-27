@@ -14,12 +14,15 @@ describe('FileDiffParser', () => {
     expect(result).toEqual([])
   })
 
-  it('when text has lines, strips the status prefix and returns paths', () => {
+  it('when text has lines, returns paths and change types', () => {
     const parser = new FileDiffParser(` M src/a.ts\n?? src/b.ts\n`)
 
     const result = parser.parse()
 
-    expect(result).toEqual(['src/a.ts', 'src/b.ts'])
+    expect(result).toEqual([
+      { path: 'src/a.ts', changeType: ' M' },
+      { path: 'src/b.ts', changeType: '??' },
+    ])
   })
 
   it('when a filter is provided, returns only paths in the filter', () => {
@@ -30,7 +33,10 @@ describe('FileDiffParser', () => {
 
     const result = parser.parse()
 
-    expect(result).toEqual(['src/a.ts', 'src/c.ts'])
+    expect(result).toEqual([
+      { path: 'src/a.ts', changeType: ' M' },
+      { path: 'src/c.ts', changeType: ' M' },
+    ])
   })
 
   it('when a filter is provided and no paths match, returns an empty array', () => {
@@ -49,7 +55,7 @@ describe('FileDiffParser', () => {
 
     const result = parser.parse()
 
-    expect(result).toEqual(['newdir/file.ts'])
+    expect(result).toEqual([{ path: 'newdir/file.ts', changeType: '??' }])
   })
 
   it('when a line is a rename, keeps the new path', () => {
@@ -57,7 +63,7 @@ describe('FileDiffParser', () => {
 
     const result = parser.parse()
 
-    expect(result).toEqual(['new/path.ts'])
+    expect(result).toEqual([{ path: 'new/path.ts', changeType: 'R ' }])
   })
 
   it('when a rename has quoted paths, keeps the new path unquoted', () => {
@@ -65,7 +71,7 @@ describe('FileDiffParser', () => {
 
     const result = parser.parse()
 
-    expect(result).toEqual(['new name.txt'])
+    expect(result).toEqual([{ path: 'new name.txt', changeType: 'R ' }])
   })
 
   it('when a path is quoted, removes the quotes', () => {
@@ -73,7 +79,9 @@ describe('FileDiffParser', () => {
 
     const result = parser.parse()
 
-    expect(result).toEqual(['path/with spaces/file.txt'])
+    expect(result).toEqual([
+      { path: 'path/with spaces/file.txt', changeType: '??' },
+    ])
   })
 
   it('when a quoted path contains escaped quotes, unescapes them', () => {
@@ -81,7 +89,9 @@ describe('FileDiffParser', () => {
 
     const result = parser.parse()
 
-    expect(result).toEqual(['path/with"quotes".txt'])
+    expect(result).toEqual([
+      { path: 'path/with"quotes".txt', changeType: '??' },
+    ])
   })
 
   it('when a line contains only whitespace, it is ignored', () => {
@@ -89,7 +99,7 @@ describe('FileDiffParser', () => {
 
     const result = parser.parse()
 
-    expect(result).toEqual(['file.ts'])
+    expect(result).toEqual([{ path: 'file.ts', changeType: ' M' }])
   })
 
   it('fileDiffParser returns a parser that can parse text', () => {
@@ -97,6 +107,6 @@ describe('FileDiffParser', () => {
 
     const result = parser.parse()
 
-    expect(result).toEqual(['file.ts'])
+    expect(result).toEqual([{ path: 'file.ts', changeType: ' M' }])
   })
 })

@@ -1,3 +1,8 @@
+export type ChangedFile = {
+  path: string
+  changeType: string
+}
+
 export class FileDiffParser {
   private output: string
   private filter?: Set<string>
@@ -13,10 +18,8 @@ export class FileDiffParser {
 
     return this.parts
       .filter(this.lineHasContent)
-      .map(this.removeStatusCode)
-      .map(this.removeRenameSource)
-      .map((line) => this.unquote(line))
-      .filter((path) => this.pathMatchesFilter(path))
+      .map((line) => this.parseChange(line))
+      .filter((change) => this.pathMatchesFilter(change.path))
   }
 
   private pathMatchesFilter(path: string) {
@@ -31,6 +34,21 @@ export class FileDiffParser {
 
   private lineHasContent(line: string) {
     return line.trim().length > 0
+  }
+
+  private parseChange(line: string): ChangedFile {
+    return {
+      path: this.parsePath(line),
+      changeType: this.changeType(line),
+    }
+  }
+
+  private parsePath(line: string) {
+    return this.unquote(this.removeRenameSource(this.removeStatusCode(line)))
+  }
+
+  private changeType(line: string) {
+    return line.slice(0, 2)
   }
 
   private removeStatusCode(line: string) {
