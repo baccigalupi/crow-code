@@ -1,8 +1,9 @@
-import type { DenoCommand } from '../../../types.ts'
+import type { DenoCommand, Logger } from '../../../types.ts'
 
 type GitDiffArguments = {
   denoCommand?: DenoCommand
   filter?: string[] | null
+  logger: Logger
 }
 
 export class GitDiffFiles {
@@ -12,14 +13,16 @@ export class GitDiffFiles {
   private command!: Deno.Command
   private response!: Deno.CommandOutput
   private responseText!: string
+  private logger: Logger
   result!: string[]
   private succeeded = false
 
   constructor(
-    { denoCommand = Deno.Command, filter = null }: GitDiffArguments = {},
+    { denoCommand = Deno.Command, filter = null, logger }: GitDiffArguments,
   ) {
     this.denoCommand = denoCommand
     this.filter = filter
+    this.logger = logger
     this.setEmptyResult()
   }
 
@@ -34,11 +37,15 @@ export class GitDiffFiles {
       this.getResponseText()
       this.setResult()
       this.succeeded = true
-    } catch {
-      // failure is reported via success()
+    } catch (error) {
+      this.handleError(error)
     }
 
     return this
+  }
+
+  private handleError(error: unknown) {
+    this.logger.error(`Git error: ${(error as Error).message}`)
   }
 
   private setEmptyResult() {
@@ -78,7 +85,7 @@ export class GitDiffFiles {
 }
 
 export const gitDiffFiles = (
-  { denoCommand = Deno.Command, filter = null }: GitDiffArguments = {},
+  { denoCommand = Deno.Command, filter = null, logger }: GitDiffArguments,
 ) => {
-  return new GitDiffFiles({ denoCommand, filter })
+  return new GitDiffFiles({ denoCommand, filter, logger })
 }

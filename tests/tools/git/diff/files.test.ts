@@ -12,15 +12,19 @@
 
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
+import { assertSpyCall, spy } from '@std/testing/mock'
+import pino from 'pino'
 import { gitDiffFiles } from '../../../../src/tools/git/diff/files.ts'
 import { loadTextFixture } from '../../../../tests/support/fixtures.ts'
 import { mockDenoCommand } from '../../../../tests/support/mock-deno-command.ts'
 
 describe('gitDiffFiles', () => {
   it('when filter is null, returns all files in the current uncommitted diff', async () => {
+    const logger = pino({ enabled: false })
     const stdout = await loadTextFixture('tools/git/git-diff-files.txt')
     const gitDiff = gitDiffFiles({
       denoCommand: mockDenoCommand({ stdout }),
+      logger,
     })
     await gitDiff.run()
 
@@ -38,14 +42,21 @@ describe('gitDiffFiles', () => {
   })
 
   it('when git cannot be executed, returns an empty array', async () => {
+    const logger = pino({ enabled: false })
+    using loggerErrorSpy = spy(logger, 'error')
     const gitDiff = gitDiffFiles({
       denoCommand: mockDenoCommand({
         outputError: 'No such file or directory (os error 2): git',
       }),
+      logger,
     })
     await gitDiff.run()
 
     expect(gitDiff.success()).toBe(false)
     expect(gitDiff.result).toEqual([])
+    assertSpyCall(loggerErrorSpy, 0)
+    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+      'Git error: No such file or directory (os error 2): git',
+    )
   })
 })
