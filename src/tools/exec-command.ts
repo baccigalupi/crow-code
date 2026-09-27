@@ -56,6 +56,10 @@ export abstract class ExecCommand<
   abstract executableOptions(): Deno.CommandOptions
   abstract errorPrefix(): string
 
+  protected isSuccessful(response: Deno.CommandOutput) {
+    return response.success
+  }
+
   private async runCommand() {
     this.setCommand()
     await this.setResponse()
@@ -64,7 +68,7 @@ export abstract class ExecCommand<
   }
 
   private handleResponse() {
-    this.succeeded = this.response.success
+    this.succeeded = this.isSuccessful(this.response)
     this.handleErrors()
   }
 
