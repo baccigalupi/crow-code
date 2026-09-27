@@ -1,8 +1,8 @@
 import { ApiRequest } from '../../api-request.ts'
 import type { ApplicationData } from '../../types.ts'
-import { ExtractModelResponse } from '../../plan/extract-model-response.ts'
 import { modelRequestObject } from '../../model-requests/framework/model-request-object.ts'
-import type { ModelEndpointDetails } from '../../plan/types.ts'
+import type { ModelEndpoint } from '../../model-requests/types.ts'
+import { ExtractModelResponse } from './extract-model-response.ts'
 import { modelEndpointInfo } from './endpoint.ts'
 import { requestMessages } from './messages.ts'
 
@@ -37,7 +37,7 @@ class CommitSummaryRequest {
     return !this.endpoint.isAvailable()
   }
 
-  private request(endpoint: ModelEndpointDetails) {
+  private request(endpoint: ModelEndpoint) {
     const request = modelRequestObject(
       endpoint,
       requestMessages(this.diff, this.goal),
