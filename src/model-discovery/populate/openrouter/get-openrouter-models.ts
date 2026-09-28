@@ -12,7 +12,7 @@ const fetchOpenRouterModels = (
   fetchClient: typeof fetch,
 ) => {
   return fetchProvider<OpenRouter2ApiBody, CatalogModel>(
-    `${provider.baseUrl()}/v1/models`,
+    provider.modelsUrl(),
     (body) => parseOpenRouterBody(body, 'openrouter'),
     20000,
     logger,

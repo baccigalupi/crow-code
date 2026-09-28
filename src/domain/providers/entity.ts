@@ -33,7 +33,7 @@ export class ProviderEntity {
 
   modelsUrl() {
     if (this.record.modelsPath === null) {
-      return this.buildModelsUrl('/v1/models')
+      return this.buildModelsUrl('v1/models')
     }
     return this.buildModelsUrl(this.record.modelsPath)
   }
@@ -46,7 +46,9 @@ export class ProviderEntity {
   }
 
   private buildModelsUrl(modelsPath: string) {
-    return new URL(modelsPath, this.record.baseUrl).toString()
+    const base = this.record.baseUrl.replace(/\/$/, '')
+    const path = modelsPath.replace(/^\//, '')
+    return `${base}/${path}`
   }
 }
 
