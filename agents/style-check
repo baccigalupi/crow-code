@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# Style-check gate: audit production and/or test TypeScript.
+set -euo pipefail
+
+mode=${1:-both}
+scope=${2:-changed}
+if [[ $mode != code && $mode != tests && $mode != both ]]; then
+  echo "Usage: $0 [code|tests|both] [changed|all]" >&2
+  exit 1
+fi
+if [[ $scope != changed && $scope != all ]]; then
+  echo "Usage: $0 [code|tests|both] [changed|all]" >&2
+  exit 1
+fi
+
+ts_files=()
+test_files=()
+
+if [ "$scope" == all ]; then
+  while IFS= read -r file; do
+    ts_files+=("$file")
+  done < <(git ls-files 'src/**/*.ts')
+  while IFS= read -r file; do
+    test_files+=("$file")
+  done < <(git ls-files 'tests/**/*.test.ts')
+else
+  changed_files=$(
+    git diff --name-only --diff-filter=ACMR
+    git diff --staged --name-only --diff-filter=ACMR
+  )
+
+  for file in $changed_files; do
+    if [[ $file == src/* && $file == *.ts ]]; then
+      ts_files+=("$file")
+    elif [[ $file == tests/* && $file == *.test.ts ]]; then
+      test_files+=("$file")
+    fi
+  done
+fi
+
+fail=0
+
+if [[ $mode == code || $mode == both ]]; then
+  if [ ${#ts_files[@]} -eq 0 ]; then
+    if [ "$mode" == code ]; then
+      echo "No code violations"
+    fi
+  else
+    deno lint --config agents/style-checks/code.deno.json "${ts_files[@]}" ||
+      fail=1
+  fi
+fi
+
+if [[ $mode == tests || $mode == both ]]; then
+  if [ ${#test_files[@]} -eq 0 ]; then
+    if [ "$mode" == tests ]; then
+      echo "No test violations"
+    fi
+  else
+    for test_file in "${test_files[@]}"; do
+      source_path=${test_file#tests/}
+      source_path=${source_path%.test.ts}.ts
+      if [ ! -f "src/$source_path" ] && [ ! -f "agents/$source_path" ]; then
+        echo "$test_file:1: test path must mirror source: expected src/$source_path or agents/$source_path"
+        fail=1
+      fi
+      deno lint --config agents/style-checks/unit-tests.deno.json "$test_file" ||
+        fail=1
+    done
+  fi
+fi
+
+if [ "$mode" == both ] && [ ${#ts_files[@]} -eq 0 ] &&
+  [ ${#test_files[@]} -eq 0 ]; then
+  echo "No violations"
+fi
+
+exit $fail

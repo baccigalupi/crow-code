@@ -10,9 +10,8 @@ Apply when creating or changing tests in this repo.
 
 ## Hard rules
 
-1. When finished touching TypeScript files, run `agents/typecheck` and report
-   the actual output. Do not claim TS is clean without running the typecheck
-   gate.
+1. When finished touching TypeScript files, run `agents/pre-commit` and report
+   the actual output. Do not claim TS is clean without running the gate.
 2. Source-to-test placement is one-to-one: `src/<path>.ts` ↔
    `tests/<path>.test.ts` (same relative path under `src/` and `tests/`). One
    source file, one test file — no combining modules or splitting one module

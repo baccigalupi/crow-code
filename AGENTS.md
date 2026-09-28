@@ -24,9 +24,10 @@ Never create scripts there to try to circumvent permissions.
 
 ### Gates
 
-- Run `/style-check` before finishing TypeScript changes.
-- When finished touching TypeScript files, run `agents/typecheck` and report the
-  actual output.
+- Run `agents/style-check` before finishing TypeScript changes.
+  - `agents/style-check [code|tests|both] [changed|all]` — defaults to changed
+    files only; use `all` to audit the whole tracked codebase.
+- Before finishing a requested task, run `agents/pre-commit`.
 
 ## Git rules
 

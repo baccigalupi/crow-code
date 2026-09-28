@@ -1,0 +1,5 @@
+{
+  "lint": {
+    "plugins": ["./unit-tests.ts"]
+  }
+}

@@ -10,8 +10,8 @@ Apply when creating or changing production TypeScript in this repo.
 
 ## Hard rules
 
-1. Types used in more than one location go in `src/types.ts`, not re-exported
-   from a feature module
+1. Only files named `types.ts` may export type definitions (`type`, `interface`,
+   `enum`). Types used in more than one location go in `src/types.ts`.
 2. Module-level: `const foo = () => {}` — not `function foo() {}`
 3. When the same data is passed between multiple functions in a module, use a
    class; class methods use normal `method() {}` syntax (not arrow properties)
@@ -20,13 +20,15 @@ Apply when creating or changing production TypeScript in this repo.
 5. Conditionals stay flat (no nesting)
 6. Ban `?:`, `??`, and `?.` — write explicit `if` / early return
 7. No abbreviations in method or variables names
-8. Either a full if/else flow or a guard clause for exception cases and then a
-   return at the end of the function
+8. Either a full if/else if/else flow or a guard clause for exception cases and
+   then a return at the end of the function. Mutually exclusive branches must be
+   chained, not written as consecutive `if` statements.
 9. No guard clauses except on the very first line. Setup before the guard is
    incorrect and can usually be converted to a private method called in the
    condition for the guard.
 10. Prefer null object pattern over null checks
-11. Do not nest functions inside functions
+11. Do not nest `function` declarations inside functions. Arrow functions and
+    inline callbacks are allowed.
 12. Functions/methods ≤ 7 lines of code
 13. Do not throw unless the user asks or approves
 14. Keep ABC complexity low: few assignments, branches, and calls per function;
