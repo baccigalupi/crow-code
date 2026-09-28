@@ -1,7 +1,4 @@
-export type ChangedFile = {
-  path: string
-  changeType: string
-}
+import type { ChangedFile } from '../../../types.ts'
 
 export class FileDiffParser {
   private output: string
@@ -10,7 +7,12 @@ export class FileDiffParser {
 
   constructor(output: string, filter?: string[]) {
     this.output = output
-    this.filter = filter ? new Set(filter) : undefined
+    this.filter = this.buildFilter(filter)
+  }
+
+  private buildFilter(filter?: string[]) {
+    if (filter) return new Set(filter)
+    return undefined
   }
 
   parse() {

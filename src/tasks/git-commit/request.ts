@@ -38,17 +38,24 @@ class CommitSummaryRequest {
   }
 
   private request(endpoint: ModelEndpoint) {
-    const request = modelRequestObject(
-      endpoint,
-      requestMessages(this.diff, this.goal),
-    )
-    const parseResponse = this.parseResponse.bind(this)
+    return this.runRequest(endpoint, this.parseResponse.bind(this))
+  }
+
+  private runRequest(
+    endpoint: ModelEndpoint,
+    parseResponse: (response: Response) => Promise<string>,
+  ) {
+    const request = this.requestObject(endpoint)
     return new ApiRequest(
       request,
       this.data.fetchClient,
       parseResponse,
       this.data.logger,
     ).run()
+  }
+
+  private requestObject(endpoint: ModelEndpoint) {
+    return modelRequestObject(endpoint, requestMessages(this.diff, this.goal))
   }
 
   private parseResponse(response: Response) {

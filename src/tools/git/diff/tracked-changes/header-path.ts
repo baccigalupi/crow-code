@@ -59,6 +59,5 @@ export const parseHeaderPath = (line: string) => {
     unchangedPathParser(header),
     renamedPathParser(header),
   ].find((parser) => parser.isMatch())
-
   return parser!.parse()
 }

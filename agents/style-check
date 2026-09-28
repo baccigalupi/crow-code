@@ -60,8 +60,8 @@ if [[ $mode == tests || $mode == both ]]; then
     for test_file in "${test_files[@]}"; do
       source_path=${test_file#tests/}
       source_path=${source_path%.test.ts}.ts
-      if [ ! -f "src/$source_path" ] && [ ! -f "agents/$source_path" ]; then
-        echo "$test_file:1: test path must mirror source: expected src/$source_path or agents/$source_path"
+      if [ ! -f "src/$source_path" ] && [ ! -f "$source_path" ]; then
+        echo "$test_file:1: test path must mirror source: expected src/$source_path or $source_path"
         fail=1
       fi
       deno lint --config agents/style-checks/unit-tests.deno.json "$test_file" ||

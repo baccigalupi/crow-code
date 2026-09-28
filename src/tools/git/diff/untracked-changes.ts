@@ -1,6 +1,6 @@
 import type { ApplicationData } from '../../../types.ts'
 import { gitDiffFiles } from './files.ts'
-import type { ChangedFile } from './files/parser.ts'
+import type { ChangedFile } from '../../types.ts'
 import {
   type GitUntrackedChange,
   gitUntrackedChange,

@@ -227,6 +227,34 @@ describe('style-check code plugin', () => {
     expect(diagnostics).toHaveLength(0)
   })
 
+  it('when a second guard clause follows a guard clause, reports it', () => {
+    const source = `const example = (a: string | null, b: string | null) => {
+      if (a === null) return ''
+      if (b === null) return ''
+      return a + b
+    }`
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(
+      diagnostics.some((d) => d.message.includes('guard clauses must be')),
+    ).toBe(true)
+  })
+
+  it('when a guard clause follows a non-guard statement, reports it', () => {
+    const source = `const example = (x: string | null) => {
+      const y = x
+      if (y === null) return ''
+      return y
+    }`
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(
+      diagnostics.some((d) => d.message.includes('guard clauses must be')),
+    ).toBe(true)
+  })
+
   it('when a named re-export is used, reports it', () => {
     const source = "export { foo } from './foo'"
 

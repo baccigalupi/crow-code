@@ -14,15 +14,39 @@ class NousParser {
 
   parseRecord(): CatalogModel {
     return {
+      ...this.identifiers(),
+      ...this.pricing(),
+      ...this.capabilities(),
+      ...this.reasoningFields(),
+    }
+  }
+
+  private identifiers() {
+    return {
       id: this.model.id,
       name: this.model.name,
       provider: this.provider,
       contextLength: this.model.context_length,
+    }
+  }
+
+  private pricing() {
+    return {
       costInput: this.toMillionPrice(this.model.pricing.prompt),
       costOutput: this.toMillionPrice(this.model.pricing.completion),
+    }
+  }
+
+  private capabilities() {
+    return {
       dynamicDelegation: false,
       modality: this.modality(),
       supportedParameters: this.model.supported_parameters,
+    }
+  }
+
+  private reasoningFields() {
+    return {
       supportsReasoning: this.reasoning.supportsReasoning(),
       canDisableReasoning: this.reasoning.canDisableReasoning(),
       reasoningOptions: this.reasoning.reasoningOptions(),
@@ -36,7 +60,6 @@ class NousParser {
     ) {
       return 'unknown'
     }
-
     return this.model.architecture.modality
   }
 

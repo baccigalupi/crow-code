@@ -1,6 +1,7 @@
 import type { ApplicationData } from '../../../types.ts'
 import { ExecCommand } from '../../exec-command.ts'
-import { type ChangedFile, FileDiffParser } from './files/parser.ts'
+import { FileDiffParser } from './files/parser.ts'
+import type { ChangedFile } from '../../types.ts'
 
 type CommandArguments = {
   filter?: string[]

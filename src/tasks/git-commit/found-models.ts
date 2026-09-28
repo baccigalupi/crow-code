@@ -26,16 +26,14 @@ export class FoundModels {
   }
 
   firstEndpoint() {
-    const model = this.first()
-    if (model === undefined) {
-      return this.emptyEndpoint()
-    }
+    if (this.first() === undefined) return this.emptyEndpoint()
+    const model = this.first() as ModelInfo
+    return this.endpointFor(model)
+  }
 
-    const provider = this.provider(model)
-    if (provider === undefined) {
-      return this.emptyEndpoint()
-    }
-
+  private endpointFor(model: ModelInfo) {
+    if (this.provider(model) === undefined) return this.emptyEndpoint()
+    const provider = this.provider(model) as ProviderConfig
     return this.endpoint(model, provider)
   }
 

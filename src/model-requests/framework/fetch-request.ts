@@ -52,12 +52,16 @@ export class FetchRequest {
     this.startTime = performance.now()
     this.endTime = performance.now()
     await this.fetch()
+    await this.recordResult()
+  }
+
+  private async recordResult() {
     if (this.response.ok) {
       this.endTime = performance.now()
       this.succeeded = true
-    } else {
-      await this.logApiError()
+      return
     }
+    await this.logApiError()
   }
 
   private handleNetworkError(error: Error) {
@@ -85,7 +89,6 @@ export class FetchRequest {
     }
   }
 }
-
 export const fetchRequest = async (
   request: Request,
   fetchClient: typeof fetch,

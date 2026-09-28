@@ -33,9 +33,7 @@ class CurrentDiff {
 
   private async runCommand() {
     try {
-      this.command = new this.denoCommand('git', {
-        args: ['diff', 'HEAD'],
-      })
+      this.command = new this.denoCommand('git', { args: ['diff', 'HEAD'] })
       this.output = await this.command.output()
     } catch (error) {
       this.error = (error as Error).message

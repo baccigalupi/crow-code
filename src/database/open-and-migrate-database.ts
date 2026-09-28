@@ -12,13 +12,21 @@ export const openAndMigrateDatabase = async (
   logger: Logger,
 ) => {
   Deno.mkdirSync(crowDirectory, { recursive: true })
-  const database = knex({
+  const database = openDatabase(crowDirectory)
+  await configureDatabase(database)
+  await migrateDatabase(database, logger)
+  return database
+}
+
+const openDatabase = (crowDirectory: string) => {
+  return knex({
     client: 'better-sqlite3',
     connection: { filename: defaultDatabasePath(crowDirectory) },
     useNullAsDefault: true,
   })
+}
+
+const configureDatabase = async (database: ReturnType<typeof openDatabase>) => {
   await database.raw('PRAGMA journal_mode = WAL')
   await database.raw('PRAGMA foreign_keys = ON')
-  await migrateDatabase(database, logger)
-  return database
 }

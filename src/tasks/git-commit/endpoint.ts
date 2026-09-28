@@ -30,13 +30,14 @@ class EndpointInfo {
 
   private loadModels() {
     try {
-      return getCheapNoReasoningModels(
-        join(this.crowDirectory, 'models.json'),
-        5,
-      )
+      return getCheapNoReasoningModels(this.modelCatalogPath(), 5)
     } catch {
       return []
     }
+  }
+
+  private modelCatalogPath() {
+    return join(this.crowDirectory, 'models.json')
   }
 }
 

@@ -16,15 +16,39 @@ class OllamaParser {
 
   parseRecord(): CatalogModel {
     return {
+      ...this.identifiers(),
+      ...this.pricing(),
+      ...this.capabilities(),
+      ...this.reasoning(),
+    }
+  }
+
+  private identifiers() {
+    return {
       id: this.model.name,
       name: this.model.name,
       provider: this.provider,
       contextLength: this.contextLength(),
+    }
+  }
+
+  private pricing() {
+    return {
       costInput: 0,
       costOutput: 0,
+    }
+  }
+
+  private capabilities() {
+    return {
       dynamicDelegation: false,
       modality: 'local',
       supportedParameters: [],
+    }
+  }
+
+  private reasoning() {
+    return {
       supportsReasoning: this.supportsReasoning(),
       canDisableReasoning: this.canDisableReasoning(),
       reasoningOptions: this.reasoningOptions(),
@@ -51,7 +75,6 @@ class OllamaParser {
     if (!this.supportsReasoning()) {
       return {}
     }
-
     return {
       default_enabled: true,
       supported_efforts: ['low', 'medium', 'high', 'max'],

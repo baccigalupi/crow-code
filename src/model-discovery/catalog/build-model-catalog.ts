@@ -2,7 +2,7 @@ import { loadProviderConfig } from './providers/load-provider-config.ts'
 import { fetchProviders } from './providers/fetch-providers.ts'
 import { defaultModelCatalogPath, writeModelCatalog } from './model-catalog.ts'
 import type { Logger } from '../../types.ts'
-import type { ModelInfo } from '../types.ts'
+import type { ModelInfo, ProviderConfig } from '../types.ts'
 
 class BuildModelCatalog {
   private crowDirectory: string
@@ -32,14 +32,14 @@ class BuildModelCatalog {
 
   private async fetchProviders() {
     const configs = loadProviderConfig(this.crowDirectory)
+    const records = await Promise.all(
+      configs.map((config) => this.fetch(config)),
+    )
+    this.records = records.flat()
+  }
 
-    this.records = (
-      await Promise.all(
-        configs.map((config) =>
-          fetchProviders(config, this.logger, this.fetchClient)
-        ),
-      )
-    ).flat()
+  private fetch(config: ProviderConfig) {
+    return fetchProviders(config, this.logger, this.fetchClient)
   }
 
   private persistModelCatalog() {

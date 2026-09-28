@@ -39,7 +39,6 @@ export class ReasoningParser {
     ) {
       return 'unknown'
     }
-
     return this.model.architecture.modality
   }
 
