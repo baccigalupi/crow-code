@@ -22,6 +22,14 @@ Never create scripts there to try to circumvent permissions.
 - TS check: `agents/typecheck`
 - Full gate (format, lint, typecheck, tests, coverage): `agents/pre-commit`
 
+### Exec rules
+
+- NEVER use `cd` in exec commands. The exec tool accepts a `workdir` parameter
+  for the working directory.
+- Commands must not use `&&`, `;`, `|`, `>`, `<`, backticks, or `$(...)`. One
+  command per exec call.
+- Run only the approved commands above. Do not try `deno`, `npm`, `bash`, etc.
+
 ### Gates
 
 - Run `agents/style-check` before finishing TypeScript changes.
