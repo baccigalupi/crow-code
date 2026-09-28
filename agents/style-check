@@ -27,6 +27,7 @@ else
   changed_files=$(
     git diff --name-only --diff-filter=ACMR
     git diff --staged --name-only --diff-filter=ACMR
+    git ls-files --others --exclude-standard
   )
 
   for file in $changed_files; do
