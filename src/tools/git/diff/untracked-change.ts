@@ -1,5 +1,6 @@
 import type { ApplicationData } from '../../../types.ts'
 import { ExecCommand } from '../../exec-command.ts'
+import type { GitFileDiff } from '../../types.ts'
 
 type CommandArguments = {
   path: string
@@ -10,7 +11,8 @@ type GitUntrackedChangeArguments = {
   commandArguments: CommandArguments
 }
 
-export class GitUntrackedChange extends ExecCommand<CommandArguments, string> {
+export class GitUntrackedChange
+  extends ExecCommand<CommandArguments, GitFileDiff> {
   executable = 'git'
 
   executableOptions() {
@@ -20,11 +22,14 @@ export class GitUntrackedChange extends ExecCommand<CommandArguments, string> {
   }
 
   parse() {
-    return this.responseText
+    return {
+      path: this.commandArguments.path,
+      diff: this.responseText,
+    }
   }
 
   emptyResult() {
-    return ''
+    return { path: '', diff: '' }
   }
 
   errorPrefix() {

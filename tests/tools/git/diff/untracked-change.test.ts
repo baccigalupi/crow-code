@@ -32,7 +32,13 @@ describe('gitUntrackedChange', () => {
       ],
     })
     expect(changes.success()).toBe(true)
-    expect(changes.result()).toContain('+++ b/src/new-file.ts')
+    expect(changes.result().path).toBe('src/new-file.ts')
+    expect(changes.result().diff).toMatch(
+      /^diff --git a\/src\/new-file\.ts b\/src\/new-file\.ts\n/,
+    )
+    expect(changes.result().diff).toContain('--- /dev/null')
+    expect(changes.result().diff).toContain('+++ b/src/new-file.ts')
+    expect(changes.result().diff).toContain('+hello')
   })
 
   it('when git cannot be executed, returns an empty diff', async () => {
@@ -58,7 +64,7 @@ describe('gitUntrackedChange', () => {
       ],
     })
     expect(changes.success()).toBe(false)
-    expect(changes.result()).toBe('')
+    expect(changes.result()).toEqual({ path: '', diff: '' })
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
       'Git error: No such file or directory (os error 2): git',
     )
@@ -81,7 +87,7 @@ describe('gitUntrackedChange', () => {
     await changes.run()
 
     expect(changes.success()).toBe(false)
-    expect(changes.result()).toBe('')
+    expect(changes.result()).toEqual({ path: '', diff: '' })
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
       'Git error: fatal: not a git repository',
     )
