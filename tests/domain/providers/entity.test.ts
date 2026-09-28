@@ -2,14 +2,14 @@ import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { Environment } from '../../../src/env-vars.ts'
 import {
-  ProviderModel,
-  providerModel,
-} from '../../../src/domain/providers/provider.ts'
+  ProviderEntity,
+  providerEntity,
+} from '../../../src/domain/providers/entity.ts'
 
 describe('provider', () => {
   it('exposes pass-through attributes', () => {
     const environment = new Environment({})
-    const provider = new ProviderModel({
+    const provider = new ProviderEntity({
       id: 1,
       name: 'provider-name',
       baseUrl: 'https://www.example.com',
@@ -25,7 +25,7 @@ describe('provider', () => {
   describe('modelsUrl', () => {
     it('when base url has no trailing slash and path has a leading slash, joins them with one slash', () => {
       const environment = new Environment({})
-      const provider = new ProviderModel({
+      const provider = new ProviderEntity({
         id: 1,
         name: 'provider-name',
         baseUrl: 'https://www.example.com',
@@ -38,7 +38,7 @@ describe('provider', () => {
 
     it('when base url has a trailing slash and path has no leading slash, joins them with one slash', () => {
       const environment = new Environment({})
-      const provider = new ProviderModel({
+      const provider = new ProviderEntity({
         id: 1,
         name: 'provider-name',
         baseUrl: 'https://www.example.com/',
@@ -51,7 +51,7 @@ describe('provider', () => {
 
     it('when base url and path both have slashes, joins them with one slash', () => {
       const environment = new Environment({})
-      const provider = new ProviderModel({
+      const provider = new ProviderEntity({
         id: 1,
         name: 'provider-name',
         baseUrl: 'https://www.example.com/',
@@ -64,7 +64,7 @@ describe('provider', () => {
 
     it('when models_path is null, uses the default path', () => {
       const environment = new Environment({})
-      const provider = new ProviderModel({
+      const provider = new ProviderEntity({
         id: 1,
         name: 'provider-name',
         baseUrl: 'https://www.example.com',
@@ -81,7 +81,7 @@ describe('provider', () => {
       const environment = new Environment({
         PROVIDER_API_KEY: 'provider-api-key',
       })
-      const provider = new ProviderModel({
+      const provider = new ProviderEntity({
         id: 1,
         name: 'provider-name',
         baseUrl: 'https://www.example.com',
@@ -94,7 +94,7 @@ describe('provider', () => {
 
     it('when api_key_env_var is null, returns an empty string', () => {
       const environment = new Environment({})
-      const provider = new ProviderModel({
+      const provider = new ProviderEntity({
         id: 1,
         name: 'provider-name',
         baseUrl: 'https://www.example.com',
@@ -107,7 +107,7 @@ describe('provider', () => {
 
     it('when the environment variable is not set, returns an empty string', () => {
       const environment = new Environment({})
-      const provider = new ProviderModel({
+      const provider = new ProviderEntity({
         id: 1,
         name: 'provider-name',
         baseUrl: 'https://www.example.com',
@@ -119,11 +119,11 @@ describe('provider', () => {
     })
   })
 
-  describe('providerModel', () => {
-    it('when given a record, returns a provider model', () => {
+  describe('providerEntity', () => {
+    it('when given a record, returns a provider entity', () => {
       const environment = new Environment({})
 
-      const provider = providerModel({
+      const provider = providerEntity({
         id: 1,
         name: 'provider-name',
         base_url: 'https://www.example.com',
@@ -131,13 +131,13 @@ describe('provider', () => {
         api_key_env_var: null,
       }, environment)
 
-      expect(provider).toBeInstanceOf(ProviderModel)
+      expect(provider).toBeInstanceOf(ProviderEntity)
     })
 
     it('when the record is undefined, returns undefined', () => {
       const environment = new Environment({})
 
-      const provider = providerModel(undefined, environment)
+      const provider = providerEntity(undefined, environment)
 
       expect(provider).toBeUndefined()
     })

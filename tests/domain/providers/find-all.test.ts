@@ -2,13 +2,13 @@ import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import pino from 'pino'
 import { Environment } from '../../../src/env-vars.ts'
-import { ProviderModel } from '../../../src/domain/providers/provider.ts'
+import { ProviderEntity } from '../../../src/domain/providers/entity.ts'
 import { providerFindAll } from '../../../src/domain/providers/find-all.ts'
 import { createTestDatabase } from '../../support/test-database.ts'
 
 describe('providerFindAll', () => {
   describe('all', () => {
-    it('returns every provider as a ProviderModel', async () => {
+    it('returns every provider as a ProviderEntity', async () => {
       const environment = new Environment({ PROVIDER_API_KEY: 'secret' })
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
@@ -32,11 +32,11 @@ describe('providerFindAll', () => {
 
       const [first, second] = providers
       expect(providers).toHaveLength(2)
-      expect(first).toBeInstanceOf(ProviderModel)
+      expect(first).toBeInstanceOf(ProviderEntity)
       expect(first.name()).toBe('provider-one')
       expect(first.baseUrl()).toBe('https://www.example.com/one')
       expect(first.apiKey()).toBe('secret')
-      expect(second).toBeInstanceOf(ProviderModel)
+      expect(second).toBeInstanceOf(ProviderEntity)
       expect(second.name()).toBe('provider-two')
       await database.destroy()
     })

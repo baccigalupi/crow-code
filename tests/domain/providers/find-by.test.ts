@@ -2,7 +2,7 @@ import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import pino from 'pino'
 import { Environment } from '../../../src/env-vars.ts'
-import { ProviderModel } from '../../../src/domain/providers/provider.ts'
+import { ProviderEntity } from '../../../src/domain/providers/entity.ts'
 import { providerFindBy } from '../../../src/domain/providers/find-by.ts'
 import { createTestDatabase } from '../../support/test-database.ts'
 
@@ -22,8 +22,8 @@ describe('providerFindBy', () => {
       const provider = await providerFindBy(environment, database, logger)
         .getByName('provider-name')
 
-      expect(provider).toBeInstanceOf(ProviderModel)
-      const foundProvider = provider as ProviderModel
+      expect(provider).toBeInstanceOf(ProviderEntity)
+      const foundProvider = provider as ProviderEntity
       expect(foundProvider.name()).toBe('provider-name')
       expect(foundProvider.baseUrl()).toBe('https://www.example.com')
       expect(foundProvider.modelsUrl()).toBe('https://www.example.com/models')
@@ -59,8 +59,8 @@ describe('providerFindBy', () => {
       const provider = await providerFindBy(environment, database, logger)
         .getById(id)
 
-      expect(provider).toBeInstanceOf(ProviderModel)
-      const foundProvider = provider as ProviderModel
+      expect(provider).toBeInstanceOf(ProviderEntity)
+      const foundProvider = provider as ProviderEntity
       expect(foundProvider.name()).toBe('provider-name')
       await database.destroy()
     })

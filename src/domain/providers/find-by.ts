@@ -3,8 +3,8 @@ import type { Environment } from '../../env-vars.ts'
 import type { DatabaseQuerySerializer, Logger } from '../../types.ts'
 import { databaseQuery } from '../database-query.ts'
 import type { ProviderRecord } from '../types.ts'
-import type { ProviderModel } from './provider.ts'
-import { providerModels } from './provider.ts'
+import type { ProviderEntity } from './entity.ts'
+import { providerEntities } from './entity.ts'
 
 export class ProviderFindBy {
   private environment: Environment
@@ -31,9 +31,9 @@ export class ProviderFindBy {
 
   private serializer(): DatabaseQuerySerializer<
     ProviderRecord[],
-    ProviderModel | undefined
+    ProviderEntity | undefined
   > {
-    return (result) => providerModels(result, this.environment)[0]
+    return (result) => providerEntities(result, this.environment)[0]
   }
 
   private async runQuery(query: PromiseLike<ProviderRecord[]>) {
