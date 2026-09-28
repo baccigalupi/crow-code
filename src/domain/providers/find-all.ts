@@ -6,7 +6,7 @@ import type { ProviderRecord } from '../types.ts'
 import type { ProviderModel } from './provider.ts'
 import { providerModels } from './provider.ts'
 
-export class ProviderFindBy {
+export class ProviderFindAll {
   private environment: Environment
   private database: Knex
   private logger: Logger
@@ -17,23 +17,17 @@ export class ProviderFindBy {
     this.logger = logger
   }
 
-  getByName(name: string) {
-    const query = this.database<ProviderRecord>('providers').where({ name })
-
-    return this.runQuery(query)
-  }
-
-  getById(id: number) {
-    const query = this.database<ProviderRecord>('providers').where({ id })
+  all() {
+    const query = this.database<ProviderRecord>('providers')
 
     return this.runQuery(query)
   }
 
   private serializer(): DatabaseQuerySerializer<
     ProviderRecord[],
-    ProviderModel | undefined
+    ProviderModel[]
   > {
-    return (result) => providerModels(result, this.environment)[0]
+    return (result) => providerModels(result, this.environment)
   }
 
   private async runQuery(query: PromiseLike<ProviderRecord[]>) {
@@ -46,8 +40,8 @@ export class ProviderFindBy {
   }
 }
 
-export const providerFindBy = (
+export const providerFindAll = (
   environment: Environment,
   database: Knex,
   logger: Logger,
-) => new ProviderFindBy(environment, database, logger)
+) => new ProviderFindAll(environment, database, logger)

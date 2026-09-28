@@ -50,6 +50,15 @@ export class ProviderModel {
   }
 }
 
+export const providerModels = (
+  records: ProviderRecord[],
+  environment: Environment,
+) => {
+  return records
+    .map((record) => providerModel(record, environment))
+    .filter((provider) => provider !== undefined)
+}
+
 export const providerModel = (
   record: ProviderRecord | undefined,
   environment: Environment,
