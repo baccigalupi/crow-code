@@ -16,18 +16,18 @@ describe('gitTrackedChanges', () => {
 
     const diff = gitTrackedChanges({ applicationData })
     await diff.run()
-    const fileDiffLines = diff.result().split('\n').filter((line) =>
-      line.startsWith('diff --git')
-    )
 
     assertSpyCall(commandSpy, 0, {
       args: ['git', { args: ['diff', 'HEAD'] }],
     })
-    expect(fileDiffLines).toEqual([
-      'diff --git a/src/tools/git/diff/files.ts b/src/tools/git/diff/files.ts',
-      'diff --git a/src/tools/git/diff/files/parser.ts b/src/tools/git/diff/files/parser.ts',
-      'diff --git a/tests/tools/git/diff/files/parser.test.ts b/tests/tools/git/diff/files/parser.test.ts',
-    ])
+    expect(diff.result().length).toBe(3)
+    expect(diff.result()[0].path).toBe('src/tools/git/diff/files.ts')
+    expect(diff.result()[0].diff).toMatch(
+      /^diff --git a\/src\/tools\/git\/diff\/files\.ts b\/src\/tools\/git\/diff\/files\.ts\n/,
+    )
+    expect(diff.result()[0].diff).toContain(
+      '-      return this.parser.parse(this.responseText)\n+      return new FileDiffParser(this.responseText).parse()\n',
+    )
   })
 
   it('when a filter is present, limits the diff to those files', async () => {
@@ -64,7 +64,7 @@ describe('gitTrackedChanges', () => {
     await diff.run()
 
     expect(diff.success()).toBe(false)
-    expect(diff.result()).toBe('')
+    expect(diff.result()).toEqual([])
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
       'Git error: No such file or directory (os error 2): git',
     )

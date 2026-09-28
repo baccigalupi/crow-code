@@ -1,5 +1,7 @@
 import type { ApplicationData } from '../../types.ts'
 import { ExecCommand } from '../exec-command.ts'
+import type { GitFileDiff } from '../types.ts'
+import { trackedChangeParser } from './tracked-changes/parser.ts'
 
 type CommandArguments = {
   filter?: string[]
@@ -15,7 +17,8 @@ type OptionalGitTrackedChangesArguments = Pick<
   'applicationData'
 >
 
-export class GitTrackedChanges extends ExecCommand<CommandArguments, string> {
+export class GitTrackedChanges
+  extends ExecCommand<CommandArguments, GitFileDiff[]> {
   executable = 'git'
 
   executableOptions() {
@@ -25,11 +28,11 @@ export class GitTrackedChanges extends ExecCommand<CommandArguments, string> {
   }
 
   parse() {
-    return this.responseText
+    return trackedChangeParser(this.responseText)
   }
 
   emptyResult() {
-    return ''
+    return []
   }
 
   errorPrefix() {
