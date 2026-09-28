@@ -6,9 +6,6 @@ export type StopInput = {
   stopHookActive: boolean
 }
 
-export const recoveryReason =
-  'A tool call was rejected and its parallel siblings were canceled. Retry each permitted call individually — do not end your turn.'
-
 export const stopDecision = async (
   input: StopInput,
   projectDirectory: string,
@@ -20,5 +17,5 @@ export const stopDecision = async (
     input.promptId,
   )
   if (!pending) return null
-  return { decision: 'block', reason: recoveryReason }
+  return { decision: 'block' }
 }
