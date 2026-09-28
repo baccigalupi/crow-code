@@ -1,11 +1,11 @@
-import { fetchProvider } from '../fetch-provider.ts'
+import { fetchProvider } from '../../catalog/providers/fetch-provider.ts'
 import { parseOpenRouterBody } from './parser.ts'
-import type { Logger } from '../../../../types.ts'
+import type { Logger } from '../../../types.ts'
 import type {
   CatalogModel,
   OpenRouter2ApiBody,
   ProviderConfig,
-} from '../../../types.ts'
+} from '../../types.ts'
 
 export const getOpenRouterModels = (
   config: ProviderConfig,

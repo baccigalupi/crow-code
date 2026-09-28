@@ -1,9 +1,9 @@
-import type { DefaultReasoning } from '../../../../types.ts'
+import type { DefaultReasoning } from '../../../types.ts'
 import type {
   CatalogModel,
   Ollama2ApiBody,
   Ollama2ApiModel,
-} from '../../../types.ts'
+} from '../../types.ts'
 
 class OllamaParser {
   private model: Ollama2ApiModel

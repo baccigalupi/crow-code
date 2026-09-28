@@ -5,9 +5,9 @@ import {
   mockFetchError,
   mockFetchRejected,
   mockFetchSuccess,
-} from '../../../../support/mock-fetch.ts'
-import { loadOllamaFixture } from '../../../../support/fixtures.ts'
-import { getOllamaModels } from '../../../../../src/model-discovery/catalog/providers/ollama2/get-ollama-models.ts'
+} from '../../../support/mock-fetch.ts'
+import { loadOllamaFixture } from '../../../support/fixtures.ts'
+import { getOllamaModels } from '../../../../src/model-discovery/populate/ollama/get-ollama-models.ts'
 
 describe('getOllamaModels', () => {
   it('when fetched, returns parsed records', async () => {

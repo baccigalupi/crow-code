@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { loadOllamaFixture } from '../../../../support/fixtures.ts'
-import { parseOllamaBody } from '../../../../../src/model-discovery/catalog/providers/ollama2/parser.ts'
+import { loadOllamaFixture } from '../../../support/fixtures.ts'
+import { parseOllamaBody } from '../../../../src/model-discovery/populate/ollama/parser.ts'
 
 describe('parseOllamaBody', () => {
   it('maps id and name through', () => {

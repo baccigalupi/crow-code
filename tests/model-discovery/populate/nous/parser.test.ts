@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { loadNousFixture } from '../../../../support/fixtures.ts'
-import { parseNousBody } from '../../../../../src/model-discovery/catalog/providers/nous2/parser.ts'
+import { loadNousFixture } from '../../../support/fixtures.ts'
+import { parseNousBody } from '../../../../src/model-discovery/populate/nous/parser.ts'
 
 describe('parseNousBody', () => {
   it('maps id and name through', () => {

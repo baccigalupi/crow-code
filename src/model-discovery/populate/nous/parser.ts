@@ -1,9 +1,5 @@
-import { ReasoningParser } from '../reasoning-parser.ts'
-import type {
-  CatalogModel,
-  Nous2ApiBody,
-  Nous2ApiModel,
-} from '../../../types.ts'
+import { ReasoningParser } from '../../catalog/providers/reasoning-parser.ts'
+import type { CatalogModel, Nous2ApiBody, Nous2ApiModel } from '../../types.ts'
 
 class NousParser {
   private model: Nous2ApiModel

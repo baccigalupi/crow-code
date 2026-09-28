@@ -1,9 +1,9 @@
-import { ReasoningParser } from '../reasoning-parser.ts'
+import { ReasoningParser } from '../../catalog/providers/reasoning-parser.ts'
 import type {
   CatalogModel,
   OpenRouter2ApiBody,
   OpenRouter2ApiModel,
-} from '../../../types.ts'
+} from '../../types.ts'
 
 class OpenRouterParser {
   private model: OpenRouter2ApiModel

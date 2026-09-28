@@ -5,9 +5,9 @@ import {
   mockFetchError,
   mockFetchRejected,
   mockFetchSuccess,
-} from '../../../../support/mock-fetch.ts'
-import { loadOpenRouterFixture } from '../../../../support/fixtures.ts'
-import { getOpenRouterModels } from '../../../../../src/model-discovery/catalog/providers/openrouter2/get-openrouter-models.ts'
+} from '../../../support/mock-fetch.ts'
+import { loadOpenRouterFixture } from '../../../support/fixtures.ts'
+import { getOpenRouterModels } from '../../../../src/model-discovery/populate/openrouter/get-openrouter-models.ts'
 
 describe('getOpenRouterModels', () => {
   it('when fetched, returns parsed records', async () => {
