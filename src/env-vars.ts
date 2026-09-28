@@ -1,7 +1,7 @@
 import { parse } from '@std/dotenv'
 import { existsSync } from '@std/fs'
 import { join } from '@std/path'
-import type { EnvironmentValues } from './model-info/types.ts'
+import type { EnvironmentValues } from './model-discovery/types.ts'
 
 const defaultEnvironmentPath = () => join(Deno.cwd(), '.env')
 

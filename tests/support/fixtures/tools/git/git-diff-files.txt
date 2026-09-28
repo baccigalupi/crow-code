@@ -1,8 +1,8 @@
  M src/tools/git/diff/files.ts
  M tests/support/fixtures.ts
-R  tests/support/fixtures/models-dev-api.json -> tests/support/fixtures/model-info/catalog/providers/models-dev-api.json
-R  tests/support/fixtures/nous-models.json -> tests/support/fixtures/model-info/catalog/providers/nous-models.json
-R  tests/support/fixtures/ollama-models.json -> tests/support/fixtures/model-info/catalog/providers/ollama-models.json
-R  tests/support/fixtures/openrouter-models.json -> tests/support/fixtures/model-info/catalog/providers/openrouter-models.json
+R  tests/support/fixtures/models-dev-api.json -> tests/support/fixtures/model-discovery/catalog/providers/models-dev-api.json
+R  tests/support/fixtures/nous-models.json -> tests/support/fixtures/model-discovery/catalog/providers/nous-models.json
+R  tests/support/fixtures/ollama-models.json -> tests/support/fixtures/model-discovery/catalog/providers/ollama-models.json
+R  tests/support/fixtures/openrouter-models.json -> tests/support/fixtures/model-discovery/catalog/providers/openrouter-models.json
  M tests/tools/git/diff/files.test.ts
 ?? tests/support/fixtures/tools/git/git-diff-files.txt

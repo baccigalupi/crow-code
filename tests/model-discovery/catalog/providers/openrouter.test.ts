@@ -8,7 +8,7 @@ import {
 import {
   fetchOpenRouterModels,
   parseOpenRouterResponse,
-} from '../../../../src/model-info/catalog/providers/openrouter.ts'
+} from '../../../../src/model-discovery/catalog/providers/openrouter.ts'
 
 describe('openrouter', () => {
   it('when the body has models, parseOpenRouterResponse normalizes them into records', () => {

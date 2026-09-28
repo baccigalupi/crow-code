@@ -18,16 +18,16 @@ export const loadTextFixture = async (subpath: string) => {
 }
 
 export const loadModelsDevFixture = async () =>
-  await loadFixture('model-info/catalog/providers/models-dev-api.json')
+  await loadFixture('model-discovery/catalog/providers/models-dev-api.json')
 
 export const loadNousFixture = async () =>
-  await loadFixture('model-info/catalog/providers/nous-models.json')
+  await loadFixture('model-discovery/catalog/providers/nous-models.json')
 
 export const loadOpenRouterFixture = async () =>
-  await loadFixture('model-info/catalog/providers/openrouter-models.json')
+  await loadFixture('model-discovery/catalog/providers/openrouter-models.json')
 
 export const loadOllamaFixture = async () =>
-  await loadFixture('model-info/catalog/providers/ollama-models.json')
+  await loadFixture('model-discovery/catalog/providers/ollama-models.json')
 
 export const clearDirectory = async (path: string) => {
   await Deno.remove(path, { recursive: true }).catch(() => {})

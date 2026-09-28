@@ -1,4 +1,4 @@
-import { buildModelCatalog } from '../../model-info/catalog/build-model-catalog.ts'
+import { buildModelCatalog } from '../../model-discovery/catalog/build-model-catalog.ts'
 import { Command } from './command.ts'
 
 export class CreateModelCatalog extends Command {

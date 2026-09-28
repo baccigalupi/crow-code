@@ -7,7 +7,7 @@ import {
   mockFetchSuccess,
 } from '../../../../support/mock-fetch.ts'
 import { loadNousFixture } from '../../../../support/fixtures.ts'
-import { getNousModels } from '../../../../../src/model-info/catalog/providers/nous2/get-nous-models.ts'
+import { getNousModels } from '../../../../../src/model-discovery/catalog/providers/nous2/get-nous-models.ts'
 
 describe('getNousModels', () => {
   it('when fetched, returns parsed records', async () => {

@@ -5,7 +5,7 @@ import {
   mockFetchRejected,
   mockFetchSuccess,
 } from '../../../support/mock-fetch.ts'
-import { fetchProvider } from '../../../../src/model-info/catalog/providers/fetch-provider.ts'
+import { fetchProvider } from '../../../../src/model-discovery/catalog/providers/fetch-provider.ts'
 import pino from 'pino'
 
 describe('fetchProvider', () => {

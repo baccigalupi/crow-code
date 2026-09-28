@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { loadOpenRouterFixture } from '../../../../support/fixtures.ts'
-import { parseOpenRouterBody } from '../../../../../src/model-info/catalog/providers/openrouter2/parser.ts'
+import { parseOpenRouterBody } from '../../../../../src/model-discovery/catalog/providers/openrouter2/parser.ts'
 
 describe('parseOpenRouterBody', () => {
   it('maps id and name through', () => {

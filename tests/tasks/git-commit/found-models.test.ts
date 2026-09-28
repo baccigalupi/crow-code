@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import type { ModelInfo } from '../../../src/model-info/types.ts'
+import type { ModelInfo } from '../../../src/model-discovery/types.ts'
 import { Environment } from '../../../src/env-vars.ts'
 import { FoundModels } from '../../../src/tasks/git-commit/found-models.ts'
 

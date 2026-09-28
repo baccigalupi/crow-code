@@ -3,8 +3,8 @@ import { expect } from '@std/expect'
 import {
   defaultModelCatalogPath,
   writeModelCatalog,
-} from '../../../src/model-info/catalog/model-catalog.ts'
-import type { ModelInfo } from '../../../src/model-info/types.ts'
+} from '../../../src/model-discovery/catalog/model-catalog.ts'
+import type { ModelInfo } from '../../../src/model-discovery/types.ts'
 import { join } from '@std/path'
 
 describe('modelCatalog', () => {

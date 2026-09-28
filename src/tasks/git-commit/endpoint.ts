@@ -1,6 +1,6 @@
 import { join } from '@std/path'
 import type { Environment } from '../../env-vars.ts'
-import { getCheapNoReasoningModels } from '../../model-info/pick/select-cheap-no-reasoning-models.ts'
+import { getCheapNoReasoningModels } from '../../model-discovery/pick/select-cheap-no-reasoning-models.ts'
 import { FoundModels } from './found-models.ts'
 
 class EndpointInfo {

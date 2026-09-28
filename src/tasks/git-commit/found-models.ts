@@ -1,6 +1,6 @@
 import type { Environment } from '../../env-vars.ts'
-import { loadProviderConfig } from '../../model-info/catalog/providers/load-provider-config.ts'
-import type { ModelInfo, ProviderConfig } from '../../model-info/types.ts'
+import { loadProviderConfig } from '../../model-discovery/catalog/providers/load-provider-config.ts'
+import type { ModelInfo, ProviderConfig } from '../../model-discovery/types.ts'
 
 export class FoundModels {
   private models: ModelInfo[]

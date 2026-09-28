@@ -8,7 +8,7 @@ import {
 import {
   fetchNousModels,
   parseNousResponse,
-} from '../../../../src/model-info/catalog/providers/nous.ts'
+} from '../../../../src/model-discovery/catalog/providers/nous.ts'
 
 describe('nous', () => {
   it('when the body has models, parseNousResponse normalizes them into records', () => {

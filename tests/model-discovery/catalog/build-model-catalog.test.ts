@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import { buildModelCatalog } from '../../../src/model-info/catalog/build-model-catalog.ts'
+import { buildModelCatalog } from '../../../src/model-discovery/catalog/build-model-catalog.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import { mockFetchRoutes } from '../../support/mock-fetch.ts'
 import pino from 'pino'

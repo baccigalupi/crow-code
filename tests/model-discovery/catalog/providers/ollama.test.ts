@@ -8,7 +8,7 @@ import {
 import {
   fetchOllamaModels,
   parseOllamaResponse,
-} from '../../../../src/model-info/catalog/providers/ollama.ts'
+} from '../../../../src/model-discovery/catalog/providers/ollama.ts'
 
 describe('ollama', () => {
   it('when the body has models, parseOllamaResponse normalizes them into records', () => {

@@ -4,7 +4,7 @@ import {
   loadNousFixture,
   loadOpenRouterFixture,
 } from '../../../support/fixtures.ts'
-import { ReasoningParser } from '../../../../src/model-info/catalog/providers/reasoning-parser.ts'
+import { ReasoningParser } from '../../../../src/model-discovery/catalog/providers/reasoning-parser.ts'
 
 describe('ReasoningParser', () => {
   describe('supportsReasoning', () => {

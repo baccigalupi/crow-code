@@ -4,8 +4,8 @@ import {
   mockFetchError,
   mockFetchSuccess,
 } from '../../../support/mock-fetch.ts'
-import { fetchProviders } from '../../../../src/model-info/catalog/providers/fetch-providers.ts'
-import type { ProviderConfig } from '../../../../src/model-info/types.ts'
+import { fetchProviders } from '../../../../src/model-discovery/catalog/providers/fetch-providers.ts'
+import type { ProviderConfig } from '../../../../src/model-discovery/types.ts'
 import pino from 'pino'
 
 describe('fetchProviders', () => {
