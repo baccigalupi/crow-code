@@ -1,4 +1,4 @@
-import { fetchProvider } from '../../catalog/providers/fetch-provider.ts'
+import { fetchProvider } from '../fetch-provider.ts'
 import { parseNousBody } from './parser.ts'
 import type { Logger } from '../../../types.ts'
 import type { CatalogModel, Nous2ApiBody, ProviderConfig } from '../../types.ts'

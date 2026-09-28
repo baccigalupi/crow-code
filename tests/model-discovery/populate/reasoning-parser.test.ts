@@ -3,8 +3,8 @@ import { expect } from '@std/expect'
 import {
   loadNousFixture,
   loadOpenRouterFixture,
-} from '../../../support/fixtures.ts'
-import { ReasoningParser } from '../../../../src/model-discovery/catalog/providers/reasoning-parser.ts'
+} from '../../support/fixtures.ts'
+import { ReasoningParser } from '../../../src/model-discovery/populate/reasoning-parser.ts'
 
 describe('ReasoningParser', () => {
   describe('supportsReasoning', () => {

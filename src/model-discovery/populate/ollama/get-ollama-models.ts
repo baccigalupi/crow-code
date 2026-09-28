@@ -1,4 +1,4 @@
-import { fetchProvider } from '../../catalog/providers/fetch-provider.ts'
+import { fetchProvider } from '../fetch-provider.ts'
 import { parseOllamaBody } from './parser.ts'
 import type { Logger } from '../../../types.ts'
 import type {

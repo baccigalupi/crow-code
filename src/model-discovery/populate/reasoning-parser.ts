@@ -1,4 +1,4 @@
-import type { ReasoningSource } from '../../types.ts'
+import type { ReasoningSource } from '../types.ts'
 
 export class ReasoningParser {
   private model: ReasoningSource

@@ -1,4 +1,4 @@
-import { fetchProvider } from '../../catalog/providers/fetch-provider.ts'
+import { fetchProvider } from '../fetch-provider.ts'
 import { parseOpenRouterBody } from './parser.ts'
 import type { Logger } from '../../../types.ts'
 import type {
