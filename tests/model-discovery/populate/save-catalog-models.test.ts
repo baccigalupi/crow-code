@@ -4,16 +4,15 @@ import { assertSpyCall, spy } from '@std/testing/mock'
 import pino from 'pino'
 import { saveCatalogModels } from '../../../src/model-discovery/populate/save-catalog-models.ts'
 import { createTestDatabase } from '../../support/test-database.ts'
-import type { CatalogModel } from '../../../src/model-discovery/types.ts'
 
 describe('saveCatalogModels', () => {
   it('when given models, inserts one row per model with the provider id', async () => {
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
-    const model: CatalogModel = {
+    const model = {
       id: 'author/model',
       name: 'Model',
-      provider: 'nous',
+      provider: 'nous' as const,
       contextLength: 128000,
       costInput: 1.5,
       costOutput: 3,
@@ -24,7 +23,7 @@ describe('saveCatalogModels', () => {
       canDisableReasoning: true,
       reasoningOptions: { mandatory: false },
     }
-    const other: CatalogModel = { ...model, id: 'author/other' }
+    const other = { ...model, id: 'author/other' }
 
     await saveCatalogModels(database, 7, [model, other], logger)
 
@@ -40,10 +39,10 @@ describe('saveCatalogModels', () => {
   it('when given a model, maps catalog fields onto the model columns', async () => {
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
-    const model: CatalogModel = {
+    const model = {
       id: 'author/model',
       name: 'Model',
-      provider: 'nous',
+      provider: 'nous' as const,
       contextLength: 128000,
       costInput: 1.5,
       costOutput: 3,
@@ -87,10 +86,10 @@ describe('saveCatalogModels', () => {
     const logger = pino({ enabled: false })
     using loggerErrorSpy = spy(logger, 'error')
     const database = await createTestDatabase(logger)
-    const model: CatalogModel = {
+    const model = {
       id: 'author/model',
       name: 'Model',
-      provider: 'nous',
+      provider: 'nous' as const,
       contextLength: 128000,
       costInput: 1.5,
       costOutput: 3,
