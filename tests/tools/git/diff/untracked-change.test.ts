@@ -1,9 +1,9 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { assertSpyCall, spy } from '@std/testing/mock'
-import { gitUntrackedChange } from '../../../src/tools/git/untracked-change.ts'
-import { mockApplicationData } from '../../support/mock-application-data.ts'
-import { mockDenoCommand } from '../../support/mock-deno-command.ts'
+import { gitUntrackedChange } from '../../../../src/tools/git/diff/untracked-change.ts'
+import { mockApplicationData } from '../../../support/mock-application-data.ts'
+import { mockDenoCommand } from '../../../support/mock-deno-command.ts'
 
 describe('gitUntrackedChange', () => {
   it('when git diff exits with code 1, returns the diff for the given path', async () => {

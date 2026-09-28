@@ -1,10 +1,10 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { assertSpyCall, spy } from '@std/testing/mock'
-import { gitTrackedChanges } from '../../../src/tools/git/tracked-changes.ts'
-import { loadTextFixture } from '../../support/fixtures.ts'
-import { mockApplicationData } from '../../support/mock-application-data.ts'
-import { mockDenoCommand } from '../../support/mock-deno-command.ts'
+import { gitTrackedChanges } from '../../../../src/tools/git/diff/tracked-changes.ts'
+import { loadTextFixture } from '../../../support/fixtures.ts'
+import { mockApplicationData } from '../../../support/mock-application-data.ts'
+import { mockDenoCommand } from '../../../support/mock-deno-command.ts'
 
 describe('gitTrackedChanges', () => {
   it('when no filter is present, returns the full diff', async () => {

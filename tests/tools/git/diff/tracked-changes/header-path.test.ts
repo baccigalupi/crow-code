@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { parseHeaderPath } from '../../../../src/tools/git/tracked-changes/header-path.ts'
+import { parseHeaderPath } from '../../../../../src/tools/git/diff/tracked-changes/header-path.ts'
 
 describe('parseHeaderPath', () => {
   it('when both paths are the same, returns the path without b/', () => {

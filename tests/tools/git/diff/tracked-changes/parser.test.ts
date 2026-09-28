@@ -3,7 +3,7 @@ import { expect } from '@std/expect'
 import {
   TrackedChangeParser,
   trackedChangeParser,
-} from '../../../../src/tools/git/tracked-changes/parser.ts'
+} from '../../../../../src/tools/git/diff/tracked-changes/parser.ts'
 
 describe('TrackedChangeParser', () => {
   it('when text is empty, returns an empty array', () => {

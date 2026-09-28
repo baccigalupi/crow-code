@@ -1,5 +1,5 @@
-import type { ApplicationData } from '../../types.ts'
-import { ExecCommand } from '../exec-command.ts'
+import type { ApplicationData } from '../../../types.ts'
+import { ExecCommand } from '../../exec-command.ts'
 
 type CommandArguments = {
   path: string
