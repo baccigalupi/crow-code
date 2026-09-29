@@ -6,14 +6,6 @@ allowed-tools:
   - grep
   - glob
   - exec
-  - mcp__codebase-memory-mcp__list_projects
-  - mcp__codebase-memory-mcp__index_status
-  - mcp__codebase-memory-mcp__search_graph
-  - mcp__codebase-memory-mcp__trace_path
-  - mcp__codebase-memory-mcp__get_code_snippet
-  - mcp__codebase-memory-mcp__check_index_coverage
-  - mcp__codebase-memory-mcp__query_graph
-  - mcp__codebase-memory-mcp__get_architecture
 triggers:
   - user
   - model
@@ -53,21 +45,13 @@ This is the plan's stable anchor and must be the first content section.
 
 ### Verified research
 
-Use `codebase-memory-mcp` as the primary research interface for code structure
-and behavior. At the start of research, confirm the project and index generation
-with `list_projects` or `index_status`. Prefer `search_graph`, `trace_path`, and
-`get_code_snippet`; use `query_graph` and `get_architecture` when needed. After
-identifying candidate paths, run `check_index_coverage` for every evidence path
-and investigate any reported gaps with targeted source reads or grep before
-relying on the graph.
-
-Record only facts verified from graph evidence, source code, tests,
+Record only facts verified from source code, tests,
 configuration, documentation, issue state, or command output. Replace the former
 `Existing structure` section with this name. Include concrete paths, qualified
 symbols, call relationships, constraints, current behavior, and relevant
 coverage limitations. Distinguish verified facts from inferences; inferences
 belong in Assumptions. Use grep, glob, or file search only for literals,
-non-code files, graph coverage gaps, or when MCP results are insufficient.
+non-code files.
 
 ### Assumptions
 

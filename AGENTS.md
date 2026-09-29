@@ -2,8 +2,6 @@
 
 This is a CLI based coding agent.
 
-To understand the code use the MCP server: `codebase-memory-mcp`.
-
 ## Exec, scripts and tools
 
 This application is locked down to prevent incorrect exec commands from running.
