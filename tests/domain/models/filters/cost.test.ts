@@ -3,21 +3,46 @@ import { expect } from '@std/expect'
 import pino from 'pino'
 import { costFilter } from '../../../../src/domain/models/filters/cost.ts'
 import { createTestDatabase } from '../../../../tests/support/test-database.ts'
-import {
-  testModelRow,
-  testProviderRow,
-} from '../../../../tests/support/model-rows.ts'
 
 describe('costFilter', () => {
   it('returns free models when costTier is free', async () => {
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
-    await database('providers').insert(
-      testProviderRow({ api_key_env_var: null }),
-    )
+    await database('providers').insert({
+      name: 'nous',
+      base_url: 'https://nous.example',
+      models_path: null,
+      api_key_env_var: null,
+    })
     await database('models').insert([
-      testModelRow({ identifier: 'free', cost_output: 0 }),
-      testModelRow({ identifier: 'cheap', cost_output: 0.1 }),
+      {
+        provider_id: 1,
+        identifier: 'free',
+        name: 'Free',
+        context_length: 1000,
+        cost_input: 0,
+        cost_output: 0,
+        dynamic_delegation: false,
+        modality: 'text->text',
+        supported_parameters: '[]',
+        supports_reasoning: false,
+        can_disable_reasoning: false,
+        reasoning_options: '{}',
+      },
+      {
+        provider_id: 1,
+        identifier: 'cheap',
+        name: 'Cheap',
+        context_length: 1000,
+        cost_input: 0,
+        cost_output: 0.1,
+        dynamic_delegation: false,
+        modality: 'text->text',
+        supported_parameters: '[]',
+        supports_reasoning: false,
+        can_disable_reasoning: false,
+        reasoning_options: '{}',
+      },
     ])
 
     const builder = database('models')
@@ -32,11 +57,27 @@ describe('costFilter', () => {
   it('does not match low-cost models when costTier is free', async () => {
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
-    await database('providers').insert(
-      testProviderRow({ api_key_env_var: null }),
-    )
+    await database('providers').insert({
+      name: 'nous',
+      base_url: 'https://nous.example',
+      models_path: null,
+      api_key_env_var: null,
+    })
     await database('models').insert([
-      testModelRow({ identifier: 'cheap', cost_output: 0.1 }),
+      {
+        provider_id: 1,
+        identifier: 'cheap',
+        name: 'Cheap',
+        context_length: 1000,
+        cost_input: 0,
+        cost_output: 0.1,
+        dynamic_delegation: false,
+        modality: 'text->text',
+        supported_parameters: '[]',
+        supports_reasoning: false,
+        can_disable_reasoning: false,
+        reasoning_options: '{}',
+      },
     ])
 
     const builder = database('models')
@@ -51,11 +92,27 @@ describe('costFilter', () => {
     it('returns models in the middle of the range', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert(
-        testProviderRow({ api_key_env_var: null }),
-      )
+      await database('providers').insert({
+        name: 'nous',
+        base_url: 'https://nous.example',
+        models_path: null,
+        api_key_env_var: null,
+      })
       await database('models').insert([
-        testModelRow({ identifier: 'mid', cost_output: 0.1 }),
+        {
+          provider_id: 1,
+          identifier: 'mid',
+          name: 'Mid',
+          context_length: 1000,
+          cost_input: 0,
+          cost_output: 0.1,
+          dynamic_delegation: false,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
       ])
 
       const builder = database('models')
@@ -70,11 +127,27 @@ describe('costFilter', () => {
     it('returns models at the upper boundary', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert(
-        testProviderRow({ api_key_env_var: null }),
-      )
+      await database('providers').insert({
+        name: 'nous',
+        base_url: 'https://nous.example',
+        models_path: null,
+        api_key_env_var: null,
+      })
       await database('models').insert([
-        testModelRow({ identifier: 'upper', cost_output: 0.25 }),
+        {
+          provider_id: 1,
+          identifier: 'upper',
+          name: 'Upper',
+          context_length: 1000,
+          cost_input: 0,
+          cost_output: 0.25,
+          dynamic_delegation: false,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
       ])
 
       const builder = database('models')
@@ -89,11 +162,27 @@ describe('costFilter', () => {
     it('does not return free models below the range', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert(
-        testProviderRow({ api_key_env_var: null }),
-      )
+      await database('providers').insert({
+        name: 'nous',
+        base_url: 'https://nous.example',
+        models_path: null,
+        api_key_env_var: null,
+      })
       await database('models').insert([
-        testModelRow({ identifier: 'free', cost_output: 0 }),
+        {
+          provider_id: 1,
+          identifier: 'free',
+          name: 'Free',
+          context_length: 1000,
+          cost_input: 0,
+          cost_output: 0,
+          dynamic_delegation: false,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
       ])
 
       const builder = database('models')
@@ -107,11 +196,27 @@ describe('costFilter', () => {
     it('does not return models above the range', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert(
-        testProviderRow({ api_key_env_var: null }),
-      )
+      await database('providers').insert({
+        name: 'nous',
+        base_url: 'https://nous.example',
+        models_path: null,
+        api_key_env_var: null,
+      })
       await database('models').insert([
-        testModelRow({ identifier: 'expensive', cost_output: 0.26 }),
+        {
+          provider_id: 1,
+          identifier: 'expensive',
+          name: 'Expensive',
+          context_length: 1000,
+          cost_input: 0,
+          cost_output: 0.26,
+          dynamic_delegation: false,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
       ])
 
       const builder = database('models')
@@ -127,11 +232,27 @@ describe('costFilter', () => {
     it('returns models in the middle of the range', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert(
-        testProviderRow({ api_key_env_var: null }),
-      )
+      await database('providers').insert({
+        name: 'nous',
+        base_url: 'https://nous.example',
+        models_path: null,
+        api_key_env_var: null,
+      })
       await database('models').insert([
-        testModelRow({ identifier: 'mid', cost_output: 1 }),
+        {
+          provider_id: 1,
+          identifier: 'mid',
+          name: 'Mid',
+          context_length: 1000,
+          cost_input: 0,
+          cost_output: 1,
+          dynamic_delegation: false,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
       ])
 
       const builder = database('models')
@@ -146,11 +267,27 @@ describe('costFilter', () => {
     it('returns models at the upper boundary', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert(
-        testProviderRow({ api_key_env_var: null }),
-      )
+      await database('providers').insert({
+        name: 'nous',
+        base_url: 'https://nous.example',
+        models_path: null,
+        api_key_env_var: null,
+      })
       await database('models').insert([
-        testModelRow({ identifier: 'upper', cost_output: 1.7 }),
+        {
+          provider_id: 1,
+          identifier: 'upper',
+          name: 'Upper',
+          context_length: 1000,
+          cost_input: 0,
+          cost_output: 1.7,
+          dynamic_delegation: false,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
       ])
 
       const builder = database('models')
@@ -165,11 +302,27 @@ describe('costFilter', () => {
     it('does not return models at the lower boundary', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert(
-        testProviderRow({ api_key_env_var: null }),
-      )
+      await database('providers').insert({
+        name: 'nous',
+        base_url: 'https://nous.example',
+        models_path: null,
+        api_key_env_var: null,
+      })
       await database('models').insert([
-        testModelRow({ identifier: 'lower', cost_output: 0.25 }),
+        {
+          provider_id: 1,
+          identifier: 'lower',
+          name: 'Lower',
+          context_length: 1000,
+          cost_input: 0,
+          cost_output: 0.25,
+          dynamic_delegation: false,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
       ])
 
       const builder = database('models')
@@ -183,11 +336,27 @@ describe('costFilter', () => {
     it('does not return models above the range', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert(
-        testProviderRow({ api_key_env_var: null }),
-      )
+      await database('providers').insert({
+        name: 'nous',
+        base_url: 'https://nous.example',
+        models_path: null,
+        api_key_env_var: null,
+      })
       await database('models').insert([
-        testModelRow({ identifier: 'expensive', cost_output: 1.71 }),
+        {
+          provider_id: 1,
+          identifier: 'expensive',
+          name: 'Expensive',
+          context_length: 1000,
+          cost_input: 0,
+          cost_output: 1.71,
+          dynamic_delegation: false,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
       ])
 
       const builder = database('models')
@@ -203,11 +372,27 @@ describe('costFilter', () => {
     it('returns models in the middle of the range', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert(
-        testProviderRow({ api_key_env_var: null }),
-      )
+      await database('providers').insert({
+        name: 'nous',
+        base_url: 'https://nous.example',
+        models_path: null,
+        api_key_env_var: null,
+      })
       await database('models').insert([
-        testModelRow({ identifier: 'mid', cost_output: 5 }),
+        {
+          provider_id: 1,
+          identifier: 'mid',
+          name: 'Mid',
+          context_length: 1000,
+          cost_input: 0,
+          cost_output: 5,
+          dynamic_delegation: false,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
       ])
 
       const builder = database('models')
@@ -222,11 +407,27 @@ describe('costFilter', () => {
     it('returns models at the upper boundary', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert(
-        testProviderRow({ api_key_env_var: null }),
-      )
+      await database('providers').insert({
+        name: 'nous',
+        base_url: 'https://nous.example',
+        models_path: null,
+        api_key_env_var: null,
+      })
       await database('models').insert([
-        testModelRow({ identifier: 'upper', cost_output: 15 }),
+        {
+          provider_id: 1,
+          identifier: 'upper',
+          name: 'Upper',
+          context_length: 1000,
+          cost_input: 0,
+          cost_output: 15,
+          dynamic_delegation: false,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
       ])
 
       const builder = database('models')
@@ -241,11 +442,27 @@ describe('costFilter', () => {
     it('does not return models at the lower boundary', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert(
-        testProviderRow({ api_key_env_var: null }),
-      )
+      await database('providers').insert({
+        name: 'nous',
+        base_url: 'https://nous.example',
+        models_path: null,
+        api_key_env_var: null,
+      })
       await database('models').insert([
-        testModelRow({ identifier: 'lower', cost_output: 1.7 }),
+        {
+          provider_id: 1,
+          identifier: 'lower',
+          name: 'Lower',
+          context_length: 1000,
+          cost_input: 0,
+          cost_output: 1.7,
+          dynamic_delegation: false,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
       ])
 
       const builder = database('models')
@@ -259,11 +476,27 @@ describe('costFilter', () => {
     it('does not return models above the range', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert(
-        testProviderRow({ api_key_env_var: null }),
-      )
+      await database('providers').insert({
+        name: 'nous',
+        base_url: 'https://nous.example',
+        models_path: null,
+        api_key_env_var: null,
+      })
       await database('models').insert([
-        testModelRow({ identifier: 'expensive', cost_output: 15.01 }),
+        {
+          provider_id: 1,
+          identifier: 'expensive',
+          name: 'Expensive',
+          context_length: 1000,
+          cost_input: 0,
+          cost_output: 15.01,
+          dynamic_delegation: false,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
       ])
 
       const builder = database('models')
@@ -277,15 +510,27 @@ describe('costFilter', () => {
     it('includes dynamic delegation models', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert(
-        testProviderRow({ api_key_env_var: null }),
-      )
+      await database('providers').insert({
+        name: 'nous',
+        base_url: 'https://nous.example',
+        models_path: null,
+        api_key_env_var: null,
+      })
       await database('models').insert([
-        testModelRow({
+        {
+          provider_id: 1,
           identifier: 'delegated',
-          dynamic_delegation: true,
+          name: 'Delegated',
+          context_length: 1000,
+          cost_input: null,
           cost_output: null,
-        }),
+          dynamic_delegation: true,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
       ])
 
       const builder = database('models')
@@ -302,11 +547,27 @@ describe('costFilter', () => {
     it('returns models in the middle of the range', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert(
-        testProviderRow({ api_key_env_var: null }),
-      )
+      await database('providers').insert({
+        name: 'nous',
+        base_url: 'https://nous.example',
+        models_path: null,
+        api_key_env_var: null,
+      })
       await database('models').insert([
-        testModelRow({ identifier: 'mid', cost_output: 20 }),
+        {
+          provider_id: 1,
+          identifier: 'mid',
+          name: 'Mid',
+          context_length: 1000,
+          cost_input: 0,
+          cost_output: 20,
+          dynamic_delegation: false,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
       ])
 
       const builder = database('models')
@@ -321,11 +582,27 @@ describe('costFilter', () => {
     it('returns models at the upper boundary', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert(
-        testProviderRow({ api_key_env_var: null }),
-      )
+      await database('providers').insert({
+        name: 'nous',
+        base_url: 'https://nous.example',
+        models_path: null,
+        api_key_env_var: null,
+      })
       await database('models').insert([
-        testModelRow({ identifier: 'upper', cost_output: 30 }),
+        {
+          provider_id: 1,
+          identifier: 'upper',
+          name: 'Upper',
+          context_length: 1000,
+          cost_input: 0,
+          cost_output: 30,
+          dynamic_delegation: false,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
       ])
 
       const builder = database('models')
@@ -340,11 +617,27 @@ describe('costFilter', () => {
     it('does not return models at the lower boundary', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert(
-        testProviderRow({ api_key_env_var: null }),
-      )
+      await database('providers').insert({
+        name: 'nous',
+        base_url: 'https://nous.example',
+        models_path: null,
+        api_key_env_var: null,
+      })
       await database('models').insert([
-        testModelRow({ identifier: 'lower', cost_output: 15 }),
+        {
+          provider_id: 1,
+          identifier: 'lower',
+          name: 'Lower',
+          context_length: 1000,
+          cost_input: 0,
+          cost_output: 15,
+          dynamic_delegation: false,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
       ])
 
       const builder = database('models')
@@ -358,11 +651,27 @@ describe('costFilter', () => {
     it('does not return models above the range', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert(
-        testProviderRow({ api_key_env_var: null }),
-      )
+      await database('providers').insert({
+        name: 'nous',
+        base_url: 'https://nous.example',
+        models_path: null,
+        api_key_env_var: null,
+      })
       await database('models').insert([
-        testModelRow({ identifier: 'expensive', cost_output: 30.01 }),
+        {
+          provider_id: 1,
+          identifier: 'expensive',
+          name: 'Expensive',
+          context_length: 1000,
+          cost_input: 0,
+          cost_output: 30.01,
+          dynamic_delegation: false,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
       ])
 
       const builder = database('models')
@@ -378,11 +687,27 @@ describe('costFilter', () => {
     it('returns models above the range', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert(
-        testProviderRow({ api_key_env_var: null }),
-      )
+      await database('providers').insert({
+        name: 'nous',
+        base_url: 'https://nous.example',
+        models_path: null,
+        api_key_env_var: null,
+      })
       await database('models').insert([
-        testModelRow({ identifier: 'expensive', cost_output: 100 }),
+        {
+          provider_id: 1,
+          identifier: 'expensive',
+          name: 'Expensive',
+          context_length: 1000,
+          cost_input: 0,
+          cost_output: 100,
+          dynamic_delegation: false,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
       ])
 
       const builder = database('models')
@@ -397,11 +722,27 @@ describe('costFilter', () => {
     it('does not return models at the lower boundary', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert(
-        testProviderRow({ api_key_env_var: null }),
-      )
+      await database('providers').insert({
+        name: 'nous',
+        base_url: 'https://nous.example',
+        models_path: null,
+        api_key_env_var: null,
+      })
       await database('models').insert([
-        testModelRow({ identifier: 'lower', cost_output: 30 }),
+        {
+          provider_id: 1,
+          identifier: 'lower',
+          name: 'Lower',
+          context_length: 1000,
+          cost_input: 0,
+          cost_output: 30,
+          dynamic_delegation: false,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
       ])
 
       const builder = database('models')

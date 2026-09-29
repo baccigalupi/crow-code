@@ -8,41 +8,221 @@ import {
   cleanDatabase,
   createTestDatabase,
 } from '../../support/test-database.ts'
-import { seedCheapModelCandidates } from '../../support/model-rows.ts'
 
 describe('modelFindCheapNoReasoning', () => {
-  it('returns no-reasoning-possible models in insertion order', async () => {
+  it('returns eligible models in insertion order', async () => {
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
-    await seedCheapModelCandidates(database)
+    await database('providers').insert({
+      name: 'nous',
+      base_url: 'https://nous.example',
+      models_path: null,
+      api_key_env_var: null,
+    })
+    await database('models').insert([
+      {
+        provider_id: 1,
+        identifier: 'disableable',
+        name: 'Disableable',
+        context_length: 1000,
+        cost_input: 0,
+        cost_output: 0,
+        dynamic_delegation: false,
+        modality: 'text->text',
+        supported_parameters: '[]',
+        supports_reasoning: true,
+        can_disable_reasoning: true,
+        reasoning_options: '{}',
+      },
+      {
+        provider_id: 1,
+        identifier: 'free',
+        name: 'Free',
+        context_length: 1000,
+        cost_input: 0,
+        cost_output: 0,
+        dynamic_delegation: false,
+        modality: 'text->text',
+        supported_parameters: '[]',
+        supports_reasoning: false,
+        can_disable_reasoning: false,
+        reasoning_options: '{}',
+      },
+    ])
 
     const models = await modelFindCheapNoReasoning(database, logger).first(10)
 
     expect(models.map((model) => model.identifier())).toEqual([
       'disableable',
       'free',
-      'cheap',
-      'off_by_default',
     ])
     for (const model of models) expect(model).toBeInstanceOf(ModelEntity)
     await database.destroy()
   })
 
-  it('excludes embedding models that do not support reasoning', async () => {
+  it('excludes models with mandatory reasoning', async () => {
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
-    await seedCheapModelCandidates(database)
+    await database('providers').insert({
+      name: 'nous',
+      base_url: 'https://nous.example',
+      models_path: null,
+      api_key_env_var: null,
+    })
+    await database('models').insert([
+      {
+        provider_id: 1,
+        identifier: 'mandatory',
+        name: 'Mandatory',
+        context_length: 1000,
+        cost_input: 0,
+        cost_output: 0,
+        dynamic_delegation: false,
+        modality: 'text->text',
+        supported_parameters: '[]',
+        supports_reasoning: true,
+        can_disable_reasoning: false,
+        reasoning_options: '{}',
+      },
+    ])
 
     const models = await modelFindCheapNoReasoning(database, logger).first(10)
 
-    expect(models.map((model) => model.identifier())).not.toContain('embedding')
+    expect(models).toEqual([])
+    await database.destroy()
+  })
+
+  it('excludes dynamic delegation models', async () => {
+    const logger = pino({ enabled: false })
+    const database = await createTestDatabase(logger)
+    await database('providers').insert({
+      name: 'nous',
+      base_url: 'https://nous.example',
+      models_path: null,
+      api_key_env_var: null,
+    })
+    await database('models').insert([
+      {
+        provider_id: 1,
+        identifier: 'delegated',
+        name: 'Delegated',
+        context_length: 1000,
+        cost_input: null,
+        cost_output: null,
+        dynamic_delegation: true,
+        modality: 'text->text',
+        supported_parameters: '[]',
+        supports_reasoning: false,
+        can_disable_reasoning: false,
+        reasoning_options: '{}',
+      },
+    ])
+
+    const models = await modelFindCheapNoReasoning(database, logger).first(10)
+
+    expect(models).toEqual([])
+    await database.destroy()
+  })
+
+  it('excludes embedding models', async () => {
+    const logger = pino({ enabled: false })
+    const database = await createTestDatabase(logger)
+    await database('providers').insert({
+      name: 'nous',
+      base_url: 'https://nous.example',
+      models_path: null,
+      api_key_env_var: null,
+    })
+    await database('models').insert([
+      {
+        provider_id: 1,
+        identifier: 'embedding',
+        name: 'Embedding',
+        context_length: 1000,
+        cost_input: 0.01,
+        cost_output: 0,
+        dynamic_delegation: false,
+        modality: 'text->embeddings',
+        supported_parameters: '[]',
+        supports_reasoning: false,
+        can_disable_reasoning: false,
+        reasoning_options: '{}',
+      },
+      {
+        provider_id: 1,
+        identifier: 'free',
+        name: 'Free',
+        context_length: 1000,
+        cost_input: 0,
+        cost_output: 0,
+        dynamic_delegation: false,
+        modality: 'text->text',
+        supported_parameters: '[]',
+        supports_reasoning: false,
+        can_disable_reasoning: false,
+        reasoning_options: '{}',
+      },
+    ])
+
+    const models = await modelFindCheapNoReasoning(database, logger).first(10)
+
+    expect(models.map((model) => model.identifier())).toEqual(['free'])
     await database.destroy()
   })
 
   it('when given a count, limits the results', async () => {
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
-    await seedCheapModelCandidates(database)
+    await database('providers').insert({
+      name: 'nous',
+      base_url: 'https://nous.example',
+      models_path: null,
+      api_key_env_var: null,
+    })
+    await database('models').insert([
+      {
+        provider_id: 1,
+        identifier: 'disableable',
+        name: 'Disableable',
+        context_length: 1000,
+        cost_input: 0,
+        cost_output: 0,
+        dynamic_delegation: false,
+        modality: 'text->text',
+        supported_parameters: '[]',
+        supports_reasoning: true,
+        can_disable_reasoning: true,
+        reasoning_options: '{}',
+      },
+      {
+        provider_id: 1,
+        identifier: 'free',
+        name: 'Free',
+        context_length: 1000,
+        cost_input: 0,
+        cost_output: 0,
+        dynamic_delegation: false,
+        modality: 'text->text',
+        supported_parameters: '[]',
+        supports_reasoning: false,
+        can_disable_reasoning: false,
+        reasoning_options: '{}',
+      },
+      {
+        provider_id: 1,
+        identifier: 'cheap',
+        name: 'Cheap',
+        context_length: 1000,
+        cost_input: 0.05,
+        cost_output: 0.15,
+        dynamic_delegation: false,
+        modality: 'text->text',
+        supported_parameters: '[]',
+        supports_reasoning: false,
+        can_disable_reasoning: false,
+        reasoning_options: '{}',
+      },
+    ])
 
     const models = await modelFindCheapNoReasoning(database, logger).first(1)
 
