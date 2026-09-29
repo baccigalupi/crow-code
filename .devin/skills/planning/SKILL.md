@@ -45,8 +45,8 @@ This is the plan's stable anchor and must be the first content section.
 
 ### Verified research
 
-Record only facts verified from source code, tests,
-configuration, documentation, issue state, or command output. Replace the former
+Record only facts verified from source code, tests, configuration,
+documentation, issue state, or command output. Replace the former
 `Existing structure` section with this name. Include concrete paths, qualified
 symbols, call relationships, constraints, current behavior, and relevant
 coverage limitations. Distinguish verified facts from inferences; inferences
