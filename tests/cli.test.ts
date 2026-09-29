@@ -189,42 +189,31 @@ describe('run', () => {
   })
 
   it('when git-commit is passed a goal, sends the goal in the request', async () => {
-    const models = [{
-      id: 'first-model',
-      name: 'First Model',
-      provider: 'nous',
-      reasoning: false,
-      reasoningOptions: [],
-      costInput: 0,
-      costOutput: 0,
-      contextLength: 1000,
-      modality: 'text->text',
-      knowledgeCutoff: null,
-      size: '',
-    }]
-    await Deno.mkdir(join(fixturesDirectory, 'cli', '.crow'), {
-      recursive: true,
+    const logger = pino({ enabled: false })
+    const cliCrowDir = join(fixturesDirectory, 'cli', '.crow')
+    const database = await openAndMigrateDatabase(cliCrowDir, logger)
+    await database('providers').insert({
+      name: 'nous',
+      base_url: 'https://nous.example',
+      models_path: null,
+      api_key_env_var: 'NOUS_TEST_KEY',
     })
-    await Deno.writeTextFile(
-      join(join(fixturesDirectory, 'cli', '.crow'), 'models.json'),
-      JSON.stringify({
-        fetchedAt: '',
-        modelCount: models.length,
-        models,
-      }),
-    )
-    await Deno.writeTextFile(
-      join(join(fixturesDirectory, 'cli', '.crow'), 'providers.json'),
-      JSON.stringify({
-        providers: [{
-          name: 'nous',
-          baseUrl: 'https://nous.example/v1',
-          apiKeyEnv: 'NOUS_TEST_KEY',
-        }],
-      }),
-    )
+    await database('models').insert({
+      provider_id: 1,
+      identifier: 'first-model',
+      name: 'First Model',
+      context_length: 1000,
+      cost_input: 0,
+      cost_output: 0,
+      dynamic_delegation: 0,
+      modality: 'text->text',
+      supported_parameters: '[]',
+      supports_reasoning: 0,
+      can_disable_reasoning: 0,
+      reasoning_options: '{}',
+    })
+    await database.destroy()
     const environment = new Environment({ NOUS_TEST_KEY: 'secret-key' })
-    const logger = { error: () => {}, info: () => {} } as unknown as Logger
     const fetchMock = mockFetchSuccess({
       choices: [{ message: { content: 'summary' } }],
     })

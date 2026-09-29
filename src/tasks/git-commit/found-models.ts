@@ -1,20 +1,14 @@
-import type { Environment } from '../../env-vars.ts'
-import { loadProviderConfig } from '../../model-discovery/catalog/providers/load-provider-config.ts'
-import type { ModelInfo, ProviderConfig } from '../../model-discovery/types.ts'
+import type { ModelEntity } from '../../domain/models/model.ts'
+import type { ProviderEntity } from '../../domain/providers/entity.ts'
+import type { ModelEndpoint } from '../../model-requests/types.ts'
 
 export class FoundModels {
-  private models: ModelInfo[]
-  private providers: ProviderConfig[]
-  private environment: Environment
+  private models: ModelEntity[]
+  private providers: ProviderEntity[]
 
-  constructor(
-    models: ModelInfo[],
-    crowDirectory: string,
-    environment: Environment,
-  ) {
+  constructor(models: ModelEntity[], providers: ProviderEntity[]) {
     this.models = models
-    this.providers = this.loadProviders(crowDirectory)
-    this.environment = environment
+    this.providers = providers
   }
 
   all() {
@@ -25,41 +19,33 @@ export class FoundModels {
     return this.all()[0]
   }
 
-  firstEndpoint() {
+  firstEndpoint(): ModelEndpoint {
     if (this.first() === undefined) return this.emptyEndpoint()
-    const model = this.first() as ModelInfo
+    const model = this.first() as ModelEntity
     return this.endpointFor(model)
   }
 
-  private endpointFor(model: ModelInfo) {
+  private endpointFor(model: ModelEntity) {
     if (this.provider(model) === undefined) return this.emptyEndpoint()
-    const provider = this.provider(model) as ProviderConfig
+    const provider = this.provider(model) as ProviderEntity
     return this.endpoint(model, provider)
-  }
-
-  private loadProviders(crowDirectory: string) {
-    try {
-      return loadProviderConfig(crowDirectory)
-    } catch {
-      return []
-    }
   }
 
   private emptyEndpoint() {
     return { baseURL: '', apiKey: '', model: '' }
   }
 
-  private endpoint(model: ModelInfo, provider: ProviderConfig) {
-    const apiKey = this.apiKey(provider)
-    return { baseURL: `${provider.baseUrl}/v1`, apiKey, model: model.id }
+  private endpoint(model: ModelEntity, provider: ProviderEntity) {
+    return {
+      baseURL: `${provider.baseUrl()}/v1`,
+      apiKey: provider.apiKey(),
+      model: model.identifier() as string,
+    }
   }
 
-  private apiKey(provider: ProviderConfig) {
-    if (provider.apiKeyEnv === undefined) return ''
-    return this.environment.value(provider.apiKeyEnv)
-  }
-
-  private provider(model: ModelInfo) {
-    return this.providers.find(({ name }) => name === model.provider)
+  private provider(model: ModelEntity) {
+    return this.providers.find((provider) =>
+      provider.id() === model.providerId()
+    )
   }
 }

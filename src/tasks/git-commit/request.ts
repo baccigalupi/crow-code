@@ -7,7 +7,7 @@ import { modelEndpointInfo } from './endpoint.ts'
 import { requestMessages } from './messages.ts'
 
 class CommitSummaryRequest {
-  private endpoint!: ReturnType<typeof modelEndpointInfo>
+  private endpoint!: Awaited<ReturnType<typeof modelEndpointInfo>>
   private diff: string
   private goal: string
   private data: ApplicationData
@@ -18,8 +18,8 @@ class CommitSummaryRequest {
     this.data = data
   }
 
-  run(): Promise<string> {
-    if (this.endpointIsUnavailable()) return this.unavailable()
+  async run(): Promise<string> {
+    if (await this.endpointIsUnavailable()) return this.unavailable()
 
     return this.request(this.endpoint.value())
   }
@@ -29,10 +29,11 @@ class CommitSummaryRequest {
     return Promise.resolve('')
   }
 
-  private endpointIsUnavailable() {
-    this.endpoint = modelEndpointInfo(
-      this.data.crowDirectory,
+  private async endpointIsUnavailable() {
+    this.endpoint = await modelEndpointInfo(
+      this.data.database,
       this.data.environment,
+      this.data.logger,
     )
     return !this.endpoint.isAvailable()
   }

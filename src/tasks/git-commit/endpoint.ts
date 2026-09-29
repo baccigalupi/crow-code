@@ -1,49 +1,44 @@
-import { join } from '@std/path'
+import type { Knex } from 'knex'
 import type { Environment } from '../../env-vars.ts'
-import { getCheapNoReasoningModels } from '../../model-discovery/pick/select-cheap-no-reasoning-models.ts'
+import type { Logger } from '../../types.ts'
+import { modelFindCheapNoReasoning } from '../../domain/models/find-cheap-no-reasoning.ts'
+import { providerFindAll } from '../../domain/providers/find-all.ts'
 import { FoundModels } from './found-models.ts'
 
 class EndpointInfo {
-  private crowDirectory: string
+  private database: Knex
   private environment: Environment
+  private logger: Logger
+  private foundModels!: FoundModels
 
-  constructor(crowDirectory: string, environment: Environment) {
-    this.crowDirectory = crowDirectory
+  constructor(database: Knex, environment: Environment, logger: Logger) {
+    this.database = database
     this.environment = environment
+    this.logger = logger
+  }
+
+  async run() {
+    const [models, providers] = await Promise.all([
+      modelFindCheapNoReasoning(this.database, this.logger).first(5),
+      providerFindAll(this.environment, this.database, this.logger).all(),
+    ])
+    this.foundModels = new FoundModels(models, providers)
+    return this
   }
 
   isAvailable() {
-    return this.foundModels().firstEndpoint().baseURL !== ''
+    return this.foundModels.firstEndpoint().baseURL !== ''
   }
 
   value() {
-    return this.foundModels().firstEndpoint()
-  }
-
-  private foundModels() {
-    return new FoundModels(
-      this.loadModels(),
-      this.crowDirectory,
-      this.environment,
-    )
-  }
-
-  private loadModels() {
-    try {
-      return getCheapNoReasoningModels(this.modelCatalogPath(), 5)
-    } catch {
-      return []
-    }
-  }
-
-  private modelCatalogPath() {
-    return join(this.crowDirectory, 'models.json')
+    return this.foundModels.firstEndpoint()
   }
 }
 
-export const modelEndpointInfo = (
-  crowDirectory: string,
+export const modelEndpointInfo = async (
+  database: Knex,
   environment: Environment,
+  logger: Logger,
 ) => {
-  return new EndpointInfo(crowDirectory, environment)
+  return await new EndpointInfo(database, environment, logger).run()
 }

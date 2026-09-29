@@ -73,20 +73,18 @@ non-code files, graph coverage gaps, or when MCP results are insufficient.
 
 Use a table:
 
-| ID | Assumption / unknown | Why it matters | Verification method | Status |
-| -- | -------------------- | -------------- | ------------------- | ------ |
+| ID | Assumption / unknown | Why it matters |
+| -- | -------------------- | -------------- |
 
 Rules:
 
+- An assumption is only an assumption if it is undecided and requires a user
+  decision
 - Number assumptions sequentially as `A1`, `A2`, and so on; never use bare
   numbers or unnumbered rows.
 - Keep an assumption's ID stable throughout plan revisions and never renumber
   later assumptions after moving one.
 - Add every unknown or question here instead of asking it in chat.
-- Use statuses `Unverified`, `Verifying`, `Refuted`, or
-  `Requires user decision`.
-- State testable propositions rather than vague questions where possible.
-- Include the source or command that can resolve each item.
 - Do not leave a verified or resolved item in this table.
 
 ### Decisions
