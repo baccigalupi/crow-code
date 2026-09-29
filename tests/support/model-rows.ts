@@ -23,11 +23,11 @@ export const testModelRow = (
   context_length: 1000,
   cost_input: 0,
   cost_output: 0,
-  dynamic_delegation: 0,
+  dynamic_delegation: false,
   modality: 'text->text',
   supported_parameters: '[]',
-  supports_reasoning: 0,
-  can_disable_reasoning: 0,
+  supports_reasoning: false,
+  can_disable_reasoning: false,
   reasoning_options: '{}',
   ...overrides,
 })
@@ -37,13 +37,13 @@ export const seedCheapModelCandidates = async (database: Knex) => {
   await database('models').insert([
     testModelRow({
       identifier: 'disableable',
-      supports_reasoning: 1,
-      can_disable_reasoning: 1,
+      supports_reasoning: true,
+      can_disable_reasoning: true,
     }),
     testModelRow({
       identifier: 'mandatory',
-      supports_reasoning: 1,
-      can_disable_reasoning: 0,
+      supports_reasoning: true,
+      can_disable_reasoning: false,
     }),
     testModelRow({ identifier: 'free' }),
     testModelRow({
@@ -58,20 +58,20 @@ export const seedCheapModelCandidates = async (database: Knex) => {
     }),
     testModelRow({
       identifier: 'delegated',
-      dynamic_delegation: 1,
+      dynamic_delegation: true,
       cost_input: null,
       cost_output: null,
     }),
     testModelRow({
       identifier: 'off_by_default',
-      supports_reasoning: 1,
-      can_disable_reasoning: 1,
+      supports_reasoning: true,
+      can_disable_reasoning: true,
       reasoning_options: '{"mandatory":false,"default_enabled":false}',
       cost_output: 0.25,
     }),
     testModelRow({
       identifier: 'param_only',
-      supports_reasoning: 1,
+      supports_reasoning: true,
       supported_parameters: '["reasoning_effort"]',
     }),
     testModelRow({

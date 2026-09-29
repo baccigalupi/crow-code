@@ -13,10 +13,10 @@ type ModelEntityRow =
   >
 
 const emptyModelRow: ModelEntityRow = {
-  dynamic_delegation: 0,
+  dynamic_delegation: false,
   supported_parameters: '[]',
-  supports_reasoning: 0,
-  can_disable_reasoning: 0,
+  supports_reasoning: false,
+  can_disable_reasoning: false,
   reasoning_options: '{}',
 }
 

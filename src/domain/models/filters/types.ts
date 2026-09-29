@@ -9,3 +9,11 @@ export type CostTier =
 export type CostOptions = {
   costTier: CostTier
 }
+
+export type ReasoningType =
+  | 'chat'
+  | 'dynamic'
+
+export type ReasoningOptions = {
+  type: ReasoningType
+}

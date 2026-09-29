@@ -283,7 +283,7 @@ describe('costFilter', () => {
       await database('models').insert([
         testModelRow({
           identifier: 'delegated',
-          dynamic_delegation: 1,
+          dynamic_delegation: true,
           cost_output: null,
         }),
       ])

@@ -28,7 +28,7 @@ export class ModelFindCheapNoReasoning {
 
   private query(count: number) {
     const query = this.database<ModelRow>('models')
-      .where('dynamic_delegation', 0)
+      .where('dynamic_delegation', false)
       .where(this.eligibility)
       .where('cost_output', '<=', this.cheapCostThreshold)
       .whereNot('modality', 'like', '%->embeddings')
@@ -36,7 +36,10 @@ export class ModelFindCheapNoReasoning {
   }
 
   private eligibility(builder: Knex.QueryBuilder<ModelRow>) {
-    builder.where('supports_reasoning', 0).orWhere('can_disable_reasoning', 1)
+    builder.where('supports_reasoning', false).orWhere(
+      'can_disable_reasoning',
+      true,
+    )
   }
 
   private ordering(query: Knex.QueryBuilder<ModelRow, ModelRow[]>) {

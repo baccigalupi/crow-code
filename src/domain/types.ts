@@ -8,11 +8,11 @@ export type ModelRow = {
   context_length: number | null
   cost_input: number | null
   cost_output: number | null
-  dynamic_delegation: number
+  dynamic_delegation: boolean
   modality: string
   supported_parameters: string
-  supports_reasoning: number
-  can_disable_reasoning: number
+  supports_reasoning: boolean
+  can_disable_reasoning: boolean
   reasoning_options: string
 }
 

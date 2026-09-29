@@ -38,7 +38,7 @@ export class CostFilter {
     if (this.options.costTier !== 'standard') return
     this.builder
       .where((subBuilder) => this.whereCostRange(subBuilder, 1.7, 15))
-      .orWhere('dynamic_delegation', 1)
+      .orWhere('dynamic_delegation', true)
   }
 
   private wherePremium() {
