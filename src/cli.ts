@@ -5,9 +5,17 @@ import { parseArguments } from './cli/arguments.ts'
 import type { Command } from './cli/commands/command.ts'
 import { AddProvider } from './cli/commands/add-provider.ts'
 import { CreateModelCatalog } from './cli/commands/create-model-catalog.ts'
-import { GitCommit } from './cli/commands/git-commit.ts'
 import { Help } from './cli/commands/help.ts'
 import { Version } from './cli/commands/version.ts'
+
+type RunOptions = {
+  crowDirectory: string
+  logger: Logger
+  consoleLog: ConsoleLog
+  fetchClient: typeof fetch
+  denoCommand: typeof Deno.Command
+  environment: Environment
+}
 
 class Cli {
   private data: ApplicationData
@@ -16,15 +24,18 @@ class Cli {
     this.data = data
   }
 
-  run() {
-    return this.matchedCommand().run()
+  async run() {
+    try {
+      await this.matchedCommand().run()
+    } finally {
+      await this.data.database.destroy()
+    }
   }
 
   private commands(): Command[] {
     return [
       new Version(this.data),
       new CreateModelCatalog(this.data),
-      new GitCommit(this.data),
       new AddProvider(this.data),
       new Help(this.data),
     ]
@@ -35,7 +46,7 @@ class Cli {
   }
 }
 
-export const run = async (
+export const run = (
   argumentsList: string[],
   crowDirectory: string,
   logger: Logger,
@@ -43,20 +54,19 @@ export const run = async (
   fetchClient: typeof fetch = fetch,
   denoCommand: typeof Deno.Command = Deno.Command,
   environment: Environment = loadEnvironmentalVariables(),
-): Promise<void> => {
+): Promise<void> =>
+  cli(argumentsList, {
+    crowDirectory,
+    logger,
+    consoleLog,
+    fetchClient,
+    denoCommand,
+    environment,
+  }).then((cli) => cli.run())
+
+const cli = async (argumentsList: string[], options: RunOptions) => {
+  const { crowDirectory, logger } = options
   const database = await openAndMigrateDatabase(crowDirectory, logger)
-  try {
-    await new Cli({
-      parsedArguments: parseArguments(argumentsList),
-      crowDirectory,
-      logger,
-      database,
-      consoleLog,
-      fetchClient,
-      denoCommand,
-      environment,
-    }).run()
-  } finally {
-    await database.destroy()
-  }
+  const parsedArguments = parseArguments(argumentsList)
+  return new Cli({ parsedArguments, database, ...options })
 }

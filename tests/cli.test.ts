@@ -2,32 +2,15 @@ import { afterEach, beforeEach, describe, it, mock } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import type { Logger } from '../src/types.ts'
-import { Environment } from '../src/env-vars.ts'
 import { run } from '../src/cli.ts'
 import { openAndMigrateDatabase } from '../src/database/open-and-migrate-database.ts'
 import { clearDirectory, fixturesDirectory } from './support/fixtures.ts'
-import { mockDenoCommand } from './support/mock-deno-command.ts'
-import { mockFetchRoutes, mockFetchSuccess } from './support/mock-fetch.ts'
+import { mockFetchRoutes } from './support/mock-fetch.ts'
 import pino from 'pino'
 
 describe('run', () => {
   beforeEach(() => clearDirectory(join(fixturesDirectory, 'cli', '.crow')))
   afterEach(() => clearDirectory(join(fixturesDirectory, 'cli', '.crow')))
-
-  it('when the generated summary is empty, does not commit', async () => {
-    const logger = { error: () => {}, info: () => {} } as unknown as Logger
-
-    await run(
-      ['git-commit'],
-      join(fixturesDirectory, 'cli', '.crow'),
-      logger,
-      () => {},
-      undefined,
-      mockDenoCommand() as never,
-    )
-
-    expect(true).toBe(true)
-  })
 
   it('when create-model-catalog is requested, populates the model catalog', async () => {
     const logger = pino({ enabled: false })
@@ -119,7 +102,6 @@ describe('run', () => {
     expect(outputs[0]).toContain(
       'create-model-catalog   populate models from configured providers',
     )
-    expect(outputs[0]).toContain('git-commit')
   })
 
   it('when --help is passed, writes help text without invoking command dependencies', async () => {
@@ -140,7 +122,6 @@ describe('run', () => {
     expect(outputs[0]).toContain(
       'create-model-catalog   populate models from configured providers',
     )
-    expect(outputs[0]).toContain('git-commit')
   })
 
   it('when -V is passed, writes the version without invoking command dependencies', async () => {
@@ -186,51 +167,6 @@ describe('run', () => {
     expect(consoleLog.mock.calls[0].arguments[0]).toContain(
       'Usage: crow <command>',
     )
-  })
-
-  it('when git-commit is passed a goal, sends the goal in the request', async () => {
-    const logger = pino({ enabled: false })
-    const cliCrowDir = join(fixturesDirectory, 'cli', '.crow')
-    const database = await openAndMigrateDatabase(cliCrowDir, logger)
-    await database('providers').insert({
-      name: 'nous',
-      base_url: 'https://nous.example',
-      models_path: null,
-      api_key_env_var: 'NOUS_TEST_KEY',
-    })
-    await database('models').insert({
-      provider_id: 1,
-      identifier: 'first-model',
-      name: 'First Model',
-      context_length: 1000,
-      cost_input: 0,
-      cost_output: 0,
-      dynamic_delegation: 0,
-      modality: 'text->text',
-      supported_parameters: '[]',
-      supports_reasoning: 0,
-      can_disable_reasoning: 0,
-      reasoning_options: '{}',
-    })
-    await database.destroy()
-    const environment = new Environment({ NOUS_TEST_KEY: 'secret-key' })
-    const fetchMock = mockFetchSuccess({
-      choices: [{ message: { content: 'summary' } }],
-    })
-
-    await run(
-      ['--goal=ship it', 'git-commit'],
-      join(fixturesDirectory, 'cli', '.crow'),
-      logger,
-      () => {},
-      fetchMock,
-      mockDenoCommand() as never,
-      environment,
-    )
-
-    const request = fetchMock.calls[0] as Request
-    const body = await request.json()
-    expect(body.messages[1].content).toContain('ship it')
   })
 
   it('when an unsupported option is passed, writes usage without invoking command dependencies', async () => {
