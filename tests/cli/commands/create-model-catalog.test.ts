@@ -5,14 +5,17 @@ import knex from 'knex'
 import { CreateModelCatalog } from '../../../src/cli/commands/create-model-catalog.ts'
 import { Environment } from '../../../src/env-vars.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
-import { mockFetchRoutes } from '../../support/mock-fetch.ts'
+import { mockFetchSuccess } from '../../support/mock-fetch.ts'
+import { createTestDatabase } from '../../support/test-database.ts'
 import pino from 'pino'
 
-const fixtureDirectory = join(fixturesDirectory, 'create-model-catalog')
-
 describe('CreateModelCatalog', () => {
-  beforeEach(() => clearDirectory(fixtureDirectory))
-  afterEach(() => clearDirectory(fixtureDirectory))
+  beforeEach(() =>
+    clearDirectory(join(fixturesDirectory, 'create-model-catalog'))
+  )
+  afterEach(() =>
+    clearDirectory(join(fixturesDirectory, 'create-model-catalog'))
+  )
 
   it('when the command is create-model-catalog, matches', () => {
     const command = new CreateModelCatalog({
@@ -30,7 +33,9 @@ describe('CreateModelCatalog', () => {
       environment: new Environment({}),
     })
 
-    expect(command.isMatch()).toBe(true)
+    const result = command.isMatch()
+
+    expect(result).toBe(true)
   })
 
   it('when the command is something else, does not match', () => {
@@ -49,7 +54,9 @@ describe('CreateModelCatalog', () => {
       environment: new Environment({}),
     })
 
-    expect(command.isMatch()).toBe(false)
+    const result = command.isMatch()
+
+    expect(result).toBe(false)
   })
 
   it('when options are passed, extracts none of them', () => {
@@ -71,32 +78,27 @@ describe('CreateModelCatalog', () => {
       environment: new Environment({}),
     })
 
-    expect(command.extractOptions()).toEqual({})
+    const result = command.extractOptions()
+
+    expect(result).toEqual({})
   })
 
-  it('when run, builds the catalog into the injected crow directory', async () => {
-    const crowDirectory = join(fixtureDirectory, '.crow')
-    await Deno.mkdir(crowDirectory, { recursive: true })
-    await Deno.writeTextFile(
-      join(crowDirectory, 'providers.json'),
-      JSON.stringify({
-        providers: [{
-          name: 'ollama',
-          baseUrl: 'http://pile-driver.local:11434',
-          modelsUrl: 'http://pile-driver.local:11434/api/tags',
-        }],
-      }),
-    )
-    const fetchMock = mockFetchRoutes([['pile-driver', { models: [] }]])
-    const database = knex({
-      client: 'better-sqlite3',
-      connection: ':memory:',
-      useNullAsDefault: true,
+  it('when run, populates models from database providers', async () => {
+    const fixtureDirectory = join(fixturesDirectory, 'create-model-catalog')
+    const database = await createTestDatabase(pino({ enabled: false }))
+    await database('providers').insert({
+      name: 'ollama',
+      base_url: 'http://pile-driver.local:11434',
+      models_path: '/api/tags',
+      api_key_env_var: null,
+    })
+    const fetchMock = mockFetchSuccess({
+      models: [{ name: 'author/model', details: { context_length: 128000 } }],
     })
 
     await new CreateModelCatalog({
       parsedArguments: { commands: ['create-model-catalog'], options: {} },
-      crowDirectory,
+      crowDirectory: join(fixtureDirectory, '.crow'),
       logger: pino({ enabled: false }),
       database,
       consoleLog: () => {},
@@ -105,7 +107,9 @@ describe('CreateModelCatalog', () => {
       environment: new Environment({}),
     }).run()
 
-    expect(Deno.statSync(join(crowDirectory, 'models.json')).isFile).toBe(true)
+    expect(await database('models').select('identifier')).toEqual([
+      { identifier: 'author/model' },
+    ])
     await database.destroy()
   })
 })

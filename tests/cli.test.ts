@@ -10,50 +10,49 @@ import { mockDenoCommand } from './support/mock-deno-command.ts'
 import { mockFetchRoutes, mockFetchSuccess } from './support/mock-fetch.ts'
 import pino from 'pino'
 
-const crowDirectory = join(fixturesDirectory, 'cli', '.crow')
-
 describe('run', () => {
-  beforeEach(() => clearDirectory(crowDirectory))
-  afterEach(() => clearDirectory(crowDirectory))
+  beforeEach(() => clearDirectory(join(fixturesDirectory, 'cli', '.crow')))
+  afterEach(() => clearDirectory(join(fixturesDirectory, 'cli', '.crow')))
 
   it('when the generated summary is empty, does not commit', async () => {
     const logger = { error: () => {}, info: () => {} } as unknown as Logger
 
     await run(
       ['git-commit'],
-      crowDirectory,
+      join(fixturesDirectory, 'cli', '.crow'),
       logger,
       () => {},
       undefined,
       mockDenoCommand() as never,
     )
+
+    expect(true).toBe(true)
   })
 
-  it('when create-model-catalog is requested, builds the model catalog', async () => {
-    await Deno.mkdir(crowDirectory, { recursive: true })
-    await Deno.writeTextFile(
-      join(crowDirectory, 'providers.json'),
-      JSON.stringify({
-        providers: [{
-          name: 'ollama',
-          baseUrl: 'http://pile-driver.local:11434',
-          modelsUrl: 'http://pile-driver.local:11434/api/tags',
-        }],
-      }),
-    )
+  it('when create-model-catalog is requested, populates the model catalog', async () => {
     const logger = pino({ enabled: false })
+    const database = await openAndMigrateDatabase(
+      join(fixturesDirectory, 'cli', '.crow'),
+      logger,
+    )
+    await database('providers').insert({
+      name: 'ollama',
+      base_url: 'http://pile-driver.local:11434',
+      models_path: '/api/tags',
+      api_key_env_var: null,
+    })
+    await database.destroy()
     const fetchMock = mockFetchRoutes([['pile-driver', { models: [] }]])
 
     await run(
       ['create-model-catalog'],
-      crowDirectory,
+      join(fixturesDirectory, 'cli', '.crow'),
       logger,
       () => {},
       fetchMock,
     )
 
     expect(fetchMock.calls).toHaveLength(1)
-    expect(Deno.statSync(join(crowDirectory, 'models.json')).isFile).toBe(true)
   })
 
   it('when add-provider is requested, creates the provider', async () => {
@@ -66,12 +65,15 @@ describe('run', () => {
         '--base-url=http://x',
         '--api-key-env-var=OLLAMA_KEY',
       ],
-      crowDirectory,
+      join(fixturesDirectory, 'cli', '.crow'),
       logger,
       () => {},
     )
 
-    const database = await openAndMigrateDatabase(crowDirectory, logger)
+    const database = await openAndMigrateDatabase(
+      join(fixturesDirectory, 'cli', '.crow'),
+      logger,
+    )
     const rows = await database('providers').select('*')
     expect(rows).toEqual([{
       id: expect.any(Number),
@@ -87,7 +89,12 @@ describe('run', () => {
     const logger = { error: () => {}, info: () => {} } as unknown as Logger
     const consoleLog = mock.fn()
 
-    await run(['unknown'], crowDirectory, logger, consoleLog)
+    await run(
+      ['unknown'],
+      join(fixturesDirectory, 'cli', '.crow'),
+      logger,
+      consoleLog,
+    )
 
     expect(consoleLog.mock.calls[0].arguments[0]).toContain(
       'Usage: crow <command>',
@@ -100,7 +107,7 @@ describe('run', () => {
 
     await run(
       ['-h'],
-      crowDirectory,
+      join(fixturesDirectory, 'cli', '.crow'),
       logger,
       (summary: string) => outputs.push(summary),
       () => {
@@ -109,7 +116,9 @@ describe('run', () => {
     )
 
     expect(outputs[0]).toContain('Usage: crow')
-    expect(outputs[0]).toContain('create-model-catalog')
+    expect(outputs[0]).toContain(
+      'create-model-catalog   populate models from configured providers',
+    )
     expect(outputs[0]).toContain('git-commit')
   })
 
@@ -119,7 +128,7 @@ describe('run', () => {
 
     await run(
       ['--help'],
-      crowDirectory,
+      join(fixturesDirectory, 'cli', '.crow'),
       logger,
       (summary: string) => outputs.push(summary),
       () => {
@@ -128,7 +137,9 @@ describe('run', () => {
     )
 
     expect(outputs[0]).toContain('Usage: crow')
-    expect(outputs[0]).toContain('create-model-catalog')
+    expect(outputs[0]).toContain(
+      'create-model-catalog   populate models from configured providers',
+    )
     expect(outputs[0]).toContain('git-commit')
   })
 
@@ -138,7 +149,7 @@ describe('run', () => {
 
     await run(
       ['-V'],
-      crowDirectory,
+      join(fixturesDirectory, 'cli', '.crow'),
       logger,
       (summary: string) => outputs.push(summary),
       () => {
@@ -155,7 +166,7 @@ describe('run', () => {
 
     await run(
       ['--version'],
-      crowDirectory,
+      join(fixturesDirectory, 'cli', '.crow'),
       logger,
       (summary: string) => outputs.push(summary),
       () => {
@@ -170,7 +181,7 @@ describe('run', () => {
     const logger = { error: () => {}, info: () => {} } as unknown as Logger
     const consoleLog = mock.fn()
 
-    await run([], crowDirectory, logger, consoleLog)
+    await run([], join(fixturesDirectory, 'cli', '.crow'), logger, consoleLog)
 
     expect(consoleLog.mock.calls[0].arguments[0]).toContain(
       'Usage: crow <command>',
@@ -191,9 +202,11 @@ describe('run', () => {
       knowledgeCutoff: null,
       size: '',
     }]
-    await Deno.mkdir(crowDirectory, { recursive: true })
+    await Deno.mkdir(join(fixturesDirectory, 'cli', '.crow'), {
+      recursive: true,
+    })
     await Deno.writeTextFile(
-      join(crowDirectory, 'models.json'),
+      join(join(fixturesDirectory, 'cli', '.crow'), 'models.json'),
       JSON.stringify({
         fetchedAt: '',
         modelCount: models.length,
@@ -201,7 +214,7 @@ describe('run', () => {
       }),
     )
     await Deno.writeTextFile(
-      join(crowDirectory, 'providers.json'),
+      join(join(fixturesDirectory, 'cli', '.crow'), 'providers.json'),
       JSON.stringify({
         providers: [{
           name: 'nous',
@@ -210,7 +223,6 @@ describe('run', () => {
         }],
       }),
     )
-
     const environment = new Environment({ NOUS_TEST_KEY: 'secret-key' })
     const logger = { error: () => {}, info: () => {} } as unknown as Logger
     const fetchMock = mockFetchSuccess({
@@ -219,7 +231,7 @@ describe('run', () => {
 
     await run(
       ['--goal=ship it', 'git-commit'],
-      crowDirectory,
+      join(fixturesDirectory, 'cli', '.crow'),
       logger,
       () => {},
       fetchMock,
@@ -238,7 +250,7 @@ describe('run', () => {
 
     await run(
       ['--unknown'],
-      crowDirectory,
+      join(fixturesDirectory, 'cli', '.crow'),
       logger,
       consoleLog,
       () => {

@@ -1,4 +1,4 @@
-import { buildModelCatalog } from '../../model-discovery/catalog/build-model-catalog.ts'
+import { populateModels } from '../../model-discovery/populate/populate-models.ts'
 import { Command } from './command.ts'
 
 export class CreateModelCatalog extends Command {
@@ -11,6 +11,11 @@ export class CreateModelCatalog extends Command {
   }
 
   async run() {
-    await buildModelCatalog(this.crowDirectory, this.logger, this.fetchClient)
+    await populateModels(
+      this.environment,
+      this.database,
+      this.logger,
+      this.fetchClient,
+    )
   }
 }
