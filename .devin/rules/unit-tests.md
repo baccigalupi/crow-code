@@ -32,6 +32,11 @@ Apply when creating or changing tests in this repo.
     exception.
 11. Only mock dependents when it makes the tests clearer
 12. Only test what logic is in the module, not what's in the dependencies.
+13. No mapping or other logic anywhere in a test — not inside `expect(...)`, and
+    not smuggled into Act as a derived variable either. Act is only the call
+    under test. Assert directly on the result: `expect(models).toHaveLength(2)`,
+    `expect(models[0].identifier()).toBe('free')`. No loops around `expect` —
+    assert each element explicitly.
 
 ## Examples
 

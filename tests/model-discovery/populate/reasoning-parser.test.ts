@@ -1,9 +1,5 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import {
-  loadNousFixture,
-  loadOpenRouterFixture,
-} from '../../support/fixtures.ts'
 import { ReasoningParser } from '../../../src/model-discovery/populate/reasoning-parser.ts'
 
 describe('ReasoningParser', () => {
@@ -104,11 +100,22 @@ describe('ReasoningParser', () => {
       expect(result).toBe(false)
     })
 
-    it('when fixture model has no reasoning object, is false', async () => {
-      const fixture = await loadNousFixture()
-      const model = fixture.data.find((model: { id: string }) =>
-        model.id === 'unbiased/pareto'
-      )
+    it('when nous model has no reasoning object, is false', () => {
+      const model = {
+        id: 'unbiased/pareto',
+        name: 'Pareto',
+        context_length: 262144,
+        pricing: { prompt: '0.0000025000', completion: '0.0000075000' },
+        architecture: { modality: 'text+image->text' },
+        supported_parameters: [
+          'max_tokens',
+          'temperature',
+          'tool_choice',
+          'tools',
+          'top_p',
+        ],
+        reasoning: undefined,
+      }
 
       const result = new ReasoningParser(model).supportsReasoning()
 
@@ -181,33 +188,98 @@ describe('ReasoningParser', () => {
       expect(result).toBe(false)
     })
 
-    it('when fixture model has reasoning mandatory false, is true', async () => {
-      const fixture = await loadNousFixture()
-      const model = fixture.data.find((model: { id: string }) =>
-        model.id === 'xiaomi/mimo-v2.6-pro-ultraspeed'
-      )
+    it('when nous model has reasoning mandatory false, is true', () => {
+      const model = {
+        id: 'xiaomi/mimo-v2.6-pro-ultraspeed',
+        name: 'Xiaomi: MiMo-V2.6-Pro-UltraSpeed',
+        context_length: 1048576,
+        pricing: { prompt: '0.0000043500', completion: '0.0000087000' },
+        architecture: { modality: 'text+image+audio+video->text' },
+        supported_parameters: [
+          'frequency_penalty',
+          'include_reasoning',
+          'max_tokens',
+          'presence_penalty',
+          'reasoning',
+          'response_format',
+          'stop',
+          'structured_outputs',
+          'temperature',
+          'tool_choice',
+          'tools',
+          'top_p',
+        ],
+        reasoning: { mandatory: false },
+      }
 
       const result = new ReasoningParser(model).canDisableReasoning()
 
       expect(result).toBe(true)
     })
 
-    it('when fixture model has reasoning mandatory true, is false', async () => {
-      const fixture = await loadNousFixture()
-      const model = fixture.data.find((model: { id: string }) =>
-        model.id === 'z-ai/glm-5.3-flashx'
-      )
+    it('when nous model has reasoning mandatory true, is false', () => {
+      const model = {
+        id: 'z-ai/glm-5.3-flashx',
+        name: 'Z.ai: GLM 5.3 FlashX',
+        context_length: 1048576,
+        pricing: { prompt: '0.0000003700', completion: '0.0000012500' },
+        architecture: { modality: 'text+image+video->text' },
+        supported_parameters: [
+          'include_reasoning',
+          'max_tokens',
+          'reasoning',
+          'reasoning_effort',
+          'response_format',
+          'temperature',
+          'tool_choice',
+          'tools',
+          'top_k',
+          'top_p',
+        ],
+        reasoning: {
+          mandatory: true,
+          default_enabled: true,
+          supported_efforts: ['max', 'high', 'low'],
+          default_effort: 'max',
+        },
+      }
 
       const result = new ReasoningParser(model).canDisableReasoning()
 
       expect(result).toBe(false)
     })
 
-    it('when openrouter fixture model has reasoning mandatory true, is false', async () => {
-      const fixture = await loadOpenRouterFixture()
-      const model = fixture.data.find((model: { id: string }) =>
-        model.id === 'moonshotai/kimi-k2.7-code'
-      )
+    it('when openrouter model has reasoning mandatory true, is false', () => {
+      const model = {
+        id: 'moonshotai/kimi-k2.7-code',
+        name: 'MoonshotAI: Kimi K2.7 Code',
+        context_length: 262144,
+        pricing: { prompt: '0.0000006562', completion: '0.0000033' },
+        architecture: { modality: 'text+image->text' },
+        supported_parameters: [
+          'frequency_penalty',
+          'include_reasoning',
+          'logit_bias',
+          'logprobs',
+          'max_tokens',
+          'min_p',
+          'parallel_tool_calls',
+          'presence_penalty',
+          'reasoning',
+          'repetition_penalty',
+          'response_format',
+          'seed',
+          'stop',
+          'structured_outputs',
+          'temperature',
+          'tool_choice',
+          'tools',
+          'top_k',
+          'top_logprobs',
+          'top_p',
+        ],
+        reasoning: { mandatory: true, default_enabled: true },
+      }
 
       const result = new ReasoningParser(model).canDisableReasoning()
 
@@ -255,18 +327,44 @@ describe('ReasoningParser', () => {
       expect(result).toEqual({})
     })
 
-    it('when fixture model has rich reasoning, are preserved', async () => {
-      const fixture = await loadNousFixture()
-      const model = fixture.data.find((model: { id: string }) =>
-        model.id === 'prism-ml/ternary-bonsai-2-27b'
-      )
+    it('when nous model has rich reasoning, are preserved', () => {
+      const model = {
+        id: 'prism-ml/ternary-bonsai-2-27b',
+        name: 'PrismML: Ternary Bonsai 2 27B',
+        context_length: 262144,
+        pricing: { prompt: '0.0000000750', completion: '0.0000005000' },
+        architecture: { modality: 'text+image->text' },
+        supported_parameters: [
+          'frequency_penalty',
+          'include_reasoning',
+          'logprobs',
+          'max_tokens',
+          'presence_penalty',
+          'reasoning',
+          'reasoning_effort',
+          'repetition_penalty',
+          'response_format',
+          'seed',
+          'stop',
+          'structured_outputs',
+          'temperature',
+          'tool_choice',
+          'tools',
+          'top_k',
+          'top_logprobs',
+          'top_p',
+        ],
+        reasoning: {
+          mandatory: false,
+          default_enabled: true,
+          supported_efforts: ['xhigh', 'medium'],
+          default_effort: 'xhigh',
+        },
+      }
 
       const result = new ReasoningParser(model).reasoningOptions()
 
-      expect(result.supported_efforts).toEqual([
-        'xhigh',
-        'medium',
-      ])
+      expect(result.supported_efforts).toEqual(['xhigh', 'medium'])
       expect(result.default_effort).toBe('xhigh')
     })
   })

@@ -1,7 +1,8 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import {
-  type ModelEntity,
+  modelEntities,
+  ModelEntity,
   modelEntity,
 } from '../../../src/domain/models/model.ts'
 import type { ModelRow } from '../../../src/domain/types.ts'
@@ -50,5 +51,46 @@ describe('model', () => {
 
     expect(model.canDisableReasoning()).toBe(false)
     expect(model.reasoningOptions()).toEqual({})
+  })
+
+  it('modelEntities maps every row to a ModelEntity', () => {
+    const first: ModelRow = {
+      id: 1,
+      provider_id: 2,
+      identifier: 'author/first',
+      name: 'First',
+      context_length: 128000,
+      cost_input: 1.5,
+      cost_output: 3,
+      dynamic_delegation: false,
+      modality: 'text->text',
+      supported_parameters: '["temperature"]',
+      supports_reasoning: true,
+      can_disable_reasoning: true,
+      reasoning_options: '{"mandatory":false}',
+    }
+    const second: ModelRow = {
+      id: 2,
+      provider_id: 2,
+      identifier: 'author/second',
+      name: 'Second',
+      context_length: 128000,
+      cost_input: 1.5,
+      cost_output: 3,
+      dynamic_delegation: false,
+      modality: 'text->text',
+      supported_parameters: '["temperature"]',
+      supports_reasoning: true,
+      can_disable_reasoning: true,
+      reasoning_options: '{"mandatory":false}',
+    }
+
+    const models = modelEntities([first, second])
+
+    expect(models).toHaveLength(2)
+    expect(models[0]).toBeInstanceOf(ModelEntity)
+    expect(models[1]).toBeInstanceOf(ModelEntity)
+    expect(models[0].identifier()).toBe('author/first')
+    expect(models[1].identifier()).toBe('author/second')
   })
 })

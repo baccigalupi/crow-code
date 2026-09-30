@@ -8,11 +8,10 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(
-      diagnostics.some((d) =>
-        d.message.includes('module-level functions must be const arrows')
-      ),
-    ).toBe(true)
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain(
+      'module-level functions must be const arrows',
+    )
   })
 
   it('when a constructor uses a parameter property, reports it', () => {
@@ -20,9 +19,8 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(
-      diagnostics.some((d) => d.message.includes('no parameter properties')),
-    ).toBe(true)
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('no parameter properties')
   })
 
   it('when a ternary is used, reports it', () => {
@@ -30,9 +28,8 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(diagnostics.some((d) => d.message.includes('no ternary'))).toBe(
-      true,
-    )
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('no ternary')
   })
 
   it('when nullish coalescing is used, reports it', () => {
@@ -40,7 +37,8 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(diagnostics.some((d) => d.message.includes('no ??'))).toBe(true)
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('no ??')
   })
 
   it('when optional chaining is used, reports it', () => {
@@ -48,7 +46,8 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(diagnostics.some((d) => d.message.includes('no ?.'))).toBe(true)
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('no ?.')
   })
 
   it('when a throw is used, reports it', () => {
@@ -56,7 +55,8 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(diagnostics.some((d) => d.message.includes('no throws'))).toBe(true)
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('no throws')
   })
 
   it('when a for loop is used, reports it', () => {
@@ -64,7 +64,8 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(diagnostics.some((d) => d.message.includes('no for'))).toBe(true)
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('no for')
   })
 
   it('when a while loop is not infinite, reports it', () => {
@@ -72,9 +73,8 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(
-      diagnostics.some((d) => d.message.includes('while only allowed')),
-    ).toBe(true)
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('while only allowed')
   })
 
   it('when an infinite while loop is used, does not report it', () => {
@@ -90,9 +90,8 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(
-      diagnostics.some((d) => d.message.includes('SCREAMING_CASE')),
-    ).toBe(true)
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('SCREAMING_CASE')
   })
 
   it('when a function body exceeds seven lines, reports it', () => {
@@ -110,9 +109,8 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(diagnostics.some((d) => d.message.includes('must be ≤ 7'))).toBe(
-      true,
-    )
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('must be ≤ 7')
   })
 
   it('when a function declaration is nested inside a function, reports it', () => {
@@ -123,11 +121,10 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(
-      diagnostics.some((d) =>
-        d.message.includes('no nested function declarations')
-      ),
-    ).toBe(true)
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain(
+      'no nested function declarations',
+    )
   })
 
   it('when an arrow function is nested inside a function, does not report it', () => {
@@ -146,9 +143,8 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(
-      diagnostics.some((d) => d.message.includes('file exceeds 100 lines')),
-    ).toBe(true)
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('file exceeds 100 lines')
   })
 
   it('when three consecutive ifs test the same variable, reports it', () => {
@@ -160,9 +156,10 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(
-      diagnostics.some((d) => d.message.includes('if/else if/else')),
-    ).toBe(true)
+    expect(diagnostics).toHaveLength(3)
+    expect(diagnostics[0].message).toContain('guard clauses must be')
+    expect(diagnostics[1].message).toContain('guard clauses must be')
+    expect(diagnostics[2].message).toContain('if/else if/else')
   })
 
   it('when branches are written as if/else if/else, does not report it', () => {
@@ -211,9 +208,8 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(
-      diagnostics.some((d) => d.message.includes('guard clauses must be')),
-    ).toBe(true)
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('guard clauses must be')
   })
 
   it('when a guard clause is wrapped in a block, does not report it', () => {
@@ -236,9 +232,8 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(
-      diagnostics.some((d) => d.message.includes('guard clauses must be')),
-    ).toBe(true)
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('guard clauses must be')
   })
 
   it('when a guard clause follows a non-guard statement, reports it', () => {
@@ -250,9 +245,8 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(
-      diagnostics.some((d) => d.message.includes('guard clauses must be')),
-    ).toBe(true)
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('guard clauses must be')
   })
 
   it('when a named re-export is used, reports it', () => {
@@ -260,9 +254,8 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(
-      diagnostics.some((d) => d.message.includes('re-export')),
-    ).toBe(true)
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('re-export')
   })
 
   it('when a wildcard re-export is used, reports it', () => {
@@ -270,9 +263,8 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(
-      diagnostics.some((d) => d.message.includes('re-export')),
-    ).toBe(true)
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('re-export')
   })
 
   it('when a local named export is used, does not report it', () => {
@@ -288,9 +280,8 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(
-      diagnostics.some((d) => d.message.includes('types.ts')),
-    ).toBe(true)
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('types.ts')
   })
 
   it('when an interface is exported outside types.ts, reports it', () => {
@@ -298,9 +289,8 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(
-      diagnostics.some((d) => d.message.includes('types.ts')),
-    ).toBe(true)
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('types.ts')
   })
 
   it('when a type is exported from types.ts, does not report it', () => {

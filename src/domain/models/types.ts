@@ -20,3 +20,9 @@ export type ReasoningType =
 export type ReasoningOptions = {
   type: ReasoningType
 }
+
+export type ModelFilters =
+  | { costTier: CostTier; type?: ReasoningType }
+  | { costTier?: CostTier; type: ReasoningType }
+
+export type ModelFilterOptions = ModelFilters & { limit?: number }

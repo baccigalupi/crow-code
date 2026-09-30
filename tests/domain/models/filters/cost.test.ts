@@ -8,12 +8,6 @@ describe('costFilter', () => {
   it('returns free models when costTier is free', async () => {
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
-    await database('providers').insert({
-      name: 'nous',
-      base_url: 'https://nous.example',
-      models_path: null,
-      api_key_env_var: null,
-    })
     await database('models').insert([
       {
         provider_id: 1,
@@ -49,20 +43,14 @@ describe('costFilter', () => {
     costFilter(builder, { costTier: 'free' })
     const models = await builder
 
-    expect(models.map((model: { identifier: string }) => model.identifier))
-      .toEqual(['free'])
+    expect(models).toHaveLength(1)
+    expect(models[0].identifier).toBe('free')
     await database.destroy()
   })
 
   it('does not match low-cost models when costTier is free', async () => {
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
-    await database('providers').insert({
-      name: 'nous',
-      base_url: 'https://nous.example',
-      models_path: null,
-      api_key_env_var: null,
-    })
     await database('models').insert([
       {
         provider_id: 1,
@@ -92,12 +80,6 @@ describe('costFilter', () => {
     it('returns models in the middle of the range', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert({
-        name: 'nous',
-        base_url: 'https://nous.example',
-        models_path: null,
-        api_key_env_var: null,
-      })
       await database('models').insert([
         {
           provider_id: 1,
@@ -119,20 +101,14 @@ describe('costFilter', () => {
       costFilter(builder, { costTier: 'cheap' })
       const models = await builder
 
-      expect(models.map((model: { identifier: string }) => model.identifier))
-        .toEqual(['mid'])
+      expect(models).toHaveLength(1)
+      expect(models[0].identifier).toBe('mid')
       await database.destroy()
     })
 
     it('returns models at the upper boundary', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert({
-        name: 'nous',
-        base_url: 'https://nous.example',
-        models_path: null,
-        api_key_env_var: null,
-      })
       await database('models').insert([
         {
           provider_id: 1,
@@ -154,20 +130,14 @@ describe('costFilter', () => {
       costFilter(builder, { costTier: 'cheap' })
       const models = await builder
 
-      expect(models.map((model: { identifier: string }) => model.identifier))
-        .toEqual(['upper'])
+      expect(models).toHaveLength(1)
+      expect(models[0].identifier).toBe('upper')
       await database.destroy()
     })
 
     it('does not return free models below the range', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert({
-        name: 'nous',
-        base_url: 'https://nous.example',
-        models_path: null,
-        api_key_env_var: null,
-      })
       await database('models').insert([
         {
           provider_id: 1,
@@ -196,12 +166,6 @@ describe('costFilter', () => {
     it('does not return models above the range', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert({
-        name: 'nous',
-        base_url: 'https://nous.example',
-        models_path: null,
-        api_key_env_var: null,
-      })
       await database('models').insert([
         {
           provider_id: 1,
@@ -232,12 +196,6 @@ describe('costFilter', () => {
     it('returns models in the middle of the range', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert({
-        name: 'nous',
-        base_url: 'https://nous.example',
-        models_path: null,
-        api_key_env_var: null,
-      })
       await database('models').insert([
         {
           provider_id: 1,
@@ -259,20 +217,14 @@ describe('costFilter', () => {
       costFilter(builder, { costTier: 'budget' })
       const models = await builder
 
-      expect(models.map((model: { identifier: string }) => model.identifier))
-        .toEqual(['mid'])
+      expect(models).toHaveLength(1)
+      expect(models[0].identifier).toBe('mid')
       await database.destroy()
     })
 
     it('returns models at the upper boundary', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert({
-        name: 'nous',
-        base_url: 'https://nous.example',
-        models_path: null,
-        api_key_env_var: null,
-      })
       await database('models').insert([
         {
           provider_id: 1,
@@ -294,20 +246,14 @@ describe('costFilter', () => {
       costFilter(builder, { costTier: 'budget' })
       const models = await builder
 
-      expect(models.map((model: { identifier: string }) => model.identifier))
-        .toEqual(['upper'])
+      expect(models).toHaveLength(1)
+      expect(models[0].identifier).toBe('upper')
       await database.destroy()
     })
 
     it('does not return models at the lower boundary', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert({
-        name: 'nous',
-        base_url: 'https://nous.example',
-        models_path: null,
-        api_key_env_var: null,
-      })
       await database('models').insert([
         {
           provider_id: 1,
@@ -336,12 +282,6 @@ describe('costFilter', () => {
     it('does not return models above the range', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert({
-        name: 'nous',
-        base_url: 'https://nous.example',
-        models_path: null,
-        api_key_env_var: null,
-      })
       await database('models').insert([
         {
           provider_id: 1,
@@ -372,12 +312,6 @@ describe('costFilter', () => {
     it('returns models in the middle of the range', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert({
-        name: 'nous',
-        base_url: 'https://nous.example',
-        models_path: null,
-        api_key_env_var: null,
-      })
       await database('models').insert([
         {
           provider_id: 1,
@@ -399,20 +333,14 @@ describe('costFilter', () => {
       costFilter(builder, { costTier: 'standard' })
       const models = await builder
 
-      expect(models.map((model: { identifier: string }) => model.identifier))
-        .toEqual(['mid'])
+      expect(models).toHaveLength(1)
+      expect(models[0].identifier).toBe('mid')
       await database.destroy()
     })
 
     it('returns models at the upper boundary', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert({
-        name: 'nous',
-        base_url: 'https://nous.example',
-        models_path: null,
-        api_key_env_var: null,
-      })
       await database('models').insert([
         {
           provider_id: 1,
@@ -434,20 +362,14 @@ describe('costFilter', () => {
       costFilter(builder, { costTier: 'standard' })
       const models = await builder
 
-      expect(models.map((model: { identifier: string }) => model.identifier))
-        .toEqual(['upper'])
+      expect(models).toHaveLength(1)
+      expect(models[0].identifier).toBe('upper')
       await database.destroy()
     })
 
     it('does not return models at the lower boundary', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert({
-        name: 'nous',
-        base_url: 'https://nous.example',
-        models_path: null,
-        api_key_env_var: null,
-      })
       await database('models').insert([
         {
           provider_id: 1,
@@ -476,12 +398,6 @@ describe('costFilter', () => {
     it('does not return models above the range', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert({
-        name: 'nous',
-        base_url: 'https://nous.example',
-        models_path: null,
-        api_key_env_var: null,
-      })
       await database('models').insert([
         {
           provider_id: 1,
@@ -510,12 +426,6 @@ describe('costFilter', () => {
     it('includes dynamic delegation models', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert({
-        name: 'nous',
-        base_url: 'https://nous.example',
-        models_path: null,
-        api_key_env_var: null,
-      })
       await database('models').insert([
         {
           provider_id: 1,
@@ -537,8 +447,8 @@ describe('costFilter', () => {
       costFilter(builder, { costTier: 'standard' })
       const models = await builder
 
-      expect(models.map((model: { identifier: string }) => model.identifier))
-        .toEqual(['delegated'])
+      expect(models).toHaveLength(1)
+      expect(models[0].identifier).toBe('delegated')
       await database.destroy()
     })
   })
@@ -547,12 +457,6 @@ describe('costFilter', () => {
     it('returns models in the middle of the range', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert({
-        name: 'nous',
-        base_url: 'https://nous.example',
-        models_path: null,
-        api_key_env_var: null,
-      })
       await database('models').insert([
         {
           provider_id: 1,
@@ -574,20 +478,14 @@ describe('costFilter', () => {
       costFilter(builder, { costTier: 'premium' })
       const models = await builder
 
-      expect(models.map((model: { identifier: string }) => model.identifier))
-        .toEqual(['mid'])
+      expect(models).toHaveLength(1)
+      expect(models[0].identifier).toBe('mid')
       await database.destroy()
     })
 
     it('returns models at the upper boundary', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert({
-        name: 'nous',
-        base_url: 'https://nous.example',
-        models_path: null,
-        api_key_env_var: null,
-      })
       await database('models').insert([
         {
           provider_id: 1,
@@ -609,20 +507,14 @@ describe('costFilter', () => {
       costFilter(builder, { costTier: 'premium' })
       const models = await builder
 
-      expect(models.map((model: { identifier: string }) => model.identifier))
-        .toEqual(['upper'])
+      expect(models).toHaveLength(1)
+      expect(models[0].identifier).toBe('upper')
       await database.destroy()
     })
 
     it('does not return models at the lower boundary', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert({
-        name: 'nous',
-        base_url: 'https://nous.example',
-        models_path: null,
-        api_key_env_var: null,
-      })
       await database('models').insert([
         {
           provider_id: 1,
@@ -651,12 +543,6 @@ describe('costFilter', () => {
     it('does not return models above the range', async () => {
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
-      await database('providers').insert({
-        name: 'nous',
-        base_url: 'https://nous.example',
-        models_path: null,
-        api_key_env_var: null,
-      })
       await database('models').insert([
         {
           provider_id: 1,
@@ -683,74 +569,60 @@ describe('costFilter', () => {
     })
   })
 
-  describe('when costTier is ultra', () => {
-    it('returns models above the range', async () => {
-      const logger = pino({ enabled: false })
-      const database = await createTestDatabase(logger)
-      await database('providers').insert({
-        name: 'nous',
-        base_url: 'https://nous.example',
-        models_path: null,
-        api_key_env_var: null,
-      })
-      await database('models').insert([
-        {
-          provider_id: 1,
-          identifier: 'expensive',
-          name: 'Expensive',
-          context_length: 1000,
-          cost_input: 0,
-          cost_output: 100,
-          dynamic_delegation: false,
-          modality: 'text->text',
-          supported_parameters: '[]',
-          supports_reasoning: false,
-          can_disable_reasoning: false,
-          reasoning_options: '{}',
-        },
-      ])
+  it('when costTier is ultra, returns models above the range', async () => {
+    const logger = pino({ enabled: false })
+    const database = await createTestDatabase(logger)
+    await database('models').insert([
+      {
+        provider_id: 1,
+        identifier: 'expensive',
+        name: 'Expensive',
+        context_length: 1000,
+        cost_input: 0,
+        cost_output: 100,
+        dynamic_delegation: false,
+        modality: 'text->text',
+        supported_parameters: '[]',
+        supports_reasoning: false,
+        can_disable_reasoning: false,
+        reasoning_options: '{}',
+      },
+    ])
 
-      const builder = database('models')
-      costFilter(builder, { costTier: 'ultra' })
-      const models = await builder
+    const builder = database('models')
+    costFilter(builder, { costTier: 'ultra' })
+    const models = await builder
 
-      expect(models.map((model: { identifier: string }) => model.identifier))
-        .toEqual(['expensive'])
-      await database.destroy()
-    })
+    expect(models).toHaveLength(1)
+    expect(models[0].identifier).toBe('expensive')
+    await database.destroy()
+  })
 
-    it('does not return models at the lower boundary', async () => {
-      const logger = pino({ enabled: false })
-      const database = await createTestDatabase(logger)
-      await database('providers').insert({
-        name: 'nous',
-        base_url: 'https://nous.example',
-        models_path: null,
-        api_key_env_var: null,
-      })
-      await database('models').insert([
-        {
-          provider_id: 1,
-          identifier: 'lower',
-          name: 'Lower',
-          context_length: 1000,
-          cost_input: 0,
-          cost_output: 30,
-          dynamic_delegation: false,
-          modality: 'text->text',
-          supported_parameters: '[]',
-          supports_reasoning: false,
-          can_disable_reasoning: false,
-          reasoning_options: '{}',
-        },
-      ])
+  it('when costTier is ultra, does not return models at the lower boundary', async () => {
+    const logger = pino({ enabled: false })
+    const database = await createTestDatabase(logger)
+    await database('models').insert([
+      {
+        provider_id: 1,
+        identifier: 'lower',
+        name: 'Lower',
+        context_length: 1000,
+        cost_input: 0,
+        cost_output: 30,
+        dynamic_delegation: false,
+        modality: 'text->text',
+        supported_parameters: '[]',
+        supports_reasoning: false,
+        can_disable_reasoning: false,
+        reasoning_options: '{}',
+      },
+    ])
 
-      const builder = database('models')
-      costFilter(builder, { costTier: 'ultra' })
-      const models = await builder
+    const builder = database('models')
+    costFilter(builder, { costTier: 'ultra' })
+    const models = await builder
 
-      expect(models).toEqual([])
-      await database.destroy()
-    })
+    expect(models).toEqual([])
+    await database.destroy()
   })
 })

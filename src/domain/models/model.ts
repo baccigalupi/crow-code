@@ -84,3 +84,6 @@ export const modelEntity = (row?: ModelRow) => {
   if (!row) return new ModelEntity(emptyModelRow)
   return new ModelEntity(row)
 }
+
+export const modelEntities = (rows: ModelRow[]) =>
+  rows.map((row) => modelEntity(row))
