@@ -14,6 +14,7 @@ export type ReasoningType =
   | 'chat'
   | 'dynamic'
   | 'low'
+  | 'medium'
 
 export type ReasoningOptions = {
   type: ReasoningType
