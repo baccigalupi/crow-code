@@ -22,22 +22,17 @@ describe('gitDiffFiles', () => {
       { path: 'tests/support/fixtures.ts', changeType: ' M' },
       {
         path:
-          'tests/support/fixtures/model-discovery/catalog/providers/models-dev-api.json',
+          'tests/support/fixtures/model-discovery/populate/providers/nous-models.json',
         changeType: 'R ',
       },
       {
         path:
-          'tests/support/fixtures/model-discovery/catalog/providers/nous-models.json',
+          'tests/support/fixtures/model-discovery/populate/providers/ollama-models.json',
         changeType: 'R ',
       },
       {
         path:
-          'tests/support/fixtures/model-discovery/catalog/providers/ollama-models.json',
-        changeType: 'R ',
-      },
-      {
-        path:
-          'tests/support/fixtures/model-discovery/catalog/providers/openrouter-models.json',
+          'tests/support/fixtures/model-discovery/populate/providers/openrouter-models.json',
         changeType: 'R ',
       },
       { path: 'tests/tools/git/diff/files.test.ts', changeType: ' M' },
