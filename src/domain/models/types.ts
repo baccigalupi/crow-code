@@ -13,6 +13,7 @@ export type CostOptions = {
 export type ReasoningType =
   | 'chat'
   | 'dynamic'
+  | 'low'
 
 export type ReasoningOptions = {
   type: ReasoningType

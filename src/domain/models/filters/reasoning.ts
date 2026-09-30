@@ -1,5 +1,5 @@
 import type { Knex } from 'knex'
-import type { ReasoningOptions } from './types.ts'
+import type { ReasoningOptions } from '../types.ts'
 
 export class ReasoningFilter {
   private builder: Knex.QueryBuilder
@@ -13,6 +13,7 @@ export class ReasoningFilter {
   addWhereClause() {
     this.whereDynamic()
     this.whereChat()
+    this.whereLow()
   }
 
   private whereDynamic() {
@@ -31,6 +32,21 @@ export class ReasoningFilter {
     builder
       .where('supports_reasoning', false)
       .orWhere('can_disable_reasoning', true)
+  }
+
+  private whereLow() {
+    if (this.options.type !== 'low') return
+    this.builder
+      .where('supports_reasoning', true)
+      .where((subBuilder) => this.whereLowReasoning(subBuilder))
+  }
+
+  private whereLowReasoning(builder: Knex.QueryBuilder) {
+    builder
+      .whereLike('reasoning_options', '%"low"%')
+      .orWhereLike('reasoning_options', '%"minimal"%')
+      .orWhereLike('reasoning_options', '%"supports_max_tokens":true%')
+      .orWhereLike('supported_parameters', '%"reasoning_effort"%')
   }
 }
 

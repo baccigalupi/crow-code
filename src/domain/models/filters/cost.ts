@@ -1,5 +1,5 @@
 import type { Knex } from 'knex'
-import type { CostOptions } from './types.ts'
+import type { CostOptions } from '../types.ts'
 
 export class CostFilter {
   private builder: Knex.QueryBuilder
