@@ -15,6 +15,7 @@ export type ReasoningType =
   | 'dynamic'
   | 'low'
   | 'medium'
+  | 'high'
 
 export type ReasoningOptions = {
   type: ReasoningType

@@ -15,6 +15,7 @@ export class ReasoningFilter {
     this.whereChat()
     this.whereLow()
     this.whereMedium()
+    this.whereHigh()
   }
 
   private whereDynamic() {
@@ -60,6 +61,22 @@ export class ReasoningFilter {
   private whereMediumReasoning(builder: Knex.QueryBuilder) {
     builder
       .whereLike('reasoning_options', '%"medium"%')
+      .orWhereLike('reasoning_options', '%"supports_max_tokens":true%')
+      .orWhereLike('supported_parameters', '%"reasoning_effort"%')
+  }
+
+  private whereHigh() {
+    if (this.options.type !== 'high') return
+    this.builder
+      .where('supports_reasoning', true)
+      .where((subBuilder) => this.whereHighReasoning(subBuilder))
+  }
+
+  private whereHighReasoning(builder: Knex.QueryBuilder) {
+    builder
+      .whereLike('reasoning_options', '%"high"%')
+      .orWhereLike('reasoning_options', '%"xhigh"%')
+      .orWhereLike('reasoning_options', '%"max"%')
       .orWhereLike('reasoning_options', '%"supports_max_tokens":true%')
       .orWhereLike('supported_parameters', '%"reasoning_effort"%')
   }
