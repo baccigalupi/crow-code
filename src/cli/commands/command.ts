@@ -21,16 +21,11 @@ export abstract class Command {
   protected environment: Environment
 
   constructor(data: ApplicationData) {
-    this.data = data
-    this.commands = data.parsedArguments.commands
-    this.options = data.parsedArguments.options
-    this.crowDirectory = data.crowDirectory
-    this.logger = data.logger
-    this.database = data.database
-    this.consoleLog = data.consoleLog
-    this.fetchClient = data.fetchClient
-    this.denoCommand = data.denoCommand
-    this.environment = data.environment
+    Object.assign(this, data, {
+      data,
+      commands: data.parsedArguments.commands,
+      options: data.parsedArguments.options,
+    })
   }
 
   abstract isMatch(): boolean

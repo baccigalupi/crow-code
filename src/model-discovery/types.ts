@@ -1,16 +1,8 @@
 import type { DefaultReasoning } from '../types.ts'
 
 export type EnvironmentValues = Record<string, string>
-
 export type ReasoningOption = 'toggle' | 'effort' | 'budget_tokens'
-
-export type ProviderConfig = {
-  name: string
-  baseUrl: string
-  modelsUrl?: string
-  apiKeyEnv?: string
-}
-
+export type ProviderConfig = { name: string; baseUrl: string; modelsUrl?: string; apiKeyEnv?: string }
 export type ModelInfo = {
   id: string
   name: string
@@ -24,19 +16,8 @@ export type ModelInfo = {
   knowledgeCutoff: string | null
   size: string
 }
-
-export type ModelCatalog = {
-  fetchedAt: string
-  modelCount: number
-  models: ModelInfo[]
-}
-
-export type ReasoningMeta = {
-  mandatory?: boolean
-  default_enabled?: boolean
-  default_effort?: string
-}
-
+export type ModelCatalog = { fetchedAt: string; modelCount: number; models: ModelInfo[] }
+export type ReasoningMeta = { mandatory?: boolean; default_enabled?: boolean; default_effort?: string }
 export type NousModel = {
   id: string
   name?: string
@@ -47,15 +28,12 @@ export type NousModel = {
   supported_parameters?: string[]
   architecture?: { modality?: string }
 }
-
 export type NousApiRecord = { data?: NousModel[] }
-
 export type ReasoningSource = {
   architecture?: { modality?: string }
   supported_parameters: string[]
   reasoning?: DefaultReasoning
 }
-
 export type Nous2ApiModel = {
   id: string
   name: string
@@ -65,11 +43,7 @@ export type Nous2ApiModel = {
   supported_parameters: string[]
   reasoning?: DefaultReasoning
 }
-
-export type Nous2ApiBody = {
-  data: Nous2ApiModel[]
-}
-
+export type Nous2ApiBody = { data: Nous2ApiModel[] }
 export type OpenRouter2ApiModel = {
   id: string
   name: string
@@ -79,11 +53,7 @@ export type OpenRouter2ApiModel = {
   supported_parameters: string[]
   reasoning?: DefaultReasoning
 }
-
-export type OpenRouter2ApiBody = {
-  data: OpenRouter2ApiModel[]
-}
-
+export type OpenRouter2ApiBody = { data: OpenRouter2ApiModel[] }
 export type CatalogModel = {
   id: string
   name: string
@@ -98,7 +68,6 @@ export type CatalogModel = {
   canDisableReasoning: boolean
   reasoningOptions: DefaultReasoning
 }
-
 export type Ollama2ApiModel = {
   name: string
   model: string
@@ -119,30 +88,13 @@ export type Ollama2ApiModel = {
   remote_host?: string
   capabilities?: string[]
 }
-
-export type Ollama2ApiBody = {
-  models: Ollama2ApiModel[]
-}
-
-export type OllamaModel = {
-  name: string
-  details?: { parameter_size?: string; context_length?: number }
-}
-
+export type Ollama2ApiBody = { models: Ollama2ApiModel[] }
+export type OllamaModel = { name: string; details?: { parameter_size?: string; context_length?: number } }
 export type OllamaApiRecord = { models?: OllamaModel[] }
-
-export type OpenRouterPricing = {
-  prompt?: string
-  completion?: string
-}
-
+export type OpenRouterPricing = { prompt?: string; completion?: string }
 export type OpenRouterModel = {
-  id: string
-  name?: string
-  context_length?: number
+  id: string; name?: string; context_length?: number
   pricing?: OpenRouterPricing
-  supported_parameters?: string[]
-  architecture?: { modality?: string }
+  supported_parameters?: string[]; architecture?: { modality?: string }
 }
-
 export type OpenRouterApiRecord = { data?: OpenRouterModel[] }

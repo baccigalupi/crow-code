@@ -8,11 +8,9 @@ import { openAndMigrateDatabase } from '../../../src/database/open-and-migrate-d
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import pino from 'pino'
 
-const fixtureDirectory = join(fixturesDirectory, 'add-provider')
-
 describe('AddProvider', () => {
-  beforeEach(() => clearDirectory(fixtureDirectory))
-  afterEach(() => clearDirectory(fixtureDirectory))
+  beforeEach(() => clearDirectory(join(fixturesDirectory, 'add-provider')))
+  afterEach(() => clearDirectory(join(fixturesDirectory, 'add-provider')))
 
   it('when the command is add-provider, matches', () => {
     const command = new AddProvider({
@@ -30,7 +28,9 @@ describe('AddProvider', () => {
       environment: new Environment({}),
     })
 
-    expect(command.isMatch()).toBe(true)
+    const matches = command.isMatch()
+
+    expect(matches).toBe(true)
   })
 
   it('when the command is something else, does not match', () => {
@@ -49,7 +49,9 @@ describe('AddProvider', () => {
       environment: new Environment({}),
     })
 
-    expect(command.isMatch()).toBe(false)
+    const matches = command.isMatch()
+
+    expect(matches).toBe(false)
   })
 
   it('when options are passed, extracts them', () => {
@@ -71,7 +73,9 @@ describe('AddProvider', () => {
       environment: new Environment({}),
     })
 
-    expect(command.extractOptions()).toEqual({
+    const options = command.extractOptions()
+
+    expect(options).toEqual({
       name: 'x',
       'base-url': 'y',
       verbose: true,
@@ -79,7 +83,7 @@ describe('AddProvider', () => {
   })
 
   it('when run with provider params, creates the provider in the injected crow directory', async () => {
-    const crowDirectory = join(fixtureDirectory, '.crow')
+    const crowDirectory = join(join(fixturesDirectory, 'add-provider'), '.crow')
     const logger = pino({ enabled: false })
     const database = await openAndMigrateDatabase(crowDirectory, logger)
 
@@ -113,7 +117,7 @@ describe('AddProvider', () => {
   })
 
   it('when run succeeds, writes the .env key reminder', async () => {
-    const crowDirectory = join(fixtureDirectory, '.crow')
+    const crowDirectory = join(join(fixturesDirectory, 'add-provider'), '.crow')
     const logger = pino({ enabled: false })
     const database = await openAndMigrateDatabase(crowDirectory, logger)
     const consoleLog = mock.fn()
@@ -143,7 +147,7 @@ describe('AddProvider', () => {
   })
 
   it('when the provider has no api key env var, writes the reminder with a placeholder key', async () => {
-    const crowDirectory = join(fixtureDirectory, '.crow')
+    const crowDirectory = join(join(fixturesDirectory, 'add-provider'), '.crow')
     const logger = pino({ enabled: false })
     const database = await openAndMigrateDatabase(crowDirectory, logger)
     const consoleLog = mock.fn()
@@ -169,7 +173,7 @@ describe('AddProvider', () => {
   })
 
   it('when creation fails, writes the failure message', async () => {
-    const crowDirectory = join(fixtureDirectory, '.crow')
+    const crowDirectory = join(join(fixturesDirectory, 'add-provider'), '.crow')
     const logger = pino({ enabled: false })
     const database = await openAndMigrateDatabase(crowDirectory, logger)
     await database('providers').insert({

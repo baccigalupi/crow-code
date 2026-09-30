@@ -10,7 +10,6 @@ describe('stopDecision', () => {
     const input = { sessionId: 'one', promptId: 'first', stopHookActive: false }
 
     const decision = await stopDecision(input, projectDirectory)
-
     Deno.removeSync(projectDirectory, { recursive: true })
 
     expect(decision).toMatchObject({ decision: 'block' })
@@ -22,7 +21,6 @@ describe('stopDecision', () => {
     const input = { sessionId: 'one', promptId: 'first', stopHookActive: true }
 
     const decision = await stopDecision(input, projectDirectory)
-
     Deno.removeSync(projectDirectory, { recursive: true })
 
     expect(decision).toBeNull()
@@ -33,7 +31,6 @@ describe('stopDecision', () => {
     const input = { sessionId: 'one', promptId: 'first', stopHookActive: false }
 
     const decision = await stopDecision(input, projectDirectory)
-
     Deno.removeSync(projectDirectory, { recursive: true })
 
     expect(decision).toBeNull()

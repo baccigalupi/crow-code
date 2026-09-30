@@ -22,7 +22,9 @@ describe('Help', () => {
       environment: new Environment({}),
     })
 
-    expect(command.isMatch()).toBe(true)
+    const matches = command.isMatch()
+
+    expect(matches).toBe(true)
   })
 
   it('when options are passed, extracts none of them', () => {
@@ -41,7 +43,9 @@ describe('Help', () => {
       environment: new Environment({}),
     })
 
-    expect(command.extractOptions()).toEqual({})
+    const options = command.extractOptions()
+
+    expect(options).toEqual({})
   })
 
   it('when run, writes the usage text', async () => {

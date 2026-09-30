@@ -3,7 +3,7 @@
 set -euo pipefail
 
 mode=${1:-both}
-scope=${2:-changed}
+scope=${2:-all}
 if [[ $mode != code && $mode != tests && $mode != both ]]; then
   echo "Usage: $0 [code|tests|both] [changed|all]" >&2
   exit 1

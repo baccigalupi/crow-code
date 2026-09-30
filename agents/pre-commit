@@ -17,7 +17,7 @@ bash agents/typecheck
 
 echo ""
 echo "--> Style check"
-bash agents/style-check
+bash agents/style-check both all
 
 echo ""
 echo "--> Tests with coverage (95% per-file on branches, functions, lines)"

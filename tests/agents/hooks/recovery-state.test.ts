@@ -12,7 +12,6 @@ describe('recovery-state', () => {
 
     await recordRecovery(projectDirectory, 'one', 'first')
     const pending = await recoveryPending(projectDirectory, 'one', 'first')
-
     Deno.removeSync(projectDirectory, { recursive: true })
 
     expect(pending).toBe(true)
@@ -22,7 +21,6 @@ describe('recovery-state', () => {
     const projectDirectory = Deno.makeTempDirSync()
 
     const pending = await recoveryPending(projectDirectory, 'one', 'first')
-
     Deno.removeSync(projectDirectory, { recursive: true })
 
     expect(pending).toBe(false)
@@ -34,7 +32,6 @@ describe('recovery-state', () => {
 
     const otherPrompt = await recoveryPending(projectDirectory, 'one', 'second')
     const otherSession = await recoveryPending(projectDirectory, 'two', 'first')
-
     Deno.removeSync(projectDirectory, { recursive: true })
 
     expect(otherPrompt).toBe(false)
@@ -49,7 +46,6 @@ describe('recovery-state', () => {
     await pruneRecovery(projectDirectory, 'one', 'first')
     const kept = await recoveryPending(projectDirectory, 'one', 'first')
     const pruned = await recoveryPending(projectDirectory, 'two', 'second')
-
     Deno.removeSync(projectDirectory, { recursive: true })
 
     expect(kept).toBe(true)
