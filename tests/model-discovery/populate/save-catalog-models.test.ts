@@ -72,17 +72,56 @@ describe('saveCatalogModels', () => {
     await database.destroy()
   })
 
-  it('when given no models, inserts nothing', async () => {
+  it('when the provider already has models, replaces them with the new set', async () => {
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
+    const storedModel = {
+      provider_id: 1,
+      identifier: 'author/old',
+      name: 'Old',
+      context_length: 1000,
+      cost_input: 1,
+      cost_output: 2,
+      dynamic_delegation: false,
+      modality: 'text->text',
+      supported_parameters: '[]',
+      supports_reasoning: false,
+      can_disable_reasoning: false,
+      reasoning_options: '{}',
+    }
+    const model = {
+      id: 'author/model',
+      name: 'Model',
+      provider: 'nous' as const,
+      contextLength: 128000,
+      costInput: 1.5,
+      costOutput: 3,
+      dynamicDelegation: false,
+      modality: 'text->text',
+      supportedParameters: ['temperature'],
+      supportsReasoning: true,
+      canDisableReasoning: true,
+      reasoningOptions: { mandatory: false },
+    }
+    await database('models').insert(storedModel)
+    await database('models').insert({
+      ...storedModel,
+      provider_id: 2,
+      identifier: 'author/kept',
+    })
 
-    await saveCatalogModels(database, 1, [], logger)
+    await saveCatalogModels(database, 1, [model], logger)
 
-    expect(await database('models')).toEqual([])
+    const rows = await database('models').orderBy('identifier')
+    expect(rows).toHaveLength(2)
+    expect(rows[0].provider_id).toBe(2)
+    expect(rows[0].identifier).toBe('author/kept')
+    expect(rows[1].provider_id).toBe(1)
+    expect(rows[1].identifier).toBe('author/model')
     await database.destroy()
   })
 
-  it('when a model already exists, logs the error and saves the rest', async () => {
+  it('when the payload lists the same model twice, logs the error and saves the rest', async () => {
     const logger = pino({ enabled: false })
     using loggerErrorSpy = spy(logger, 'error')
     const database = await createTestDatabase(logger)
@@ -100,18 +139,51 @@ describe('saveCatalogModels', () => {
       canDisableReasoning: true,
       reasoningOptions: { mandatory: false },
     }
-    await saveCatalogModels(database, 1, [model], logger)
 
     await saveCatalogModels(database, 1, [
       model,
+      { ...model },
       { ...model, id: 'author/other' },
     ], logger)
 
-    expect(await database('models')).toHaveLength(2)
+    const rows = await database('models').orderBy('identifier')
+    expect(rows).toHaveLength(2)
+    expect(rows[0].identifier).toBe('author/model')
+    expect(rows[1].identifier).toBe('author/other')
     assertSpyCall(loggerErrorSpy, 0)
     expect(loggerErrorSpy.calls[0].args[0]).toContain(
       'UNIQUE constraint failed',
     )
+    expect(loggerErrorSpy.calls).toHaveLength(1)
+    await database.destroy()
+  })
+
+  it('when given no models, leaves existing rows unchanged', async () => {
+    const logger = pino({ enabled: false })
+    using loggerErrorSpy = spy(logger, 'error')
+    const database = await createTestDatabase(logger)
+    const storedModel = {
+      provider_id: 1,
+      identifier: 'author/old',
+      name: 'Old',
+      context_length: 1000,
+      cost_input: 1,
+      cost_output: 2,
+      dynamic_delegation: false,
+      modality: 'text->text',
+      supported_parameters: '[]',
+      supports_reasoning: false,
+      can_disable_reasoning: false,
+      reasoning_options: '{}',
+    }
+    await database('models').insert(storedModel)
+
+    await saveCatalogModels(database, 1, [], logger)
+
+    const rows = await database('models')
+    expect(rows).toHaveLength(1)
+    expect(rows[0].identifier).toBe('author/old')
+    expect(loggerErrorSpy.calls).toHaveLength(0)
     await database.destroy()
   })
 })
