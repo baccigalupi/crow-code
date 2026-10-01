@@ -13,6 +13,10 @@ export const mockFetchSuccess = <T>(body: T) => {
   return createFetchMock(() => Promise.resolve(Response.json(body)))
 }
 
+export const mockFetchResponse = (build: () => Response) => {
+  return createFetchMock(() => Promise.resolve(build()))
+}
+
 export const mockFetchError = (status: number) => {
   return createFetchMock(() => {
     return Promise.resolve(new Response(null, { status }))
