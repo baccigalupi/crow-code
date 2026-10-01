@@ -52,5 +52,24 @@ describe('providerFindAll', () => {
       expect(providers).toEqual([])
       await database.destroy()
     })
+
+    it('returns an empty api key when the env var is unset', async () => {
+      const environment = new Environment({})
+      const logger = pino({ enabled: false })
+      const database = await createTestDatabase(logger)
+      await database('providers').insert({
+        name: 'provider-name',
+        base_url: 'https://www.example.com',
+        models_path: '/models',
+        api_key_env_var: 'MISSING_KEY',
+      })
+
+      const providers = await providerFindAll(environment, database, logger)
+        .all()
+
+      expect(providers).toHaveLength(1)
+      expect(providers[0].apiKey()).toBe('')
+      await database.destroy()
+    })
   })
 })

@@ -9,14 +9,18 @@ import { clearDirectory, fixturesDirectory } from '../support/fixtures.ts'
 import { cleanDatabase, createTestDatabase } from '../support/test-database.ts'
 import pino from 'pino'
 
-const crowDirectory = join(fixturesDirectory, 'open-database', '.crow')
-
 describe('openAndMigrateDatabase', () => {
-  beforeEach(() => clearDirectory(crowDirectory))
-  afterEach(() => clearDirectory(crowDirectory))
+  beforeEach(() =>
+    clearDirectory(join(fixturesDirectory, 'open-database', '.crow'))
+  )
+  afterEach(() =>
+    clearDirectory(join(fixturesDirectory, 'open-database', '.crow'))
+  )
 
   it('when opened, creates the crow directory and database file', async () => {
+    const crowDirectory = join(fixturesDirectory, 'open-database', '.crow')
     const logger = pino({ enabled: false })
+
     const database = await openAndMigrateDatabase(crowDirectory, logger)
 
     expect(Deno.statSync(defaultDatabasePath(crowDirectory)).isFile).toBe(true)
@@ -24,6 +28,7 @@ describe('openAndMigrateDatabase', () => {
   })
 
   it('when opened, returns a writable database', async () => {
+    const crowDirectory = join(fixturesDirectory, 'open-database', '.crow')
     const logger = pino({ enabled: false })
     const database = await openAndMigrateDatabase(crowDirectory, logger)
 
@@ -38,6 +43,7 @@ describe('openAndMigrateDatabase', () => {
   })
 
   it('when opened twice, keeps existing data', async () => {
+    const crowDirectory = join(fixturesDirectory, 'open-database', '.crow')
     const logger = pino({ enabled: false })
     const first = await openAndMigrateDatabase(crowDirectory, logger)
     await first.schema.createTable('notes', (table) => {
@@ -54,6 +60,7 @@ describe('openAndMigrateDatabase', () => {
   })
 
   it('when cleaned, drops all tables', async () => {
+    const crowDirectory = join(fixturesDirectory, 'open-database', '.crow')
     const logger = pino({ enabled: false })
     const database = await openAndMigrateDatabase(crowDirectory, logger)
     await database.schema.createTable('notes', (table) => {

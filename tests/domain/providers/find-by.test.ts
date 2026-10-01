@@ -42,6 +42,34 @@ describe('providerFindBy', () => {
       expect(provider).toBeUndefined()
       await database.destroy()
     })
+
+    it('returns the matching provider among several', async () => {
+      const environment = new Environment({})
+      const logger = pino({ enabled: false })
+      const database = await createTestDatabase(logger)
+      await database('providers').insert([
+        {
+          name: 'provider-one',
+          base_url: 'https://www.example.com/one',
+          models_path: '/models',
+          api_key_env_var: null,
+        },
+        {
+          name: 'provider-two',
+          base_url: 'https://www.example.com/two',
+          models_path: '/models',
+          api_key_env_var: null,
+        },
+      ])
+
+      const provider = await providerFindBy(environment, database, logger)
+        .getByName('provider-two')
+
+      expect(provider).toBeInstanceOf(ProviderEntity)
+      const foundProvider = provider as ProviderEntity
+      expect(foundProvider.name()).toBe('provider-two')
+      await database.destroy()
+    })
   })
 
   describe('getById', () => {
@@ -74,6 +102,32 @@ describe('providerFindBy', () => {
         .getById(999)
 
       expect(provider).toBeUndefined()
+      await database.destroy()
+    })
+
+    it('returns the matching provider among several', async () => {
+      const environment = new Environment({})
+      const logger = pino({ enabled: false })
+      const database = await createTestDatabase(logger)
+      await database('providers').insert({
+        name: 'provider-one',
+        base_url: 'https://www.example.com/one',
+        models_path: '/models',
+        api_key_env_var: null,
+      })
+      const [{ id }] = await database('providers').insert({
+        name: 'provider-two',
+        base_url: 'https://www.example.com/two',
+        models_path: '/models',
+        api_key_env_var: null,
+      }).returning('id')
+
+      const provider = await providerFindBy(environment, database, logger)
+        .getById(id)
+
+      expect(provider).toBeInstanceOf(ProviderEntity)
+      const foundProvider = provider as ProviderEntity
+      expect(foundProvider.name()).toBe('provider-two')
       await database.destroy()
     })
   })

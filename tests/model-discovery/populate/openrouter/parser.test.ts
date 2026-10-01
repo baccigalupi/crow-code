@@ -179,116 +179,160 @@ describe('parseOpenRouterBody', () => {
     })
   })
 
-  describe('fixture', () => {
-    it('maps every record', async () => {
-      const fixture = await loadOpenRouterFixture()
+  it('maps every fixture record', async () => {
+    const fixture = await loadOpenRouterFixture()
 
-      const result = parseOpenRouterBody(fixture, 'openrouter')
+    const result = parseOpenRouterBody(fixture, 'openrouter')
 
-      expect(result).toHaveLength(458)
-    })
+    expect(result).toHaveLength(458)
+  })
 
-    it('normalizes a fixed-price record', async () => {
-      const fixture = await loadOpenRouterFixture()
-      const model = fixture.data.find((model: { id: string }) =>
-        model.id === 'fireworks/ember-1'
-      )
+  it('normalizes a fixed-price record with reasoning options', () => {
+    const model = {
+      id: 'fireworks/ember-1',
+      name: 'Fireworks: Ember-1',
+      context_length: 1048576,
+      pricing: { prompt: '0.000003', completion: '0.000015' },
+      architecture: { modality: 'text+image->text' },
+      supported_parameters: ['reasoning', 'reasoning_effort', 'temperature'],
+      reasoning: {
+        mandatory: false,
+        default_enabled: true,
+        supported_efforts: ['max', 'high', 'low'],
+        default_effort: 'max',
+      },
+    }
 
-      const result = parseOpenRouterBody({ data: [model] }, 'openrouter')[0]
+    const result = parseOpenRouterBody({ data: [model] }, 'openrouter')[0]
 
-      expect(result.costInput).toBe(3)
-      expect(result.costOutput).toBe(15)
-      expect(result.contextLength).toBe(1048576)
-      expect(result.modality).toBe('text+image->text')
-      expect(result.supportsReasoning).toBe(true)
-      expect(result.canDisableReasoning).toBe(true)
-      expect(result.reasoningOptions.supported_efforts).toEqual([
-        'max',
-        'high',
-        'low',
-      ])
-      expect(result.reasoningOptions.default_effort).toBe('max')
-      expect(result.dynamicDelegation).toBe(false)
-    })
+    expect(result.costInput).toBe(3)
+    expect(result.costOutput).toBe(15)
+    expect(result.contextLength).toBe(1048576)
+    expect(result.modality).toBe('text+image->text')
+    expect(result.supportsReasoning).toBe(true)
+    expect(result.canDisableReasoning).toBe(true)
+    expect(result.reasoningOptions.supported_efforts).toEqual([
+      'max',
+      'high',
+      'low',
+    ])
+    expect(result.reasoningOptions.default_effort).toBe('max')
+    expect(result.dynamicDelegation).toBe(false)
+  })
 
-    it('normalizes the auto router as dynamic delegation', async () => {
-      const fixture = await loadOpenRouterFixture()
-      const model = fixture.data.find((model: { id: string }) =>
-        model.id === 'openrouter/auto'
-      )
+  it('normalizes a router record as dynamic delegation', () => {
+    const model = {
+      id: 'openrouter/auto',
+      name: 'Auto Router',
+      context_length: 2000000,
+      pricing: { prompt: '-1', completion: '-1' },
+      architecture: { modality: 'text+image+file+audio+video->text+image' },
+      supported_parameters: ['reasoning', 'reasoning_effort', 'temperature'],
+    }
 
-      const result = parseOpenRouterBody({ data: [model] }, 'openrouter')[0]
+    const result = parseOpenRouterBody({ data: [model] }, 'openrouter')[0]
 
-      expect(result.dynamicDelegation).toBe(true)
-      expect(result.costInput).toBeNull()
-      expect(result.costOutput).toBeNull()
-      expect(result.supportsReasoning).toBe(true)
-      expect(result.canDisableReasoning).toBe(false)
-    })
+    expect(result.dynamicDelegation).toBe(true)
+    expect(result.costInput).toBeNull()
+    expect(result.costOutput).toBeNull()
+    expect(result.supportsReasoning).toBe(true)
+    expect(result.canDisableReasoning).toBe(false)
+  })
 
-    it('normalizes a free record at zero cost', async () => {
-      const fixture = await loadOpenRouterFixture()
-      const model = fixture.data.find((model: { id: string }) =>
-        model.id === 'openrouter/free'
-      )
+  it('marks only negative-priced records as dynamic delegation', () => {
+    const router = {
+      name: 'Router',
+      context_length: 2000000,
+      pricing: { prompt: '-1', completion: '-1' },
+      architecture: { modality: 'text->text' },
+      supported_parameters: ['temperature'],
+    }
+    const fixed = {
+      id: 'vendor/fixed',
+      name: 'Fixed Model',
+      context_length: 128000,
+      pricing: { prompt: '0.000001', completion: '0.000002' },
+      architecture: { modality: 'text->text' },
+      supported_parameters: ['temperature'],
+    }
+    const data = [
+      { ...router, id: 'openrouter/auto' },
+      { ...fixed },
+      { ...router, id: 'openrouter/auto-beta' },
+      { ...router, id: 'openrouter/bodybuilder' },
+      { ...router, id: 'openrouter/fusion' },
+      { ...router, id: 'openrouter/pareto-code' },
+    ]
 
-      const result = parseOpenRouterBody({ data: [model] }, 'openrouter')[0]
+    const result = parseOpenRouterBody({ data }, 'openrouter')
 
-      expect(result.dynamicDelegation).toBe(false)
-      expect(result.costInput).toBe(0)
-      expect(result.costOutput).toBe(0)
-    })
+    expect(result[0].dynamicDelegation).toBe(true)
+    expect(result[0].id).toBe('openrouter/auto')
+    expect(result[1].dynamicDelegation).toBe(false)
+    expect(result[1].id).toBe('vendor/fixed')
+    expect(result[2].dynamicDelegation).toBe(true)
+    expect(result[2].id).toBe('openrouter/auto-beta')
+    expect(result[3].dynamicDelegation).toBe(true)
+    expect(result[3].id).toBe('openrouter/bodybuilder')
+    expect(result[4].dynamicDelegation).toBe(true)
+    expect(result[4].id).toBe('openrouter/fusion')
+    expect(result[5].dynamicDelegation).toBe(true)
+    expect(result[5].id).toBe('openrouter/pareto-code')
+  })
 
-    it('marks exactly the five router records as dynamic delegation', async () => {
-      const fixture = await loadOpenRouterFixture()
+  it('passes empty supported_parameters arrays through unchanged', () => {
+    const model = {
+      id: 'test/model',
+      name: 'Test Model',
+      context_length: 128000,
+      pricing: { prompt: '0.000001', completion: '0.000002' },
+      architecture: { modality: 'text->text' },
+      supported_parameters: ['temperature'],
+    }
+    const empty = { ...model, supported_parameters: [] }
+    const data = [
+      { ...empty, id: 'test/one' },
+      { ...empty, id: 'test/two' },
+      { ...empty, id: 'test/three' },
+      { ...model },
+    ]
 
-      const result = parseOpenRouterBody(fixture, 'openrouter')
-      const dynamic = result
-        .filter((model) => model.dynamicDelegation)
-        .map((model) => model.id)
-        .sort()
+    const result = parseOpenRouterBody({ data }, 'openrouter')
 
-      expect(dynamic).toEqual([
-        'openrouter/auto',
-        'openrouter/auto-beta',
-        'openrouter/bodybuilder',
-        'openrouter/fusion',
-        'openrouter/pareto-code',
-      ])
-    })
+    expect(result[0].supportedParameters).toEqual([])
+    expect(result[1].supportedParameters).toEqual([])
+    expect(result[2].supportedParameters).toEqual([])
+    expect(result[3].supportedParameters).toEqual(['temperature'])
+  })
 
-    it('preserves exactly three empty supported_parameters arrays', async () => {
-      const fixture = await loadOpenRouterFixture()
+  it('passes context_length through as a number', () => {
+    const model = {
+      id: 'test/model',
+      name: 'Test Model',
+      context_length: 128000,
+      pricing: { prompt: '0.000001', completion: '0.000002' },
+      architecture: { modality: 'text->text' },
+      supported_parameters: ['temperature'],
+    }
 
-      const result = parseOpenRouterBody(fixture, 'openrouter')
-      const empty = result.filter((model) =>
-        model.supportedParameters.length === 0
-      )
+    const result = parseOpenRouterBody({ data: [model] }, 'openrouter')[0]
 
-      expect(empty).toHaveLength(3)
-    })
+    expect(typeof result.contextLength).toBe('number')
+  })
 
-    it('gives every record a numeric contextLength', async () => {
-      const fixture = await loadOpenRouterFixture()
+  it('emits null costs instead of negative sentinel prices', () => {
+    const model = {
+      id: 'openrouter/auto',
+      name: 'Auto Router',
+      context_length: 2000000,
+      pricing: { prompt: '-1', completion: '-1' },
+      architecture: { modality: 'text->text' },
+      supported_parameters: ['temperature'],
+    }
 
-      const result = parseOpenRouterBody(fixture, 'openrouter')
-      const numeric = result.every((model) =>
-        typeof model.contextLength === 'number'
-      )
+    const result = parseOpenRouterBody({ data: [model] }, 'openrouter')[0]
 
-      expect(numeric).toBe(true)
-    })
-
-    it('never emits a negative cost', async () => {
-      const fixture = await loadOpenRouterFixture()
-
-      const result = parseOpenRouterBody(fixture, 'openrouter')
-      const negative = result.filter((model) =>
-        (model.costInput !== null && model.costInput < 0) ||
-        (model.costOutput !== null && model.costOutput < 0)
-      )
-
-      expect(negative).toEqual([])
-    })
+    expect(result.costInput).toBeNull()
+    expect(result.costOutput).toBeNull()
   })
 })

@@ -4,19 +4,25 @@ import { normalize } from '../../../../src/domain/parsers/parse-params/normalize
 
 describe('normalize', () => {
   it('when the key is kebab-case, returns the snake_case key', () => {
-    const result = normalize('api-key-env-var')
+    const key = 'api-key-env-var'
+
+    const result = normalize(key)
 
     expect(result).toBe('api_key_env_var')
   })
 
   it('when the key is camelCase, returns the snake_case key', () => {
-    const result = normalize('apiKeyEnvVar')
+    const key = 'apiKeyEnvVar'
+
+    const result = normalize(key)
 
     expect(result).toBe('api_key_env_var')
   })
 
   it('when the key matches nothing, returns the key unchanged', () => {
-    const result = normalize('Bad_Key')
+    const key = 'Bad_Key'
+
+    const result = normalize(key)
 
     expect(result).toBe('Bad_Key')
   })

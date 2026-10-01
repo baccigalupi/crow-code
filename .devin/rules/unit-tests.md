@@ -37,6 +37,9 @@ Apply when creating or changing tests in this repo.
     under test. Assert directly on the result: `expect(models).toHaveLength(2)`,
     `expect(models[0].identifier()).toBe('free')`. No loops around `expect` —
     assert each element explicitly.
+14. Tests must not create temporary directories (e.g., `Deno.makeTempDirSync`,
+    `Deno.makeTempDir`). Use fixed fixture paths under `tests/support/fixtures`
+    instead.
 
 ## Examples
 

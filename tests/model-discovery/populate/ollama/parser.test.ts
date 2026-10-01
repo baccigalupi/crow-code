@@ -288,7 +288,9 @@ describe('parseOllamaBody', () => {
   })
 
   it('returns an empty list when models is empty', () => {
-    const result = parseOllamaBody({ models: [] }, 'ollama')
+    const body = { models: [] }
+
+    const result = parseOllamaBody(body, 'ollama')
 
     expect(result).toEqual([])
   })

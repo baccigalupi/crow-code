@@ -74,7 +74,6 @@ describe('Command', () => {
 
   it('when constructed, exposes the application data to subclasses', async () => {
     const consoleLog = mock.fn()
-
     class EchoDirectory extends Command {
       isMatch() {
         return true
@@ -89,12 +88,12 @@ describe('Command', () => {
         return Promise.resolve()
       }
     }
-
     const database = knex({
       client: 'better-sqlite3',
       connection: ':memory:',
       useNullAsDefault: true,
     })
+
     await new EchoDirectory({
       parsedArguments: { commands: [], options: {} },
       crowDirectory: '/tmp/crow',

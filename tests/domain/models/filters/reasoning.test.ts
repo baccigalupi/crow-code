@@ -62,6 +62,49 @@ describe('reasoningFilter', () => {
       expect(models).toEqual([])
       await database.destroy()
     })
+
+    it('returns only dynamic models when mixed with static models', async () => {
+      const logger = pino({ enabled: false })
+      const database = await createTestDatabase(logger)
+      await database('models').insert([
+        {
+          provider_id: 1,
+          identifier: 'delegated',
+          name: 'Delegated Model',
+          context_length: 1000,
+          cost_input: null,
+          cost_output: null,
+          dynamic_delegation: true,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
+        {
+          provider_id: 1,
+          identifier: 'static',
+          name: 'Static Model',
+          context_length: 1000,
+          cost_input: 0,
+          cost_output: 0,
+          dynamic_delegation: false,
+          modality: 'text->text',
+          supported_parameters: '[]',
+          supports_reasoning: false,
+          can_disable_reasoning: false,
+          reasoning_options: '{}',
+        },
+      ])
+
+      const builder = database('models')
+      reasoningFilter(builder, { type: 'dynamic' })
+      const models = await builder
+
+      expect(models).toHaveLength(1)
+      expect(models[0].identifier).toBe('delegated')
+      await database.destroy()
+    })
   })
 
   describe("when type is 'chat'", () => {

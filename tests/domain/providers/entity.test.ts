@@ -17,9 +17,13 @@ describe('provider', () => {
       apiKeyEnvVar: null,
     }, environment)
 
-    expect(provider.id()).toBe(1)
-    expect(provider.name()).toBe('provider-name')
-    expect(provider.baseUrl()).toBe('https://www.example.com')
+    const id = provider.id()
+    const name = provider.name()
+    const baseUrl = provider.baseUrl()
+
+    expect(id).toBe(1)
+    expect(name).toBe('provider-name')
+    expect(baseUrl).toBe('https://www.example.com')
   })
 
   describe('modelsUrl', () => {
@@ -33,7 +37,9 @@ describe('provider', () => {
         apiKeyEnvVar: null,
       }, environment)
 
-      expect(provider.modelsUrl()).toBe('https://www.example.com/v1/models')
+      const url = provider.modelsUrl()
+
+      expect(url).toBe('https://www.example.com/v1/models')
     })
 
     it('when base url has a trailing slash and path has no leading slash, joins them with one slash', () => {
@@ -46,7 +52,9 @@ describe('provider', () => {
         apiKeyEnvVar: null,
       }, environment)
 
-      expect(provider.modelsUrl()).toBe('https://www.example.com/v1/models')
+      const url = provider.modelsUrl()
+
+      expect(url).toBe('https://www.example.com/v1/models')
     })
 
     it('when base url and path both have slashes, joins them with one slash', () => {
@@ -59,7 +67,9 @@ describe('provider', () => {
         apiKeyEnvVar: null,
       }, environment)
 
-      expect(provider.modelsUrl()).toBe('https://www.example.com/v1/models')
+      const url = provider.modelsUrl()
+
+      expect(url).toBe('https://www.example.com/v1/models')
     })
 
     it('when models_path is null, uses the default path', () => {
@@ -72,7 +82,9 @@ describe('provider', () => {
         apiKeyEnvVar: null,
       }, environment)
 
-      expect(provider.modelsUrl()).toBe('https://www.example.com/v1/models')
+      const url = provider.modelsUrl()
+
+      expect(url).toBe('https://www.example.com/v1/models')
     })
   })
 
@@ -89,7 +101,9 @@ describe('provider', () => {
         apiKeyEnvVar: 'PROVIDER_API_KEY',
       }, environment)
 
-      expect(provider.apiKey()).toBe('provider-api-key')
+      const key = provider.apiKey()
+
+      expect(key).toBe('provider-api-key')
     })
 
     it('when api_key_env_var is null, returns an empty string', () => {
@@ -102,7 +116,9 @@ describe('provider', () => {
         apiKeyEnvVar: null,
       }, environment)
 
-      expect(provider.apiKey()).toBe('')
+      const key = provider.apiKey()
+
+      expect(key).toBe('')
     })
 
     it('when the environment variable is not set, returns an empty string', () => {
@@ -115,7 +131,9 @@ describe('provider', () => {
         apiKeyEnvVar: 'MISSING_KEY',
       }, environment)
 
-      expect(provider.apiKey()).toBe('')
+      const key = provider.apiKey()
+
+      expect(key).toBe('')
     })
   })
 
@@ -140,6 +158,21 @@ describe('provider', () => {
       const provider = providerEntity(undefined, environment)
 
       expect(provider).toBeUndefined()
+    })
+
+    it('when given a record, normalizes the record fields', () => {
+      const environment = new Environment({})
+
+      const provider = providerEntity({
+        id: 2,
+        name: 'other-provider',
+        base_url: 'https://api.example.com/',
+        models_path: 'models',
+        api_key_env_var: null,
+      }, environment) as ProviderEntity
+
+      expect(provider.name()).toBe('other-provider')
+      expect(provider.modelsUrl()).toBe('https://api.example.com/models')
     })
   })
 })

@@ -185,6 +185,30 @@ const plugin: Deno.lint.Plugin = {
         }
       },
     },
+    'no-temporary-directories': {
+      create(context) {
+        if (!isTestFile(context.filename)) return {}
+        return {
+          CallExpression(node) {
+            const callee = node.callee
+            if (
+              callee.type === 'MemberExpression' &&
+              callee.object.type === 'Identifier' &&
+              callee.object.name === 'Deno' &&
+              callee.property.type === 'Identifier' &&
+              (callee.property.name === 'makeTempDir' ||
+                callee.property.name === 'makeTempDirSync')
+            ) {
+              context.report({
+                node,
+                message:
+                  'no temporary directories in tests; use fixed fixture paths under tests/support/fixtures',
+              })
+            }
+          },
+        }
+      },
+    },
     'no-logic-in-tests': {
       create(context) {
         if (!isTestFile(context.filename)) return {}

@@ -1,15 +1,12 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { recoveryPending } from '../../../agents/hooks/recovery-state.ts'
-
-const config = Deno.readTextFileSync('tests/support/fixtures/devin-config.json')
+import { clearDirectory } from '../../support/fixtures.ts'
 
 describe('block-random-execs', () => {
   it('when command is a literal multiline git commit, prints nothing', async () => {
-    const projectDirectory = Deno.makeTempDirSync()
-    Deno.mkdirSync(`${projectDirectory}/.devin`)
-    Deno.writeTextFileSync(`${projectDirectory}/.devin/config.json`, config)
-
+    const projectDirectory =
+      'tests/support/fixtures/hook-project/block-random-execs'
     const payload = JSON.stringify({
       tool_name: 'exec',
       tool_input: { command: 'git commit -m "subject\n\nbody"' },
@@ -29,23 +26,17 @@ describe('block-random-execs', () => {
     })
     const process = command.spawn()
     const writer = process.stdin.getWriter()
-    const encoder = new TextEncoder()
-    await writer.write(encoder.encode(payload))
+    await writer.write(new TextEncoder().encode(payload))
     await writer.close()
     const output = await process.output()
-
-    Deno.removeSync(projectDirectory, { recursive: true })
-
     const stdout = new TextDecoder().decode(output.stdout)
 
     expect(stdout).toBe('')
   })
 
   it('when command contains command substitution, prints a block decision', async () => {
-    const projectDirectory = Deno.makeTempDirSync()
-    Deno.mkdirSync(`${projectDirectory}/.devin`)
-    Deno.writeTextFileSync(`${projectDirectory}/.devin/config.json`, config)
-
+    const projectDirectory =
+      'tests/support/fixtures/hook-project/block-random-execs'
     const payload = JSON.stringify({
       tool_name: 'exec',
       tool_input: {
@@ -67,23 +58,17 @@ describe('block-random-execs', () => {
     })
     const process = command.spawn()
     const writer = process.stdin.getWriter()
-    const encoder = new TextEncoder()
-    await writer.write(encoder.encode(payload))
+    await writer.write(new TextEncoder().encode(payload))
     await writer.close()
     const output = await process.output()
-
-    Deno.removeSync(projectDirectory, { recursive: true })
-
     const stdout = new TextDecoder().decode(output.stdout)
 
     expect(stdout).toContain('"decision":"block"')
   })
 
   it('when a denied payload carries ids, records a recovery marker', async () => {
-    const projectDirectory = Deno.makeTempDirSync()
-    Deno.mkdirSync(`${projectDirectory}/.devin`)
-    Deno.writeTextFileSync(`${projectDirectory}/.devin/config.json`, config)
-
+    const projectDirectory =
+      'tests/support/fixtures/hook-project/block-random-execs-recovery'
     const payload = JSON.stringify({
       session_id: 'one',
       prompt_id: 'first',
@@ -99,23 +84,18 @@ describe('block-random-execs', () => {
     })
     const process = command.spawn()
     const writer = process.stdin.getWriter()
-    const encoder = new TextEncoder()
-    await writer.write(encoder.encode(payload))
+    await writer.write(new TextEncoder().encode(payload))
     await writer.close()
     await process.output()
-
     const exists = await recoveryPending(projectDirectory, 'one', 'first')
-
-    Deno.removeSync(projectDirectory, { recursive: true })
+    await clearDirectory(`${projectDirectory}/.devin/state`)
 
     expect(exists).toBe(true)
   })
 
   it('when a recognized guess is blocked, the reason names the approved script', async () => {
-    const projectDirectory = Deno.makeTempDirSync()
-    Deno.mkdirSync(`${projectDirectory}/.devin`)
-    Deno.writeTextFileSync(`${projectDirectory}/.devin/config.json`, config)
-
+    const projectDirectory =
+      'tests/support/fixtures/hook-project/block-random-execs'
     const payload = JSON.stringify({
       tool_name: 'exec',
       tool_input: { command: 'deno test tests/foo.test.ts' },
@@ -135,13 +115,9 @@ describe('block-random-execs', () => {
     })
     const process = command.spawn()
     const writer = process.stdin.getWriter()
-    const encoder = new TextEncoder()
-    await writer.write(encoder.encode(payload))
+    await writer.write(new TextEncoder().encode(payload))
     await writer.close()
     const output = await process.output()
-
-    Deno.removeSync(projectDirectory, { recursive: true })
-
     const stdout = new TextDecoder().decode(output.stdout)
 
     expect(stdout).toContain('"decision":"block"')

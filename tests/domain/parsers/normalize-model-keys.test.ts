@@ -4,11 +4,13 @@ import { normalizeModelKeys } from '../../../src/domain/parsers/normalize-model-
 
 describe('normalizeModelKeys', () => {
   it('converts snake_case record keys to camelCase', () => {
-    const result = normalizeModelKeys({
+    const record = {
       provider_id: 1,
       context_length: 128000,
       supported_parameters: ['temperature'],
-    })
+    }
+
+    const result = normalizeModelKeys(record)
 
     expect(result).toEqual({
       providerId: 1,

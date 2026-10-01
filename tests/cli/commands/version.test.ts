@@ -22,7 +22,9 @@ describe('Version', () => {
       environment: new Environment({}),
     })
 
-    expect(command.isMatch()).toBe(true)
+    const result = command.isMatch()
+
+    expect(result).toBe(true)
   })
 
   it('when -V is passed, matches', () => {
@@ -41,7 +43,9 @@ describe('Version', () => {
       environment: new Environment({}),
     })
 
-    expect(command.isMatch()).toBe(true)
+    const result = command.isMatch()
+
+    expect(result).toBe(true)
   })
 
   it('when no version option is passed, does not match', () => {
@@ -60,7 +64,9 @@ describe('Version', () => {
       environment: new Environment({}),
     })
 
-    expect(command.isMatch()).toBe(false)
+    const result = command.isMatch()
+
+    expect(result).toBe(false)
   })
 
   it('when options are passed, extracts none of them', () => {
@@ -82,7 +88,9 @@ describe('Version', () => {
       environment: new Environment({}),
     })
 
-    expect(command.extractOptions()).toEqual({})
+    const options = command.extractOptions()
+
+    expect(options).toEqual({})
   })
 
   it('when run, writes the project version', async () => {

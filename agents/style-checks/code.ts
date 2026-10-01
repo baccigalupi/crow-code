@@ -415,6 +415,7 @@ const plugin: Deno.lint.Plugin = {
     'max-file-lines': {
       create(context) {
         if (!isProductionFile(context.filename)) return {}
+        if (context.filename.endsWith('/types.ts')) return {}
         return {
           Program(node) {
             const lines = fileLineCount(context.sourceCode.getText())

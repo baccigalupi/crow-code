@@ -9,16 +9,16 @@ import type {
 } from '../../types.ts'
 
 export abstract class Command {
-  protected data: ApplicationData
-  protected commands: string[]
-  protected options: ParsedArgumentsOptions
-  protected crowDirectory: string
-  protected logger: Logger
-  protected database: Knex
-  protected consoleLog: ConsoleLog
-  protected fetchClient: typeof fetch
-  protected denoCommand: DenoCommand
-  protected environment: Environment
+  protected data!: ApplicationData
+  protected commands!: string[]
+  protected options!: ParsedArgumentsOptions
+  protected crowDirectory!: string
+  protected logger!: Logger
+  protected database!: Knex
+  protected consoleLog!: ConsoleLog
+  protected fetchClient!: typeof fetch
+  protected denoCommand!: DenoCommand
+  protected environment!: Environment
 
   constructor(data: ApplicationData) {
     Object.assign(this, data, {

@@ -1,8 +1,10 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { assertSpyCall, spy } from '@std/testing/mock'
+import type { Knex } from 'knex'
 import pino from 'pino'
 import { saveCatalogModels } from '../../../src/model-discovery/populate/save-catalog-models.ts'
+import type { CatalogModel } from '../../../src/model-discovery/types.ts'
 import { createTestDatabase } from '../../support/test-database.ts'
 
 describe('saveCatalogModels', () => {
@@ -185,5 +187,75 @@ describe('saveCatalogModels', () => {
     expect(rows[0].identifier).toBe('author/old')
     expect(loggerErrorSpy.calls).toHaveLength(0)
     await database.destroy()
+  })
+
+  it('when no model can be saved, rolls back the refresh and logs an error', async () => {
+    const logger = pino({ enabled: false })
+    using loggerErrorSpy = spy(logger, 'error')
+    const database = await createTestDatabase(logger)
+    await database('models').insert({
+      provider_id: 1,
+      identifier: 'author/kept',
+      name: 'Kept',
+      context_length: 1000,
+      cost_input: 1,
+      cost_output: 2,
+      dynamic_delegation: false,
+      modality: 'text->text',
+      supported_parameters: '[]',
+      supports_reasoning: false,
+      can_disable_reasoning: false,
+      reasoning_options: '{}',
+    })
+    const model = {
+      id: 'author/model',
+      name: undefined,
+      provider: 'nous' as const,
+      contextLength: 128000,
+      costInput: 1.5,
+      costOutput: 3,
+      dynamicDelegation: false,
+      modality: 'text->text',
+      supportedParameters: ['temperature'],
+      supportsReasoning: true,
+      canDisableReasoning: true,
+      reasoningOptions: { mandatory: false },
+    }
+
+    await saveCatalogModels(database, 1, [
+      model as unknown as CatalogModel,
+    ], logger)
+
+    const rows = await database('models')
+    expect(rows).toHaveLength(1)
+    expect(rows[0].identifier).toBe('author/kept')
+    expect(loggerErrorSpy.calls.length).toBeGreaterThan(0)
+    await database.destroy()
+  })
+
+  it('when the transaction fails, logs the rollback error', async () => {
+    const logger = pino({ enabled: false })
+    using loggerErrorSpy = spy(logger, 'error')
+    const database = {
+      transaction: () => Promise.reject(new Error('disk gone')),
+    } as unknown as Knex
+    const model = {
+      id: 'author/model',
+      name: 'Model',
+      provider: 'nous' as const,
+      contextLength: 128000,
+      costInput: 1.5,
+      costOutput: 3,
+      dynamicDelegation: false,
+      modality: 'text->text',
+      supportedParameters: ['temperature'],
+      supportsReasoning: true,
+      canDisableReasoning: true,
+      reasoningOptions: { mandatory: false },
+    }
+
+    await saveCatalogModels(database, 9, [model], logger)
+
+    expect(loggerErrorSpy.calls[0].args[0]).toContain('disk gone')
   })
 })
