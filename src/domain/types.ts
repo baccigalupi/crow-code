@@ -39,3 +39,21 @@ export type ProviderRecord = {
   api_key_env_var: string | null
 }
 export type EmptyRecord = Record<string, never>
+
+export type AvailabilityReason = 'rate_limited' | 'auth_failed' | 'unreachable'
+
+export type ProviderAvailabilityRow = {
+  id: number
+  provider_id: number
+  reason: AvailabilityReason
+  retry_at: string | null
+  updated_at: string
+}
+
+export type ModelAvailabilityRow = {
+  id: number
+  model_id: number
+  reason: AvailabilityReason
+  retry_at: string | null
+  updated_at: string
+}
