@@ -11,14 +11,14 @@ describe('create provider availability', () => {
 
     const creator = await createProviderAvailability(database, logger, {
       providerId: 1,
-      reason: 'rate_limited',
+      reason: 'no-api-key',
     }).create()
 
     expect(creator.success()).toBe(true)
     expect(creator.record()).toEqual({
       id: expect.any(Number),
       provider_id: 1,
-      reason: 'rate_limited',
+      reason: 'no-api-key',
       retry_at: null,
       updated_at: expect.any(String),
     })

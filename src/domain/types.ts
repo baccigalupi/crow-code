@@ -40,7 +40,7 @@ export type ProviderRecord = {
 }
 export type EmptyRecord = Record<string, never>
 
-export type AvailabilityReason = 'rate_limited' | 'auth_failed' | 'unreachable'
+export type AvailabilityReason = 'no-api-key'
 
 export type ProviderAvailabilityRow = {
   id: number

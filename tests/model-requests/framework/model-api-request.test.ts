@@ -3,6 +3,8 @@ import { expect } from '@std/expect'
 import { FetchRequest } from '../../../src/model-requests/framework/fetch-request.ts'
 import { ModelApiRequest } from '../../../src/model-requests/framework/model-api-request.ts'
 import type { ModelMessages } from '../../../src/model-requests/types.ts'
+import pino from 'pino'
+import { createTestDatabase } from '../../support/test-database.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
 
@@ -12,6 +14,7 @@ describe('ModelApiRequest', () => {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
       model: 'test-model',
+      providerId: 1,
     }
     const applicationData = mockApplicationData({
       fetchClient: mockFetchSuccess({
@@ -43,6 +46,7 @@ describe('ModelApiRequest', () => {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
       model: 'test-model',
+      providerId: 1,
     }
     const applicationData = mockApplicationData({
       fetchClient: mockFetchSuccess({
@@ -75,6 +79,7 @@ describe('ModelApiRequest', () => {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
       model: 'test-model',
+      providerId: 1,
     }
     const applicationData = mockApplicationData()
     const modelApiRequest = new class
@@ -100,6 +105,7 @@ describe('ModelApiRequest', () => {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
       model: 'test-model',
+      providerId: 1,
     }
     const applicationData = mockApplicationData({
       fetchClient: mockFetchSuccess({
@@ -131,6 +137,7 @@ describe('ModelApiRequest', () => {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
       model: 'test-model',
+      providerId: 1,
     }
     const applicationData = mockApplicationData({
       fetchClient: mockFetchSuccess({
@@ -159,6 +166,7 @@ describe('ModelApiRequest', () => {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
       model: 'test-model',
+      providerId: 1,
     }
     const applicationData = mockApplicationData({
       fetchClient: mockFetchSuccess({
@@ -197,6 +205,7 @@ describe('ModelApiRequest', () => {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
       model: 'test-model',
+      providerId: 1,
     }
     const applicationData = mockApplicationData({
       fetchClient: mockFetchError(500),
@@ -224,6 +233,7 @@ describe('ModelApiRequest', () => {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
       model: 'test-model',
+      providerId: 1,
     }
     const applicationData = mockApplicationData({
       fetchClient: mockFetchError(500),
@@ -244,5 +254,71 @@ describe('ModelApiRequest', () => {
     const response = await modelApiRequest.run()
 
     expect(response).toEqual([])
+  })
+
+  it('when an api call fails without an api token, creates a provider availability record', async () => {
+    const logger = pino({ enabled: false })
+    const database = await createTestDatabase(logger)
+    const modelEndpoint = {
+      baseURL: 'https://example.com/api/v1',
+      apiKey: '',
+      model: 'test-model',
+      providerId: 1,
+    }
+    const applicationData = mockApplicationData({
+      database,
+      fetchClient: mockFetchError(401),
+    })
+    const modelApiRequest = new class extends ModelApiRequest<string, string> {
+      protected parseAsJson = false
+
+      protected override jsonErrorResponse() {
+        return ''
+      }
+
+      protected getMessages(): ModelMessages[] {
+        return [{ role: 'user', content: this.requestData }]
+      }
+    }(modelEndpoint, applicationData, 'build a cli')
+
+    await modelApiRequest.run()
+
+    const rows = await database('provider_availabilities')
+    expect(rows).toHaveLength(1)
+    expect(rows[0].provider_id).toBe(1)
+    expect(rows[0].reason).toBe('no-api-key')
+    await database.destroy()
+  })
+
+  it('when an api call fails with an api token, does not create a provider availability record', async () => {
+    const logger = pino({ enabled: false })
+    const database = await createTestDatabase(logger)
+    const modelEndpoint = {
+      baseURL: 'https://example.com/api/v1',
+      apiKey: 'test-key',
+      model: 'test-model',
+      providerId: 1,
+    }
+    const applicationData = mockApplicationData({
+      database,
+      fetchClient: mockFetchError(500),
+    })
+    const modelApiRequest = new class extends ModelApiRequest<string, string> {
+      protected parseAsJson = false
+
+      protected override jsonErrorResponse() {
+        return ''
+      }
+
+      protected getMessages(): ModelMessages[] {
+        return [{ role: 'user', content: this.requestData }]
+      }
+    }(modelEndpoint, applicationData, 'build a cli')
+
+    await modelApiRequest.run()
+
+    const rows = await database('provider_availabilities')
+    expect(rows).toHaveLength(0)
+    await database.destroy()
   })
 })

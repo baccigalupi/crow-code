@@ -1,39 +1,43 @@
-import type { Logger } from '../../types.ts'
+import { ModelRequestErrorHandler } from './model-request-error-handler.ts'
+import type { ApplicationData, Logger } from '../../types.ts'
+import type { ModelEndpoint } from '../types.ts'
 
 export class FetchRequest {
-  private request: Request
+  request: Request
+  private modelEndpoint: ModelEndpoint
+  private applicationData: ApplicationData
   private fetchClient: typeof fetch
   private logger: Logger
-  private response: Response
-  private succeeded: boolean
+  response: Response
+  error?: Error
   private startTime!: number
   private endTime!: number
-  error?: Error
 
   constructor(
     request: Request,
-    fetchClient: typeof fetch,
-    logger: Logger,
+    modelEndpoint: ModelEndpoint,
+    applicationData: ApplicationData,
   ) {
     this.request = request
-    this.fetchClient = fetchClient
-    this.logger = logger
+    this.modelEndpoint = modelEndpoint
+    this.applicationData = applicationData
+    this.fetchClient = applicationData.fetchClient
+    this.logger = applicationData.logger
     this.response = Response.error()
-    this.succeeded = false
   }
 
   async run() {
     try {
       await this.send()
     } catch (error) {
-      this.handleNetworkError(error as Error)
+      await this.handleNetworkError(error as Error)
     }
 
     return this.response
   }
 
   success() {
-    return this.succeeded
+    return this.response.ok
   }
 
   benchmark() {
@@ -44,57 +48,40 @@ export class FetchRequest {
     return await this.response.json()
   }
 
-  private async fetch() {
-    this.response = await this.fetchClient(this.request)
-  }
-
   private async send() {
     this.startTime = performance.now()
     this.endTime = performance.now()
-    await this.fetch()
+    this.response = await this.fetchClient(this.request)
     await this.recordResult()
   }
 
   private async recordResult() {
     if (this.response.ok) {
       this.endTime = performance.now()
-      this.succeeded = true
-      return
+    } else {
+      await this.handleFailure()
     }
-    await this.logApiError()
   }
 
-  private handleNetworkError(error: Error) {
+  private async handleNetworkError(error: Error) {
     this.error = error
-    this.logger.error(
-      `Error: ${this.request.url} failed to connect: \n${error.message}`,
-    )
+    await this.handleFailure()
   }
 
-  private async logApiError() {
-    const errorDetails = await this.getResponseJson()
-
-    this.logger.error(
-      `Error: ${this.request.url} returned ${this.response.status} \n${errorDetails}`,
-    )
-  }
-
-  private async getResponseJson() {
-    try {
-      return await this.response.json()
-    } catch (error) {
-      this.error ||= error as SyntaxError
-      this.succeeded = false
-      return {}
-    }
+  private async handleFailure() {
+    await new ModelRequestErrorHandler(
+      this.modelEndpoint,
+      this.applicationData,
+      this,
+    ).run()
   }
 }
 export const fetchRequest = async (
   request: Request,
-  fetchClient: typeof fetch,
-  logger: Logger,
+  modelEndpoint: ModelEndpoint,
+  applicationData: ApplicationData,
 ) => {
-  const caller = new FetchRequest(request, fetchClient, logger)
+  const caller = new FetchRequest(request, modelEndpoint, applicationData)
   await caller.run()
   return caller
 }

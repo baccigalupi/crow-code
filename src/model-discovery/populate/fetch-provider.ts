@@ -43,11 +43,11 @@ class FetchProvider<ApiRecord, T> {
   }
 
   private async handleResponse(response: Response) {
-    if (!response.ok) {
+    if (response.ok) {
+      this.records = this.parse((await response.json()) as ApiRecord)
+    } else {
       this.logError(response.status)
-      return
     }
-    this.records = this.parse((await response.json()) as ApiRecord)
   }
 
   private fail() {

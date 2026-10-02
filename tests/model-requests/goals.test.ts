@@ -12,6 +12,7 @@ describe('goals', () => {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
       model: 'test-model',
+      providerId: 1,
     }
     const applicationData = mockApplicationData({
       fetchClient: mockFetchSuccess({
@@ -33,6 +34,7 @@ describe('goals', () => {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
       model: 'test-model',
+      providerId: 1,
     }
     const applicationData = mockApplicationData({
       fetchClient: mockFetchError(500),
@@ -49,6 +51,7 @@ describe('goals', () => {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
       model: 'test-model',
+      providerId: 1,
     }
     const fixture = await loadFixture(
       'model-requests/ollama-goals-response.json',

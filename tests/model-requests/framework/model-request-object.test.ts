@@ -8,6 +8,7 @@ describe('modelRequestObject', () => {
       baseURL: 'https://openrouter.ai/api/v1',
       apiKey: 'test-key',
       model: 'qwen3-coder:30b',
+      providerId: 1,
     }
     const messages = [
       { role: 'system', content: 'you extract goals' },
@@ -25,6 +26,7 @@ describe('modelRequestObject', () => {
       baseURL: 'https://openrouter.ai/api/v1',
       apiKey: 'test-key',
       model: 'qwen3-coder:30b',
+      providerId: 1,
     }
     const messages = [
       { role: 'system', content: 'you extract goals' },
@@ -42,6 +44,7 @@ describe('modelRequestObject', () => {
       baseURL: 'https://openrouter.ai/api/v1',
       apiKey: 'test-key',
       model: 'qwen3-coder:30b',
+      providerId: 1,
     }
     const messages = [
       { role: 'system', content: 'you extract goals' },

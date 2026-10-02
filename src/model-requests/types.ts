@@ -7,6 +7,7 @@ export type ModelEndpoint = {
   baseURL: string
   apiKey: string
   model: string
+  providerId: number
 }
 
 export type RequestMessages<T> = (input: T) => ModelMessages[]

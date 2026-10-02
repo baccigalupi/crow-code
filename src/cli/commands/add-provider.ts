@@ -23,12 +23,20 @@ export class AddProvider extends Command {
   }
 
   private report(creator: CreateProvider) {
-    if (!creator.success()) {
-      this.consoleLog('Unable to create a provider')
-      return
+    if (creator.success()) {
+      this.reportSuccess()
+    } else {
+      this.reportFailure()
     }
+  }
+
+  private reportSuccess() {
     this.consoleLog(
       'Provider added. Add your api key <api_key> to the .env file',
     )
+  }
+
+  private reportFailure() {
+    this.consoleLog('Unable to create a provider')
   }
 }

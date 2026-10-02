@@ -249,6 +249,70 @@ describe('style-check code plugin', () => {
     expect(diagnostics[0].message).toContain('guard clauses must be')
   })
 
+  it('when a guard clause body is not a single return, reports it', () => {
+    const source = `const example = (x: string | null) => {
+      if (x === null) {
+        log()
+        return ''
+      }
+      return x
+    }`
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain(
+      'guard clause body must be a single return',
+    )
+  })
+
+  it('when a guard clause returns a function call, reports it', () => {
+    const source = `const example = (x: string | null) => {
+      if (x === null) return example()
+      return x
+    }`
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain(
+      'guard clause return must not be a function call',
+    )
+  })
+
+  it('when a guard clause returns an awaited function call, reports it', () => {
+    const source = `const example = async (x: string | null) => {
+      if (x === null) return await example()
+      return x
+    }`
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain(
+      'guard clause return must not be a function call',
+    )
+  })
+
+  it('when a guard clause is not first and body is not a single return, reports both', () => {
+    const source = `const example = (x: string | null) => {
+      const y = x
+      if (y === null) {
+        log()
+        return ''
+      }
+      return y
+    }`
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(2)
+    expect(diagnostics[0].message).toContain('guard clauses must be')
+    expect(diagnostics[1].message).toContain(
+      'guard clause body must be a single return',
+    )
+  })
+
   it('when a named re-export is used, reports it', () => {
     const source = "export { foo } from './foo'"
 

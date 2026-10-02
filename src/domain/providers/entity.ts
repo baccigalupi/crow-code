@@ -34,8 +34,9 @@ export class ProviderEntity {
   modelsUrl() {
     if (this.record.modelsPath === null) {
       return this.buildModelsUrl('v1/models')
+    } else {
+      return this.buildModelsUrl(this.record.modelsPath)
     }
-    return this.buildModelsUrl(this.record.modelsPath)
   }
 
   apiKey() {

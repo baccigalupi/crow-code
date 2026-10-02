@@ -60,17 +60,33 @@ const discriminantText = (
   return null
 }
 
-const isGuardClause = (node: Deno.lint.IfStatement): boolean => {
-  const consequent = node.consequent
+const containsReturn = (node: Deno.lint.Statement): boolean => {
+  if (node.type === 'ReturnStatement') return true
+  if (node.type === 'BlockStatement') {
+    return node.body.some((statement) => containsReturn(statement))
+  }
+  return false
+}
+
+const singleReturn = (
+  node: Deno.lint.Statement,
+): Deno.lint.ReturnStatement | null => {
+  if (node.type === 'ReturnStatement') return node
   if (
-    consequent.type === 'ReturnStatement' ||
-    consequent.type === 'ThrowStatement'
-  ) return true
+    node.type === 'BlockStatement' &&
+    node.body.length === 1 &&
+    node.body[0].type === 'ReturnStatement'
+  ) return node.body[0]
+  return null
+}
+
+const returnIsFunctionCall = (node: Deno.lint.ReturnStatement): boolean => {
+  const argument = node.argument
+  if (!argument) return false
+  if (argument.type === 'CallExpression') return true
   if (
-    consequent.type === 'BlockStatement' &&
-    consequent.body.length === 1 &&
-    (consequent.body[0].type === 'ReturnStatement' ||
-      consequent.body[0].type === 'ThrowStatement')
+    argument.type === 'AwaitExpression' &&
+    argument.argument.type === 'CallExpression'
   ) return true
   return false
 }
@@ -384,6 +400,11 @@ const plugin: Deno.lint.Plugin = {
           ':matches(FunctionDeclaration, FunctionExpression, ArrowFunctionExpression, MethodDefinition)'(
             node,
           ) {
+            if (node.type === 'FunctionExpression') {
+              const ancestors = context.sourceCode.getAncestors(node)
+              const parent = ancestors[ancestors.length - 1]
+              if (parent?.type === 'MethodDefinition') return
+            }
             const bodyNode =
               (node as unknown as Record<string, unknown>).body ??
                 ((node as unknown as Record<string, unknown>).value as
@@ -398,14 +419,28 @@ const plugin: Deno.lint.Plugin = {
               const statement = body[i]
               if (
                 statement.type === 'IfStatement' &&
-                isGuardClause(statement) &&
-                i > 0
+                statement.alternate === null &&
+                containsReturn(statement.consequent)
               ) {
-                context.report({
-                  node: statement,
-                  message:
-                    'guard clauses must be on the first line of the function',
-                })
+                if (i > 0) {
+                  context.report({
+                    node: statement,
+                    message:
+                      'guard clauses must be on the first line of the function',
+                  })
+                }
+                const guardReturn = singleReturn(statement.consequent)
+                if (!guardReturn) {
+                  context.report({
+                    node: statement,
+                    message: 'guard clause body must be a single return',
+                  })
+                } else if (returnIsFunctionCall(guardReturn)) {
+                  context.report({
+                    node: statement,
+                    message: 'guard clause return must not be a function call',
+                  })
+                }
               }
             }
           },

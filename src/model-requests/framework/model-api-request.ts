@@ -60,8 +60,8 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
   private async fetchRequest() {
     this.apiRequest = await fetchRequest(
       this.requestObject,
-      this.applicationData.fetchClient,
-      this.applicationData.logger,
+      this.modelEndpoint,
+      this.applicationData,
     )
     this.succeeded = this.apiRequest.success()
   }
@@ -75,7 +75,14 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
   }
 
   private async parseJsonResponse(): Promise<TResponse> {
-    if (!this.apiRequest.success()) return this.jsonErrorResponse()
+    if (this.apiRequest.success()) {
+      return await this.parseJsonAnswer()
+    } else {
+      return this.jsonErrorResponse()
+    }
+  }
+
+  private async parseJsonAnswer(): Promise<TResponse> {
     const json = await this.apiRequest.json() as ChatCompletionJson
     this.answer = modelAnswer(json, this.apiRequest.benchmark())
     return this.answer.answerAsJson() as TResponse
