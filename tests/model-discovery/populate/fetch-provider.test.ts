@@ -8,8 +8,12 @@ import {
 import { fetchProvider } from '../../../src/model-discovery/populate/fetch-provider.ts'
 import pino from 'pino'
 
+const foo = () => {}
+
 describe('fetchProvider', () => {
   it('when the request succeeds, returns the parsed models', async () => {
+    foo()
+
     type ApiRecord = { items: string[] }
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess<ApiRecord>({ items: ['a'] })
