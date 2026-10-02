@@ -80,17 +80,6 @@ const singleReturn = (
   return null
 }
 
-const returnIsFunctionCall = (node: Deno.lint.ReturnStatement): boolean => {
-  const argument = node.argument
-  if (!argument) return false
-  if (argument.type === 'CallExpression') return true
-  if (
-    argument.type === 'AwaitExpression' &&
-    argument.argument.type === 'CallExpression'
-  ) return true
-  return false
-}
-
 const plugin: Deno.lint.Plugin = {
   name: 'crow-style-code',
   rules: {
@@ -434,11 +423,6 @@ const plugin: Deno.lint.Plugin = {
                   context.report({
                     node: statement,
                     message: 'guard clause body must be a single return',
-                  })
-                } else if (returnIsFunctionCall(guardReturn)) {
-                  context.report({
-                    node: statement,
-                    message: 'guard clause return must not be a function call',
                   })
                 }
               }

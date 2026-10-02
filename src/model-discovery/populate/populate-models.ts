@@ -54,12 +54,11 @@ class PopulateModels {
   }
 
   private getModels(provider: ProviderEntity) {
-    if (providerGetters.has(provider.name())) {
-      const getter = providerGetters.get(provider.name())!
-      return getter(provider, this.logger, this.database, this.fetchClient)
-    } else {
+    if (!providerGetters.has(provider.name())) {
       return this.skipProvider(provider.name())
     }
+    const getter = providerGetters.get(provider.name())!
+    return getter(provider, this.logger, this.database, this.fetchClient)
   }
 
   private skipProvider(name: string) {

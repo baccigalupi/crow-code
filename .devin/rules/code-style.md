@@ -25,7 +25,10 @@ Apply when creating or changing production TypeScript in this repo.
    chained, not written as consecutive `if` statements.
 9. No guard clauses except on the very first line. Setup before the guard is
    incorrect and can usually be converted to a private method called in the
-   condition for the guard.
+   condition for the guard. A guard's return may be a call only when the call
+   returns a value; `return f()` where `f` returns `void`/`Promise<void>`
+   smuggles a side effect — do the work in the condition or in a value-returning
+   helper instead.
 10. Prefer null object pattern over null checks
 11. Do not nest `function` declarations inside functions. Arrow functions and
     inline callbacks are allowed.

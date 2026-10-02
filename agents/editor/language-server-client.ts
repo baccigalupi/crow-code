@@ -13,15 +13,24 @@ export type Diagnostic = {
   range: { start: { line: number; character: number } }
 }
 
-type IncomingMessage = { id?: unknown; method?: unknown; params?: unknown }
+type IncomingMessage = {
+  id?: unknown
+  method?: unknown
+  params?: unknown
+  result?: unknown
+}
 type PublishDiagnostics = { uri: string; diagnostics: Diagnostic[] }
 
 const languageId = 'typescript'
 const initializeId = 1
 
+type PendingRequest = (result: unknown) => void
+
 export class LanguageServer {
   private stream: JsonRpcStream
   private received = new Map<string, Diagnostic[]>()
+  private pending = new Map<number, PendingRequest>()
+  private nextRequestId = 100
   ready = false
 
   constructor(child: Deno.ChildProcess) {
@@ -49,6 +58,22 @@ export class LanguageServer {
     await this.stream.send({ method: 'initialized', params: {} })
   }
 
+  async request(method: string, params: Record<string, unknown>) {
+    const id = this.nextRequestId++
+    const result = new Promise<unknown>((resolve) => {
+      this.pending.set(id, resolve)
+    })
+    await this.stream.send({ id, method, params })
+    return result
+  }
+
+  async hover(file: string, line: number, character: number) {
+    return await this.request('textDocument/hover', {
+      textDocument: { uri: toFileUrl(file).href },
+      position: { line, character },
+    })
+  }
+
   async openDocument(file: string) {
     await this.stream.send({
       method: 'textDocument/didOpen',
@@ -68,6 +93,13 @@ export class LanguageServer {
   }
 
   private consume(message: IncomingMessage) {
+    const id = message.id
+    if (typeof id === 'number' && this.pending.has(id)) {
+      const resolve = this.pending.get(id) as PendingRequest
+      this.pending.delete(id)
+      resolve(message.result)
+      return
+    }
     if (message.id === initializeId) {
       this.ready = true
     }

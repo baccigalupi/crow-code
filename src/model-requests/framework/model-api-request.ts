@@ -75,11 +75,8 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
   }
 
   private async parseJsonResponse(): Promise<TResponse> {
-    if (this.apiRequest.success()) {
-      return await this.parseJsonAnswer()
-    } else {
-      return this.jsonErrorResponse()
-    }
+    if (!this.apiRequest.success()) return this.jsonErrorResponse()
+    return await this.parseJsonAnswer()
   }
 
   private async parseJsonAnswer(): Promise<TResponse> {

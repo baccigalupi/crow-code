@@ -55,6 +55,8 @@ if [[ $mode == code || $mode == both ]]; then
   else
     deno lint --config agents/style-checks/code.deno.json "${ts_files[@]}" ||
       fail=1
+    deno run --allow-run --allow-read --allow-env \
+      agents/style-checks/void-guard-calls.ts "${ts_files[@]}" || fail=1
   fi
 fi
 

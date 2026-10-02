@@ -266,7 +266,7 @@ describe('style-check code plugin', () => {
     )
   })
 
-  it('when a guard clause returns a function call, reports it', () => {
+  it('when a guard clause returns a function call, does not report it', () => {
     const source = `const example = (x: string | null) => {
       if (x === null) return example()
       return x
@@ -274,13 +274,10 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(diagnostics).toHaveLength(1)
-    expect(diagnostics[0].message).toContain(
-      'guard clause return must not be a function call',
-    )
+    expect(diagnostics).toHaveLength(0)
   })
 
-  it('when a guard clause returns an awaited function call, reports it', () => {
+  it('when a guard clause returns an awaited function call, does not report it', () => {
     const source = `const example = async (x: string | null) => {
       if (x === null) return await example()
       return x
@@ -288,10 +285,7 @@ describe('style-check code plugin', () => {
 
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
-    expect(diagnostics).toHaveLength(1)
-    expect(diagnostics[0].message).toContain(
-      'guard clause return must not be a function call',
-    )
+    expect(diagnostics).toHaveLength(0)
   })
 
   it('when a guard clause is not first and body is not a single return, reports both', () => {

@@ -1,0 +1,5 @@
+{
+  "lint": {
+    "plugins": ["./void-guard-calls-analysis.ts"]
+  }
+}
