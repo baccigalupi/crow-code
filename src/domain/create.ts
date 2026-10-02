@@ -7,7 +7,7 @@ export abstract class CreateRecord<TParams, TRow, TRecord = unknown> {
   protected readonly database: Knex
   protected readonly logger: Logger
   protected readonly recordParams: TParams
-  private result: TRow | EmptyRecord = {}
+  private result?: TRecord
   private succeeded = false
 
   constructor(
@@ -29,12 +29,13 @@ export abstract class CreateRecord<TParams, TRow, TRecord = unknown> {
     return this
   }
 
-  success(): boolean | Promise<boolean> {
+  success() {
     return this.succeeded
   }
 
-  record(): TRecord | Promise<TRecord> {
-    return this.serialize(this.result)
+  record(): TRecord | EmptyRecord {
+    if (this.result !== undefined) return this.result
+    return this.emptyRecord()
   }
 
   private async save() {
@@ -43,17 +44,21 @@ export abstract class CreateRecord<TParams, TRow, TRecord = unknown> {
   }
 
   private async insert() {
-    const [record] = await this.database(this.tableName)
+    const rows = await this.database(this.tableName)
       .insert(this.params())
-      .returning<TRow[]>('*')
-    this.result = record
+      .returning('*') as TRow[]
+    this.result = this.serialize(rows)
   }
 
   protected params(): TParams | Partial<TRow> {
     return this.recordParams
   }
 
-  protected serialize(result: TRow | EmptyRecord): TRecord {
-    return result as unknown as TRecord
+  protected serialize(rows: TRow[]): TRecord {
+    return rows[0] as unknown as TRecord
+  }
+
+  protected emptyRecord(): TRecord | EmptyRecord {
+    return {}
   }
 }

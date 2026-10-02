@@ -63,7 +63,7 @@ describe('create', () => {
     await database.destroy()
   })
 
-  it('when create has not been called, success and record run the query', async () => {
+  it('when create has not been called, reports failure and an empty model', async () => {
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
     const params = {
@@ -83,10 +83,8 @@ describe('create', () => {
 
     const creator = new CreateModel(database, logger, params)
 
-    expect(await creator.success()).toBe(true)
-    const model = await creator.record()
-    expect(model.providerId()).toBe(1)
-    expect(model.supportedParameters()).toEqual(['temperature'])
+    expect(creator.success()).toBe(false)
+    expect(creator.record().supportedParameters()).toEqual([])
     await database.destroy()
   })
 
