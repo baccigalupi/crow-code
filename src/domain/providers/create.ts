@@ -1,7 +1,8 @@
 import type { Knex } from 'knex'
 import type { Logger, ParsedArgumentsOptions } from '../../types.ts'
-import type { EmptyRecord, ProviderRecord } from '../types.ts'
+import { CreateRecord } from '../create.ts'
 import { parseParamKeys } from '../parsers/parse-param-keys.ts'
+import type { EmptyRecord, ProviderRecord } from '../types.ts'
 
 const allowedProviderKeys = [
   'name',
@@ -10,54 +11,18 @@ const allowedProviderKeys = [
   'api_key_env_var',
 ]
 
-export class CreateProvider {
-  private database: Knex
-  private logger: Logger
-  private recordParams: ParsedArgumentsOptions
-  private result: ProviderRecord | EmptyRecord = {}
-  private succeeded = false
+export class CreateProvider extends CreateRecord<
+  ParsedArgumentsOptions,
+  ProviderRecord,
+  ProviderRecord | EmptyRecord
+> {
+  protected readonly tableName = 'providers'
 
-  constructor(
-    database: Knex,
-    logger: Logger,
-    recordParams: ParsedArgumentsOptions,
-  ) {
-    this.database = database
-    this.logger = logger
-    this.recordParams = recordParams
-  }
-
-  async create() {
-    try {
-      await this.save()
-    } catch (error) {
-      this.logger.error((error as Error).message)
-    }
-    return this
-  }
-
-  success() {
-    return this.succeeded
-  }
-
-  record() {
-    return this.result
-  }
-
-  private async save() {
-    await this.insert()
-    this.succeeded = true
-  }
-
-  private async insert() {
-    const [record] = await this.database('providers')
-      .insert(this.attributes())
-      .returning('*')
-    this.result = record
-  }
-
-  private attributes() {
-    return parseParamKeys(this.recordParams, allowedProviderKeys)
+  protected override params(): Partial<ProviderRecord> {
+    return parseParamKeys(
+      this.recordParams,
+      allowedProviderKeys,
+    ) as Partial<ProviderRecord>
   }
 }
 

@@ -35,6 +35,15 @@ Never create scripts there to try to circumvent permissions.
     files only; use `all` to audit the whole tracked codebase.
 - Before finishing a requested task, run `agents/pre-commit`.
 
+## Database conventions
+
+- Table names must be pluralized.
+- Tables must use auto-incrementing IDs as their primary keys, not composite
+  keys or semantic columns.
+- Do not add foreign key constraints.
+- Never modify existing migrations; make schema changes with additive
+  migrations.
+
 ## Git rules
 
 - NEVER commit, stage, or push unless the user explicitly asks

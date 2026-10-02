@@ -21,8 +21,14 @@ if [ "$scope" == all ]; then
     ts_files+=("$file")
   done < <(git ls-files 'src/**/*.ts')
   while IFS= read -r file; do
+    ts_files+=("$file")
+  done < <(git ls-files --others --exclude-standard 'src/**/*.ts')
+  while IFS= read -r file; do
     test_files+=("$file")
   done < <(git ls-files 'tests/**/*.test.ts')
+  while IFS= read -r file; do
+    test_files+=("$file")
+  done < <(git ls-files --others --exclude-standard 'tests/**/*.test.ts')
 else
   changed_files=$(
     git diff --name-only --diff-filter=ACMR

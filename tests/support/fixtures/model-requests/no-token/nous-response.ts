@@ -1,28 +1,27 @@
 export const nousNoTokenResponse = () =>
   new Response(
     JSON.stringify({
-      status: 400,
+      status: 401,
       message:
-        'This request is not valid. Check the model name and other parameters. Additional info: Unknown model: xiaomi/mimo-v2.6-flash. Please specify a valid model.',
+        'Your API key is invalid, blocked or out of funds. Please go visit the portal to sort that out: https://portal.nousresearch.com ',
     }),
     {
-      status: 400,
+      status: 401,
       statusText: '',
       headers: {
-        'date': 'Thu, 01 Oct 2026 23:26:34 GMT',
+        'date': 'Thu, 01 Oct 2026 23:39:34 GMT',
         'content-type': 'application/json',
-        'content-length': '182',
+        'content-length': '154',
         'access-control-allow-origin': '*',
         'access-control-expose-headers': 'X-Nous-Token-Sharing',
         'server': 'cloudflare',
-        'x-402-accept': 'solana',
-        'x-railway-request-id': 'zOA5MsNuTEiLihqInPRhug',
-        'x-hikari-trace': 'lax1.v9kt',
+        'x-railway-request-id': 'Q8KKkuNXR9qAE_x6-_9nXA',
+        'x-hikari-trace': 'lax1.sx7j',
         'x-railway-edge': 'lax1',
         'cf-cache-status': 'DYNAMIC',
         'set-cookie':
-          '__cf_bm=jTBOZXGyS5FqcwW.WMKmg02eqK5bhL.TiRJ99CObzSs-1790897193.7919412-1.0.1.1-Wz3kJ7_rbMbZq.ujNG2rnob_1q4bBTe5PSudPW31XldS28VRbGjb2e851e6C5H5.Xza.gSzwezoUsbAsvrUY8w_eoBPpQDMkaHtWB9XnMA9a1.SvyB1qQGJz0XDqdkak; HttpOnly; SameSite=None; Secure; Path=/; Domain=nousresearch.com; Expires=Thu, 01 Oct 2026 23:56:34 GMT',
-        'cf-ray': 'a43f3ba538702c2d-SJC',
+          '__cf_bm=sY8wGq9o_Q3XKXiLVjSURC7c8fZJ7HD6PjyxDJ6_re0-1790897974.6819427-1.0.1.1-UL7P7M2N50XB23DU6BWgeVrQxevcs1ejHDhulA.aEYNMLu4SI0S6RDuVfV_j1mPcZyl73Do9UbFgk1fz7qpvMGJOvDDK3V7B_S6_SmXYpE98xEr2acA2l2pfIPWmKc5o; HttpOnly; SameSite=None; Secure; Path=/; Domain=nousresearch.com; Expires=Fri, 02 Oct 2026 00:09:34 GMT',
+        'cf-ray': 'a43f4eb5cd5ce196-SJC',
       },
     },
   )
