@@ -1,4 +1,4 @@
-import type { ApplicationData } from '../../../types.ts'
+import type { ApplicationData } from '../../../application-data.ts'
 import { ExecCommand } from '../../exec-command.ts'
 import { FileDiffParser } from './files/parser.ts'
 import type { ChangedFile } from '../../types.ts'

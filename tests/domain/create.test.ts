@@ -4,6 +4,7 @@ import { assertSpyCall, spy } from '@std/testing/mock'
 import pino from 'pino'
 import { CreateRecord } from '../../src/domain/create.ts'
 import { createTestDatabase } from '../support/test-database.ts'
+import { mockApplicationData } from '../support/mock-application-data.ts'
 
 describe('CreateRecord', () => {
   it('inserts the given params into the subclass table', async () => {
@@ -18,10 +19,13 @@ describe('CreateRecord', () => {
     }
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
-    const creator = new CreateProvider(database, logger, {
-      name: 'provider-name',
-      base_url: 'https://www.example.com',
-    })
+    const creator = new CreateProvider(
+      mockApplicationData({ database, logger }),
+      {
+        name: 'provider-name',
+        base_url: 'https://www.example.com',
+      },
+    )
 
     await creator.create()
 
@@ -58,10 +62,13 @@ describe('CreateRecord', () => {
     }
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
-    const creator = new CreateProvider(database, logger, {
-      providerName: 'provider-name',
-      baseUrl: 'https://www.example.com',
-    })
+    const creator = new CreateProvider(
+      mockApplicationData({ database, logger }),
+      {
+        providerName: 'provider-name',
+        baseUrl: 'https://www.example.com',
+      },
+    )
 
     await creator.create()
 
@@ -90,7 +97,10 @@ describe('CreateRecord', () => {
       base_url: 'https://www.example.com',
     }
     await database('providers').insert(params)
-    const creator = new CreateProvider(database, logger, params)
+    const creator = new CreateProvider(
+      mockApplicationData({ database, logger }),
+      params,
+    )
 
     await creator.create()
 

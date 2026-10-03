@@ -1,5 +1,5 @@
-import type { Knex } from 'knex'
-import type { Logger, ParsedArgumentsOptions } from '../../types.ts'
+import type { ApplicationData } from '../../application-data.ts'
+import type { ParsedArgumentsOptions } from '../../types.ts'
 import { CreateRecord } from '../create.ts'
 import { parseParamKeys } from '../parsers/parse-param-keys.ts'
 import type { EmptyRecord, ProviderRecord } from '../types.ts'
@@ -26,10 +26,7 @@ export class CreateProvider extends CreateRecord<
   }
 }
 
-export const createProvider = async (
-  database: Knex,
-  logger: Logger,
-  recordParams: ParsedArgumentsOptions,
-) => {
-  return await new CreateProvider(database, logger, recordParams).create()
-}
+export const createProvider = (
+  applicationData: ApplicationData,
+  options: ParsedArgumentsOptions,
+) => new CreateProvider(applicationData, options).create()

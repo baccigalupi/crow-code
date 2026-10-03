@@ -1,12 +1,10 @@
 import { afterEach, beforeEach, describe, it, mock } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import knex from 'knex'
 import { AddProvider } from '../../../src/cli/commands/add-provider.ts'
-import { Environment } from '../../../src/env-vars.ts'
 import { openAndMigrateDatabase } from '../../../src/database/open-and-migrate-database.ts'
-import { openAiClient } from '../../../src/model-requests/framework/openai-client.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
+import { mockApplicationData } from '../../support/mock-application-data.ts'
 import pino from 'pino'
 
 describe('AddProvider', () => {
@@ -14,101 +12,39 @@ describe('AddProvider', () => {
   afterEach(() => clearDirectory(join(fixturesDirectory, 'add-provider')))
 
   it('when the command is add-provider, matches', () => {
-    const command = new AddProvider({
-      parsedArguments: { commands: ['add-provider'], options: {} },
-      crowDirectory: '',
-      logger: pino({ enabled: false }),
-      database: knex({
-        client: 'better-sqlite3',
-        connection: ':memory:',
-        useNullAsDefault: true,
-      }),
-      consoleLog: () => {},
-      fetchClient: fetch,
-      openAiClient: openAiClient,
-      denoCommand: Deno.Command,
-      environment: new Environment({}),
-    })
+    const applicationData = mockApplicationData({ args: ['add-provider'] })
 
-    const matches = command.isMatch()
+    const command = new AddProvider(applicationData)
 
-    expect(matches).toBe(true)
+    expect(command.isMatch()).toBe(true)
   })
 
   it('when the command is something else, does not match', () => {
-    const command = new AddProvider({
-      parsedArguments: { commands: ['git-commit'], options: {} },
-      crowDirectory: '',
-      logger: pino({ enabled: false }),
-      database: knex({
-        client: 'better-sqlite3',
-        connection: ':memory:',
-        useNullAsDefault: true,
-      }),
-      consoleLog: () => {},
-      fetchClient: fetch,
-      openAiClient: openAiClient,
-      denoCommand: Deno.Command,
-      environment: new Environment({}),
-    })
+    const applicationData = mockApplicationData({ args: ['git-commit'] })
 
-    const matches = command.isMatch()
+    const command = new AddProvider(applicationData)
 
-    expect(matches).toBe(false)
-  })
-
-  it('when options are passed, extracts them', () => {
-    const command = new AddProvider({
-      parsedArguments: {
-        commands: ['add-provider'],
-        options: { name: 'x', 'base-url': 'y', verbose: true },
-      },
-      crowDirectory: '',
-      logger: pino({ enabled: false }),
-      database: knex({
-        client: 'better-sqlite3',
-        connection: ':memory:',
-        useNullAsDefault: true,
-      }),
-      consoleLog: () => {},
-      fetchClient: fetch,
-      openAiClient: openAiClient,
-      denoCommand: Deno.Command,
-      environment: new Environment({}),
-    })
-
-    const options = command.extractOptions()
-
-    expect(options).toEqual({
-      name: 'x',
-      'base-url': 'y',
-      verbose: true,
-    })
+    expect(command.isMatch()).toBe(false)
   })
 
   it('when run with provider params, creates the provider in the injected crow directory', async () => {
     const crowDirectory = join(join(fixturesDirectory, 'add-provider'), '.crow')
-    const logger = pino({ enabled: false })
-    const database = await openAndMigrateDatabase(crowDirectory, logger)
-
-    await new AddProvider({
-      parsedArguments: {
-        commands: ['add-provider'],
-        options: {
-          name: 'ollama',
-          'base-url': 'http://x',
-          'api-key-env-var': 'OLLAMA_KEY',
-        },
-      },
+    const database = await openAndMigrateDatabase(
       crowDirectory,
-      logger,
+      pino({ enabled: false }),
+    )
+    const applicationData = mockApplicationData({
+      args: [
+        'add-provider',
+        '--name=ollama',
+        '--base-url=http://x',
+        '--api-key-env-var=OLLAMA_KEY',
+      ],
+      crowDirectory,
       database,
-      consoleLog: () => {},
-      fetchClient: fetch,
-      openAiClient: openAiClient,
-      denoCommand: Deno.Command,
-      environment: new Environment({}),
-    }).run()
+    })
+
+    await new AddProvider(applicationData).run()
 
     const rows = await database('providers').select('*')
     expect(rows).toEqual([{
@@ -123,28 +59,24 @@ describe('AddProvider', () => {
 
   it('when run succeeds, writes the .env key reminder', async () => {
     const crowDirectory = join(join(fixturesDirectory, 'add-provider'), '.crow')
-    const logger = pino({ enabled: false })
-    const database = await openAndMigrateDatabase(crowDirectory, logger)
-    const consoleLog = mock.fn()
-
-    await new AddProvider({
-      parsedArguments: {
-        commands: ['add-provider'],
-        options: {
-          name: 'ollama',
-          'base-url': 'http://x',
-          'api-key-env-var': 'OLLAMA_KEY',
-        },
-      },
+    const database = await openAndMigrateDatabase(
       crowDirectory,
-      logger,
+      pino({ enabled: false }),
+    )
+    const consoleLog = mock.fn()
+    const applicationData = mockApplicationData({
+      args: [
+        'add-provider',
+        '--name=ollama',
+        '--base-url=http://x',
+        '--api-key-env-var=OLLAMA_KEY',
+      ],
+      crowDirectory,
       database,
       consoleLog,
-      fetchClient: fetch,
-      openAiClient: openAiClient,
-      denoCommand: Deno.Command,
-      environment: new Environment({}),
-    }).run()
+    })
+
+    await new AddProvider(applicationData).run()
 
     expect(consoleLog.mock.calls[0].arguments[0]).toBe(
       'Provider added. Add your api key <api_key> to the .env file',
@@ -154,24 +86,19 @@ describe('AddProvider', () => {
 
   it('when the provider has no api key env var, writes the reminder with a placeholder key', async () => {
     const crowDirectory = join(join(fixturesDirectory, 'add-provider'), '.crow')
-    const logger = pino({ enabled: false })
-    const database = await openAndMigrateDatabase(crowDirectory, logger)
-    const consoleLog = mock.fn()
-
-    await new AddProvider({
-      parsedArguments: {
-        commands: ['add-provider'],
-        options: { name: 'ollama', 'base-url': 'http://x' },
-      },
+    const database = await openAndMigrateDatabase(
       crowDirectory,
-      logger,
+      pino({ enabled: false }),
+    )
+    const consoleLog = mock.fn()
+    const applicationData = mockApplicationData({
+      args: ['add-provider', '--name=ollama', '--base-url=http://x'],
+      crowDirectory,
       database,
       consoleLog,
-      fetchClient: fetch,
-      openAiClient: openAiClient,
-      denoCommand: Deno.Command,
-      environment: new Environment({}),
-    }).run()
+    })
+
+    await new AddProvider(applicationData).run()
 
     expect(consoleLog.mock.calls[0].arguments[0]).toBe(
       'Provider added. Add your api key <api_key> to the .env file',
@@ -181,28 +108,23 @@ describe('AddProvider', () => {
 
   it('when creation fails, writes the failure message', async () => {
     const crowDirectory = join(join(fixturesDirectory, 'add-provider'), '.crow')
-    const logger = pino({ enabled: false })
-    const database = await openAndMigrateDatabase(crowDirectory, logger)
+    const database = await openAndMigrateDatabase(
+      crowDirectory,
+      pino({ enabled: false }),
+    )
     await database('providers').insert({
       name: 'ollama',
       base_url: 'http://x',
     })
     const consoleLog = mock.fn()
-
-    await new AddProvider({
-      parsedArguments: {
-        commands: ['add-provider'],
-        options: { name: 'other', 'base-url': 'http://x' },
-      },
+    const applicationData = mockApplicationData({
+      args: ['add-provider', '--name=other', '--base-url=http://x'],
       crowDirectory,
-      logger,
       database,
       consoleLog,
-      fetchClient: fetch,
-      openAiClient: openAiClient,
-      denoCommand: Deno.Command,
-      environment: new Environment({}),
-    }).run()
+    })
+
+    await new AddProvider(applicationData).run()
 
     expect(consoleLog.mock.calls[0].arguments[0]).toBe(
       'Unable to create a provider',

@@ -9,6 +9,7 @@ import {
 import { loadOpenRouterFixture } from '../../../support/fixtures.ts'
 import { getOpenRouterModels } from '../../../../src/model-discovery/populate/openrouter/get-openrouter-models.ts'
 import { createTestDatabase } from '../../../support/test-database.ts'
+import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { ProviderEntity } from '../../../../src/domain/providers/entity.ts'
 import { Environment } from '../../../../src/env-vars.ts'
 
@@ -31,9 +32,7 @@ describe('getOpenRouterModels', () => {
 
     const result = await getOpenRouterModels(
       provider,
-      logger,
-      database,
-      mockFetch,
+      mockApplicationData({ database, logger, fetch: mockFetch }),
     )
 
     expect(result).toHaveLength(458)
@@ -65,7 +64,10 @@ describe('getOpenRouterModels', () => {
     }
     const mockFetch = mockFetchSuccess({ data: [record] })
 
-    await getOpenRouterModels(provider, logger, database, mockFetch)
+    await getOpenRouterModels(
+      provider,
+      mockApplicationData({ database, logger, fetch: mockFetch }),
+    )
 
     const rows = await database('models')
     expect(rows).toHaveLength(1)
@@ -91,7 +93,10 @@ describe('getOpenRouterModels', () => {
     const database = await createTestDatabase(logger)
     const mockFetch = mockFetchSuccess({ data: [] })
 
-    await getOpenRouterModels(provider, logger, database, mockFetch)
+    await getOpenRouterModels(
+      provider,
+      mockApplicationData({ database, logger, fetch: mockFetch }),
+    )
 
     expect(mockFetch.calls).toHaveLength(1)
     expect(mockFetch.calls[0]).toBe('https://example.com/api/v1/models')
@@ -115,9 +120,7 @@ describe('getOpenRouterModels', () => {
 
     const result = await getOpenRouterModels(
       provider,
-      logger,
-      database,
-      mockFetch,
+      mockApplicationData({ database, logger, fetch: mockFetch }),
     )
 
     expect(result).toEqual([])
@@ -142,9 +145,7 @@ describe('getOpenRouterModels', () => {
 
     const result = await getOpenRouterModels(
       provider,
-      logger,
-      database,
-      mockFetch,
+      mockApplicationData({ database, logger, fetch: mockFetch }),
     )
 
     expect(result).toEqual([])

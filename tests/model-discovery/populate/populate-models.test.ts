@@ -3,21 +3,21 @@ import { expect } from '@std/expect'
 import pino from 'pino'
 import { populateModels } from '../../../src/model-discovery/populate/populate-models.ts'
 import { createTestDatabase } from '../../support/test-database.ts'
-import { Environment } from '../../../src/env-vars.ts'
 import { mockFetchRoutes, mockFetchSuccess } from '../../support/mock-fetch.ts'
+import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('populateModels', () => {
   it('with no providers, returns an empty list and makes no requests', async () => {
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
     const mockFetch = mockFetchSuccess({ data: [] })
-
-    const result = await populateModels(
-      new Environment({}),
+    const applicationData = mockApplicationData({
       database,
       logger,
-      mockFetch,
-    )
+      fetch: mockFetch,
+    })
+
+    const result = await populateModels(applicationData)
 
     expect(result).toEqual([])
     expect(mockFetch.calls).toHaveLength(0)
@@ -42,13 +42,13 @@ describe('populateModels', () => {
       supported_parameters: ['temperature'],
     }
     const mockFetch = mockFetchSuccess({ data: [record] })
-
-    const result = await populateModels(
-      new Environment({}),
+    const applicationData = mockApplicationData({
       database,
       logger,
-      mockFetch,
-    )
+      fetch: mockFetch,
+    })
+
+    const result = await populateModels(applicationData)
 
     expect(result).toHaveLength(1)
     expect(result[0].id).toBe('author/model')
@@ -74,8 +74,13 @@ describe('populateModels', () => {
     const mockFetch = mockFetchSuccess({
       models: [{ name: 'author/model', details: { context_length: 128000 } }],
     })
+    const applicationData = mockApplicationData({
+      database,
+      logger,
+      fetch: mockFetch,
+    })
 
-    await populateModels(new Environment({}), database, logger, mockFetch)
+    await populateModels(applicationData)
 
     expect(mockFetch.calls).toHaveLength(1)
     expect(mockFetch.calls[0]).toBe('http://ollama.local:11434/api/tags')
@@ -104,8 +109,13 @@ describe('populateModels', () => {
       supported_parameters: ['temperature'],
     }
     const mockFetch = mockFetchSuccess({ data: [record] })
+    const applicationData = mockApplicationData({
+      database,
+      logger,
+      fetch: mockFetch,
+    })
 
-    await populateModels(new Environment({}), database, logger, mockFetch)
+    await populateModels(applicationData)
 
     expect(mockFetch.calls).toHaveLength(1)
     expect(mockFetch.calls[0]).toBe('https://openrouter.example/v1/models')
@@ -125,13 +135,13 @@ describe('populateModels', () => {
       api_key_env_var: null,
     })
     const mockFetch = mockFetchSuccess({ data: [] })
-
-    const result = await populateModels(
-      new Environment({}),
+    const applicationData = mockApplicationData({
       database,
       logger,
-      mockFetch,
-    )
+      fetch: mockFetch,
+    })
+
+    const result = await populateModels(applicationData)
 
     expect(result).toEqual([])
     expect(mockFetch.calls).toHaveLength(0)
@@ -186,13 +196,13 @@ describe('populateModels', () => {
         },
       ],
     ])
-
-    const result = await populateModels(
-      new Environment({}),
+    const applicationData = mockApplicationData({
       database,
       logger,
-      mockFetch,
-    )
+      fetch: mockFetch,
+    })
+
+    const result = await populateModels(applicationData)
 
     expect(result).toHaveLength(2)
     expect(mockFetch.calls).toHaveLength(2)

@@ -8,6 +8,7 @@ import {
   cleanDatabase,
   createTestDatabase,
 } from '../../support/test-database.ts'
+import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('modelFindAllByFilters', () => {
   it('when models match, returns ModelEntity instances ordered by id', async () => {
@@ -43,8 +44,9 @@ describe('modelFindAllByFilters', () => {
         reasoning_options: '{}',
       },
     ])
+    const applicationData = mockApplicationData({ database, logger })
 
-    const models = await modelFindAllByFilters(database, logger, {
+    const models = await modelFindAllByFilters(applicationData, {
       type: 'chat',
     }).all()
 
@@ -103,8 +105,9 @@ describe('modelFindAllByFilters', () => {
         reasoning_options: '{}',
       },
     ])
+    const applicationData = mockApplicationData({ database, logger })
 
-    const models = await modelFindAllByFilters(database, logger, {
+    const models = await modelFindAllByFilters(applicationData, {
       type: 'chat',
       limit: 1,
     }).all()
@@ -119,8 +122,9 @@ describe('modelFindAllByFilters', () => {
     using loggerErrorSpy = spy(logger, 'error')
     const database = await createTestDatabase(logger)
     await cleanDatabase(database)
+    const applicationData = mockApplicationData({ database, logger })
 
-    const models = await modelFindAllByFilters(database, logger, {
+    const models = await modelFindAllByFilters(applicationData, {
       type: 'chat',
     }).all()
 
@@ -162,8 +166,9 @@ describe('modelFindAllByFilters', () => {
         reasoning_options: '{}',
       },
     ])
+    const applicationData = mockApplicationData({ database, logger })
 
-    const models = await modelFindAllByFilters(database, logger, {
+    const models = await modelFindAllByFilters(applicationData, {
       type: 'dynamic',
     }).all()
 
@@ -219,8 +224,9 @@ describe('modelFindAllByFilters', () => {
         reasoning_options: '{}',
       },
     ])
+    const applicationData = mockApplicationData({ database, logger })
 
-    const models = await modelFindAllByFilters(database, logger, {
+    const models = await modelFindAllByFilters(applicationData, {
       costTier: 'budget',
     }).all()
 
@@ -262,8 +268,9 @@ describe('modelFindAllByFilters', () => {
         reasoning_options: '{}',
       },
     ])
+    const applicationData = mockApplicationData({ database, logger })
 
-    const models = await modelFindAllByFilters(database, logger, {
+    const models = await modelFindAllByFilters(applicationData, {
       costTier: 'free',
     }).all()
 
@@ -319,8 +326,9 @@ describe('modelFindAllByFilters', () => {
         reasoning_options: '{}',
       },
     ])
+    const applicationData = mockApplicationData({ database, logger })
 
-    const models = await modelFindAllByFilters(database, logger, {
+    const models = await modelFindAllByFilters(applicationData, {
       costTier: 'cheap',
       type: 'chat',
     }).all()
@@ -363,8 +371,9 @@ describe('modelFindAllByFilters', () => {
         reasoning_options: '{}',
       },
     ])
+    const applicationData = mockApplicationData({ database, logger })
 
-    const models = await modelFindAllByFilters(database, logger, {
+    const models = await modelFindAllByFilters(applicationData, {
       costTier: 'standard',
       type: 'chat',
     }).all()
@@ -463,8 +472,9 @@ describe('modelFindAllByFilters', () => {
         reasoning_options: '{}',
       },
     ])
+    const applicationData = mockApplicationData({ database, logger })
 
-    const models = await modelFindAllByFilters(database, logger, {
+    const models = await modelFindAllByFilters(applicationData, {
       type: 'chat',
     }).all()
 

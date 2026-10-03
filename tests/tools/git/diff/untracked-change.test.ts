@@ -49,7 +49,7 @@ describe('gitUntrackedChange', () => {
         outputError: 'No such file or directory (os error 2): git',
       }),
     })
-    using loggerErrorSpy = spy(applicationData.logger, 'error')
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const changes = gitUntrackedChange({
       applicationData,
@@ -78,7 +78,7 @@ describe('gitUntrackedChange', () => {
         code: 128,
       }),
     })
-    using loggerErrorSpy = spy(applicationData.logger, 'error')
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const changes = gitUntrackedChange({
       applicationData,

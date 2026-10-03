@@ -11,12 +11,8 @@ export class Help extends Command {
     return true
   }
 
-  extractOptions() {
-    return {}
-  }
-
   run() {
-    this.consoleLog(usageText)
+    this.applicationData.consoleLog()(usageText)
     return Promise.resolve()
   }
 }

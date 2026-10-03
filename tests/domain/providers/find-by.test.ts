@@ -5,6 +5,7 @@ import { Environment } from '../../../src/env-vars.ts'
 import { ProviderEntity } from '../../../src/domain/providers/entity.ts'
 import { providerFindBy } from '../../../src/domain/providers/find-by.ts'
 import { createTestDatabase } from '../../support/test-database.ts'
+import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('providerFindBy', () => {
   describe('getByName', () => {
@@ -18,8 +19,13 @@ describe('providerFindBy', () => {
         models_path: '/models',
         api_key_env_var: 'PROVIDER_API_KEY',
       })
+      const applicationData = mockApplicationData({
+        envars: environment,
+        database,
+        logger,
+      })
 
-      const provider = await providerFindBy(environment, database, logger)
+      const provider = await providerFindBy(applicationData)
         .getByName('provider-name')
 
       expect(provider).toBeInstanceOf(ProviderEntity)
@@ -35,8 +41,13 @@ describe('providerFindBy', () => {
       const environment = new Environment({})
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
+      const applicationData = mockApplicationData({
+        envars: environment,
+        database,
+        logger,
+      })
 
-      const provider = await providerFindBy(environment, database, logger)
+      const provider = await providerFindBy(applicationData)
         .getByName('missing')
 
       expect(provider).toBeUndefined()
@@ -61,8 +72,13 @@ describe('providerFindBy', () => {
           api_key_env_var: null,
         },
       ])
+      const applicationData = mockApplicationData({
+        envars: environment,
+        database,
+        logger,
+      })
 
-      const provider = await providerFindBy(environment, database, logger)
+      const provider = await providerFindBy(applicationData)
         .getByName('provider-two')
 
       expect(provider).toBeInstanceOf(ProviderEntity)
@@ -83,8 +99,13 @@ describe('providerFindBy', () => {
         models_path: '/models',
         api_key_env_var: 'PROVIDER_API_KEY',
       }).returning('id')
+      const applicationData = mockApplicationData({
+        envars: environment,
+        database,
+        logger,
+      })
 
-      const provider = await providerFindBy(environment, database, logger)
+      const provider = await providerFindBy(applicationData)
         .getById(id)
 
       expect(provider).toBeInstanceOf(ProviderEntity)
@@ -97,8 +118,13 @@ describe('providerFindBy', () => {
       const environment = new Environment({})
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
+      const applicationData = mockApplicationData({
+        envars: environment,
+        database,
+        logger,
+      })
 
-      const provider = await providerFindBy(environment, database, logger)
+      const provider = await providerFindBy(applicationData)
         .getById(999)
 
       expect(provider).toBeUndefined()
@@ -121,8 +147,13 @@ describe('providerFindBy', () => {
         models_path: '/models',
         api_key_env_var: null,
       }).returning('id')
+      const applicationData = mockApplicationData({
+        envars: environment,
+        database,
+        logger,
+      })
 
-      const provider = await providerFindBy(environment, database, logger)
+      const provider = await providerFindBy(applicationData)
         .getById(id)
 
       expect(provider).toBeInstanceOf(ProviderEntity)

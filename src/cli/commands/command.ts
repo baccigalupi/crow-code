@@ -1,34 +1,17 @@
-import type { Knex } from 'knex'
-import type { Environment } from '../../env-vars.ts'
-import type {
-  ApplicationData,
-  ConsoleLog,
-  DenoCommand,
-  Logger,
-  ParsedArgumentsOptions,
-} from '../../types.ts'
+import type { ApplicationData } from '../../application-data.ts'
+import type { ParsedArgumentsOptions } from '../../types.ts'
 
 export abstract class Command {
-  protected data!: ApplicationData
-  protected commands!: string[]
-  protected options!: ParsedArgumentsOptions
-  protected crowDirectory!: string
-  protected logger!: Logger
-  protected database!: Knex
-  protected consoleLog!: ConsoleLog
-  protected fetchClient!: typeof fetch
-  protected denoCommand!: DenoCommand
-  protected environment!: Environment
+  protected applicationData: ApplicationData
+  protected commands: string[]
+  protected options: ParsedArgumentsOptions
 
-  constructor(data: ApplicationData) {
-    Object.assign(this, data, {
-      data,
-      commands: data.parsedArguments.commands,
-      options: data.parsedArguments.options,
-    })
+  constructor(applicationData: ApplicationData) {
+    this.applicationData = applicationData
+    this.commands = applicationData.parsedArguments().commands
+    this.options = applicationData.parsedArguments().options
   }
 
   abstract isMatch(): boolean
-  abstract extractOptions(): ParsedArgumentsOptions
   abstract run(): Promise<void>
 }

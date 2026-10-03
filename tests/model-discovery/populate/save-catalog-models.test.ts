@@ -6,6 +6,7 @@ import pino from 'pino'
 import { saveCatalogModels } from '../../../src/model-discovery/populate/save-catalog-models.ts'
 import type { CatalogModel } from '../../../src/model-discovery/types.ts'
 import { createTestDatabase } from '../../support/test-database.ts'
+import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('saveCatalogModels', () => {
   it('when given models, inserts one row per model with the provider id', async () => {
@@ -27,7 +28,10 @@ describe('saveCatalogModels', () => {
     }
     const other = { ...model, id: 'author/other' }
 
-    await saveCatalogModels(database, 7, [model, other], logger)
+    await saveCatalogModels(mockApplicationData({ database, logger }), 7, [
+      model,
+      other,
+    ])
 
     const rows = await database('models').orderBy('identifier')
     expect(rows).toHaveLength(2)
@@ -56,7 +60,9 @@ describe('saveCatalogModels', () => {
       reasoningOptions: { mandatory: false },
     }
 
-    await saveCatalogModels(database, 1, [model], logger)
+    await saveCatalogModels(mockApplicationData({ database, logger }), 1, [
+      model,
+    ])
 
     const row = await database('models').first()
     expect(row.identifier).toBe('author/model')
@@ -112,7 +118,9 @@ describe('saveCatalogModels', () => {
       identifier: 'author/kept',
     })
 
-    await saveCatalogModels(database, 1, [model], logger)
+    await saveCatalogModels(mockApplicationData({ database, logger }), 1, [
+      model,
+    ])
 
     const rows = await database('models').orderBy('identifier')
     expect(rows).toHaveLength(2)
@@ -142,11 +150,11 @@ describe('saveCatalogModels', () => {
       reasoningOptions: { mandatory: false },
     }
 
-    await saveCatalogModels(database, 1, [
+    await saveCatalogModels(mockApplicationData({ database, logger }), 1, [
       model,
       { ...model },
       { ...model, id: 'author/other' },
-    ], logger)
+    ])
 
     const rows = await database('models').orderBy('identifier')
     expect(rows).toHaveLength(2)
@@ -180,7 +188,7 @@ describe('saveCatalogModels', () => {
     }
     await database('models').insert(storedModel)
 
-    await saveCatalogModels(database, 1, [], logger)
+    await saveCatalogModels(mockApplicationData({ database, logger }), 1, [])
 
     const rows = await database('models')
     expect(rows).toHaveLength(1)
@@ -222,9 +230,9 @@ describe('saveCatalogModels', () => {
       reasoningOptions: { mandatory: false },
     }
 
-    await saveCatalogModels(database, 1, [
+    await saveCatalogModels(mockApplicationData({ database, logger }), 1, [
       model as unknown as CatalogModel,
-    ], logger)
+    ])
 
     const rows = await database('models')
     expect(rows).toHaveLength(1)
@@ -254,7 +262,9 @@ describe('saveCatalogModels', () => {
       reasoningOptions: { mandatory: false },
     }
 
-    await saveCatalogModels(database, 9, [model], logger)
+    await saveCatalogModels(mockApplicationData({ database, logger }), 9, [
+      model,
+    ])
 
     expect(loggerErrorSpy.calls[0].args[0]).toContain('disk gone')
   })

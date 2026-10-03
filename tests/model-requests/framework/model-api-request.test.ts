@@ -17,7 +17,7 @@ describe('ModelApiRequest', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetchClient: mockFetchSuccess({
+      fetch: mockFetchSuccess({
         choices: [{ message: { content: '[]' } }],
       }),
     })
@@ -75,7 +75,7 @@ describe('ModelApiRequest', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetchClient: mockFetchSuccess({
+      fetch: mockFetchSuccess({
         choices: [{ message: { content: '[]' } }],
       }),
     })
@@ -107,7 +107,7 @@ describe('ModelApiRequest', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetchClient: mockFetchSuccess({
+      fetch: mockFetchSuccess({
         choices: [{ message: { content: 'raw response' } }],
       }),
     })
@@ -136,7 +136,7 @@ describe('ModelApiRequest', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetchClient: mockFetchSuccess({
+      fetch: mockFetchSuccess({
         choices: [{ message: { content: '["first goal"]' } }],
         usage: {
           completion_tokens: 3,
@@ -175,7 +175,7 @@ describe('ModelApiRequest', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetchClient: mockFetchError(500),
+      fetch: mockFetchError(500),
     })
     const modelApiRequest = new class extends ModelApiRequest<string, string> {
       protected parseAsJson = false
@@ -203,7 +203,7 @@ describe('ModelApiRequest', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetchClient: mockFetchError(500),
+      fetch: mockFetchError(500),
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
@@ -234,7 +234,7 @@ describe('ModelApiRequest', () => {
     }
     const applicationData = mockApplicationData({
       database,
-      fetchClient: mockFetchError(401),
+      fetch: mockFetchError(401),
     })
     const modelApiRequest = new class extends ModelApiRequest<string, string> {
       protected parseAsJson = false
@@ -268,7 +268,7 @@ describe('ModelApiRequest', () => {
     }
     const applicationData = mockApplicationData({
       database,
-      fetchClient: mockFetchError(500),
+      fetch: mockFetchError(500),
     })
     const modelApiRequest = new class extends ModelApiRequest<string, string> {
       protected parseAsJson = false

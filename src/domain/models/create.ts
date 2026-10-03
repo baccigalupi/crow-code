@@ -1,5 +1,5 @@
-import type { Knex } from 'knex'
-import type { Logger, RecordParams } from '../../types.ts'
+import type { ApplicationData } from '../../application-data.ts'
+import type { RecordParams } from '../../types.ts'
 import { CreateRecord } from '../create.ts'
 import type { ModelRow } from '../types.ts'
 import { type ModelEntity, modelEntity } from './model.ts'
@@ -23,9 +23,6 @@ export class CreateModel
 }
 
 export const createModel = async (
-  database: Knex,
-  logger: Logger,
+  applicationData: ApplicationData,
   params: RecordParams,
-) => {
-  return await new CreateModel(database, logger, params).create()
-}
+) => await new CreateModel(applicationData, params).create()

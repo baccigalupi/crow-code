@@ -19,7 +19,7 @@ describe('ModelRequestErrorHandler', () => {
     }
     const applicationData = mockApplicationData({
       database,
-      fetchClient: mockFetchError(401),
+      fetch: mockFetchError(401),
     })
     const apiRequest = new OpenAiRequest(modelEndpoint, [], applicationData)
     await apiRequest.run()
@@ -49,7 +49,7 @@ describe('ModelRequestErrorHandler', () => {
     }
     const applicationData = mockApplicationData({
       database,
-      fetchClient: mockFetchError(500),
+      fetch: mockFetchError(500),
     })
     const apiRequest = new OpenAiRequest(modelEndpoint, [], applicationData)
     await apiRequest.run()
@@ -77,7 +77,7 @@ describe('ModelRequestErrorHandler', () => {
     }
     const applicationData = mockApplicationData({
       database,
-      fetchClient: mockFetchSuccess({
+      fetch: mockFetchSuccess({
         choices: [{ message: { content: '[]' } }],
       }),
     })

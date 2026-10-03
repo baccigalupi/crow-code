@@ -1,10 +1,7 @@
 import { describe, it, mock } from 'node:test'
 import { expect } from '@std/expect'
-import knex from 'knex'
-import pino from 'pino'
-import { Environment } from '../../../src/env-vars.ts'
 import { Command } from '../../../src/cli/commands/command.ts'
-import { openAiClient } from '../../../src/model-requests/framework/openai-client.ts'
+import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('Command', () => {
   it('when constructed, exposes the parsed commands to subclasses', () => {
@@ -13,30 +10,12 @@ describe('Command', () => {
         return this.commands[0] === 'first'
       }
 
-      extractOptions() {
-        return {}
-      }
-
       run() {
         return Promise.resolve()
       }
     }
 
-    const command = new FirstCommand({
-      parsedArguments: { commands: ['first'], options: {} },
-      crowDirectory: '',
-      logger: pino({ enabled: false }),
-      database: knex({
-        client: 'better-sqlite3',
-        connection: ':memory:',
-        useNullAsDefault: true,
-      }),
-      consoleLog: () => {},
-      fetchClient: fetch,
-      openAiClient: openAiClient,
-      denoCommand: Deno.Command,
-      environment: new Environment({}),
-    })
+    const command = new FirstCommand(mockApplicationData({ args: ['first'] }))
 
     expect(command.isMatch()).toBe(true)
   })
@@ -44,11 +23,7 @@ describe('Command', () => {
   it('when constructed, exposes the parsed options to subclasses', () => {
     class GoalCommand extends Command {
       isMatch() {
-        return true
-      }
-
-      extractOptions() {
-        return { goal: this.options.goal }
+        return this.options.goal === 'ship'
       }
 
       run() {
@@ -56,23 +31,11 @@ describe('Command', () => {
       }
     }
 
-    const command = new GoalCommand({
-      parsedArguments: { commands: [], options: { goal: 'ship' } },
-      crowDirectory: '',
-      logger: pino({ enabled: false }),
-      database: knex({
-        client: 'better-sqlite3',
-        connection: ':memory:',
-        useNullAsDefault: true,
-      }),
-      consoleLog: () => {},
-      fetchClient: fetch,
-      openAiClient: openAiClient,
-      denoCommand: Deno.Command,
-      environment: new Environment({}),
-    })
+    const command = new GoalCommand(
+      mockApplicationData({ args: ['--goal=ship'] }),
+    )
 
-    expect(command.extractOptions()).toEqual({ goal: 'ship' })
+    expect(command.isMatch()).toBe(true)
   })
 
   it('when constructed, exposes the application data to subclasses', async () => {
@@ -82,34 +45,18 @@ describe('Command', () => {
         return true
       }
 
-      extractOptions() {
-        return {}
-      }
-
       run() {
-        this.consoleLog(this.crowDirectory)
+        this.applicationData.consoleLog()(this.applicationData.crowDirectory())
         return Promise.resolve()
       }
     }
-    const database = knex({
-      client: 'better-sqlite3',
-      connection: ':memory:',
-      useNullAsDefault: true,
+    const applicationData = mockApplicationData({
+      crowDirectory: '/tmp/crow',
+      consoleLog,
     })
 
-    await new EchoDirectory({
-      parsedArguments: { commands: [], options: {} },
-      crowDirectory: '/tmp/crow',
-      logger: pino({ enabled: false }),
-      database,
-      consoleLog,
-      fetchClient: fetch,
-      openAiClient: openAiClient,
-      denoCommand: Deno.Command,
-      environment: new Environment({}),
-    }).run()
+    await new EchoDirectory(applicationData).run()
 
     expect(consoleLog.mock.calls[0].arguments[0]).toBe('/tmp/crow')
-    await database.destroy()
   })
 })

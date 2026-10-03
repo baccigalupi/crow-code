@@ -5,38 +5,39 @@ import {
 import { Command } from './command.ts'
 
 export class AddProvider extends Command {
+  private dbRecordCreator!: CreateProvider
+
   isMatch() {
     return this.commands[0] === 'add-provider'
   }
 
-  extractOptions() {
-    return this.options
-  }
-
   async run() {
-    const creator = await createProvider(
-      this.database,
-      this.logger,
-      this.extractOptions(),
-    )
-    this.report(creator)
+    await this.createProvider()
+    this.log()
   }
 
-  private report(creator: CreateProvider) {
-    if (creator.success()) {
-      this.reportSuccess()
+  private async createProvider() {
+    this.dbRecordCreator = await createProvider(
+      this.applicationData,
+      this.options,
+    )
+  }
+
+  private log() {
+    if (this.dbRecordCreator.success()) {
+      this.logSuccess()
     } else {
-      this.reportFailure()
+      this.logFailure()
     }
   }
 
-  private reportSuccess() {
-    this.consoleLog(
+  private logSuccess() {
+    this.applicationData.consoleLog()(
       'Provider added. Add your api key <api_key> to the .env file',
     )
   }
 
-  private reportFailure() {
-    this.consoleLog('Unable to create a provider')
+  private logFailure() {
+    this.applicationData.consoleLog()('Unable to create a provider')
   }
 }

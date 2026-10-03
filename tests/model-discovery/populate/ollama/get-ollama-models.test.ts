@@ -9,6 +9,7 @@ import {
 import { loadOllamaFixture } from '../../../support/fixtures.ts'
 import { getOllamaModels } from '../../../../src/model-discovery/populate/ollama/get-ollama-models.ts'
 import { createTestDatabase } from '../../../support/test-database.ts'
+import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { ProviderEntity } from '../../../../src/domain/providers/entity.ts'
 import { Environment } from '../../../../src/env-vars.ts'
 
@@ -29,7 +30,10 @@ describe('getOllamaModels', () => {
     const database = await createTestDatabase(logger)
     const mockFetch = mockFetchSuccess(fixture)
 
-    const result = await getOllamaModels(provider, logger, database, mockFetch)
+    const result = await getOllamaModels(
+      provider,
+      mockApplicationData({ database, logger, fetch: mockFetch }),
+    )
 
     expect(result).toHaveLength(3)
     expect(result[0].id).toBe('qwen3-coder:30b')
@@ -54,7 +58,10 @@ describe('getOllamaModels', () => {
       models: [{ name: 'author/model', details: { context_length: 128000 } }],
     })
 
-    await getOllamaModels(provider, logger, database, mockFetch)
+    await getOllamaModels(
+      provider,
+      mockApplicationData({ database, logger, fetch: mockFetch }),
+    )
 
     const rows = await database('models')
     expect(rows).toHaveLength(1)
@@ -80,7 +87,10 @@ describe('getOllamaModels', () => {
     const database = await createTestDatabase(logger)
     const mockFetch = mockFetchSuccess({ models: [] })
 
-    await getOllamaModels(provider, logger, database, mockFetch)
+    await getOllamaModels(
+      provider,
+      mockApplicationData({ database, logger, fetch: mockFetch }),
+    )
 
     expect(mockFetch.calls).toHaveLength(1)
     expect(mockFetch.calls[0]).toBe('http://other.local:11434/api/tags')
@@ -102,7 +112,10 @@ describe('getOllamaModels', () => {
     const database = await createTestDatabase(logger)
     const mockFetch = mockFetchError(500)
 
-    const result = await getOllamaModels(provider, logger, database, mockFetch)
+    const result = await getOllamaModels(
+      provider,
+      mockApplicationData({ database, logger, fetch: mockFetch }),
+    )
 
     expect(result).toEqual([])
     expect(await database('models')).toEqual([])
@@ -124,7 +137,10 @@ describe('getOllamaModels', () => {
     const database = await createTestDatabase(logger)
     const mockFetch = mockFetchRejected('network down')
 
-    const result = await getOllamaModels(provider, logger, database, mockFetch)
+    const result = await getOllamaModels(
+      provider,
+      mockApplicationData({ database, logger, fetch: mockFetch }),
+    )
 
     expect(result).toEqual([])
     expect(await database('models')).toEqual([])

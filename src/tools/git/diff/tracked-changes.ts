@@ -1,4 +1,4 @@
-import type { ApplicationData } from '../../../types.ts'
+import type { ApplicationData } from '../../../application-data.ts'
 import { ExecCommand } from '../../exec-command.ts'
 import type { GitFileDiff } from '../../types.ts'
 import { trackedChangeParser } from './tracked-changes/parser.ts'

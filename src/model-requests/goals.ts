@@ -1,4 +1,4 @@
-import type { ApplicationData } from '../types.ts'
+import type { ApplicationData } from '../application-data.ts'
 import { ModelApiRequest } from './framework/model-api-request.ts'
 import type { ModelEndpoint, RequestMessages } from './types.ts'
 

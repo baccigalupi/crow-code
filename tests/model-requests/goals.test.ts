@@ -15,7 +15,7 @@ describe('goals', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetchClient: mockFetchSuccess({
+      fetch: mockFetchSuccess({
         choices: [{ message: { content: '[]' } }],
       }),
     })
@@ -37,7 +37,7 @@ describe('goals', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetchClient: mockFetchError(500),
+      fetch: mockFetchError(500),
     })
     const getGoals = new GetGoals(modelEndpoint, applicationData, 'build a cli')
 
@@ -57,7 +57,7 @@ describe('goals', () => {
       'model-requests/ollama-goals-response.json',
     ) as ChatCompletionJson
     const applicationData = mockApplicationData({
-      fetchClient: mockFetchSuccess(fixture),
+      fetch: mockFetchSuccess(fixture),
     })
 
     const request = await getGoals(

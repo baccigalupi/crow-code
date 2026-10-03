@@ -1,8 +1,4 @@
-import type { Knex } from 'knex'
 import type pino from 'pino'
-import type { Environment } from './env-vars.ts'
-import type { OpenAiClientOptions } from './model-requests/types.ts'
-import type OpenAI from 'openai'
 
 export type Logger = pino.Logger
 
@@ -39,15 +35,3 @@ export type Committer = (summary: string, logger: Logger) => Promise<boolean>
 export type DatabaseQuerySerializer<Result, Serialized> = (
   result: Result,
 ) => Serialized
-
-export type ApplicationData = {
-  parsedArguments: ParsedArguments
-  crowDirectory: string
-  logger: Logger
-  database: Knex
-  consoleLog: ConsoleLog
-  fetchClient: typeof fetch
-  openAiClient: (options: OpenAiClientOptions) => OpenAI
-  denoCommand: DenoCommand
-  environment: Environment
-}

@@ -5,6 +5,7 @@ import { Environment } from '../../../src/env-vars.ts'
 import { ProviderEntity } from '../../../src/domain/providers/entity.ts'
 import { providerFindAll } from '../../../src/domain/providers/find-all.ts'
 import { createTestDatabase } from '../../support/test-database.ts'
+import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('providerFindAll', () => {
   describe('all', () => {
@@ -26,9 +27,13 @@ describe('providerFindAll', () => {
           api_key_env_var: 'PROVIDER_API_KEY',
         },
       ])
+      const applicationData = mockApplicationData({
+        envars: environment,
+        database,
+        logger,
+      })
 
-      const providers = await providerFindAll(environment, database, logger)
-        .all()
+      const providers = await providerFindAll(applicationData).all()
 
       const [first, second] = providers
       expect(providers).toHaveLength(2)
@@ -45,9 +50,13 @@ describe('providerFindAll', () => {
       const environment = new Environment({})
       const logger = pino({ enabled: false })
       const database = await createTestDatabase(logger)
+      const applicationData = mockApplicationData({
+        envars: environment,
+        database,
+        logger,
+      })
 
-      const providers = await providerFindAll(environment, database, logger)
-        .all()
+      const providers = await providerFindAll(applicationData).all()
 
       expect(providers).toEqual([])
       await database.destroy()
@@ -63,9 +72,13 @@ describe('providerFindAll', () => {
         models_path: '/models',
         api_key_env_var: 'MISSING_KEY',
       })
+      const applicationData = mockApplicationData({
+        envars: environment,
+        database,
+        logger,
+      })
 
-      const providers = await providerFindAll(environment, database, logger)
-        .all()
+      const providers = await providerFindAll(applicationData).all()
 
       expect(providers).toHaveLength(1)
       expect(providers[0].apiKey()).toBe('')

@@ -1,29 +1,45 @@
 import type { Knex } from 'knex'
-import type { Logger } from './types.ts'
+import { join } from '@std/path'
+import { OpenAI } from 'openai'
+import type {
+  ConsoleLog,
+  DenoCommand,
+  Logger,
+  ParsedArguments,
+} from './types.ts'
 import type { OpenAiClientOptions } from './model-requests/types.ts'
 import { openAndMigrateDatabase } from './database/open-and-migrate-database.ts'
 import { createLogger } from './logger.ts'
-import { OpenAI } from 'openai'
-import { loadEnvironmentalVariables, type Environment } from './env-vars.ts'
+import { type Environment, loadEnvironmentalVariables } from './env-vars.ts'
+import { parseArguments } from './cli/arguments.ts'
 
 export class ApplicationData {
   private _database?: Knex
   private _logger?: Logger
   private _envars?: Environment
-  
-  crowDirectory() {
-    return Deno.cwd() + './crow'
+  private _parsedArguments?: ParsedArguments
+
+  crowDirectory(): string {
+    return join(Deno.cwd(), '.crow')
   }
 
-  console() {
-    return console
-  }
-
-  consoleLog() {
+  consoleLog(): ConsoleLog {
     return console.log
   }
 
-  logger() {
+  args(): string[] {
+    return Deno.args
+  }
+
+  parsedArguments(): ParsedArguments {
+    if (this._parsedArguments) return this._parsedArguments
+
+    this._parsedArguments = parseArguments(this.args())
+
+    return this._parsedArguments
+  }
+
+  logger(): Logger {
     if (this._logger) return this._logger
 
     this._logger = createLogger(this.crowDirectory(), 'debug')
@@ -31,41 +47,48 @@ export class ApplicationData {
     return this._logger
   }
 
-  fetch() {
-    return global.fetch
+  fetch(): typeof fetch {
+    return globalThis.fetch
   }
 
-  async database() {
+  async database(): Promise<Knex> {
     if (this._database) return this._database
 
-    this._database = await openAndMigrateDatabase(this.crowDirectory(), this.logger())
+    const crowDirectory = this.crowDirectory()
+    this._database = await openAndMigrateDatabase(crowDirectory, this.logger())
 
     return this._database
   }
 
-  chatClient(options: OpenAiClientOptions) {
-    const timeout = 20000
-    const maxRetries = 2
+  withDatabase(database: Knex): ApplicationData {
+    const clone = Object.create(
+      Object.getPrototypeOf(this),
+      Object.getOwnPropertyDescriptors(this),
+    ) as ApplicationData
+    Object.defineProperty(clone, 'database', {
+      value: () => Promise.resolve(database),
+    })
+    return clone
+  }
 
-    const fullOptions = {
+  async close(): Promise<void> {
+    await (await this.database()).destroy()
+  }
+
+  chatClient(options: OpenAiClientOptions): OpenAI {
+    return new OpenAI({
       fetch: this.fetch(),
-      timeout,
-      maxRetries,
-      ...options
-    }
-
-    return () => new OpenAI(fullOptions)
+      timeout: 20000,
+      maxRetries: 2,
+      ...options,
+    })
   }
 
-  deno() {
-    Deno
+  denoCommand(): DenoCommand {
+    return Deno.Command
   }
 
-  denoCommand() {
-    Deno.Command
-  }
-
-  envars() {
+  envars(): Environment {
     if (this._envars) return this._envars
 
     this._envars = loadEnvironmentalVariables()

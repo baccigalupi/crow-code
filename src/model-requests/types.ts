@@ -1,9 +1,6 @@
 export type OpenAiClientOptions = {
   apiKey: string
   baseURL: string
-  timeout?: number
-  maxRetries?: number
-  fetch?: typeof fetch
 }
 
 export type ModelMessages = {

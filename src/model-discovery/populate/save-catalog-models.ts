@@ -1,24 +1,21 @@
 import type { Knex } from 'knex'
-import type { Logger } from '../../types.ts'
+import type { ApplicationData } from '../../application-data.ts'
 import { createModel } from '../../domain/models/create.ts'
 import type { CatalogModel } from '../types.ts'
 
 class SaveCatalogModels {
-  private database: Knex
+  private applicationData: ApplicationData
   private providerId: number
   private models: CatalogModel[]
-  private logger: Logger
 
   constructor(
-    database: Knex,
+    applicationData: ApplicationData,
     providerId: number,
     models: CatalogModel[],
-    logger: Logger,
   ) {
-    this.database = database
+    this.applicationData = applicationData
     this.providerId = providerId
     this.models = models
-    this.logger = logger
   }
 
   async run() {
@@ -31,7 +28,9 @@ class SaveCatalogModels {
   }
 
   private async refreshCatalog() {
-    await this.database.transaction((transaction) => this.refresh(transaction))
+    await (await this.applicationData.database()).transaction((transaction) =>
+      this.refresh(transaction)
+    )
   }
 
   private async refresh(transaction: Knex.Transaction) {
@@ -47,7 +46,7 @@ class SaveCatalogModels {
     saveResults: boolean[],
   ) {
     if (saveResults.includes(true)) return
-    this.logger.error(
+    this.applicationData.logger().error(
       `No models could be saved for provider ${this.providerId}; catalog refresh rolled back`,
     )
     await transaction.rollback()
@@ -55,15 +54,14 @@ class SaveCatalogModels {
 
   private async save(model: CatalogModel, transaction: Knex.Transaction) {
     const created = await createModel(
-      transaction,
-      this.logger,
+      this.applicationData.withDatabase(transaction),
       this.toModelParams(model),
     )
     return created.success()
   }
 
   private logFailure(error: unknown) {
-    this.logger.error(
+    this.applicationData.logger().error(
       `Model catalog refresh for provider ${this.providerId} rolled back: ${
         (error as Error).message
       }`,
@@ -76,10 +74,9 @@ class SaveCatalogModels {
 }
 
 export const saveCatalogModels = async (
-  database: Knex,
+  applicationData: ApplicationData,
   providerId: number,
   models: CatalogModel[],
-  logger: Logger,
 ) => {
-  await new SaveCatalogModels(database, providerId, models, logger).run()
+  await new SaveCatalogModels(applicationData, providerId, models).run()
 }

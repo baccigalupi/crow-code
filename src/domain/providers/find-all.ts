@@ -1,24 +1,20 @@
-import type { Knex } from 'knex'
-import type { Environment } from '../../env-vars.ts'
-import type { DatabaseQuerySerializer, Logger } from '../../types.ts'
+import type { ApplicationData } from '../../application-data.ts'
+import type { DatabaseQuerySerializer } from '../../types.ts'
 import { databaseQuery } from '../database-query.ts'
 import type { ProviderRecord } from '../types.ts'
 import type { ProviderEntity } from './entity.ts'
 import { providerEntities } from './entity.ts'
 
 export class ProviderFindAll {
-  private environment: Environment
-  private database: Knex
-  private logger: Logger
+  private applicationData: ApplicationData
 
-  constructor(environment: Environment, database: Knex, logger: Logger) {
-    this.environment = environment
-    this.database = database
-    this.logger = logger
+  constructor(applicationData: ApplicationData) {
+    this.applicationData = applicationData
   }
 
-  all() {
-    const query = this.database<ProviderRecord>('providers')
+  async all() {
+    const database = await this.applicationData.database()
+    const query = database<ProviderRecord>('providers')
 
     return this.runQuery(query)
   }
@@ -27,21 +23,18 @@ export class ProviderFindAll {
     ProviderRecord[],
     ProviderEntity[]
   > {
-    return (result) => providerEntities(result, this.environment)
+    return (result) => providerEntities(result, this.applicationData.envars())
   }
 
   private async runQuery(query: PromiseLike<ProviderRecord[]>) {
     const databaseQueryResult = await databaseQuery(
       query,
-      this.logger,
+      this.applicationData.logger(),
       this.serializer(),
     )
     return databaseQueryResult.result()
   }
 }
 
-export const providerFindAll = (
-  environment: Environment,
-  database: Knex,
-  logger: Logger,
-) => new ProviderFindAll(environment, database, logger)
+export const providerFindAll = (applicationData: ApplicationData) =>
+  new ProviderFindAll(applicationData)

@@ -49,7 +49,7 @@ describe('gitUntrackedChanges', () => {
         ],
       }),
     })
-    using loggerErrorSpy = spy(applicationData.logger, 'error')
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const changes = gitUntrackedChanges({ applicationData })
     await changes.run()
@@ -73,7 +73,7 @@ describe('gitUntrackedChanges', () => {
         code: 128,
       }),
     })
-    using loggerErrorSpy = spy(applicationData.logger, 'error')
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const changes = gitUntrackedChanges({ applicationData })
     await changes.run()

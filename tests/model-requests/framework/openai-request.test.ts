@@ -14,7 +14,7 @@ import { mockFetchSequence } from '../../support/mock-fetch.ts'
 describe('OpenAiRequest', () => {
   it('when the completion succeeds, reports success and returns parsed json', async () => {
     const applicationData = mockApplicationData({
-      openAiClient: mockOpenAiClient('["a goal"]'),
+      chatClient: mockOpenAiClient('["a goal"]'),
     })
     const request = new OpenAiRequest(
       {
@@ -37,7 +37,7 @@ describe('OpenAiRequest', () => {
 
   it('when the completion succeeds, records the request duration', async () => {
     const applicationData = mockApplicationData({
-      openAiClient: mockOpenAiClient('["a goal"]'),
+      chatClient: mockOpenAiClient('["a goal"]'),
     })
     const request = new OpenAiRequest(
       {
@@ -74,7 +74,7 @@ describe('OpenAiRequest', () => {
 
   it('when the api call throws a connection error, reports failure and exposes the error', async () => {
     const applicationData = mockApplicationData({
-      openAiClient: mockOpenAiClientNetworkError('down'),
+      chatClient: mockOpenAiClientNetworkError('down'),
     })
     const request = new OpenAiRequest(
       {
@@ -95,7 +95,7 @@ describe('OpenAiRequest', () => {
 
   it('when the api returns 401, reports failure with the status', async () => {
     const applicationData = mockApplicationData({
-      openAiClient: mockOpenAiClientError(401),
+      chatClient: mockOpenAiClientError(401),
     })
     const request = new OpenAiRequest(
       {
@@ -115,8 +115,8 @@ describe('OpenAiRequest', () => {
   })
 
   it('when the endpoint has an api key, constructs the client with it', async () => {
-    const openAiClient = mock.fn(mockOpenAiClient(''))
-    const applicationData = mockApplicationData({ openAiClient })
+    const chatClient = mock.fn(mockOpenAiClient(''))
+    const applicationData = mockApplicationData({ chatClient })
     const request = new OpenAiRequest(
       {
         baseURL: 'https://example.com/api/v1',
@@ -130,15 +130,15 @@ describe('OpenAiRequest', () => {
 
     await request.run()
 
-    expect(openAiClient.mock.calls[0].arguments[0].apiKey).toBe('test-key')
-    expect(openAiClient.mock.calls[0].arguments[0].baseURL).toBe(
-      'https://example.com/api/v1',
-    )
+    expect(chatClient.mock.calls[0].arguments[0]).toEqual({
+      apiKey: 'test-key',
+      baseURL: 'https://example.com/api/v1',
+    })
   })
 
   it('when the endpoint has no api key, constructs the client with the placeholder', async () => {
-    const openAiClient = mock.fn(mockOpenAiClient(''))
-    const applicationData = mockApplicationData({ openAiClient })
+    const chatClient = mock.fn(mockOpenAiClient(''))
+    const applicationData = mockApplicationData({ chatClient })
     const request = new OpenAiRequest(
       {
         baseURL: 'https://example.com/api/v1',
@@ -152,9 +152,10 @@ describe('OpenAiRequest', () => {
 
     await request.run()
 
-    expect(openAiClient.mock.calls[0].arguments[0].apiKey).toBe(
-      'crow-no-api-key',
-    )
+    expect(chatClient.mock.calls[0].arguments[0]).toEqual({
+      apiKey: 'crow-no-api-key',
+      baseURL: 'https://example.com/api/v1',
+    })
   })
 
   it('when the first attempt returns 500 and the second succeeds, reports success', async () => {
@@ -162,7 +163,7 @@ describe('OpenAiRequest', () => {
       new Response(null, { status: 500 }),
       Response.json({ choices: [{ message: { content: '["a goal"]' } }] }),
     ])
-    const applicationData = mockApplicationData({ fetchClient: fetchMock })
+    const applicationData = mockApplicationData({ fetch: fetchMock })
     const request = new OpenAiRequest(
       {
         baseURL: 'https://example.com/api/v1',

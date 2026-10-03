@@ -6,20 +6,23 @@ import {
   CreateProvider,
   createProvider,
 } from '../../../src/domain/providers/create.ts'
+import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { createTestDatabase } from '../../support/test-database.ts'
 
 describe('create', () => {
-  it('when attributes use mixed cases and include extra values, normalizes and filters them', async () => {
+  it('when options include extra values, normalizes and filters them', async () => {
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
-
-    const creator = await createProvider(database, logger, {
+    const applicationData = mockApplicationData({ database, logger })
+    const options = {
       name: 'provider-name',
-      baseUrl: 'https://www.example.com',
+      'base-url': 'https://www.example.com',
       'models-path': '/v1/models',
-      apiKeyEnvVar: 'X',
+      'api-key-env-var': 'X',
       extra: 'ignored',
-    })
+    }
+
+    const creator = await createProvider(applicationData, options)
 
     expect(creator.success()).toBe(true)
     expect(creator.record()).toEqual({
@@ -35,8 +38,9 @@ describe('create', () => {
   it('when create has not been called, success is false and the record is empty', async () => {
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({ database, logger })
 
-    const creator = new CreateProvider(database, logger, {})
+    const creator = new CreateProvider(applicationData, {})
 
     expect(creator.success()).toBe(false)
     expect(creator.record()).toEqual({})
@@ -51,11 +55,13 @@ describe('create', () => {
       name: 'provider-name',
       base_url: 'https://www.example.com',
     })
-
-    const creator = await createProvider(database, logger, {
+    const applicationData = mockApplicationData({ database, logger })
+    const options = {
       name: 'provider-name',
       'base-url': 'https://www.example.com',
-    })
+    }
+
+    const creator = await createProvider(applicationData, options)
 
     expect(creator.success()).toBe(false)
     expect(creator.record()).toEqual({})

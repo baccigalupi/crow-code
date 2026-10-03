@@ -1,5 +1,4 @@
-import type { Knex } from 'knex'
-import type { Logger } from '../../types.ts'
+import type { ApplicationData } from '../../application-data.ts'
 import { CreateRecord } from '../create.ts'
 import type {
   AvailabilityReason,
@@ -29,9 +28,6 @@ export class CreateModelAvailability extends CreateRecord<
 }
 
 export const createModelAvailability = (
-  database: Knex,
-  logger: Logger,
+  applicationData: ApplicationData,
   recordParams: RecordParams,
-) => {
-  return new CreateModelAvailability(database, logger, recordParams)
-}
+) => new CreateModelAvailability(applicationData, recordParams)

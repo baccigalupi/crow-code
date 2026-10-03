@@ -1,25 +1,22 @@
-import type { Logger } from '../../types.ts'
+import type { ApplicationData } from '../../application-data.ts'
 
 class FetchProvider<ApiRecord, T> {
+  private applicationData: ApplicationData
   private url: string
   private parse: (raw: ApiRecord) => T[]
   private timeoutMs: number
-  private logger: Logger
-  private fetchClient: typeof fetch
   private records: T[] = []
 
   constructor(
+    applicationData: ApplicationData,
     url: string,
     parse: (raw: ApiRecord) => T[],
     timeoutMs: number,
-    logger: Logger,
-    fetchClient: typeof fetch = fetch,
   ) {
+    this.applicationData = applicationData
     this.url = url
     this.parse = parse
     this.timeoutMs = timeoutMs
-    this.logger = logger
-    this.fetchClient = fetchClient
   }
 
   async run() {
@@ -37,7 +34,7 @@ class FetchProvider<ApiRecord, T> {
   }
 
   private async fetch() {
-    return await this.fetchClient(this.url, {
+    return await this.applicationData.fetch()(this.url, {
       signal: AbortSignal.timeout(this.timeoutMs),
     })
   }
@@ -51,28 +48,26 @@ class FetchProvider<ApiRecord, T> {
   }
 
   private fail() {
-    this.logger.error(`Catalog request failed: ${this.url}`)
+    this.applicationData.logger().error(`Catalog request failed: ${this.url}`)
   }
 
   private logError(status: number) {
-    this.logger.error(
+    this.applicationData.logger().error(
       `Catalog request failed with status ${status}: ${this.url}`,
     )
   }
 }
 
 export const fetchProvider = async <ApiRecord, T>(
+  applicationData: ApplicationData,
   url: string,
   parse: (raw: ApiRecord) => T[],
   timeoutMs: number,
-  logger: Logger,
-  fetchClient: typeof fetch = fetch,
 ) => {
   return await new FetchProvider(
+    applicationData,
     url,
     parse,
     timeoutMs,
-    logger,
-    fetchClient,
   ).run()
 }

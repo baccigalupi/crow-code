@@ -6,12 +6,8 @@ export class Version extends Command {
     return this.options.version === true || this.options.V === true
   }
 
-  extractOptions() {
-    return {}
-  }
-
   run() {
-    this.consoleLog(`crow ${denoConfig.version}`)
+    this.applicationData.consoleLog()(`crow ${denoConfig.version}`)
     return Promise.resolve()
   }
 }

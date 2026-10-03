@@ -1,11 +1,11 @@
 import type OpenAI from 'openai'
-import { openAiClientOptions } from './openai-client.ts'
 import { ModelRequestErrorHandler } from './model-request-error-handler.ts'
-import type { ApplicationData } from '../../types.ts'
+import type { ApplicationData } from '../../application-data.ts'
 import type {
   ChatCompletionJson,
   ModelEndpoint,
   ModelMessages,
+  OpenAiClientOptions,
 } from '../types.ts'
 
 export class OpenAiRequest {
@@ -57,14 +57,24 @@ export class OpenAiRequest {
     this.endTime = performance.now()
   }
 
-  private openAiClient() {
-    return this.applicationData.openAiClient(
-      openAiClientOptions(this.modelEndpoint, this.applicationData.fetchClient),
-    )
+  private chatClient() {
+    return this.applicationData.chatClient(this.openAiClientOptions())
+  }
+
+  private openAiClientOptions(): OpenAiClientOptions {
+    return {
+      apiKey: this.apiKey(),
+      baseURL: this.modelEndpoint.baseURL,
+    }
+  }
+
+  private apiKey() {
+    if (this.modelEndpoint.apiKey === '') return 'crow-no-api-key'
+    return this.modelEndpoint.apiKey
   }
 
   private async createCompletion() {
-    const completion = await this.openAiClient().chat.completions.create({
+    const completion = await this.chatClient().chat.completions.create({
       model: this.modelEndpoint.model,
       messages: this.messages as OpenAI.ChatCompletionMessageParam[],
     })

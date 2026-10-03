@@ -1,7 +1,7 @@
 import { APIError } from 'openai'
 import { createProviderAvailability } from '../../domain/availabilties/create-provider.ts'
 import { requestLogger } from './request-logger.ts'
-import type { ApplicationData } from '../../types.ts'
+import type { ApplicationData } from '../../application-data.ts'
 import type { ModelEndpoint } from '../types.ts'
 
 export class ModelRequestErrorHandler {
@@ -28,7 +28,7 @@ export class ModelRequestErrorHandler {
   }
 
   private requestLogger() {
-    return requestLogger(this.applicationData.logger, this.url, this.error)
+    return requestLogger(this.applicationData.logger(), this.url, this.error)
   }
 
   private async handleApiError() {
@@ -56,8 +56,7 @@ export class ModelRequestErrorHandler {
   }
 
   private async recordProviderUnavailable() {
-    const data = this.applicationData
-    await createProviderAvailability(data.database, data.logger, {
+    await createProviderAvailability(this.applicationData, {
       providerId: this.modelEndpoint.providerId,
       reason: 'no-api-key',
     }).create()

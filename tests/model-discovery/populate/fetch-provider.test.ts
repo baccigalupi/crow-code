@@ -6,20 +6,19 @@ import {
   mockFetchSuccess,
 } from '../../support/mock-fetch.ts'
 import { fetchProvider } from '../../../src/model-discovery/populate/fetch-provider.ts'
-import pino from 'pino'
+import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('fetchProvider', () => {
   it('when the request succeeds, returns the parsed models', async () => {
     type ApiRecord = { items: string[] }
-    const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess<ApiRecord>({ items: ['a'] })
+    const applicationData = mockApplicationData({ fetch: mockFetch })
 
     const result = await fetchProvider<ApiRecord, string>(
+      applicationData,
       'http://example.com',
       (raw: ApiRecord): string[] => raw.items,
       1000,
-      logger,
-      mockFetch,
     )
 
     expect(result).toEqual(['a'])
@@ -27,15 +26,14 @@ describe('fetchProvider', () => {
 
   it('when the response is an error, returns an empty list', async () => {
     type ApiRecord = { items?: string[] }
-    const logger = pino({ enabled: false })
     const mockFetch = mockFetchError(500)
+    const applicationData = mockApplicationData({ fetch: mockFetch })
 
     const result = await fetchProvider<ApiRecord, string>(
+      applicationData,
       'http://example.com',
       (): string[] => [],
       1000,
-      logger,
-      mockFetch,
     )
 
     expect(result).toEqual([])
@@ -43,15 +41,14 @@ describe('fetchProvider', () => {
 
   it('when the network request fails, returns an empty list', async () => {
     type ApiRecord = { items?: string[] }
-    const logger = pino({ enabled: false })
     const mockFetch = mockFetchRejected('network down')
+    const applicationData = mockApplicationData({ fetch: mockFetch })
 
     const result = await fetchProvider<ApiRecord, string>(
+      applicationData,
       'http://example.com',
       (): string[] => [],
       1000,
-      logger,
-      mockFetch,
     )
 
     expect(result).toEqual([])

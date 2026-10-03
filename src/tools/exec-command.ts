@@ -1,4 +1,5 @@
-import type { ApplicationData, DenoCommand, Logger } from '../types.ts'
+import type { ApplicationData } from '../application-data.ts'
+import type { DenoCommand, Logger } from '../types.ts'
 
 type ExecCommandArguments<T extends Record<string, unknown>> = {
   applicationData: ApplicationData
@@ -9,7 +10,6 @@ export abstract class ExecCommand<
   T extends Record<string, unknown>,
   U,
 > {
-  applicationData: ApplicationData
   commandArguments: T
   denoCommand: DenoCommand
   private command!: Deno.Command
@@ -21,11 +21,10 @@ export abstract class ExecCommand<
   constructor(
     { applicationData, commandArguments }: ExecCommandArguments<T>,
   ) {
-    this.applicationData = applicationData
     this.commandArguments = commandArguments
 
-    this.denoCommand = applicationData.denoCommand
-    this.logger = applicationData.logger
+    this.denoCommand = applicationData.denoCommand()
+    this.logger = applicationData.logger()
   }
 
   success() {

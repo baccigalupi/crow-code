@@ -6,16 +6,7 @@ export class CreateModelCatalog extends Command {
     return this.commands[0] === 'create-model-catalog'
   }
 
-  extractOptions() {
-    return {}
-  }
-
   async run() {
-    await populateModels(
-      this.environment,
-      this.database,
-      this.logger,
-      this.fetchClient,
-    )
+    await populateModels(this.applicationData)
   }
 }

@@ -1,22 +1,16 @@
 import type { Knex } from 'knex'
-import type { Logger } from '../types.ts'
+import type { ApplicationData } from '../application-data.ts'
 import type { EmptyRecord } from './types.ts'
 
 export abstract class CreateRecord<TParams, TRow, TRecord = unknown> {
   protected abstract readonly tableName: string
-  protected readonly database: Knex
-  protected readonly logger: Logger
+  protected readonly applicationData: ApplicationData
   protected readonly recordParams: TParams
   private result?: TRecord
   private succeeded = false
 
-  constructor(
-    database: Knex,
-    logger: Logger,
-    recordParams: TParams,
-  ) {
-    this.database = database
-    this.logger = logger
+  constructor(applicationData: ApplicationData, recordParams: TParams) {
+    this.applicationData = applicationData
     this.recordParams = recordParams
   }
 
@@ -24,7 +18,7 @@ export abstract class CreateRecord<TParams, TRow, TRecord = unknown> {
     try {
       await this.save()
     } catch (error) {
-      this.logger.error((error as Error).message)
+      this.applicationData.logger().error((error as Error).message)
     }
     return this
   }
@@ -43,8 +37,13 @@ export abstract class CreateRecord<TParams, TRow, TRecord = unknown> {
     this.succeeded = true
   }
 
+  protected database(): Promise<Knex> {
+    return this.applicationData.database()
+  }
+
   private async insert() {
-    const rows = await this.database(this.tableName)
+    const database = await this.database()
+    const rows = await database(this.tableName)
       .insert(this.params())
       .returning('*') as TRow[]
     this.result = this.serialize(rows)

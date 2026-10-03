@@ -91,7 +91,7 @@ describe('gitDiffFiles', () => {
         outputError: 'No such file or directory (os error 2): git',
       }),
     })
-    using loggerErrorSpy = spy(applicationData.logger, 'error')
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const gitDiff = gitDiffFiles({ applicationData })
     await gitDiff.run()
@@ -111,7 +111,7 @@ describe('gitDiffFiles', () => {
         code: 128,
       }),
     })
-    using loggerErrorSpy = spy(applicationData.logger, 'error')
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const gitDiff = gitDiffFiles({ applicationData })
     await gitDiff.run()

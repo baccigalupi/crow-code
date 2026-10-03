@@ -1,4 +1,4 @@
-import type { ApplicationData } from '../../types.ts'
+import type { ApplicationData } from '../../application-data.ts'
 import type {
   ChatCompletionJson,
   ModelEndpoint,

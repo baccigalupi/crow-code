@@ -9,6 +9,7 @@ import {
 import { loadNousFixture } from '../../../support/fixtures.ts'
 import { getNousModels } from '../../../../src/model-discovery/populate/nous/get-nous-models.ts'
 import { createTestDatabase } from '../../../support/test-database.ts'
+import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { ProviderEntity } from '../../../../src/domain/providers/entity.ts'
 import { Environment } from '../../../../src/env-vars.ts'
 
@@ -29,7 +30,10 @@ describe('getNousModels', () => {
     const database = await createTestDatabase(logger)
     const mockFetch = mockFetchSuccess(fixture)
 
-    const result = await getNousModels(provider, logger, database, mockFetch)
+    const result = await getNousModels(
+      provider,
+      mockApplicationData({ database, logger, fetch: mockFetch }),
+    )
 
     expect(result).toHaveLength(400)
     expect(result[0].id).toBe('xiaomi/mimo-v2.6-pro-ultraspeed')
@@ -60,7 +64,10 @@ describe('getNousModels', () => {
     }
     const mockFetch = mockFetchSuccess({ data: [record] })
 
-    await getNousModels(provider, logger, database, mockFetch)
+    await getNousModels(
+      provider,
+      mockApplicationData({ database, logger, fetch: mockFetch }),
+    )
 
     const rows = await database('models')
     expect(rows).toHaveLength(1)
@@ -86,7 +93,10 @@ describe('getNousModels', () => {
     const database = await createTestDatabase(logger)
     const mockFetch = mockFetchSuccess({ data: [] })
 
-    await getNousModels(provider, logger, database, mockFetch)
+    await getNousModels(
+      provider,
+      mockApplicationData({ database, logger, fetch: mockFetch }),
+    )
 
     expect(mockFetch.calls).toHaveLength(1)
     expect(mockFetch.calls[0]).toBe('https://example.com/v1/models')
@@ -108,7 +118,10 @@ describe('getNousModels', () => {
     const database = await createTestDatabase(logger)
     const mockFetch = mockFetchError(500)
 
-    const result = await getNousModels(provider, logger, database, mockFetch)
+    const result = await getNousModels(
+      provider,
+      mockApplicationData({ database, logger, fetch: mockFetch }),
+    )
 
     expect(result).toEqual([])
     expect(await database('models')).toEqual([])
@@ -130,7 +143,10 @@ describe('getNousModels', () => {
     const database = await createTestDatabase(logger)
     const mockFetch = mockFetchRejected('network down')
 
-    const result = await getNousModels(provider, logger, database, mockFetch)
+    const result = await getNousModels(
+      provider,
+      mockApplicationData({ database, logger, fetch: mockFetch }),
+    )
 
     expect(result).toEqual([])
     expect(await database('models')).toEqual([])

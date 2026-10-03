@@ -1,5 +1,6 @@
 import type { Knex } from 'knex'
-import type { DatabaseQuerySerializer, Logger } from '../../types.ts'
+import type { ApplicationData } from '../../application-data.ts'
+import type { DatabaseQuerySerializer } from '../../types.ts'
 import { databaseQuery } from '../database-query.ts'
 import type { ModelRow } from '../types.ts'
 import type { ModelEntity } from './model.ts'
@@ -11,26 +12,24 @@ import type { ModelFilterOptions } from './types.ts'
 const defaultLimit = 5
 
 export class ModelFindAllByFilters {
-  private database: Knex
-  private logger: Logger
+  private applicationData: ApplicationData
   private options: ModelFilterOptions
 
   constructor(
-    database: Knex,
-    logger: Logger,
+    applicationData: ApplicationData,
     options: ModelFilterOptions,
   ) {
-    this.database = database
-    this.logger = logger
+    this.applicationData = applicationData
     this.options = options
   }
 
-  all() {
-    return this.runQuery(this.query())
+  async all() {
+    const database = await this.applicationData.database()
+    return this.runQuery(this.query(database))
   }
 
-  private query() {
-    const query = this.database<ModelRow>('models')
+  private query(database: Knex) {
+    const query = database<ModelRow>('models')
       .whereNot('modality', 'like', '%->embeddings')
     return this.ordering(this.applyFilters(query)).limit(this.limit())
   }
@@ -69,7 +68,7 @@ export class ModelFindAllByFilters {
   private async runQuery(query: PromiseLike<ModelRow[]>) {
     const databaseQueryResult = await databaseQuery(
       query,
-      this.logger,
+      this.applicationData.logger(),
       this.serializer(),
     )
     return databaseQueryResult.result()
@@ -77,7 +76,6 @@ export class ModelFindAllByFilters {
 }
 
 export const modelFindAllByFilters = (
-  database: Knex,
-  logger: Logger,
+  applicationData: ApplicationData,
   options: ModelFilterOptions,
-) => new ModelFindAllByFilters(database, logger, options)
+) => new ModelFindAllByFilters(applicationData, options)

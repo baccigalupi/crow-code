@@ -4,13 +4,15 @@ import { assertSpyCall, spy } from '@std/testing/mock'
 import pino from 'pino'
 import { CreateModel, createModel } from '../../../src/domain/models/create.ts'
 import { createTestDatabase } from '../../support/test-database.ts'
+import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('create', () => {
   it('when params use mixed cases and include extra values, normalizes and filters them', async () => {
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
 
-    const creator = await createModel(database, logger, {
+    const applicationData = mockApplicationData({ database, logger })
+    const creator = await createModel(applicationData, {
       providerId: 1,
       identifier: 'author/model',
       name: 'Model',
@@ -50,7 +52,8 @@ describe('create', () => {
       reasoning_options: { mandatory: false },
     }
 
-    const creator = await createModel(database, logger, params)
+    const applicationData = mockApplicationData({ database, logger })
+    const creator = await createModel(applicationData, params)
     const row = await database('models').first()
 
     expect(await creator.success()).toBe(true)
@@ -81,7 +84,8 @@ describe('create', () => {
       reasoning_options: { mandatory: false },
     }
 
-    const creator = new CreateModel(database, logger, params)
+    const applicationData = mockApplicationData({ database, logger })
+    const creator = new CreateModel(applicationData, params)
 
     expect(creator.success()).toBe(false)
     expect(creator.record().supportedParameters()).toEqual([])
@@ -111,7 +115,8 @@ describe('create', () => {
       supported_parameters: '[]',
     })
 
-    const creator = await createModel(database, logger, params)
+    const applicationData = mockApplicationData({ database, logger })
+    const creator = await createModel(applicationData, params)
 
     expect(await creator.success()).toBe(false)
     expect((await creator.record()).supportedParameters()).toEqual([])
