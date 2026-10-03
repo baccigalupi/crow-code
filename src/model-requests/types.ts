@@ -1,11 +1,15 @@
-import type { ClientOptions } from 'openai'
+export type OpenAiClientOptions = {
+  apiKey: string
+  baseURL: string
+  timeout?: number
+  maxRetries?: number
+  fetch?: typeof fetch
+}
 
 export type ModelMessages = {
   role: string
   content: string
 }
-
-export type OpenAiClientOptions = ClientOptions
 
 export type ModelEndpoint = {
   baseURL: string
