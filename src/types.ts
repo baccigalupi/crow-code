@@ -47,7 +47,7 @@ export type ApplicationData = {
   database: Knex
   consoleLog: ConsoleLog
   fetchClient: typeof fetch
-  openAiClientFactory: (options: OpenAiClientOptions) => OpenAI
+  openAiClient: (options: OpenAiClientOptions) => OpenAI
   denoCommand: DenoCommand
   environment: Environment
 }

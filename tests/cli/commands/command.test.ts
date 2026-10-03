@@ -33,7 +33,7 @@ describe('Command', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -67,7 +67,7 @@ describe('Command', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -104,7 +104,7 @@ describe('Command', () => {
       database,
       consoleLog,
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     }).run()

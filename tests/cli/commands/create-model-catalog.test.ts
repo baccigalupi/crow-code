@@ -30,7 +30,7 @@ describe('CreateModelCatalog', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -52,7 +52,7 @@ describe('CreateModelCatalog', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -77,7 +77,7 @@ describe('CreateModelCatalog', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -107,7 +107,7 @@ describe('CreateModelCatalog', () => {
       database,
       consoleLog: () => {},
       fetchClient: fetchMock,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     }).run()

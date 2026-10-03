@@ -58,7 +58,7 @@ export class OpenAiRequest {
   }
 
   private openAiClient() {
-    return this.applicationData.openAiClientFactory(
+    return this.applicationData.openAiClient(
       openAiClientOptions(this.modelEndpoint, this.applicationData.fetchClient),
     )
   }

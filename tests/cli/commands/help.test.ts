@@ -19,7 +19,7 @@ describe('Help', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -41,7 +41,7 @@ describe('Help', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -65,7 +65,7 @@ describe('Help', () => {
       database,
       consoleLog,
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })

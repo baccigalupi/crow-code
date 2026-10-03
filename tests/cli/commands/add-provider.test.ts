@@ -25,7 +25,7 @@ describe('AddProvider', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -47,7 +47,7 @@ describe('AddProvider', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -72,7 +72,7 @@ describe('AddProvider', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -105,7 +105,7 @@ describe('AddProvider', () => {
       database,
       consoleLog: () => {},
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     }).run()
@@ -141,7 +141,7 @@ describe('AddProvider', () => {
       database,
       consoleLog,
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     }).run()
@@ -168,7 +168,7 @@ describe('AddProvider', () => {
       database,
       consoleLog,
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     }).run()
@@ -199,7 +199,7 @@ describe('AddProvider', () => {
       database,
       consoleLog,
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     }).run()

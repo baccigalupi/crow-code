@@ -20,7 +20,7 @@ export const mockApplicationData = (
     }),
     consoleLog: mock.fn(),
     fetchClient: mockFetchSuccess({}),
-    openAiClientFactory: openAiClient,
+    openAiClient: openAiClient,
     denoCommand: Deno.Command,
     environment: new Environment({}),
     ...overrides,

@@ -19,7 +19,7 @@ describe('Version', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -41,7 +41,7 @@ describe('Version', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -63,7 +63,7 @@ describe('Version', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -88,7 +88,7 @@ describe('Version', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -112,7 +112,7 @@ describe('Version', () => {
       database,
       consoleLog,
       fetchClient: fetch,
-      openAiClientFactory: openAiClient,
+      openAiClient: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
