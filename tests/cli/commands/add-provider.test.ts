@@ -5,6 +5,7 @@ import knex from 'knex'
 import { AddProvider } from '../../../src/cli/commands/add-provider.ts'
 import { Environment } from '../../../src/env-vars.ts'
 import { openAndMigrateDatabase } from '../../../src/database/open-and-migrate-database.ts'
+import { openAiClient } from '../../../src/model-requests/framework/openai-client.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import pino from 'pino'
 
@@ -24,6 +25,7 @@ describe('AddProvider', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -45,6 +47,7 @@ describe('AddProvider', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -69,6 +72,7 @@ describe('AddProvider', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -101,6 +105,7 @@ describe('AddProvider', () => {
       database,
       consoleLog: () => {},
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     }).run()
@@ -136,6 +141,7 @@ describe('AddProvider', () => {
       database,
       consoleLog,
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     }).run()
@@ -162,6 +168,7 @@ describe('AddProvider', () => {
       database,
       consoleLog,
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     }).run()
@@ -192,6 +199,7 @@ describe('AddProvider', () => {
       database,
       consoleLog,
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     }).run()

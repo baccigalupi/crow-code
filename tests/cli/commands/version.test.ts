@@ -4,6 +4,7 @@ import knex from 'knex'
 import pino from 'pino'
 import { Environment } from '../../../src/env-vars.ts'
 import { Version } from '../../../src/cli/commands/version.ts'
+import { openAiClient } from '../../../src/model-requests/framework/openai-client.ts'
 
 describe('Version', () => {
   it('when --version is passed, matches', () => {
@@ -18,6 +19,7 @@ describe('Version', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -39,6 +41,7 @@ describe('Version', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -60,6 +63,7 @@ describe('Version', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -84,6 +88,7 @@ describe('Version', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -107,6 +112,7 @@ describe('Version', () => {
       database,
       consoleLog,
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })

@@ -1,6 +1,8 @@
 import type { Knex } from 'knex'
 import type pino from 'pino'
 import type { Environment } from './env-vars.ts'
+import type { OpenAiClientOptions } from './model-requests/types.ts'
+import type OpenAI from 'openai'
 
 export type Logger = pino.Logger
 
@@ -45,6 +47,7 @@ export type ApplicationData = {
   database: Knex
   consoleLog: ConsoleLog
   fetchClient: typeof fetch
+  openAiClientFactory: (options: OpenAiClientOptions) => OpenAI
   denoCommand: DenoCommand
   environment: Environment
 }

@@ -4,6 +4,7 @@ import knex from 'knex'
 import pino from 'pino'
 import { Environment } from '../../../src/env-vars.ts'
 import { Command } from '../../../src/cli/commands/command.ts'
+import { openAiClient } from '../../../src/model-requests/framework/openai-client.ts'
 
 describe('Command', () => {
   it('when constructed, exposes the parsed commands to subclasses', () => {
@@ -32,6 +33,7 @@ describe('Command', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -65,6 +67,7 @@ describe('Command', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -101,6 +104,7 @@ describe('Command', () => {
       database,
       consoleLog,
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     }).run()

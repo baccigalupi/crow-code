@@ -7,6 +7,7 @@ import { Environment } from '../../../src/env-vars.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import { mockFetchSuccess } from '../../support/mock-fetch.ts'
 import { createTestDatabase } from '../../support/test-database.ts'
+import { openAiClient } from '../../../src/model-requests/framework/openai-client.ts'
 import pino from 'pino'
 
 describe('CreateModelCatalog', () => {
@@ -29,6 +30,7 @@ describe('CreateModelCatalog', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -50,6 +52,7 @@ describe('CreateModelCatalog', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -74,6 +77,7 @@ describe('CreateModelCatalog', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -103,6 +107,7 @@ describe('CreateModelCatalog', () => {
       database,
       consoleLog: () => {},
       fetchClient: fetchMock,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     }).run()

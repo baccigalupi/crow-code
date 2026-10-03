@@ -4,6 +4,7 @@ import pino from 'pino'
 import { Environment } from '../../src/env-vars.ts'
 import type { ApplicationData } from '../../src/types.ts'
 import { mockFetchSuccess } from './mock-fetch.ts'
+import { openAiClient } from '../../src/model-requests/framework/openai-client.ts'
 
 export const mockApplicationData = (
   overrides: Partial<ApplicationData> = {},
@@ -19,6 +20,7 @@ export const mockApplicationData = (
     }),
     consoleLog: mock.fn(),
     fetchClient: mockFetchSuccess({}),
+    openAiClientFactory: openAiClient,
     denoCommand: Deno.Command,
     environment: new Environment({}),
     ...overrides,

@@ -1,35 +1,53 @@
+import { APIError } from 'openai'
 import { createProviderAvailability } from '../../domain/availabilties/create-provider.ts'
+import { requestLogger } from './request-logger.ts'
 import type { ApplicationData } from '../../types.ts'
-import type { FetchRequest } from './fetch-request.ts'
 import type { ModelEndpoint } from '../types.ts'
 
 export class ModelRequestErrorHandler {
-  private modelEndpoint: ModelEndpoint
   private applicationData: ApplicationData
-  private apiRequest: FetchRequest
+  private modelEndpoint: ModelEndpoint
+  private url: string
+  private error: Error
 
   constructor(
-    modelEndpoint: ModelEndpoint,
     applicationData: ApplicationData,
-    apiRequest: FetchRequest,
+    modelEndpoint: ModelEndpoint,
+    url: string,
+    error: Error,
   ) {
-    this.modelEndpoint = modelEndpoint
     this.applicationData = applicationData
-    this.apiRequest = apiRequest
+    this.modelEndpoint = modelEndpoint
+    this.url = url
+    this.error = error
   }
 
   async run() {
-    if (this.apiRequest.success()) return
-    await this.logError()
+    await this.handleApiError()
+    this.handleNetworkError()
+  }
+
+  private requestLogger() {
+    return requestLogger(this.applicationData.logger, this.url, this.error)
+  }
+
+  private async handleApiError() {
+    if (!this.isApiError()) return
+    this.logApiError()
     await this.recordProviderUnavailableIfNeeded()
   }
 
-  private async logError() {
-    if (this.apiRequest.error) {
-      this.logNetworkError(this.apiRequest.error)
-    } else {
-      await this.logApiError()
-    }
+  private isApiError() {
+    return this.error instanceof APIError && this.error.status !== undefined
+  }
+
+  private logApiError() {
+    this.requestLogger().apiError()
+  }
+
+  private handleNetworkError() {
+    if (this.isApiError()) return
+    this.requestLogger().networkError()
   }
 
   private async recordProviderUnavailableIfNeeded() {
@@ -37,24 +55,11 @@ export class ModelRequestErrorHandler {
     await this.recordProviderUnavailable()
   }
 
-  private logNetworkError(error: Error) {
-    this.applicationData.logger.error(
-      `Error: ${this.apiRequest.request.url} failed to connect: \n${error.message}`,
-    )
-  }
-
-  private async logApiError() {
-    const errorDetails = await this.apiRequest.response.json().catch(() => ({}))
-    this.applicationData.logger.error(
-      `Error: ${this.apiRequest.request.url} returned ${this.apiRequest.response.status} \n${errorDetails}`,
-    )
-  }
-
   private async recordProviderUnavailable() {
-    await createProviderAvailability(
-      this.applicationData.database,
-      this.applicationData.logger,
-      { providerId: this.modelEndpoint.providerId, reason: 'no-api-key' },
-    ).create()
+    const data = this.applicationData
+    await createProviderAvailability(data.database, data.logger, {
+      providerId: this.modelEndpoint.providerId,
+      reason: 'no-api-key',
+    }).create()
   }
 }

@@ -3,6 +3,9 @@ import { openAndMigrateDatabase } from './database/open-and-migrate-database.ts'
 import type { ApplicationData, ConsoleLog, Logger } from './types.ts'
 import { parseArguments } from './cli/arguments.ts'
 import type { Command } from './cli/commands/command.ts'
+import type OpenAI from 'openai'
+import type { OpenAiClientOptions } from './model-requests/types.ts'
+import { openAiClient } from './model-requests/framework/openai-client.ts'
 import { AddProvider } from './cli/commands/add-provider.ts'
 import { CreateModelCatalog } from './cli/commands/create-model-catalog.ts'
 import { Help } from './cli/commands/help.ts'
@@ -13,6 +16,7 @@ type RunOptions = {
   logger: Logger
   consoleLog: ConsoleLog
   fetchClient: typeof fetch
+  openAiClientFactory: (options: OpenAiClientOptions) => OpenAI
   denoCommand: typeof Deno.Command
   environment: Environment
 }
@@ -52,6 +56,7 @@ export const run = (
   logger: Logger,
   consoleLog: ConsoleLog = console.log,
   fetchClient: typeof fetch = fetch,
+  openAiClientFactory: (options: OpenAiClientOptions) => OpenAI = openAiClient,
   denoCommand: typeof Deno.Command = Deno.Command,
   environment: Environment = loadEnvironmentalVariables(),
 ): Promise<void> =>
@@ -60,6 +65,7 @@ export const run = (
     logger,
     consoleLog,
     fetchClient,
+    openAiClientFactory,
     denoCommand,
     environment,
   }).then((cli) => cli.run())

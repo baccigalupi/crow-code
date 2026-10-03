@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { FetchRequest } from '../../../src/model-requests/framework/fetch-request.ts'
+import { OpenAiRequest } from '../../../src/model-requests/framework/openai-request.ts'
 import { ModelApiRequest } from '../../../src/model-requests/framework/model-api-request.ts'
 import type { ModelMessages } from '../../../src/model-requests/types.ts'
 import pino from 'pino'
@@ -39,39 +39,6 @@ describe('ModelApiRequest', () => {
     expect(modelApiRequest.messages).toEqual([
       { role: 'user', content: 'build a cli' },
     ])
-  })
-
-  it('when run is called, writes the request object onto the class', async () => {
-    const modelEndpoint = {
-      baseURL: 'https://example.com/api/v1',
-      apiKey: 'test-key',
-      model: 'test-model',
-      providerId: 1,
-    }
-    const applicationData = mockApplicationData({
-      fetchClient: mockFetchSuccess({
-        choices: [{ message: { content: '[]' } }],
-      }),
-    })
-    const modelApiRequest = new class
-      extends ModelApiRequest<string, string[]> {
-      protected parseAsJson = false
-
-      protected override jsonErrorResponse() {
-        return []
-      }
-
-      protected getMessages(): ModelMessages[] {
-        return [{ role: 'user', content: this.requestData }]
-      }
-    }(modelEndpoint, applicationData, 'build a cli')
-
-    await modelApiRequest.run()
-
-    expect(modelApiRequest.requestObject).toBeInstanceOf(Request)
-    expect(modelApiRequest.requestObject.headers.get('authorization')).toBe(
-      'Bearer test-key',
-    )
   })
 
   it('when run has not been called, reports failure', () => {
@@ -127,7 +94,7 @@ describe('ModelApiRequest', () => {
 
     await modelApiRequest.run()
 
-    expect(modelApiRequest.apiRequest).toBeInstanceOf(FetchRequest)
+    expect(modelApiRequest.apiRequest).toBeInstanceOf(OpenAiRequest)
     expect(modelApiRequest.apiRequest.success()).toBe(true)
     expect(modelApiRequest.success()).toBe(true)
   })

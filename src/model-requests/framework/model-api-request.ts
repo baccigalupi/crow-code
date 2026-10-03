@@ -4,14 +4,12 @@ import type {
   ModelEndpoint,
   ModelMessages,
 } from '../types.ts'
-import { type FetchRequest, fetchRequest } from './fetch-request.ts'
 import { type ModelAnswer, modelAnswer } from './model-answer.ts'
-import { modelRequestObject } from './model-request-object.ts'
+import { OpenAiRequest } from './openai-request.ts'
 
 export abstract class ModelApiRequest<TRequest, TResponse> {
   messages: ModelMessages[] = []
-  requestObject!: Request
-  apiRequest!: FetchRequest
+  apiRequest!: OpenAiRequest
   private modelEndpoint: ModelEndpoint
   private applicationData: ApplicationData
   private succeeded: boolean
@@ -31,7 +29,6 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
 
   async run() {
     this.constructMessages()
-    this.makeModelRequestObject()
     await this.fetchRequest()
 
     return await this.parseResponse()
@@ -53,16 +50,13 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
     this.messages = this.getMessages()
   }
 
-  private makeModelRequestObject() {
-    this.requestObject = modelRequestObject(this.modelEndpoint, this.messages)
-  }
-
   private async fetchRequest() {
-    this.apiRequest = await fetchRequest(
-      this.requestObject,
+    this.apiRequest = new OpenAiRequest(
       this.modelEndpoint,
+      this.messages,
       this.applicationData,
     )
+    await this.apiRequest.run()
     this.succeeded = this.apiRequest.success()
   }
 

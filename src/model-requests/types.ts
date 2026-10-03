@@ -1,7 +1,11 @@
+import type { ClientOptions } from 'openai'
+
 export type ModelMessages = {
   role: string
   content: string
 }
+
+export type OpenAiClientOptions = ClientOptions
 
 export type ModelEndpoint = {
   baseURL: string

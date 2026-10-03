@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import pino from 'pino'
-import { fetchRequest } from '../../../src/model-requests/framework/fetch-request.ts'
+import { OpenAiRequest } from '../../../src/model-requests/framework/openai-request.ts'
 import { ModelRequestErrorHandler } from '../../../src/model-requests/framework/model-request-error-handler.ts'
 import { createTestDatabase } from '../../support/test-database.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
@@ -21,16 +21,14 @@ describe('ModelRequestErrorHandler', () => {
       database,
       fetchClient: mockFetchError(401),
     })
-    const apiRequest = await fetchRequest(
-      new Request('https://example.com/api/v1/chat/completions'),
-      modelEndpoint,
-      applicationData,
-    )
+    const apiRequest = new OpenAiRequest(modelEndpoint, [], applicationData)
+    await apiRequest.run()
 
     await new ModelRequestErrorHandler(
-      modelEndpoint,
       applicationData,
-      apiRequest,
+      modelEndpoint,
+      apiRequest.url,
+      apiRequest.error as Error,
     ).run()
 
     const rows = await database('provider_availabilities')
@@ -53,16 +51,14 @@ describe('ModelRequestErrorHandler', () => {
       database,
       fetchClient: mockFetchError(500),
     })
-    const apiRequest = await fetchRequest(
-      new Request('https://example.com/api/v1/chat/completions'),
-      modelEndpoint,
-      applicationData,
-    )
+    const apiRequest = new OpenAiRequest(modelEndpoint, [], applicationData)
+    await apiRequest.run()
 
     await new ModelRequestErrorHandler(
-      modelEndpoint,
       applicationData,
-      apiRequest,
+      modelEndpoint,
+      apiRequest.url,
+      apiRequest.error as Error,
     ).run()
 
     const rows = await database('provider_availabilities')
@@ -85,17 +81,9 @@ describe('ModelRequestErrorHandler', () => {
         choices: [{ message: { content: '[]' } }],
       }),
     })
-    const apiRequest = await fetchRequest(
-      new Request('https://example.com/api/v1/chat/completions'),
-      modelEndpoint,
-      applicationData,
-    )
 
-    await new ModelRequestErrorHandler(
-      modelEndpoint,
-      applicationData,
-      apiRequest,
-    ).run()
+    const apiRequest = new OpenAiRequest(modelEndpoint, [], applicationData)
+    await apiRequest.run()
 
     const rows = await database('provider_availabilities')
     expect(rows).toHaveLength(0)

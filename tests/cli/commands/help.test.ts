@@ -4,6 +4,7 @@ import knex from 'knex'
 import pino from 'pino'
 import { Help } from '../../../src/cli/commands/help.ts'
 import { Environment } from '../../../src/env-vars.ts'
+import { openAiClient } from '../../../src/model-requests/framework/openai-client.ts'
 
 describe('Help', () => {
   it('when any arguments are passed, matches', () => {
@@ -18,6 +19,7 @@ describe('Help', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -39,6 +41,7 @@ describe('Help', () => {
       }),
       consoleLog: () => {},
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })
@@ -62,6 +65,7 @@ describe('Help', () => {
       database,
       consoleLog,
       fetchClient: fetch,
+      openAiClientFactory: openAiClient,
       denoCommand: Deno.Command,
       environment: new Environment({}),
     })

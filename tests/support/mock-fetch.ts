@@ -27,6 +27,16 @@ export const mockFetchRejected = (message: string) => {
   return createFetchMock(() => Promise.reject(new Error(message)))
 }
 
+export const mockFetchSequence = (responses: (Response | Error)[]) => {
+  const queue = [...responses]
+  return createFetchMock(() => {
+    const next = queue.shift()
+    if (next instanceof Response) return Promise.resolve(next)
+    if (next instanceof Error) return Promise.reject(next)
+    return Promise.resolve(Response.error())
+  })
+}
+
 export const mockFetchRoutes = (routes: [string, unknown][]) => {
   return createFetchMock((input) => {
     const address = input instanceof Request ? input.url : String(input)
