@@ -166,21 +166,6 @@ describe('run', () => {
     expect(close.mock.calls).toHaveLength(1)
   })
 
-  it('when no arguments are passed, writes usage', async () => {
-    const consoleLog = mock.fn()
-    const applicationData = mockApplicationData({
-      args: [],
-      crowDirectory: join(fixturesDirectory, 'cli', '.crow'),
-      consoleLog,
-    })
-
-    await run(applicationData)
-
-    expect(consoleLog.mock.calls[0].arguments[0]).toContain(
-      'Usage: crow <command>',
-    )
-  })
-
   it('when an unsupported option is passed, writes usage without invoking command dependencies', async () => {
     const consoleLog = mock.fn()
     const applicationData = mockApplicationData({

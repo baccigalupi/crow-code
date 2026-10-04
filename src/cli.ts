@@ -3,6 +3,7 @@ import type { Command } from './cli/commands/command.ts'
 import { AddProvider } from './cli/commands/add-provider.ts'
 import { CreateModelCatalog } from './cli/commands/create-model-catalog.ts'
 import { Help } from './cli/commands/help.ts'
+import { Repl } from './cli/commands/repl.ts'
 import { Version } from './cli/commands/version.ts'
 
 class Cli {
@@ -25,6 +26,7 @@ class Cli {
       new Version(this.applicationData),
       new CreateModelCatalog(this.applicationData),
       new AddProvider(this.applicationData),
+      new Repl(this.applicationData),
       new Help(this.applicationData),
     ]
   }
