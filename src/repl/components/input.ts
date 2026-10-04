@@ -2,6 +2,8 @@ import { Computed, Input, type Signal } from '@ubernaut/exotui/app'
 import { inputTheme } from '../themes/input-theme.ts'
 import type { App } from '../types.ts'
 
+export const inputHeight = 1
+
 const submit =
   (lines: Signal<string[]>, text: Signal<string>) => (value: string) => {
     lines.value = [...lines.peek(), value]
@@ -22,7 +24,7 @@ export const input = (
     zIndex: 2,
     rectangle: new Computed(() => ({
       column: 0,
-      row: app.tui.rectangle.value.height - 1,
+      row: app.tui.rectangle.value.height - inputHeight,
       width: app.tui.rectangle.value.width,
     })),
   })

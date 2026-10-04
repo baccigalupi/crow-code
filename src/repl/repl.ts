@@ -1,12 +1,12 @@
 import { Signal, type TerminalAppOptions } from '@ubernaut/exotui/app'
 import { input } from './components/input.ts'
-import { logViewer } from './components/log-viewer.ts'
+import { conversation } from './components/conversation.ts'
 import { statusBar } from './components/status-bar.ts'
 import type { App, ReplAction } from './types.ts'
 
 const mount = (app: App, lines: Signal<string[]>) => {
   statusBar(app)
-  logViewer(app, lines)
+  conversation(app, lines)
   const text = new Signal('')
   const component = input(app, lines, text)
   app.registerComponent(component, { id: 'repl-input' })
