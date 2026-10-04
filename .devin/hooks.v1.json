@@ -11,6 +11,18 @@
       ]
     }
   ],
+  "UserPromptSubmit": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "\"$DEVIN_PROJECT_DIR/agents/hooks/dependency-lookup-context.ts\"",
+          "timeout": 10
+        }
+      ]
+    }
+  ],
   "Stop": [
     {
       "matcher": "",

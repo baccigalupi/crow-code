@@ -29,5 +29,8 @@
   "fmt": {
     "semiColons": false,
     "singleQuote": true
-  }
+  },
+  "exclude": [
+    ".deps"
+  ]
 }

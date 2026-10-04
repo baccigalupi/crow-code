@@ -6,6 +6,7 @@ allowed-tools:
   - grep
   - glob
   - exec
+  - mcp__codebase-memory-mcp__*
 triggers:
   - user
   - model
@@ -45,13 +46,27 @@ This is the plan's stable anchor and must be the first content section.
 
 ### Verified research
 
+Begin research with the codebase-memory-mcp graph — it is the first resort, not
+a fallback:
+
+1. `list_projects`/`index_status` to confirm the index is live and fresh;
+   `get_architecture` to orient.
+2. `search_graph` (`name_pattern` for symbols, `semantic_query` for
+   natural-language discovery) on the project that owns the code:
+   `Users-kane-Projects-rho-crow-code` for this repo, `exotui`/`deno`/
+   `deno-std` for dependency APIs (see AGENTS.md "Dependency lookup").
+3. `trace_path` for callers/callees, `get_code_snippet` for source — pass the
+   exact `qn` returned by `search_graph`.
+4. `check_index_coverage` on every path the research cites; read source directly
+   for reported gaps.
+5. Use grep, glob, or file search only for literals and non-code files.
+
 Record only facts verified from source code, tests, configuration,
-documentation, issue state, or command output. Replace the former
-`Existing structure` section with this name. Include concrete paths, qualified
-symbols, call relationships, constraints, current behavior, and relevant
-coverage limitations. Distinguish verified facts from inferences; inferences
-belong in Assumptions. Use grep, glob, or file search only for literals,
-non-code files.
+documentation, issue state, command output, or the indexed graphs. Replace the
+former `Existing structure` section with this name. Include concrete paths,
+qualified symbols, call relationships, constraints, current behavior, and
+relevant coverage limitations. Distinguish verified facts from inferences;
+inferences belong in Assumptions.
 
 ### Assumptions
 

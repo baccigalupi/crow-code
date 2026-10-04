@@ -22,3 +22,6 @@ docs/plans/
 
 # Codebase Memory persistent graph artifacts (generated locally by the watcher)
 .codebase-memory/
+
+# Local dependency checkouts indexed by codebase-memory-mcp (see AGENTS.md)
+.deps/
