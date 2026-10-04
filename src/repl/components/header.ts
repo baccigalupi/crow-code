@@ -2,7 +2,7 @@ import { Computed, StatusBar } from '@ubernaut/exotui/app'
 import { chromeTheme } from '../themes/chrome-theme.ts'
 import type { App } from '../types.ts'
 
-export const statusBarHeight = 3
+export const headerHeight = 3
 
 const rectangle = (app: App, row: number) =>
   new Computed(() => ({
@@ -31,7 +31,7 @@ const content = (app: App) =>
     rectangle: rectangle(app, 1),
   })
 
-export const statusBar = (app: App) => {
+export const header = (app: App) => {
   blankLine(app, 0)
   const component = content(app)
   blankLine(app, 2)

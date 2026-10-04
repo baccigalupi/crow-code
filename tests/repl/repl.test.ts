@@ -35,6 +35,104 @@ describe('ReplOptions', () => {
     harness.destroy()
   })
 
+  it('inserts pasted text into the input', async () => {
+    const lines = new Signal<string[]>([])
+    const harness = await createTestTerminalApp(
+      new ReplOptions(lines, () => {}),
+    )
+
+    await harness.pilot.paste('hello world')
+    await harness.pilot.press('return')
+
+    expect(lines.peek()).toEqual(['hello world'])
+    harness.destroy()
+  })
+
+  it('flattens line breaks when pasting into the input', async () => {
+    const lines = new Signal<string[]>([])
+    const harness = await createTestTerminalApp(
+      new ReplOptions(lines, () => {}),
+    )
+
+    await harness.pilot.paste('a\nb')
+    await harness.pilot.press('return')
+
+    expect(lines.peek()).toEqual(['a b'])
+    harness.destroy()
+  })
+
+  it('copies a drag selection from the chat to the clipboard', async () => {
+    const lines = new Signal<string[]>(['hello', 'world'])
+    const harness = await createTestTerminalApp(
+      new ReplOptions(lines, () => {}),
+    )
+
+    await harness.pilot.drag(0, 3, 4, 3)
+
+    expect(harness.stdout.text).toContain('\x1b]52;c;aGVsbG8=\x07')
+    harness.destroy()
+  })
+
+  it('copies a multi-row drag selection from the chat', async () => {
+    const lines = new Signal<string[]>(['hello', 'world'])
+    const harness = await createTestTerminalApp(
+      new ReplOptions(lines, () => {}),
+    )
+
+    await harness.pilot.drag(0, 3, 5, 4)
+
+    expect(harness.stdout.text).toContain('\x1b]52;c;aGVsbG8Kd29ybGQ=\x07')
+    harness.destroy()
+  })
+
+  it('copies a backwards drag selection from the chat', async () => {
+    const lines = new Signal<string[]>(['hello', 'world'])
+    const harness = await createTestTerminalApp(
+      new ReplOptions(lines, () => {}),
+    )
+
+    await harness.pilot.drag(4, 3, 0, 3)
+
+    expect(harness.stdout.text).toContain('\x1b]52;c;aGVsbG8=\x07')
+    harness.destroy()
+  })
+
+  it('copies a backwards multi-row drag selection from the chat', async () => {
+    const lines = new Signal<string[]>(['hello', 'world'])
+    const harness = await createTestTerminalApp(
+      new ReplOptions(lines, () => {}),
+    )
+
+    await harness.pilot.drag(0, 4, 4, 3)
+
+    expect(harness.stdout.text).toContain('\x1b]52;c;bwp3\x07')
+    harness.destroy()
+  })
+
+  it('does not copy when a drag starts outside the chat', async () => {
+    const lines = new Signal<string[]>(['hello', 'world'])
+    const harness = await createTestTerminalApp(
+      new ReplOptions(lines, () => {}),
+    )
+
+    await harness.pilot.drag(0, 0, 4, 4)
+
+    expect(harness.stdout.text).not.toContain(']52;')
+    harness.destroy()
+  })
+
+  it('does not write to the clipboard on a click without a drag', async () => {
+    const lines = new Signal<string[]>(['hello', 'world'])
+    const harness = await createTestTerminalApp(
+      new ReplOptions(lines, () => {}),
+    )
+
+    await harness.pilot.click(2, 3)
+
+    expect(harness.stdout.text).not.toContain(']52;')
+    harness.destroy()
+  })
+
   it('calls onQuit on a single ctrl-c keypress', async () => {
     let quits = 0
     const lines = new Signal<string[]>([])
