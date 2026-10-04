@@ -2,6 +2,9 @@ const isProductionFile = (fileName: string): boolean => {
   return /(^|\/)src\/.*\.ts$/.test(fileName) && !fileName.endsWith('.test.ts')
 }
 
+const isTestFile = (fileName: string): boolean =>
+  /(^|\/)tests\/.*\.test\.ts$/.test(fileName)
+
 const functionLikeAncestorTypes = new Set([
   'FunctionDeclaration',
   'FunctionExpression',
@@ -143,7 +146,9 @@ const plugin: Deno.lint.Plugin = {
     },
     'no-optional-chaining': {
       create(context) {
-        if (!isProductionFile(context.filename)) return {}
+        if (
+          !isProductionFile(context.filename) && !isTestFile(context.filename)
+        ) return {}
         return {
           MemberExpression(node) {
             if (node.optional) {
