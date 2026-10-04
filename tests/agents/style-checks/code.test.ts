@@ -23,6 +23,41 @@ describe('style-check code plugin', () => {
     expect(diagnostics[0].message).toContain('no parameter properties')
   })
 
+  it('when a class field is static, reports it', () => {
+    const source = 'class Example { static x = 1 }'
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('no static')
+  })
+
+  it('when a class method is static, reports it', () => {
+    const source = 'class Example { static run() {} }'
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('no static')
+  })
+
+  it('when a static block is used, reports it', () => {
+    const source = 'class Example { static { this.x = 1 } }'
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('no static')
+  })
+
+  it('when class members are not static, does not report it', () => {
+    const source = 'class Example { x = 1\n  run() {} }'
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
   it('when a ternary is used, reports it', () => {
     const source = 'const x = a ? 1 : 2'
 

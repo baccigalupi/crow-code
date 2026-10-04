@@ -116,6 +116,28 @@ const plugin: Deno.lint.Plugin = {
         }
       },
     },
+    'no-static': {
+      create(context) {
+        if (!isProductionFile(context.filename)) return {}
+        return {
+          ':matches(MethodDefinition, PropertyDefinition)'(node) {
+            const member = node as unknown as { static?: boolean }
+            if (!member.static) return
+            context.report({
+              node,
+              message:
+                'no static members; use module-level consts or instance fields',
+            })
+          },
+          StaticBlock(node) {
+            context.report({
+              node,
+              message: 'no static blocks; initialize at module level',
+            })
+          },
+        }
+      },
+    },
     'no-ternary': {
       create(context) {
         if (!isProductionFile(context.filename)) return {}
