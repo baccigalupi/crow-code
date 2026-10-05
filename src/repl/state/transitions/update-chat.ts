@@ -12,7 +12,7 @@ import type {
   TuiEffect,
   TuiEffectContext,
 } from '@ismail-elkorchi/terminal-ui/tui'
-import type { ReplMessage, ReplState } from '../types.ts'
+import type { ReplMessage, ReplState } from '../../types.ts'
 
 type ChatResult = TuiUpdateResult<ReplState, ReplMessage>
 

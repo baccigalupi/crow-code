@@ -11,7 +11,7 @@ import {
   newlineTransition,
   resizeInput,
 } from './update-input.ts'
-import type { ReplMessage, ReplState } from '../types.ts'
+import type { ReplMessage, ReplState } from '../../types.ts'
 
 type ReplResult = TuiUpdateResult<ReplState, ReplMessage>
 
