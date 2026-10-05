@@ -13,6 +13,9 @@ describe('commitMessageMessages', () => {
     const messages = commitMessageMessages(request)
 
     expect(messages[0].role).toBe('system')
+    expect(messages[0].content).toContain(
+      'You write commit messages in the style of the repository you are given.',
+    )
     expect(messages[0].content).toContain('imperative mood')
     expect(messages[1].role).toBe('user')
     expect(messages[1].content).toContain('Goal:\nadd login')
@@ -33,6 +36,24 @@ describe('commitMessageMessages', () => {
     const messages = commitMessageMessages(request)
 
     expect(messages[1].content).not.toContain('Recent commit subjects:')
+  })
+
+  it('when recent subjects are excluded, omits supplied subjects', () => {
+    const request = {
+      goal: 'add login',
+      changes: [],
+      recentSubjects: ['Garbled message'],
+      includeRecentSubjects: false,
+    }
+
+    const messages = commitMessageMessages(request)
+
+    expect(messages[0].content).toContain(
+      'You write commit messages for the changes you are given.',
+    )
+    expect(messages[0].content).not.toContain('recent commit subjects')
+    expect(messages[1].content).not.toContain('Recent commit subjects:')
+    expect(messages[1].content).not.toContain('Garbled message')
   })
 
   it('when there are no changes, keeps the goal and changes heading', () => {

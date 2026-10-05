@@ -23,6 +23,7 @@ export type CommitMessageRequest = {
   goal: string
   changes: GitFileDiff[]
   recentSubjects: string[]
+  includeRecentSubjects?: boolean
 }
 
 export type CommitMessage = {
