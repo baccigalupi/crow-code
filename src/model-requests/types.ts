@@ -1,3 +1,5 @@
+import type { GitFileDiff } from '../tools/types.ts'
+
 export type OpenAiClientOptions = {
   apiKey: string
   baseURL: string
@@ -16,6 +18,18 @@ export type ModelEndpoint = {
 }
 
 export type RequestMessages<T> = (input: T) => ModelMessages[]
+
+export type CommitMessageRequest = {
+  goal: string
+  changes: GitFileDiff[]
+  recentSubjects: string[]
+}
+
+export type CommitMessage = {
+  success: boolean
+  subject: string
+  body: string
+}
 
 export type Timespan = {
   startTime: number
