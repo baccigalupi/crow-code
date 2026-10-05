@@ -132,13 +132,4 @@ describe('ApplicationData', () => {
     expect(envars).toBeInstanceOf(Environment)
     expect(data.envars()).toBe(envars)
   })
-
-  it('when repl data is requested twice, returns the same signal', () => {
-    const data = new ApplicationData()
-
-    const replData = data.replData()
-
-    expect(replData.peek()).toEqual([])
-    expect(data.replData()).toBe(replData)
-  })
 })

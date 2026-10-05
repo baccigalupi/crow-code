@@ -1,36 +1,50 @@
-import type { Signal, TerminalAppOptions } from '@ubernaut/exotui/app'
-import { layout } from './components/layout.ts'
-import type { App, ReplAction } from './types.ts'
+import { defineTui } from '@ismail-elkorchi/terminal-ui'
+import type { TuiInputBinding } from '@ismail-elkorchi/terminal-ui/tui'
+import { initialReplState } from './state.ts'
+import { updateRepl } from './update.ts'
+import { replView } from './view.ts'
+import type { ReplApp, ReplMessage, ReplState } from './types.ts'
 
-export class ReplOptions implements TerminalAppOptions<ReplAction> {
-  id = 'crow-repl'
-  label = 'crow repl'
-  input = { captureKeyboardSignals: true }
-  commands = [
-    {
-      id: 'app.quit',
-      label: 'Quit',
-      binding: { key: 'c', ctrl: true },
-      action: { type: 'app.quit' as const },
-    },
-  ]
+const inputBindings: readonly TuiInputBinding<ReplState, ReplMessage>[] = [
+  {
+    id: 'repl.submit',
+    label: 'Submit',
+    triggers: [{ kind: 'key', key: 'enter' }],
+    phase: 'beforeFocus',
+    message: { kind: 'submit' },
+  },
+  {
+    id: 'repl.newline.shift-enter',
+    label: 'Newline',
+    triggers: [{ kind: 'key', key: 'enter', modifiers: { shift: true } }],
+    phase: 'beforeFocus',
+    message: { kind: 'insertNewline' },
+  },
+  {
+    id: 'repl.newline.ctrl-j',
+    label: 'Newline',
+    triggers: [{ kind: 'key', key: 'j', modifiers: { ctrl: true } }],
+    phase: 'beforeFocus',
+    message: { kind: 'insertNewline' },
+  },
+  {
+    id: 'repl.quit',
+    label: 'Quit',
+    triggers: [{ kind: 'key', key: 'c', modifiers: { ctrl: true } }],
+    phase: 'beforeFocus',
+    message: { kind: 'quit' },
+  },
+]
 
-  private lines: Signal<string[]>
-  private onQuit: () => void
-
-  constructor(lines: Signal<string[]>, onQuit: () => void) {
-    this.lines = lines
-    this.onQuit = onQuit
-
-    this.onAction = this.onAction.bind(this)
-    this.setup = this.setup.bind(this)
-  }
-
-  onAction(action: ReplAction) {
-    if (action.type === 'app.quit') this.onQuit()
-  }
-
-  setup(app: App) {
-    layout(app, this.lines)
-  }
-}
+export const createReplApp = (): ReplApp =>
+  defineTui<ReplState, ReplMessage>({
+    id: 'crow-repl',
+    init: () => ({
+      state: initialReplState(),
+      focus: { kind: 'element', elementId: 'input' },
+    }),
+    update: updateRepl,
+    view: replView,
+    inputBindings,
+    resizeMessage: () => ({ kind: 'resize' }),
+  })

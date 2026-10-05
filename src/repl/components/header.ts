@@ -1,39 +1,35 @@
-import { Computed, StatusBar } from '@ubernaut/exotui/app'
-import { chromeTheme } from '../themes/chrome-theme.ts'
-import type { App } from '../types.ts'
+import { statusBar } from '@ismail-elkorchi/terminal-ui'
+import type { TerminalStyle } from '@ismail-elkorchi/terminal-ui'
+import type { Element } from '@ismail-elkorchi/terminal-ui/components'
+import type { ReplMessage } from '../types.ts'
 
-export const headerHeight = 3
-
-const rectangle = (app: App, row: number) =>
-  new Computed(() => ({
-    column: 0,
-    row,
-    width: app.tui.rectangle.value.width,
-    height: 1,
-  }))
-
-const blankLine = (app: App, row: number) =>
-  new StatusBar({
-    parent: app.tui,
-    theme: chromeTheme,
-    zIndex: 1,
-    left: '',
-    rectangle: rectangle(app, row),
-  })
-
-const content = (app: App) =>
-  new StatusBar({
-    parent: app.tui,
-    theme: chromeTheme,
-    zIndex: 1,
-    left: ' Crow Code - context is King',
-    right: 'ctrl-c quit ',
-    rectangle: rectangle(app, 1),
-  })
-
-export const header = (app: App) => {
-  blankLine(app, 0)
-  const component = content(app)
-  blankLine(app, 2)
-  return component
+export const chromeStyle: TerminalStyle = {
+  fg: { kind: 'rgb', r: 230, g: 202, b: 108 },
+  bg: { kind: 'rgb', r: 11, g: 61, b: 46 },
 }
+
+const chromeStyles = {
+  root: chromeStyle,
+  parts: {
+    marker: chromeStyle,
+    leading: chromeStyle,
+    value: chromeStyle,
+    trailing: chromeStyle,
+  },
+}
+
+const blankBar = (id: string): Element<ReplMessage> =>
+  statusBar({ id, styles: chromeStyles })
+
+export const headerElements = (): readonly Element<ReplMessage>[] => [
+  blankBar('header-top'),
+  statusBar({
+    id: 'header-title',
+    leading: [
+      { id: 'title', kind: 'text', text: ' Crow Code - context is King' },
+    ],
+    trailing: [{ id: 'hint', kind: 'text', text: 'ctrl-c quit ' }],
+    styles: chromeStyles,
+  }),
+  blankBar('header-bottom'),
+]

@@ -12,6 +12,6 @@ export class Repl extends Command {
   }
 
   runner() {
-    return createRunner(this.applicationData)
+    return createRunner()
   }
 }

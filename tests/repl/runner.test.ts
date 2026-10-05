@@ -1,75 +1,54 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { assertSpyCall, assertSpyCalls, spy, stub } from '@std/testing/mock'
-import { createRunner } from '../../src/repl/runner.ts'
-import type { App } from '../../src/repl/types.ts'
-import { mockApplicationData } from '../support/mock-application-data.ts'
+import { assertSpyCalls, spy, stub } from '@std/testing/mock'
+import { createMemoryTerminalHost } from '@ismail-elkorchi/terminal-ui/host'
+import { createRunner, runReplApp } from '../../src/repl/runner.ts'
 
 describe('createRunner', () => {
-  it('creates a runner that starts and cleans up the terminal app', async () => {
-    const start = spy()
-    const destroy = spy()
-    const app = { start, destroy } as unknown as App
-    const createApp = spy(() => app)
-    const runner = createRunner(mockApplicationData(), createApp)
-    using addSignal = stub(Deno, 'addSignalListener', () => {})
-    using removeSignal = stub(Deno, 'removeSignalListener', () => {})
+  it('when the app exits with completed status, exits with code 0', async () => {
+    const run = spy(() => Promise.resolve('completed' as const))
+    const runner = createRunner(run)
     using exit = stub(Deno, 'exit', () => undefined as never)
 
-    const running = runner.run()
-    runner.quit()
-    await running
+    await runner.run()
 
-    assertSpyCalls(createApp, 1)
-    assertSpyCalls(start, 1)
-    assertSpyCalls(destroy, 1)
-    assertSpyCalls(addSignal, 2)
-    assertSpyCalls(removeSignal, 2)
+    assertSpyCalls(run, 1)
+    assertSpyCalls(exit, 1)
     expect(exit.calls[0].args).toEqual([0])
   })
 
-  it('cleans up when Deno sends SIGINT', async () => {
-    const start = spy()
-    const destroy = spy()
-    const app = { start, destroy } as unknown as App
-    const createApp = spy(() => app)
-    const runner = createRunner(mockApplicationData(), createApp)
-    using addSignal = stub(Deno, 'addSignalListener', () => {})
-    using removeSignal = stub(Deno, 'removeSignalListener', () => {})
+  it('when the app exits interrupted, exits with code 1', async () => {
+    const run = spy(() => Promise.resolve('interrupted' as const))
+    const runner = createRunner(run)
     using exit = stub(Deno, 'exit', () => undefined as never)
 
-    const running = runner.run()
-    const handleInterrupt = addSignal.calls[0].args[1]
-    handleInterrupt()
-    await running
+    await runner.run()
 
-    assertSpyCall(addSignal, 0, { args: ['SIGINT', handleInterrupt] })
-    assertSpyCalls(createApp, 1)
-    assertSpyCalls(destroy, 1)
-    assertSpyCalls(removeSignal, 2)
-    assertSpyCall(exit, 0, { args: [1] })
+    assertSpyCalls(run, 1)
+    assertSpyCalls(exit, 1)
+    expect(exit.calls[0].args).toEqual([1])
   })
 
-  it('cleans up when the terminal app throws', async () => {
-    const failure = new Error('start failed')
-    const start = spy(() => {
-      throw failure
-    })
-    const destroy = spy()
-    const app = { start, destroy } as unknown as App
-    const createApp = spy(() => app)
-    const runner = createRunner(mockApplicationData(), createApp)
-    using addSignal = stub(Deno, 'addSignalListener', () => {})
-    using removeSignal = stub(Deno, 'removeSignalListener', () => {})
+  it('when the app run throws, propagates the error without exiting', async () => {
+    const failure = new Error('run failed')
+    const runner = createRunner(() => Promise.reject(failure))
     using exit = stub(Deno, 'exit', () => undefined as never)
 
     const result = await runner.run().catch((error) => error)
 
     expect(result).toBe(failure)
-    assertSpyCalls(createApp, 1)
-    assertSpyCalls(addSignal, 2)
-    assertSpyCalls(destroy, 1)
-    assertSpyCalls(removeSignal, 2)
     assertSpyCalls(exit, 0)
+  })
+
+  it('when the default app runs on a memory host, resolves after ctrl-c', async () => {
+    const host = createMemoryTerminalHost({
+      terminalSize: { columns: 80, rows: 24 },
+    })
+
+    const pending = runReplApp(host)
+    host.input('\x03')
+    const status = await pending
+
+    expect(status).toBe('completed')
   })
 })

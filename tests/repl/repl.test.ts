@@ -1,161 +1,386 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { Signal } from '@ubernaut/exotui/app'
-import { createTestTerminalApp } from '@ubernaut/exotui/testing'
-import { ReplOptions } from '../../src/repl/repl.ts'
+import { logHistoryEntries } from '@ismail-elkorchi/terminal-ui/behavior'
+import {
+  createTerminalHarness,
+  keyInput,
+  pasteInput,
+  pointerInput,
+  wheelInput,
+} from '@ismail-elkorchi/terminal-ui/testing'
+import { textDocumentText } from '@ismail-elkorchi/terminal-ui/text'
+import { createTuiRuntime } from '@ismail-elkorchi/terminal-ui/tui'
+import { createReplApp } from '../../src/repl/repl.ts'
 
-describe('ReplOptions', () => {
-  it('echoes a submitted message into the log', async () => {
-    const lines = new Signal<string[]>([])
-    const harness = await createTestTerminalApp(
-      new ReplOptions(lines, () => {}),
-    )
+describe('createReplApp', () => {
+  it('when text is typed, stores it in the input document', async () => {
+    const harness = createTerminalHarness({
+      terminalSize: { columns: 80, rows: 24 },
+    })
+    const runtime = createTuiRuntime({
+      app: createReplApp(),
+      host: harness.host,
+    })
+    await runtime.start()
 
-    await harness.pilot.press('h')
-    await harness.pilot.press('i')
-    await harness.pilot.press('return')
+    await runtime.handleInputChunk({ data: 'hi' })
 
-    expect(lines.peek()).toEqual(['hi'])
-    harness.destroy()
+    expect(textDocumentText(runtime.state().input.document)).toBe('hi')
+    await runtime.dispose()
   })
 
-  it('clears the input after a submitted message', async () => {
-    const lines = new Signal<string[]>([])
-    const harness = await createTestTerminalApp(
-      new ReplOptions(lines, () => {}),
-    )
+  it('when enter is pressed, appends the message to history and clears the input', async () => {
+    const harness = createTerminalHarness({
+      terminalSize: { columns: 80, rows: 24 },
+    })
+    const runtime = createTuiRuntime({
+      app: createReplApp(),
+      host: harness.host,
+    })
+    await runtime.start()
 
-    await harness.pilot.press('h')
-    await harness.pilot.press('i')
-    await harness.pilot.press('return')
-    await harness.pilot.press('x')
-    await harness.pilot.press('return')
+    await runtime.handleInputChunk({ data: 'hi' })
+    await runtime.handleInput(keyInput('enter'))
+    await runtime.handleInputChunk({ data: 'x' })
+    await runtime.handleInput(keyInput('enter'))
 
-    expect(lines.peek()).toEqual(['hi', 'x'])
-    harness.destroy()
+    const entries = logHistoryEntries(runtime.state().history)
+    expect(entries.length).toBe(2)
+    expect(entries[0].text).toBe('hi')
+    expect(entries[1].text).toBe('x')
+    expect(textDocumentText(runtime.state().input.document)).toBe('')
+    await runtime.dispose()
   })
 
-  it('inserts pasted text into the input', async () => {
-    const lines = new Signal<string[]>([])
-    const harness = await createTestTerminalApp(
-      new ReplOptions(lines, () => {}),
-    )
+  it('when ctrl-c is pressed, exits with completed status', async () => {
+    const harness = createTerminalHarness({
+      terminalSize: { columns: 80, rows: 24 },
+    })
+    const runtime = createTuiRuntime({
+      app: createReplApp(),
+      host: harness.host,
+    })
+    await runtime.start()
 
-    await harness.pilot.paste('hello world')
-    await harness.pilot.press('return')
+    await runtime.handleInput(keyInput('c', { modifiers: { ctrl: true } }))
 
-    expect(lines.peek()).toEqual(['hello world'])
-    harness.destroy()
+    expect(runtime.exit()).toMatchObject({ status: 'completed' })
+    await runtime.dispose()
   })
 
-  it('flattens line breaks when pasting into the input', async () => {
-    const lines = new Signal<string[]>([])
-    const harness = await createTestTerminalApp(
-      new ReplOptions(lines, () => {}),
-    )
+  it('when shift+enter is pressed, inserts a newline in the input', async () => {
+    const harness = createTerminalHarness({
+      terminalSize: { columns: 80, rows: 24 },
+    })
+    const runtime = createTuiRuntime({
+      app: createReplApp(),
+      host: harness.host,
+    })
+    await runtime.start()
 
-    await harness.pilot.paste('a\nb')
-    await harness.pilot.press('return')
+    await runtime.handleInputChunk({ data: 'a' })
+    await runtime.handleInput(keyInput('enter', { modifiers: { shift: true } }))
 
-    expect(lines.peek()).toEqual(['a b'])
-    harness.destroy()
+    expect(textDocumentText(runtime.state().input.document)).toBe('a\n')
+    await runtime.dispose()
   })
 
-  it('copies a drag selection from the chat to the clipboard', async () => {
-    const lines = new Signal<string[]>(['hello', 'world'])
-    const harness = await createTestTerminalApp(
-      new ReplOptions(lines, () => {}),
-    )
+  it('when backspace is pressed, deletes the previous character', async () => {
+    const harness = createTerminalHarness({
+      terminalSize: { columns: 80, rows: 24 },
+    })
+    const runtime = createTuiRuntime({
+      app: createReplApp(),
+      host: harness.host,
+    })
+    await runtime.start()
 
-    await harness.pilot.drag(0, 3, 4, 3)
+    await runtime.handleInputChunk({ data: 'hi' })
+    await runtime.handleInput(keyInput('backspace'))
 
-    expect(harness.stdout.text).toContain('\x1b]52;c;aGVsbG8=\x07')
-    harness.destroy()
+    expect(textDocumentText(runtime.state().input.document)).toBe('h')
+    await runtime.dispose()
   })
 
-  it('copies a multi-row drag selection from the chat', async () => {
-    const lines = new Signal<string[]>(['hello', 'world'])
-    const harness = await createTestTerminalApp(
-      new ReplOptions(lines, () => {}),
-    )
+  it('when ctrl-j is pressed, inserts a newline in the input', async () => {
+    const harness = createTerminalHarness({
+      terminalSize: { columns: 80, rows: 24 },
+    })
+    const runtime = createTuiRuntime({
+      app: createReplApp(),
+      host: harness.host,
+    })
+    await runtime.start()
 
-    await harness.pilot.drag(0, 3, 5, 4)
+    await runtime.handleInputChunk({ data: 'a' })
+    await runtime.handleInput(keyInput('j', { modifiers: { ctrl: true } }))
 
-    expect(harness.stdout.text).toContain('\x1b]52;c;aGVsbG8Kd29ybGQ=\x07')
-    harness.destroy()
+    expect(textDocumentText(runtime.state().input.document)).toBe('a\n')
+    await runtime.dispose()
   })
 
-  it('copies a backwards drag selection from the chat', async () => {
-    const lines = new Signal<string[]>(['hello', 'world'])
-    const harness = await createTestTerminalApp(
-      new ReplOptions(lines, () => {}),
-    )
+  it('when text with CRLF is pasted, normalizes line endings and keeps line breaks', async () => {
+    const harness = createTerminalHarness({
+      terminalSize: { columns: 80, rows: 24 },
+    })
+    const runtime = createTuiRuntime({
+      app: createReplApp(),
+      host: harness.host,
+    })
+    await runtime.start()
 
-    await harness.pilot.drag(4, 3, 0, 3)
+    await runtime.handleInput(pasteInput('a\r\nb'))
 
-    expect(harness.stdout.text).toContain('\x1b]52;c;aGVsbG8=\x07')
-    harness.destroy()
+    expect(textDocumentText(runtime.state().input.document)).toBe('a\nb')
+    await runtime.dispose()
   })
 
-  it('copies a backwards multi-row drag selection from the chat', async () => {
-    const lines = new Signal<string[]>(['hello', 'world'])
-    const harness = await createTestTerminalApp(
-      new ReplOptions(lines, () => {}),
-    )
+  it('when input wraps past one row, the input region grows', async () => {
+    const harness = createTerminalHarness({
+      terminalSize: { columns: 80, rows: 24 },
+    })
+    const runtime = createTuiRuntime({
+      app: createReplApp(),
+      host: harness.host,
+    })
+    await runtime.start()
 
-    await harness.pilot.drag(0, 4, 4, 3)
+    await runtime.handleInput(pasteInput('x'.repeat(200)))
 
-    expect(harness.stdout.text).toContain('\x1b]52;c;bwp3\x07')
-    harness.destroy()
+    expect(runtime.state().inputRows).toBeGreaterThan(1)
+    await runtime.dispose()
   })
 
-  it('does not copy when a drag starts outside the chat', async () => {
-    const lines = new Signal<string[]>(['hello', 'world'])
-    const harness = await createTestTerminalApp(
-      new ReplOptions(lines, () => {}),
+  it('when input exceeds the row cap, the input region stays capped', async () => {
+    const harness = createTerminalHarness({
+      terminalSize: { columns: 80, rows: 24 },
+    })
+    const runtime = createTuiRuntime({
+      app: createReplApp(),
+      host: harness.host,
+    })
+    await runtime.start()
+
+    await runtime.handleInput(
+      pasteInput('a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl\nm\nn\no\np\nq\nr\ns\nt'),
     )
 
-    await harness.pilot.drag(0, 0, 4, 4)
-
-    expect(harness.stdout.text).not.toContain(']52;')
-    harness.destroy()
+    expect(runtime.state().inputRows).toBe(8)
+    await runtime.dispose()
   })
 
-  it('does not write to the clipboard on a click without a drag', async () => {
-    const lines = new Signal<string[]>(['hello', 'world'])
-    const harness = await createTestTerminalApp(
-      new ReplOptions(lines, () => {}),
-    )
+  it('when the terminal is resized, the input region is re-measured', async () => {
+    const harness = createTerminalHarness({
+      terminalSize: { columns: 80, rows: 24 },
+    })
+    const runtime = createTuiRuntime({
+      app: createReplApp(),
+      host: harness.host,
+    })
+    await runtime.start()
 
-    await harness.pilot.click(2, 3)
+    await runtime.handleInput(pasteInput('x'.repeat(200)))
+    await runtime.resize({ columns: 400, rows: 24 })
 
-    expect(harness.stdout.text).not.toContain(']52;')
-    harness.destroy()
+    expect(runtime.state().inputRows).toBe(1)
+    await runtime.dispose()
   })
 
-  it('calls onQuit on a single ctrl-c keypress', async () => {
-    let quits = 0
-    const lines = new Signal<string[]>([])
-    const harness = await createTestTerminalApp(
-      new ReplOptions(lines, () => quits += 1),
+  it('when the wheel scrolls over the input, the document scrolls', async () => {
+    const harness = createTerminalHarness({
+      terminalSize: { columns: 80, rows: 24 },
+    })
+    const runtime = createTuiRuntime({
+      app: createReplApp(),
+      host: harness.host,
+    })
+    await runtime.start()
+
+    await runtime.handleInput(
+      pasteInput('a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl\nm\nn\no\np\nq\nr\ns\nt'),
     )
+    await runtime.handleInput(
+      wheelInput({ row: 20, column: 5, deltaRows: 1 }),
+    )
+    await runtime.flushInput()
 
-    await harness.pilot.press('c', { ctrl: true })
-
-    expect(quits).toBe(1)
-    harness.destroy()
+    expect(runtime.state().input.scroll.offsetRow).toBeGreaterThan(0)
+    await runtime.dispose()
   })
 
-  it('calls onQuit when the quit command fires', async () => {
-    let quits = 0
-    const lines = new Signal<string[]>([])
-    const harness = await createTestTerminalApp(
-      new ReplOptions(lines, () => quits += 1),
+  it('when the wheel scrolls up in the chat, tail following stops', async () => {
+    const harness = createTerminalHarness({
+      terminalSize: { columns: 80, rows: 24 },
+    })
+    const runtime = createTuiRuntime({
+      app: createReplApp(),
+      host: harness.host,
+    })
+    await runtime.start()
+
+    await runtime.handleInputChunk({ data: 'a' })
+    await runtime.handleInput(keyInput('enter'))
+    await runtime.handleInput(wheelInput({ row: 5, column: 5, deltaRows: -1 }))
+    await runtime.flushInput()
+
+    expect(runtime.state().chat.scroll.followTail).toBe(false)
+    await runtime.dispose()
+  })
+
+  it('when a message is submitted after scrolling, tail following resumes', async () => {
+    const harness = createTerminalHarness({
+      terminalSize: { columns: 80, rows: 24 },
+    })
+    const runtime = createTuiRuntime({
+      app: createReplApp(),
+      host: harness.host,
+    })
+    await runtime.start()
+
+    await runtime.handleInputChunk({ data: 'a' })
+    await runtime.handleInput(keyInput('enter'))
+    await runtime.handleInput(wheelInput({ row: 5, column: 5, deltaRows: -1 }))
+    await runtime.flushInput()
+    await runtime.handleInputChunk({ data: 'b' })
+    await runtime.handleInput(keyInput('enter'))
+
+    expect(runtime.state().chat.scroll.followTail).toBe(true)
+    await runtime.dispose()
+  })
+
+  it('when a row is drag-selected in the chat, copies it with OSC52', async () => {
+    const harness = createTerminalHarness({
+      terminalSize: { columns: 80, rows: 24 },
+    })
+    const runtime = createTuiRuntime({
+      app: createReplApp(),
+      host: harness.host,
+    })
+    await runtime.start()
+
+    await runtime.handleInputChunk({ data: 'hello' })
+    await runtime.handleInput(keyInput('enter'))
+    await runtime.handleInput(
+      pointerInput({ action: 'press', row: 4, column: 1 }),
     )
+    await runtime.handleInput(
+      pointerInput({ action: 'drag', row: 4, column: 6 }),
+    )
+    await runtime.handleInput(
+      pointerInput({ action: 'release', row: 4, column: 6 }),
+    )
+    await new Promise((resolve) => setTimeout(resolve, 0))
 
-    await harness.pilot.executeCommand('app.quit')
+    expect(harness.output()).toContain('\x1b]52;c;aGVsbG8=\x07')
+    await runtime.dispose()
+  })
 
-    expect(quits).toBe(1)
-    harness.destroy()
+  it('when multiple rows are drag-selected, copies them joined by newlines', async () => {
+    const harness = createTerminalHarness({
+      terminalSize: { columns: 80, rows: 24 },
+    })
+    const runtime = createTuiRuntime({
+      app: createReplApp(),
+      host: harness.host,
+    })
+    await runtime.start()
+
+    await runtime.handleInputChunk({ data: 'hi' })
+    await runtime.handleInput(keyInput('enter'))
+    await runtime.handleInputChunk({ data: 'yo' })
+    await runtime.handleInput(keyInput('enter'))
+    await runtime.handleInput(
+      pointerInput({ action: 'press', row: 4, column: 1 }),
+    )
+    await runtime.handleInput(
+      pointerInput({ action: 'drag', row: 5, column: 3 }),
+    )
+    await runtime.handleInput(
+      pointerInput({ action: 'release', row: 5, column: 3 }),
+    )
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(harness.output()).toContain('\x1b]52;c;aGkKeW8=\x07')
+    await runtime.dispose()
+  })
+
+  it('when a drag starts outside the chat, nothing is copied', async () => {
+    const harness = createTerminalHarness({
+      terminalSize: { columns: 80, rows: 24 },
+    })
+    const runtime = createTuiRuntime({
+      app: createReplApp(),
+      host: harness.host,
+    })
+    await runtime.start()
+
+    await runtime.handleInputChunk({ data: 'hi' })
+    await runtime.handleInput(keyInput('enter'))
+    await runtime.handleInput(
+      pointerInput({ action: 'press', row: 2, column: 1 }),
+    )
+    await runtime.handleInput(
+      pointerInput({ action: 'drag', row: 5, column: 5 }),
+    )
+    await runtime.handleInput(
+      pointerInput({ action: 'release', row: 5, column: 5 }),
+    )
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(harness.output()).not.toContain(']52;')
+    await runtime.dispose()
+  })
+
+  it('when the chat is clicked without dragging, nothing is copied', async () => {
+    const harness = createTerminalHarness({
+      terminalSize: { columns: 80, rows: 24 },
+    })
+    const runtime = createTuiRuntime({
+      app: createReplApp(),
+      host: harness.host,
+    })
+    await runtime.start()
+
+    await runtime.handleInputChunk({ data: 'hi' })
+    await runtime.handleInput(keyInput('enter'))
+    await runtime.handleInput(
+      pointerInput({ action: 'press', row: 4, column: 1 }),
+    )
+    await runtime.handleInput(
+      pointerInput({ action: 'release', row: 4, column: 1 }),
+    )
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(harness.output()).not.toContain(']52;')
+    await runtime.dispose()
+  })
+
+  it('when a selection ends with an empty range, nothing is copied', async () => {
+    const harness = createTerminalHarness({
+      terminalSize: { columns: 80, rows: 24 },
+    })
+    const runtime = createTuiRuntime({
+      app: createReplApp(),
+      host: harness.host,
+    })
+    await runtime.start()
+
+    await runtime.handleInputChunk({ data: 'hi' })
+    await runtime.handleInput(keyInput('enter'))
+    await runtime.dispatch({
+      kind: 'chatTransition',
+      transition: {
+        kind: 'pointer',
+        transition: {
+          kind: 'endSelection',
+          anchor: { entryId: 'entry-0', offset: 1 },
+          position: { entryId: 'entry-0', offset: 1 },
+        },
+      },
+    })
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(harness.output()).not.toContain(']52;')
+    await runtime.dispose()
   })
 })

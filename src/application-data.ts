@@ -8,7 +8,6 @@ import type {
   ParsedArguments,
 } from './types.ts'
 import type { OpenAiClientOptions } from './model-requests/types.ts'
-import { Signal } from '@ubernaut/exotui/app'
 import { openAndMigrateDatabase } from './database/open-and-migrate-database.ts'
 import { createLogger } from './logger.ts'
 import { type Environment, loadEnvironmentalVariables } from './env-vars.ts'
@@ -19,7 +18,6 @@ export class ApplicationData {
   private _logger?: Logger
   private _envars?: Environment
   private _parsedArguments?: ParsedArguments
-  private _replData?: Signal<string[]>
 
   crowDirectory(): string {
     return join(Deno.cwd(), '.crow')
@@ -96,13 +94,5 @@ export class ApplicationData {
     this._envars = loadEnvironmentalVariables()
 
     return this._envars
-  }
-
-  replData(): Signal<string[]> {
-    if (this._replData) return this._replData
-
-    this._replData = new Signal<string[]>([])
-
-    return this._replData
   }
 }

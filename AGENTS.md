@@ -97,21 +97,21 @@ daemon store — no reindex needed per session. A `UserPromptSubmit` hook
 (`agents/hooks/dependency-lookup-context.ts`) injects the routing summary into
 context on dep-flavored prompts.
 
-| Project    | Source                                      | Pinned to                              | Covers                             |
-| ---------- | ------------------------------------------- | -------------------------------------- | ---------------------------------- |
-| `exotui`   | `.deps/exotui` (clone of `ubernaut/exotui`) | `v0.8.1` = `deno.lock` pin             | All exotui source, tests, examples |
-| `deno`     | `.deps/deno` (fetched d.ts files)           | Deno `v2.9.7` (`cli/tsc/dts/`)         | `Deno.*` namespace + web globals   |
-| `deno-std` | `.deps/std` (clone of `denoland/std`)       | HEAD — drifts vs `deno.lock` @std pins | All @std packages                  |
+| Project       | Source                                                       | Pinned to                              | Covers                                  |
+| ------------- | ------------------------------------------------------------ | -------------------------------------- | --------------------------------------- |
+| `terminal-ui` | `.deps/terminal-ui` (clone of `Ismail-elkorchi/terminal-ui`) | `v0.1.5` = `deno.lock` pin             | All terminal-ui source, tests, examples |
+| `deno`        | `.deps/deno` (fetched d.ts files)                            | Deno `v2.9.7` (`cli/tsc/dts/`)         | `Deno.*` namespace + web globals        |
+| `deno-std`    | `.deps/std` (clone of `denoland/std`)                        | HEAD — drifts vs `deno.lock` @std pins | All @std packages                       |
 
 ### Routing — which project to query
 
-- exotui / TUI components / `Signal` / `App` / `TextBox` / `LogViewer` →
-  `exotui`
+- terminal-ui / TUI components / `defineTui` / `createTuiRuntime` / `textArea` /
+  `logViewer` → `terminal-ui`
 - `Deno.*` globals, runtime APIs, permissions → `deno`
 - `@std/*` imports (`walk`, `assertEquals`, `join`, …) → `deno-std`
 - crow-code's own code → `Users-kane-Projects-rho-crow-code`
-- The file's imports pick the project: `@ubernaut/exotui/*` → `exotui`, `@std/*`
-  → `deno-std`, `Deno.` globals → `deno`
+- The file's imports pick the project: `@ismail-elkorchi/terminal-ui*` →
+  `terminal-ui`, `@std/*` → `deno-std`, `Deno.` globals → `deno`
 
 ### Query pattern
 
@@ -129,9 +129,10 @@ context on dep-flavored prompts.
    the exact file via curl: `https://jsr.io/@scope/pkg/<ver>/<path>` (JSR) or
    `https://raw.githubusercontent.com/denoland/std/<rev>/<path>`.
 
-**Verify dep signatures against the graph — never write exotui/Deno code from
-memory.** `semantic_query` scores on these niche APIs are weak (~0.02–0.04);
-treat low scores as "no match" and switch to `name_pattern`/`query`.
+**Verify dep signatures against the graph — never write terminal-ui/Deno code
+from memory.** `semantic_query` scores on these niche APIs are weak
+(~0.02–0.04); treat low scores as "no match" and switch to
+`name_pattern`/`query`.
 
 Note: `.deps/` is gitignored (keeps dep code out of `git status` and crow's own
 index) and is in `deno.json`'s `exclude` (keeps `deno test`/`lint`/`fmt`
@@ -142,11 +143,11 @@ curl URLs above.
 ### Reindexing
 
 - On a `deno.json`/`deno.lock` dep bump:
-  `git -C .deps/exotui fetch --depth 1
+  `git -C .deps/terminal-ui fetch --depth 1
   origin tag vX.Y.Z`,
-  `git -C .deps/exotui checkout vX.Y.Z` — the daemon watcher re-indexes git
+  `git -C .deps/terminal-ui checkout vX.Y.Z` — the daemon watcher re-indexes git
   checkouts automatically, or run
-  `index_repository(repo_path, name="exotui", mode="full", persistence=true)`.
+  `index_repository(repo_path, name="terminal-ui", mode="full", persistence=true)`.
 - `.deps/deno` is not a git repo — after re-fetching d.ts files for a new Deno
   tag, re-run `index_repository(..., name="deno", mode="full")` manually.
 - Always use `mode="full"` for dep projects — `moderate`/`fast` skip `*.d.ts`
