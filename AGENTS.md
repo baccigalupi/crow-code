@@ -78,7 +78,7 @@ bd close <id>         # Complete work
 
 - Before starting a plan (not a session), `bd create` an issue for it and
   `bd update <id> --claim`
-- Close an issue when the user confirms the work is done: `bd close <id>`
+- Close an issue when the work is done: `bd close <id>`
 - Run `bd prime` for detailed command reference and session close protocol
 - Use `bd remember` for persistent knowledge — do NOT use MEMORY.md files
 - `.beads/*.jsonl` is tracked state — always stage it with the work it records.
