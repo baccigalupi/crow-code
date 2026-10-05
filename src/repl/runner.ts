@@ -1,24 +1,80 @@
-import { runTui } from '@ismail-elkorchi/terminal-ui'
-import type { TerminalHost } from '@ismail-elkorchi/terminal-ui/host'
-import { createReplApp } from './repl.ts'
-import type { ReplRun, ReplStatus } from './types.ts'
-
-export const runReplApp = async (host?: TerminalHost): Promise<ReplStatus> =>
-  (await runTui(createReplApp(), { host })).status
-
-export const createRunner = (run: ReplRun = runReplApp): Runner =>
-  new Runner(run)
+import { createElement } from 'react'
+import { render } from 'ink'
+import type { Instance } from 'ink'
+import { App } from './views/app.tsx'
+import type { ReplIo, ReplStatus } from './types.ts'
 
 export class Runner {
-  private readonly replRun: ReplRun
+  private io: ReplIo
+  private instance!: Instance
+  private signals: Deno.Signal[] = ['SIGINT', 'SIGTERM']
 
-  constructor(replRun: ReplRun) {
-    this.replRun = replRun
+  constructor(io: ReplIo) {
+    this.io = io
+    this.onSignal = this.onSignal.bind(this)
   }
 
   async run() {
-    const status = await this.replRun()
-    if (status === 'completed') Deno.exit(0)
-    else Deno.exit(1)
+    Deno.exit(await this.exitCode())
+  }
+
+  async status(): Promise<ReplStatus> {
+    this.instance = this.render()
+    this.listen()
+    try {
+      return await this.waitForExit()
+    } finally {
+      this.unlisten()
+    }
+  }
+
+  private render() {
+    return render(createElement(App), {
+      ...this.io,
+      exitOnCtrlC: false,
+      patchConsole: false,
+      alternateScreen: true,
+    })
+  }
+
+  private waitForExit() {
+    return this.instance.waitUntilExit().then(
+      () => 'completed' as const,
+      (error: unknown) => this.failed(error),
+    )
+  }
+
+  private failed(error: unknown): ReplStatus {
+    this.instance.unmount()
+    this.writeError(error)
+    return 'interrupted'
+  }
+
+  private writeError(error: unknown) {
+    Deno.stderr.writeSync(new TextEncoder().encode(`${String(error)}\n`))
+  }
+
+  private listen() {
+    this.signals.forEach((signal) =>
+      Deno.addSignalListener(signal, this.onSignal)
+    )
+  }
+
+  private unlisten() {
+    this.signals.forEach((signal) =>
+      Deno.removeSignalListener(signal, this.onSignal)
+    )
+  }
+
+  private onSignal() {
+    this.instance.unmount()
+    Deno.exit(1)
+  }
+
+  private async exitCode() {
+    if ((await this.status()) === 'completed') return 0
+    return 1
   }
 }
+
+export const createRunner = (io: ReplIo = {}) => new Runner(io)

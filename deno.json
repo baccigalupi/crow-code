@@ -9,6 +9,10 @@
     "crow": "bin/crow"
   },
   "nodeModulesDir": "auto",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
   "imports": {
     "@std/assert": "jsr:@std/assert@1.0.19",
     "@std/cli": "jsr:@std/cli@1.0.32",
@@ -17,12 +21,11 @@
     "@std/fs": "jsr:@std/fs@1.0.24",
     "@std/path": "jsr:@std/path@1.1.6",
     "@std/testing": "jsr:@std/testing@1.0.19",
-    "@ismail-elkorchi/terminal-ui": "jsr:@ismail-elkorchi/terminal-ui@0.1.5",
-    "@ismail-elkorchi/terminal-ui/behavior": "jsr:@ismail-elkorchi/terminal-ui@0.1.5/behavior",
-    "@ismail-elkorchi/terminal-ui/host": "jsr:@ismail-elkorchi/terminal-ui@0.1.5/host",
-    "@ismail-elkorchi/terminal-ui/testing": "jsr:@ismail-elkorchi/terminal-ui@0.1.5/testing",
-    "@ismail-elkorchi/terminal-ui/text": "jsr:@ismail-elkorchi/terminal-ui@0.1.5/text",
-    "@ismail-elkorchi/terminal-ui/tui": "jsr:@ismail-elkorchi/terminal-ui@0.1.5/tui",
+    "ink": "npm:ink@7.1.1",
+    "ink-testing-library": "npm:ink-testing-library@4.0.0",
+    "react": "npm:react@19.3.0",
+    "react/jsx-runtime": "npm:react@19.3.0/jsx-runtime",
+    "@types/react": "npm:@types/react@19.2.14",
     "better-sqlite3": "npm:better-sqlite3@13.0.3",
     "knex": "npm:knex@3.3.0",
     "openai": "npm:openai@7.15.0",
@@ -33,6 +36,7 @@
     "singleQuote": true
   },
   "exclude": [
-    ".deps"
+    ".deps",
+    ".worktrees"
   ]
 }

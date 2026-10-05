@@ -25,3 +25,5 @@ docs/plans/
 
 # Local dependency checkouts indexed by codebase-memory-mcp (see AGENTS.md)
 .deps/
+
+.worktrees/

@@ -18,17 +18,17 @@ test_files=()
 
 if [ "$scope" == all ]; then
   while IFS= read -r file; do
-    ts_files+=("$file")
-  done < <(git ls-files 'src/**/*.ts')
+    if [ -f "$file" ]; then ts_files+=("$file"); fi
+  done < <(git ls-files 'src/**/*.ts' 'src/**/*.tsx')
   while IFS= read -r file; do
     ts_files+=("$file")
-  done < <(git ls-files --others --exclude-standard 'src/**/*.ts')
+  done < <(git ls-files --others --exclude-standard 'src/**/*.ts' 'src/**/*.tsx')
+  while IFS= read -r file; do
+    if [ -f "$file" ]; then test_files+=("$file"); fi
+  done < <(git ls-files 'tests/**/*.test.ts' 'tests/**/*.test.tsx')
   while IFS= read -r file; do
     test_files+=("$file")
-  done < <(git ls-files 'tests/**/*.test.ts')
-  while IFS= read -r file; do
-    test_files+=("$file")
-  done < <(git ls-files --others --exclude-standard 'tests/**/*.test.ts')
+  done < <(git ls-files --others --exclude-standard 'tests/**/*.test.ts' 'tests/**/*.test.tsx')
 else
   changed_files=$(
     git diff --name-only --diff-filter=ACMR
@@ -37,9 +37,9 @@ else
   )
 
   for file in $changed_files; do
-    if [[ $file == src/* && $file == *.ts ]]; then
+    if [[ $file == src/* && ($file == *.ts || $file == *.tsx) ]]; then
       ts_files+=("$file")
-    elif [[ $file == tests/* && $file == *.test.ts ]]; then
+    elif [[ $file == tests/* && ($file == *.test.ts || $file == *.test.tsx) ]]; then
       test_files+=("$file")
     fi
   done
@@ -68,9 +68,11 @@ if [[ $mode == tests || $mode == both ]]; then
   else
     for test_file in "${test_files[@]}"; do
       source_path=${test_file#tests/}
-      source_path=${source_path%.test.ts}.ts
-      if [ ! -f "src/$source_path" ] && [ ! -f "$source_path" ]; then
-        echo "$test_file:1: test path must mirror source: expected src/$source_path or $source_path"
+      source_path=${source_path%.test.tsx}
+      source_path=${source_path%.test.ts}
+      if [ ! -f "src/$source_path.ts" ] && [ ! -f "src/$source_path.tsx" ] &&
+        [ ! -f "$source_path.ts" ] && [ ! -f "$source_path.tsx" ]; then
+        echo "$test_file:1: test path must mirror source: expected src/$source_path.ts or src/$source_path.tsx"
         fail=1
       fi
       deno lint --config agents/style-checks/unit-tests.deno.json "$test_file" ||

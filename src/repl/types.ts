@@ -1,35 +1,68 @@
-import type {
-  LogHistory,
-  LogViewerTransition,
-  ScrollableLogViewerState,
-  TextAreaState,
-  TextAreaTransition,
-} from '@ismail-elkorchi/terminal-ui/behavior'
-import type { TuiApp } from '@ismail-elkorchi/terminal-ui'
+import type { Dispatch, SetStateAction } from 'react'
+import type { Key, RenderOptions } from 'ink'
 
-export interface ReplState {
-  readonly input: TextAreaState
-  readonly inputRows: number
-  readonly history: LogHistory
-  readonly chat: ScrollableLogViewerState
+export interface InputBuffer {
+  readonly text: string
+  readonly cursor: number
 }
 
-export type ReplMessage =
-  | {
-    readonly kind: 'inputTransition'
-    readonly transition: TextAreaTransition
-  }
+export interface HistoryEntry {
+  readonly id: string
+  readonly text: string
+}
+
+export interface ReplState {
+  readonly buffer: InputBuffer
+  readonly inputRows: number
+  readonly history: readonly HistoryEntry[]
+}
+
+export type SetReplState = Dispatch<SetStateAction<ReplState>>
+
+export type AppViewModelArguments = {
+  readonly stdout: NodeJS.WriteStream
+  readonly state: ReplState
+}
+
+export type ChatViewModelArguments = {
+  readonly history: readonly HistoryEntry[]
+  readonly height: number
+  readonly width: number
+}
+
+export type InputViewModelArguments = {
+  readonly buffer: InputBuffer
+  readonly height: number
+}
+
+export type CursorMove = 'left' | 'right' | 'home' | 'end'
+
+export type ReplAction =
+  | { readonly kind: 'insert'; readonly text: string }
+  | { readonly kind: 'backspace' }
+  | { readonly kind: 'delete' }
+  | { readonly kind: 'move'; readonly to: CursorMove }
+  | { readonly kind: 'newline' }
   | { readonly kind: 'submit' }
-  | { readonly kind: 'insertNewline' }
   | { readonly kind: 'resize' }
-  | {
-    readonly kind: 'chatTransition'
-    readonly transition: LogViewerTransition
-  }
   | { readonly kind: 'quit' }
 
-export type ReplApp = TuiApp<ReplState, ReplMessage>
+export type KeyFlags = Partial<
+  Pick<
+    Key,
+    | 'ctrl'
+    | 'shift'
+    | 'meta'
+    | 'return'
+    | 'backspace'
+    | 'delete'
+    | 'leftArrow'
+    | 'rightArrow'
+    | 'home'
+    | 'end'
+  >
+>
+
+export type ReplIo = Pick<RenderOptions, 'stdin' | 'stdout' | 'stderr'>
 
 export type ReplStatus = 'completed' | 'cancelled' | 'interrupted'
-
-export type ReplRun = () => Promise<ReplStatus>

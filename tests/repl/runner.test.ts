@@ -1,54 +1,94 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { assertSpyCalls, spy, stub } from '@std/testing/mock'
-import { createMemoryTerminalHost } from '@ismail-elkorchi/terminal-ui/host'
-import { createRunner, runReplApp } from '../../src/repl/runner.ts'
+import { assertSpyCallArg, spy, stub } from '@std/testing/mock'
+import { createRunner } from '../../src/repl/runner.ts'
+import { mockTerminal } from '../support/mock-terminal.ts'
 
-describe('createRunner', () => {
-  it('when the app exits with completed status, exits with code 0', async () => {
-    const run = spy(() => Promise.resolve('completed' as const))
-    const runner = createRunner(run)
+describe('runner', () => {
+  it('when ctrl-c is written to stdin, status resolves completed', async () => {
+    const terminal = mockTerminal({})
+    const runner = createRunner(terminal.io)
+
+    const pending = runner.status()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    terminal.stdin.write('\x03')
+
+    expect(await pending).toBe('completed')
+  })
+
+  it('when stdin cannot set raw mode, status resolves interrupted since Ink requires it for user input', async () => {
+    const terminal = mockTerminal({ rawMode: false })
+    const runner = createRunner(terminal.io)
+
+    const status = await runner.status()
+
+    expect(status).toBe('interrupted')
+  })
+
+  it('when the app completes, run exits with code 0', async () => {
+    const terminal = mockTerminal({})
+    const runner = createRunner(terminal.io)
     using exit = stub(Deno, 'exit', () => undefined as never)
 
-    await runner.run()
+    const pending = runner.run()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    terminal.stdin.write('\x03')
+    await pending
 
-    assertSpyCalls(run, 1)
-    assertSpyCalls(exit, 1)
     expect(exit.calls[0].args).toEqual([0])
   })
 
-  it('when the app exits interrupted, exits with code 1', async () => {
-    const run = spy(() => Promise.resolve('interrupted' as const))
-    const runner = createRunner(run)
+  it('when the app is interrupted, run exits with code 1', async () => {
+    const terminal = mockTerminal({ rawMode: false })
+    const runner = createRunner(terminal.io)
     using exit = stub(Deno, 'exit', () => undefined as never)
 
     await runner.run()
 
-    assertSpyCalls(run, 1)
-    assertSpyCalls(exit, 1)
     expect(exit.calls[0].args).toEqual([1])
   })
 
-  it('when the app run throws, propagates the error without exiting', async () => {
-    const failure = new Error('run failed')
-    const runner = createRunner(() => Promise.reject(failure))
-    using exit = stub(Deno, 'exit', () => undefined as never)
+  it('when the app runs to completion, its signal listeners are removed', async () => {
+    const terminal = mockTerminal({})
+    const runner = createRunner(terminal.io)
+    using remove = spy(Deno, 'removeSignalListener')
 
-    const result = await runner.run().catch((error) => error)
+    const pending = runner.status()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    terminal.stdin.write('\x03')
+    await pending
 
-    expect(result).toBe(failure)
-    assertSpyCalls(exit, 0)
+    assertSpyCallArg(remove, 0, 0, 'SIGINT')
+    assertSpyCallArg(remove, 1, 0, 'SIGTERM')
   })
 
-  it('when the default app runs on a memory host, resolves after ctrl-c', async () => {
-    const host = createMemoryTerminalHost({
-      terminalSize: { columns: 80, rows: 24 },
-    })
+  it('when SIGTERM is sent to the process, unmounts and exits with code 1', async () => {
+    const terminal = mockTerminal({})
+    const runner = createRunner(terminal.io)
+    const keepAlive = () => {}
+    Deno.addSignalListener('SIGTERM', keepAlive)
+    using exit = stub(Deno, 'exit', () => undefined as never)
 
-    const pending = runReplApp(host)
-    host.input('\x03')
-    const status = await pending
+    const pending = runner.status()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    Deno.kill(Deno.pid, 'SIGTERM')
+    await pending
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    Deno.removeSignalListener('SIGTERM', keepAlive)
 
-    expect(status).toBe('completed')
+    expect(exit.calls[0].args).toEqual([1])
+  })
+
+  it('when the app fails, writes the error to stderr and resolves interrupted', async () => {
+    const terminal = mockTerminal({ rawMode: false })
+    const runner = createRunner(terminal.io)
+    using write = stub(Deno.stderr, 'writeSync', () => 0)
+
+    const status = await runner.status()
+
+    expect(status).toBe('interrupted')
+    expect(new TextDecoder().decode(write.calls[0].args[0])).toContain(
+      'setRawMode is not a function',
+    )
   })
 })
