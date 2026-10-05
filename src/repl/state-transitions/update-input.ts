@@ -5,8 +5,8 @@ import type {
 } from '@ismail-elkorchi/terminal-ui/behavior'
 import type { TextEditOperation } from '@ismail-elkorchi/terminal-ui/text'
 import type { TuiContext, TuiUpdateResult } from '@ismail-elkorchi/terminal-ui'
-import { measureInputRows } from './state.ts'
-import type { ReplMessage, ReplState } from './types.ts'
+import { measureInputRows } from '../state.ts'
+import type { ReplMessage, ReplState } from '../types.ts'
 
 export const newlineTransition: TextAreaTransition = {
   kind: 'edit',

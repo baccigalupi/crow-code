@@ -1,7 +1,7 @@
 import { defineTui } from '@ismail-elkorchi/terminal-ui'
 import type { TuiInputBinding } from '@ismail-elkorchi/terminal-ui/tui'
 import { initialReplState } from './state.ts'
-import { updateRepl } from './update.ts'
+import { updateRepl } from './state-transitions/update.ts'
 import { replView } from './view.ts'
 import type { ReplApp, ReplMessage, ReplState } from './types.ts'
 
