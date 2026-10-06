@@ -32,10 +32,9 @@ export class Runner<TRequest, TResponse> {
   }
 
   async runModels() {
-    const models = await this.models()
+    const _models = await this.models()
   }
 
-  async runModel(model: ModelEntity) {
-
-  } 
+  async runModel(_model: ModelEntity) {
+  }
 }

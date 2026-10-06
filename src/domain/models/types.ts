@@ -1,3 +1,11 @@
+import type { Knex } from 'knex'
+import type { ModelWithProviderRow } from '../types.ts'
+
+export type ModelQuery = Knex.QueryBuilder<
+  ModelWithProviderRow,
+  ModelWithProviderRow[]
+>
+
 export type CostTier =
   | 'free'
   | 'cheap'

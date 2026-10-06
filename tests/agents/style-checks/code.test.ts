@@ -161,6 +161,28 @@ describe('style-check code plugin', () => {
     expect(diagnostics[0].message).toContain('must be ≤ 7')
   })
 
+  it('when a function body has seven non-blank lines, ignores blank lines', () => {
+    const source = `const example = () => {
+      const a = 1
+
+      const b = 2
+
+      const c = 3
+
+      const d = 4
+
+      const e = 5
+
+      const f = 6
+
+      return a + b + c + d + e + f
+    }`
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
   it('when a function declaration is nested inside a function, reports it', () => {
     const source = `const outer = () => {
       function inner() {}

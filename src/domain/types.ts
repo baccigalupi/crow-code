@@ -16,6 +16,22 @@ export type ModelRow = {
   reasoning_options: string
 }
 
+export type ModelWithProviderRow = ModelRow & {
+  provider_base_url: string
+  provider_api_key_env_var: string | null
+}
+
+export type ModelEntityRow =
+  & Partial<ModelWithProviderRow>
+  & Pick<
+    ModelRow,
+    | 'dynamic_delegation'
+    | 'supported_parameters'
+    | 'supports_reasoning'
+    | 'can_disable_reasoning'
+    | 'reasoning_options'
+  >
+
 export type ModelParams = {
   provider_id: number
   identifier: string

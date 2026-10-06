@@ -1,16 +1,7 @@
 import type { DefaultReasoning } from '../../types.ts'
-import type { ModelRow } from '../types.ts'
-
-type ModelEntityRow =
-  & Partial<ModelRow>
-  & Pick<
-    ModelRow,
-    | 'dynamic_delegation'
-    | 'supported_parameters'
-    | 'supports_reasoning'
-    | 'can_disable_reasoning'
-    | 'reasoning_options'
-  >
+import { Environment } from '../../env-vars.ts'
+import type { ModelEndpoint } from '../../model-requests/types.ts'
+import type { ModelEntityRow, ModelRow } from '../types.ts'
 
 const emptyModelRow: ModelEntityRow = {
   dynamic_delegation: false,
@@ -22,9 +13,11 @@ const emptyModelRow: ModelEntityRow = {
 
 export class ModelEntity {
   private row: ModelEntityRow
+  private environment: Environment
 
-  constructor(row: ModelEntityRow) {
+  constructor(row: ModelEntityRow, environment = new Environment({})) {
     this.row = row
+    this.environment = environment
   }
 
   id() {
@@ -78,12 +71,28 @@ export class ModelEntity {
   reasoningOptions(): DefaultReasoning {
     return JSON.parse(this.row.reasoning_options)
   }
+
+  modelEndpoint(): ModelEndpoint {
+    return {
+      baseURL: String(this.row.provider_base_url || ''),
+      apiKey: this.providerApiKey(),
+      model: String(this.identifier() || ''),
+      providerId: Number(this.providerId() || 0),
+    }
+  }
+
+  private providerApiKey() {
+    const name = String(this.row.provider_api_key_env_var || '')
+    return this.environment.value(name)
+  }
 }
 
-export const modelEntity = (row?: ModelRow) => {
-  if (!row) return new ModelEntity(emptyModelRow)
-  return new ModelEntity(row)
+export const modelEntity = (row?: ModelRow, environment?: Environment) => {
+  if (!row) return new ModelEntity(emptyModelRow, environment)
+  return new ModelEntity(row, environment)
 }
 
-export const modelEntities = (rows: ModelRow[]) =>
-  rows.map((row) => modelEntity(row))
+export const modelEntities = (
+  rows: ModelRow[],
+  environment?: Environment,
+) => rows.map((row) => modelEntity(row, environment))

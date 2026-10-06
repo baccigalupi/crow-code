@@ -3,6 +3,7 @@ import { expect } from '@std/expect'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import pino from 'pino'
 import { ModelEntity } from '../../../src/domain/models/model.ts'
+import { Environment } from '../../../src/env-vars.ts'
 import { modelFindAllByFilters } from '../../../src/domain/models/find-all-by-filters.ts'
 import {
   cleanDatabase,
@@ -14,6 +15,12 @@ describe('modelFindAllByFilters', () => {
   it('when models match, returns ModelEntity instances ordered by id', async () => {
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
+    await database('providers').insert({
+      id: 1,
+      name: 'Provider',
+      base_url: 'https://example.com/v1',
+      api_key_env_var: 'PROVIDER_API_KEY',
+    })
     await database('models').insert([
       {
         provider_id: 1,
@@ -44,7 +51,8 @@ describe('modelFindAllByFilters', () => {
         reasoning_options: '{}',
       },
     ])
-    const applicationData = mockApplicationData({ database, logger })
+    const envars = new Environment({ PROVIDER_API_KEY: 'secret' })
+    const applicationData = mockApplicationData({ database, logger, envars })
 
     const models = await modelFindAllByFilters(applicationData, {
       type: 'chat',
@@ -55,6 +63,12 @@ describe('modelFindAllByFilters', () => {
     expect(models[1].identifier()).toBe('free')
     expect(models[0]).toBeInstanceOf(ModelEntity)
     expect(models[1]).toBeInstanceOf(ModelEntity)
+    expect(models[0].modelEndpoint()).toEqual({
+      baseURL: 'https://example.com/v1',
+      apiKey: 'secret',
+      model: 'disableable',
+      providerId: 1,
+    })
     await database.destroy()
   })
 

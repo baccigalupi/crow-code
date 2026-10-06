@@ -51,6 +51,12 @@ describe('model', () => {
 
     expect(model.canDisableReasoning()).toBe(false)
     expect(model.reasoningOptions()).toEqual({})
+    expect(model.modelEndpoint()).toEqual({
+      baseURL: '',
+      apiKey: '',
+      model: '',
+      providerId: 0,
+    })
   })
 
   it('modelEntities maps every row to a ModelEntity', () => {

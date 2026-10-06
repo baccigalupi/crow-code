@@ -38,8 +38,8 @@ const isTopLevel = (
 }
 
 const bodyLineCount = (text: string): number => {
-  const lines = text.split('\n').length - 2
-  return lines > 0 ? lines : 0
+  const lines = text.split('\n').slice(1, -1)
+  return lines.filter((line) => line.trim() !== '').length
 }
 
 const fileLineCount = (text: string): number => {
