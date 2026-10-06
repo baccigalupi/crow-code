@@ -1,30 +1,28 @@
 import { useApp, useInput, useStdin } from 'ink'
-import type { Key } from 'ink'
 import { keyToAction } from '../keymap.ts'
 import { updateRepl } from '../repl-state.ts'
-import type { SetReplState } from '../../types.ts'
+import type { ReplAction, SetReplState } from '../../types.ts'
 
-const onInput = (
-  input: string,
-  key: Key,
+const handleInput = (
+  action: ReplAction | null | undefined,
   setState: SetReplState,
   columns: number,
   exit: () => void,
 ) => {
-  const action = keyToAction(input, key)
   if (!action) return
   if (action.kind === 'quit') {
     exit()
-    return
+  } else {
+    setState((state) => updateRepl(state, action, columns))
   }
-  setState((state) => updateRepl(state, action, columns))
 }
 
 export const useReplKeys = (setState: SetReplState, columns: number) => {
   const { exit } = useApp()
   const { isRawModeSupported } = useStdin()
   useInput(
-    (input, key) => onInput(input, key, setState, columns, exit),
+    (input, _key) =>
+      handleInput(keyToAction(input, _key), setState, columns, exit),
     { isActive: isRawModeSupported },
   )
 }

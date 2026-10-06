@@ -1,10 +1,8 @@
 import type { InputBuffer } from '../types.ts'
 
 const cursorCharacter = (buffer: InputBuffer) => {
-  const character = buffer.text.charAt(buffer.cursor)
-  if (character === '') return ' '
-
-  return character
+  if (buffer.cursor >= buffer.text.length) return ' '
+  return buffer.text.charAt(buffer.cursor)
 }
 
 export const bufferViewModel = (buffer: InputBuffer) => {
