@@ -6,18 +6,24 @@ import type {
   DenoCommand,
   Logger,
   ParsedArguments,
+  RealPath,
 } from './types.ts'
 import type { OpenAiClientOptions } from './model-requests/types.ts'
 import { openAndMigrateDatabase } from './database/open-and-migrate-database.ts'
 import { createLogger } from './logger.ts'
 import { type Environment, loadEnvironmentalVariables } from './env-vars.ts'
 import { parseArguments } from './cli/arguments.ts'
+import {
+  type PathPermissions,
+  pathPermissions,
+} from './tools/path-permissions.ts'
 
 export class ApplicationData {
   private _database?: Knex
   private _logger?: Logger
   private _envars?: Environment
   private _parsedArguments?: ParsedArguments
+  private _pathPermissions?: ReturnType<typeof pathPermissions>
 
   crowDirectory(): string {
     return join(Deno.cwd(), '.crow')
@@ -86,6 +92,18 @@ export class ApplicationData {
 
   denoCommand(): DenoCommand {
     return Deno.Command
+  }
+
+  getRealPath(): RealPath {
+    return Deno.realPath
+  }
+
+  pathPermissions(): PathPermissions {
+    if (this._pathPermissions) return this._pathPermissions
+
+    this._pathPermissions = pathPermissions({ applicationData: this })
+
+    return this._pathPermissions
   }
 
   envars(): Environment {

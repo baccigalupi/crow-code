@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import { stub } from '@std/testing/mock'
+import { returnsNext, spy, stub } from '@std/testing/mock'
 import pino from 'pino'
 import { OpenAI } from 'openai'
 import { ApplicationData } from '../src/application-data.ts'
@@ -43,6 +43,26 @@ describe('ApplicationData', () => {
     const consoleLog = data.consoleLog()
 
     expect(consoleLog).toBe(console.log)
+  })
+
+  it('when path permissions allows is called twice for the same path, resolves the path once', async () => {
+    const data = new ApplicationData()
+    const directory = Deno.cwd()
+    const mockDenoRealPath = spy(
+      returnsNext([Promise.resolve(join(directory, 'deno.json'))]),
+    )
+    using _realPath = stub(
+      data,
+      'getRealPath',
+      () => mockDenoRealPath,
+    )
+
+    const permissions = data.pathPermissions()
+    await permissions.allows('deno.json')
+    await permissions.allows('deno.json')
+
+    expect(mockDenoRealPath.calls).toHaveLength(1)
+    expect(data.pathPermissions()).toBe(permissions)
   })
 
   it('when asked for args, returns the process arguments', () => {

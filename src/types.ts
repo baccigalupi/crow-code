@@ -29,6 +29,7 @@ export type ParsedArguments = {
 
 export type ConsoleLog = typeof console.log
 export type DenoCommand = typeof Deno.Command
+export type RealPath = typeof Deno.realPath
 
 export type Committer = (summary: string, logger: Logger) => Promise<boolean>
 
