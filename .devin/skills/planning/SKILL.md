@@ -26,6 +26,24 @@ explicitly unresolved in the table with the consequence of each plausible
 answer; do not silently choose one. Do not ask to implement the plan. You are
 just to focus on the plan, and won't do implemantion.
 
+## Worktree
+
+Every plan is executed in a dedicated git worktree, never on the main checkout.
+Creating the worktree is part of planning:
+
+1. After `bd create`/`bd update <id> --claim`, run
+   `git worktree add .worktrees/<name> -b <branch>` from the repo root, with
+   `<name>`/`<branch>` derived from the Beads issue or feature name.
+   `.worktrees/` is gitignored and excluded from `deno.json` tasks.
+2. Record the worktree path and branch in the plan's metadata. All file paths,
+   exec working directories, and verification commands in the plan are relative
+   to the worktree, not the main checkout.
+3. The worktree branch is rebased onto `main` only after explicit user approval.
+   After `agents/pre-commit` passes, request approval to rebase; never rebase,
+   merge, or fast-forward onto `main` unprompted.
+4. Once the work has landed (or is abandoned), remove the worktree with
+   `git worktree remove .worktrees/<name>`.
+
 ## Required plan structure
 
 After the plan title and any generated metadata, use these sections in this
@@ -153,6 +171,10 @@ verification step; for this repository, the command is `agents/pre-commit`.
 Nothing may follow the pre-commit item in the plan.
 
 ## Implementation completion response
+
+After `agents/pre-commit` passes, request user approval to rebase the worktree
+branch onto `main` (see Worktree). Send the completion response only after that
+approval is granted or declined.
 
 After implementing a plan, the entire final chat response must use exactly one
 of these forms, with no greeting, explanation, test summary, file list, or

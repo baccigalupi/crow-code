@@ -53,6 +53,22 @@ Never create scripts there to try to circumvent permissions.
 - When asked to commit, stage everything `git status` shows — modified and
   untracked — unless the user says to commit only specific work.
 
+## Worktrees
+
+- All planned work happens in a dedicated git worktree, never directly on the
+  main checkout.
+- Worktrees live under `.worktrees/` (already gitignored and excluded from
+  `deno.json` tasks).
+- Creating the worktree is part of planning: after `bd create`/`--claim`, run
+  `git worktree add .worktrees/<name> -b <branch>` from the repo root, where
+  `<name>`/`<branch>` derive from the Beads issue or feature name.
+- Do all subsequent work inside the worktree — file paths, exec `workdir`, and
+  verification commands all target `.worktrees/<name>`, not the main checkout.
+- A worktree branch is rebased onto `main` only after explicit user approval.
+  Never rebase, merge, or fast-forward onto `main` unprompted.
+- After the work lands, remove the worktree with
+  `git worktree remove .worktrees/<name>`.
+
 ## Planning
 
 - Invoke `/planning` whenever creating, researching, or revising a plan.
