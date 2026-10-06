@@ -1,12 +1,9 @@
 import type { ApplicationData } from '../application-data.ts'
+import type { ModelFilterOptions } from '../domain/models/types.ts'
 import { commitMessageMessages } from './commit-message/messages.ts'
 import { ModelApiRequest } from './framework/model-api-request.ts'
-import type {
-  CommitMessage,
-  CommitMessageRequest,
-  Json,
-  ModelEndpoint,
-} from './types.ts'
+import { Runner } from './framework/runner.ts'
+import type { CommitMessage, CommitMessageRequest, Json } from './types.ts'
 
 export class GetCommitMessage
   extends ModelApiRequest<CommitMessageRequest, CommitMessage> {
@@ -31,16 +28,8 @@ export class GetCommitMessage
   }
 }
 
-export const getCommitMessage = async (
-  modelEndpoint: ModelEndpoint,
+export const getCommitMessage = (
   applicationData: ApplicationData,
   requestData: CommitMessageRequest,
-) => {
-  const request = new GetCommitMessage(
-    modelEndpoint,
-    applicationData,
-    requestData,
-  )
-  await request.run()
-  return request
-}
+  options: ModelFilterOptions = { type: 'chat', costTier: 'budget', limit: 3 },
+) => new Runner(applicationData, options, GetCommitMessage, requestData).run()

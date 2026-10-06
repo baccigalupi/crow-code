@@ -1,6 +1,8 @@
 import type { ApplicationData } from '../application-data.ts'
+import type { ModelFilterOptions } from '../domain/models/types.ts'
 import { ModelApiRequest } from './framework/model-api-request.ts'
-import type { Json, ModelEndpoint, ModelMessages } from './types.ts'
+import { Runner } from './framework/runner.ts'
+import type { Json, ModelMessages } from './types.ts'
 
 const systemPrompt = `
 You are an agent focused on extracting goals from user provided information.
@@ -35,12 +37,8 @@ export class GetGoals extends ModelApiRequest<string, string[]> {
   }
 }
 
-export const getGoals = async (
-  modelEndpoint: ModelEndpoint,
+export const getGoals = (
   applicationData: ApplicationData,
   requestData: string,
-) => {
-  const request = new GetGoals(modelEndpoint, applicationData, requestData)
-  await request.run()
-  return request
-}
+  options: ModelFilterOptions = { type: 'chat', costTier: 'free', limit: 3 },
+) => new Runner(applicationData, options, GetGoals, requestData).run()
