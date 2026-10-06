@@ -4,6 +4,7 @@ import { ModelApiRequest } from './framework/model-api-request.ts'
 import type {
   CommitMessage,
   CommitMessageRequest,
+  Json,
   ModelEndpoint,
 } from './types.ts'
 
@@ -13,10 +14,10 @@ export class GetCommitMessage
     return { subject: '', body: '' }
   }
 
-  protected override validateResponse() {
-    if (typeof this.parsedResponse !== 'object') return false
+  protected override validateResponse(json: Json) {
+    if (typeof json !== 'object' || json === null) return false
 
-    const candidate = this.parsedResponse as Record<string, unknown>
+    const candidate = json as Record<string, Json>
     return this.presentString(candidate.subject) &&
       this.presentString(candidate.body)
   }

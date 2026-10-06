@@ -73,6 +73,7 @@ describe('Runner', () => {
     )
 
     await runner.run()
+    await runner.run()
 
     expect(runner.result()).toEqual(['done'])
     expect(fetch.calls).toHaveLength(2)

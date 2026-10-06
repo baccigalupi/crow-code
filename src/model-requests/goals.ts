@@ -1,6 +1,6 @@
 import type { ApplicationData } from '../application-data.ts'
 import { ModelApiRequest } from './framework/model-api-request.ts'
-import type { ModelEndpoint, ModelMessages } from './types.ts'
+import type { Json, ModelEndpoint, ModelMessages } from './types.ts'
 
 const systemPrompt = `
 You are an agent focused on extracting goals from user provided information.
@@ -18,9 +18,9 @@ export class GetGoals extends ModelApiRequest<string, string[]> {
     return []
   }
 
-  protected override validateResponse() {
-    return Array.isArray(this.parsedResponse) &&
-      this.parsedResponse.every((goal) => typeof goal === 'string')
+  protected override validateResponse(json: Json) {
+    return Array.isArray(json) &&
+      json.every((goal) => typeof goal === 'string')
   }
 
   protected getMessages() {

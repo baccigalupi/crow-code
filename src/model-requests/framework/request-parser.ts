@@ -18,9 +18,9 @@ export class RequestParser<TResponse> {
 
   constructor(apiRequest: OpenAiRequest, schemaValidator: SchemaValidator) {
     this.apiRequest = apiRequest
-    this.succeeded = false 
+    this.succeeded = false
     this.reason = ''
-    this.schemaValidator = schemaValidator 
+    this.schemaValidator = schemaValidator
   }
 
   async run() {
@@ -39,7 +39,9 @@ export class RequestParser<TResponse> {
   }
 
   private validateSchema() {
-    if (!this.schemaValidator(this.parsedResponse!)) return this.fail('invalid-schema')
+    if (!this.schemaValidator(this.parsedResponse!)) {
+      return this.fail('invalid-schema')
+    }
 
     this.succeeded = true
     return this.parsedResponse as TResponse
@@ -48,5 +50,6 @@ export class RequestParser<TResponse> {
   private fail(reason: ModelRequestFailureReason) {
     this.succeeded = false
     this.reason = reason
+    return undefined
   }
 }
