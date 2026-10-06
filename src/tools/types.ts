@@ -12,3 +12,15 @@ export type FileContent = {
   path: string
   text: string
 }
+
+export type DirectoryEntryKind = 'file' | 'directory' | 'symlink'
+
+export type DirectoryEntry = {
+  path: string
+  kind: DirectoryEntryKind
+}
+
+export type DirectoryListing = {
+  path: string
+  entries: DirectoryEntry[]
+}
