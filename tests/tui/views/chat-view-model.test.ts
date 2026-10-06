@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { chatViewModel } from '../../../src/repl/views/chat-view-model.ts'
+import { chatViewModel } from '../../../src/tui/views/chat-view-model.ts'
 
 describe('chatViewModel', () => {
   it('when history fits, returns every entry as a history line', () => {

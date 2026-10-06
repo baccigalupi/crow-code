@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { assertSpyCallArg, spy, stub } from '@std/testing/mock'
-import { createRunner } from '../../src/repl/runner.ts'
+import { createRunner } from '../../src/tui/runner.ts'
 import { mockTerminal } from '../support/mock-terminal.ts'
 
 describe('runner', () => {

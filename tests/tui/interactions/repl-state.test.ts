@@ -3,7 +3,7 @@ import { expect } from '@std/expect'
 import {
   initialReplState,
   updateRepl,
-} from '../../../src/repl/interactions/repl-state.ts'
+} from '../../../src/tui/interactions/repl-state.ts'
 
 describe('repl state', () => {
   it('when submitting twice, appends entry-0 and entry-1', () => {

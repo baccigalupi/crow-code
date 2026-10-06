@@ -2,7 +2,7 @@ import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { render } from 'ink-testing-library'
 import { render as inkRender } from 'ink'
-import { App } from '../../../src/repl/views/app.tsx'
+import { App } from '../../../src/tui/views/app.tsx'
 import { mockTerminal } from '../../support/mock-terminal.ts'
 
 describe('App', () => {

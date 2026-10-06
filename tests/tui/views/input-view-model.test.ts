@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { inputViewModel } from '../../../src/repl/views/input-view-model.ts'
+import { inputViewModel } from '../../../src/tui/views/input-view-model.ts'
 
 describe('inputViewModel', () => {
   it('when the buffer is empty, is empty', () => {

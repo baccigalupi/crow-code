@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { visibleHistory } from '../../../src/repl/interactions/visible-history.ts'
-import type { HistoryEntry } from '../../../src/repl/types.ts'
+import { visibleHistory } from '../../../src/tui/interactions/visible-history.ts'
+import type { HistoryEntry } from '../../../src/tui/types.ts'
 
 describe('visibleHistory', () => {
   it('when history fits, all entries are visible', () => {

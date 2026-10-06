@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { appViewModel } from '../../../src/repl/views/app-view-model.ts'
-import type { AppViewModelArguments } from '../../../src/repl/types.ts'
+import { appViewModel } from '../../../src/tui/views/app-view-model.ts'
+import type { AppViewModelArguments } from '../../../src/tui/types.ts'
 
 describe('appViewModel', () => {
   it('when stdout reports a size, derives the chat row height from it', () => {

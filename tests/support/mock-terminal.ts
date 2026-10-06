@@ -1,6 +1,6 @@
 import { PassThrough, Writable } from 'node:stream'
 import { spy } from '@std/testing/mock'
-import type { ReplIo } from '../../src/repl/types.ts'
+import type { ReplIo } from '../../src/tui/types.ts'
 
 export type MockTerminalOptions = {
   columns?: number

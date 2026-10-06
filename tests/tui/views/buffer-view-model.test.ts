@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { bufferViewModel } from '../../../src/repl/views/buffer-view-model.ts'
+import { bufferViewModel } from '../../../src/tui/views/buffer-view-model.ts'
 
 describe('bufferViewModel', () => {
   it('when the buffer is empty, shows a blank cursor', () => {

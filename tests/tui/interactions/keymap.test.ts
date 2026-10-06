@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { keyToAction } from '../../../src/repl/interactions/keymap.ts'
+import { keyToAction } from '../../../src/tui/interactions/keymap.ts'
 
 describe('keyToAction', () => {
   it('when ctrl+c arrives, quits', () => {

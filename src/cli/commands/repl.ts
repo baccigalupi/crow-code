@@ -1,4 +1,4 @@
-import { createRunner } from '../../repl/runner.ts'
+import { createRunner } from '../../tui/runner.ts'
 import { Command } from './command.ts'
 
 export class Repl extends Command {
