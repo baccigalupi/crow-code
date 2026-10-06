@@ -1,4 +1,4 @@
-import type { ChatCompletionJson, Timespan } from '../types.ts'
+import type { ChatCompletionJson, Json, Timespan } from '../types.ts'
 
 export class ModelAnswer {
   private json: ChatCompletionJson
@@ -34,7 +34,7 @@ export class ModelAnswer {
     return this.json.choices[0].message.content
   }
 
-  answerAsJson(): unknown {
+  answerAsJson(): Json | undefined {
     try {
       return JSON.parse(this.strippedAnswer())
     } catch {

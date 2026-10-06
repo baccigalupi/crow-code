@@ -16,6 +16,7 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
   private succeeded: boolean
   private reason: ModelRequestFailureReason = ''
   private answer!: ModelAnswer
+  private validatedResponse!: TResponse
   protected parsedResponse: unknown
   protected requestData: TRequest
 
@@ -33,8 +34,13 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
   async run() {
     this.constructMessages()
     await this.fetchRequest()
+    this.validatedResponse = await this.parseResponse()
 
-    return await this.parseResponse()
+    return this
+  }
+
+  result() {
+    return this.validatedResponse
   }
 
   success() {

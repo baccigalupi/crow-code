@@ -41,9 +41,9 @@ describe('goals', () => {
     })
     const getGoals = new GetGoals(modelEndpoint, applicationData, 'build a cli')
 
-    const goals = await getGoals.run()
+    await getGoals.run()
 
-    expect(goals).toEqual([])
+    expect(getGoals.result()).toEqual([])
     expect(getGoals.failureReason()).toBe('api-error')
   })
 
@@ -62,9 +62,9 @@ describe('goals', () => {
     })
     const getGoals = new GetGoals(modelEndpoint, applicationData, 'build a cli')
 
-    const goals = await getGoals.run()
+    await getGoals.run()
 
-    expect(goals).toEqual([])
+    expect(getGoals.result()).toEqual([])
     expect(getGoals.success()).toBe(false)
     expect(getGoals.failureReason()).toBe('invalid-schema')
   })

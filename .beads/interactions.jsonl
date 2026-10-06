@@ -87,3 +87,4 @@
 {"id":"int-58da2286","kind":"field_change","created_at":"2026-10-06T02:32:29.273831Z","actor":"Kane Baccigalupi","issue_id":"crow-code-k6f","extra":{"field":"status","new_value":"closed","old_value":"open","reason":"Superseded by the migration from exotui to Ink"}}
 {"id":"int-a91909fd","kind":"field_change","created_at":"2026-10-06T14:35:27.189171Z","actor":"Kane Baccigalupi","issue_id":"crow-code-e8v","extra":{"field":"status","new_value":"closed","old_value":"open","reason":"Closed"}}
 {"id":"int-577a977b","kind":"field_change","created_at":"2026-10-06T16:06:21.427281Z","actor":"Kane Baccigalupi","issue_id":"crow-code-3vo","extra":{"field":"status","new_value":"closed","old_value":"open","reason":"Closed"}}
+{"id":"int-961ae995","kind":"field_change","created_at":"2026-10-06T18:52:48.036133Z","actor":"Kane Baccigalupi","issue_id":"crow-code-vsx.1","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Closed"}}

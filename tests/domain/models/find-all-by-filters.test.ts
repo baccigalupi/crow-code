@@ -63,7 +63,7 @@ describe('modelFindAllByFilters', () => {
     expect(models[1].identifier()).toBe('free')
     expect(models[0]).toBeInstanceOf(ModelEntity)
     expect(models[1]).toBeInstanceOf(ModelEntity)
-    expect(models[0].modelEndpoint()).toEqual({
+    expect(models[0].endpoint()).toEqual({
       baseURL: 'https://example.com/v1',
       apiKey: 'secret',
       model: 'disableable',

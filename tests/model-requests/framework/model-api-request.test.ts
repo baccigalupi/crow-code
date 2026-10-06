@@ -121,9 +121,9 @@ describe('ModelApiRequest', () => {
       }
     }(modelEndpoint, applicationData, 'build a cli')
 
-    const response = await modelApiRequest.run()
+    await modelApiRequest.run()
 
-    expect(response).toEqual(['first goal'])
+    expect(modelApiRequest.result()).toEqual(['first goal'])
     expect(modelApiRequest.success()).toBe(true)
     expect(modelApiRequest.failureReason()).toBe('')
     expect(modelApiRequest.metaData()).toEqual({
@@ -157,9 +157,9 @@ describe('ModelApiRequest', () => {
       }
     }(modelEndpoint, applicationData, 'build a cli')
 
-    const response = await modelApiRequest.run()
+    await modelApiRequest.run()
 
-    expect(response).toEqual([])
+    expect(modelApiRequest.result()).toEqual([])
     expect(modelApiRequest.success()).toBe(false)
     expect(modelApiRequest.failureReason()).toBe('invalid-json')
   })
@@ -192,9 +192,9 @@ describe('ModelApiRequest', () => {
       }
     }(modelEndpoint, applicationData, 'build a cli')
 
-    const response = await modelApiRequest.run()
+    await modelApiRequest.run()
 
-    expect(response).toEqual([])
+    expect(modelApiRequest.result()).toEqual([])
     expect(modelApiRequest.success()).toBe(false)
     expect(modelApiRequest.failureReason()).toBe('invalid-schema')
   })
@@ -220,9 +220,9 @@ describe('ModelApiRequest', () => {
       }
     }(modelEndpoint, applicationData, 'build a cli')
 
-    const response = await modelApiRequest.run()
+    await modelApiRequest.run()
 
-    expect(response).toEqual([])
+    expect(modelApiRequest.result()).toEqual([])
     expect(modelApiRequest.success()).toBe(false)
     expect(modelApiRequest.failureReason()).toBe('api-error')
   })

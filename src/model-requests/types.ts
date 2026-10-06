@@ -1,4 +1,6 @@
+import type { ApplicationData } from '../application-data.ts'
 import type { GitFileDiff } from '../tools/types.ts'
+import type { ModelApiRequest } from './framework/model-api-request.ts'
 
 export type OpenAiClientOptions = {
   apiKey: string
@@ -18,6 +20,12 @@ export type ModelEndpoint = {
 }
 
 export type RequestMessages<T> = (input: T) => ModelMessages[]
+
+export type ModelApiRequestClass<TRequest, TResponse> = new (
+  modelEndpoint: ModelEndpoint,
+  applicationData: ApplicationData,
+  requestData: TRequest,
+) => ModelApiRequest<TRequest, TResponse>
 
 export type CommitMessageRequest = {
   goal: string
@@ -49,6 +57,14 @@ type ChatChoices = {
   }
   [key: string]: unknown
 }[]
+
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | Json[]
+  | { [key: string]: Json }
 
 export type ChatCompletionJson = {
   choices: ChatChoices

@@ -33,12 +33,12 @@ describe('commit-message', () => {
       recentSubjects: ['Fix tests'],
     })
 
-    const commitMessage = await request.run()
+    await request.run()
 
     expect(request.messages[0].role).toBe('system')
     expect(request.messages[1].role).toBe('user')
     expect(request.messages[1].content).toContain('add login')
-    expect(commitMessage).toEqual({
+    expect(request.result()).toEqual({
       subject: 'Add login',
       body: 'Adds the login form.',
     })
@@ -69,9 +69,9 @@ describe('commit-message', () => {
       recentSubjects: [],
     })
 
-    const commitMessage = await request.run()
+    await request.run()
 
-    expect(commitMessage).toEqual({ subject: '', body: '' })
+    expect(request.result()).toEqual({ subject: '', body: '' })
     expect(request.success()).toBe(false)
     expect(request.failureReason()).toBe('invalid-schema')
   })
@@ -101,9 +101,9 @@ describe('commit-message', () => {
       recentSubjects: [],
     })
 
-    const commitMessage = await request.run()
+    await request.run()
 
-    expect(commitMessage).toEqual({ subject: '', body: '' })
+    expect(request.result()).toEqual({ subject: '', body: '' })
     expect(request.success()).toBe(false)
     expect(request.failureReason()).toBe('invalid-schema')
   })
@@ -133,9 +133,9 @@ describe('commit-message', () => {
       recentSubjects: [],
     })
 
-    const commitMessage = await request.run()
+    await request.run()
 
-    expect(commitMessage).toEqual({ subject: '', body: '' })
+    expect(request.result()).toEqual({ subject: '', body: '' })
     expect(request.success()).toBe(false)
     expect(request.failureReason()).toBe('invalid-schema')
   })
@@ -165,9 +165,9 @@ describe('commit-message', () => {
       recentSubjects: [],
     })
 
-    const commitMessage = await request.run()
+    await request.run()
 
-    expect(commitMessage).toEqual({ subject: '', body: '' })
+    expect(request.result()).toEqual({ subject: '', body: '' })
     expect(request.success()).toBe(false)
     expect(request.failureReason()).toBe('invalid-schema')
   })
@@ -197,9 +197,9 @@ describe('commit-message', () => {
       recentSubjects: [],
     })
 
-    const commitMessage = await request.run()
+    await request.run()
 
-    expect(commitMessage).toEqual({ subject: '', body: '' })
+    expect(request.result()).toEqual({ subject: '', body: '' })
     expect(request.success()).toBe(false)
     expect(request.failureReason()).toBe('invalid-schema')
   })

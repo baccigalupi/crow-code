@@ -72,7 +72,7 @@ export class ModelEntity {
     return JSON.parse(this.row.reasoning_options)
   }
 
-  modelEndpoint(): ModelEndpoint {
+  endpoint(): ModelEndpoint {
     return {
       baseURL: String(this.row.provider_base_url || ''),
       apiKey: this.providerApiKey(),

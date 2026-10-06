@@ -5,7 +5,11 @@ import {
   ModelEntity,
   modelEntity,
 } from '../../../src/domain/models/model.ts'
-import type { ModelRow } from '../../../src/domain/types.ts'
+import type {
+  ModelRow,
+  ModelWithProviderRow,
+} from '../../../src/domain/types.ts'
+import { Environment } from '../../../src/env-vars.ts'
 
 describe('model', () => {
   it('exposes pass-through attributes', () => {
@@ -51,12 +55,67 @@ describe('model', () => {
 
     expect(model.canDisableReasoning()).toBe(false)
     expect(model.reasoningOptions()).toEqual({})
-    expect(model.modelEndpoint()).toEqual({
+    expect(model.endpoint()).toEqual({
       baseURL: '',
       apiKey: '',
       model: '',
       providerId: 0,
     })
+  })
+
+  it('when row has provider columns, builds the endpoint from them', () => {
+    const row: ModelWithProviderRow = {
+      id: 1,
+      provider_id: 2,
+      identifier: 'author/model',
+      name: 'Model',
+      context_length: 128000,
+      cost_input: 1.5,
+      cost_output: 3,
+      dynamic_delegation: false,
+      modality: 'text->text',
+      supported_parameters: '[]',
+      supports_reasoning: false,
+      can_disable_reasoning: false,
+      reasoning_options: '{}',
+      provider_base_url: 'https://example.com/v1',
+      provider_api_key_env_var: 'PROVIDER_KEY',
+    }
+    const environment = new Environment({ PROVIDER_KEY: 'secret' })
+
+    const model = new ModelEntity(row, environment)
+
+    expect(model.endpoint()).toEqual({
+      baseURL: 'https://example.com/v1',
+      apiKey: 'secret',
+      model: 'author/model',
+      providerId: 2,
+    })
+  })
+
+  it('when the api key env var is null, returns an empty api key', () => {
+    const row: ModelWithProviderRow = {
+      id: 1,
+      provider_id: 2,
+      identifier: 'author/model',
+      name: 'Model',
+      context_length: 128000,
+      cost_input: 1.5,
+      cost_output: 3,
+      dynamic_delegation: false,
+      modality: 'text->text',
+      supported_parameters: '[]',
+      supports_reasoning: false,
+      can_disable_reasoning: false,
+      reasoning_options: '{}',
+      provider_base_url: 'https://example.com/v1',
+      provider_api_key_env_var: null,
+    }
+    const environment = new Environment({ PROVIDER_KEY: 'secret' })
+
+    const model = new ModelEntity(row, environment)
+
+    expect(model.endpoint().apiKey).toBe('')
   })
 
   it('modelEntities maps every row to a ModelEntity', () => {
