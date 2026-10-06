@@ -3,11 +3,14 @@ import { expect } from '@std/expect'
 import { render } from 'ink-testing-library'
 import { render as inkRender } from 'ink'
 import { App } from '../../../src/tui/views/app.tsx'
+import { ChatSession } from '../../../src/tui/interactions/state/chat-session.ts'
 import { mockTerminal } from '../../support/mock-terminal.ts'
 
 describe('App', () => {
   it('when text is typed, the frame shows it', async () => {
-    const { stdin, lastFrame, unmount } = render(<App />)
+    const { stdin, lastFrame, unmount } = render(
+      <App session={new ChatSession(80)} />,
+    )
 
     stdin.write('hello')
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -18,7 +21,9 @@ describe('App', () => {
   })
 
   it('when enter is pressed, the entry moves to history and input clears', async () => {
-    const { stdin, lastFrame, unmount } = render(<App />)
+    const { stdin, lastFrame, unmount } = render(
+      <App session={new ChatSession(80)} />,
+    )
 
     stdin.write('hi')
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -32,7 +37,9 @@ describe('App', () => {
   })
 
   it('when enter is pressed on empty input, a blank entry is kept', async () => {
-    const { stdin, lastFrame, unmount } = render(<App />)
+    const { stdin, lastFrame, unmount } = render(
+      <App session={new ChatSession(80)} />,
+    )
 
     stdin.write('\r')
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -45,7 +52,9 @@ describe('App', () => {
   })
 
   it('when ctrl+j arrives, a newline is inserted', async () => {
-    const { stdin, lastFrame, unmount } = render(<App />)
+    const { stdin, lastFrame, unmount } = render(
+      <App session={new ChatSession(80)} />,
+    )
 
     stdin.write('a')
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -60,7 +69,9 @@ describe('App', () => {
   })
 
   it('when option+enter arrives, a newline is inserted', async () => {
-    const { stdin, lastFrame, unmount } = render(<App />)
+    const { stdin, lastFrame, unmount } = render(
+      <App session={new ChatSession(80)} />,
+    )
 
     stdin.write('a')
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -75,7 +86,9 @@ describe('App', () => {
   })
 
   it('when shift+enter arrives via kitty protocol, a newline is inserted', async () => {
-    const { stdin, lastFrame, unmount } = render(<App />)
+    const { stdin, lastFrame, unmount } = render(
+      <App session={new ChatSession(80)} />,
+    )
 
     stdin.write('a')
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -90,7 +103,9 @@ describe('App', () => {
   })
 
   it('when backspace arrives, the previous char is deleted', async () => {
-    const { stdin, lastFrame, unmount } = render(<App />)
+    const { stdin, lastFrame, unmount } = render(
+      <App session={new ChatSession(80)} />,
+    )
 
     stdin.write('ab')
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -104,7 +119,9 @@ describe('App', () => {
   })
 
   it('when left arrow then typing, inserts before the cursor', async () => {
-    const { stdin, lastFrame, unmount } = render(<App />)
+    const { stdin, lastFrame, unmount } = render(
+      <App session={new ChatSession(80)} />,
+    )
 
     stdin.write('ac')
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -119,7 +136,9 @@ describe('App', () => {
   })
 
   it('when mounted, the header renders', async () => {
-    const { lastFrame, unmount } = render(<App />)
+    const { lastFrame, unmount } = render(
+      <App session={new ChatSession(80)} />,
+    )
 
     await new Promise((resolve) => setTimeout(resolve, 0))
 
@@ -130,7 +149,9 @@ describe('App', () => {
   })
 
   it('when an unbound modified key arrives, nothing changes', async () => {
-    const { stdin, lastFrame, unmount } = render(<App />)
+    const { stdin, lastFrame, unmount } = render(
+      <App session={new ChatSession(80)} />,
+    )
 
     stdin.write('\x18')
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -142,7 +163,7 @@ describe('App', () => {
 
   it('when the terminal resizes, the input remeasures', async () => {
     const terminal = mockTerminal({})
-    const instance = inkRender(<App />, {
+    const instance = inkRender(<App session={new ChatSession(80)} />, {
       ...terminal.io,
       debug: true,
       exitOnCtrlC: false,
@@ -162,7 +183,7 @@ describe('App', () => {
 
   it('when the terminal shrinks vertically, older history is hidden', async () => {
     const terminal = mockTerminal({})
-    const instance = inkRender(<App />, {
+    const instance = inkRender(<App session={new ChatSession(80)} />, {
       ...terminal.io,
       debug: true,
       exitOnCtrlC: false,
@@ -208,7 +229,7 @@ describe('App', () => {
 
   it('when mounted, the frame fills the terminal height', async () => {
     const terminal = mockTerminal({ rows: 8 })
-    const instance = inkRender(<App />, {
+    const instance = inkRender(<App session={new ChatSession(80)} />, {
       ...terminal.io,
       debug: true,
       exitOnCtrlC: false,
@@ -223,7 +244,7 @@ describe('App', () => {
 
   it('when stdout reports no columns, falls back to 80', async () => {
     const terminal = mockTerminal({})
-    const instance = inkRender(<App />, {
+    const instance = inkRender(<App session={new ChatSession(80)} />, {
       ...terminal.io,
       debug: true,
       exitOnCtrlC: false,
@@ -241,7 +262,7 @@ describe('App', () => {
 
   it('when stdin is not a tty, mounts without input handling', async () => {
     const terminal = mockTerminal({ tty: false })
-    const instance = inkRender(<App />, {
+    const instance = inkRender(<App session={new ChatSession(80)} />, {
       ...terminal.io,
       debug: true,
       exitOnCtrlC: false,

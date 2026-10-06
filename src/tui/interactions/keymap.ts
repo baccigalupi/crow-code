@@ -1,20 +1,48 @@
-import type { KeyFlags, ReplAction } from '../types.ts'
+import { chatSession } from './state.ts'
+import type { ChatSession } from './state/chat-session.ts'
+import type { ExitApp, KeyFlags } from '../types.ts'
 
 export class Keymap {
-  private input: string
-  private key: KeyFlags
+  private exit: ExitApp
+  private session: ChatSession
+  private input = ''
+  private key: KeyFlags = {}
   private terminalReplyPattern = /^\[[0-9;?]*[A-Za-z~]$/
 
-  constructor(input: string, key: KeyFlags) {
-    this.input = input
-    this.key = key
+  constructor(exit: ExitApp, session: ChatSession = chatSession) {
+    this.exit = exit
+    this.session = session
   }
 
-  action(): ReplAction | null {
-    if (this.isQuit()) return { kind: 'quit' }
-    else if (this.isNewline()) return { kind: 'newline' }
-    else if (this.isIgnored()) return null
-    return this.editAction()
+  handle(input: string, key: KeyFlags) {
+    this.input = input
+    this.key = key
+    this.dispatch()
+  }
+
+  private dispatch() {
+    if (this.isQuit()) this.exit()
+    else if (this.isNewline()) this.session.newline()
+    else if (!this.isIgnored()) this.edit()
+  }
+
+  private edit() {
+    if (this.key.return === true) this.session.submit()
+    else if (this.input.length === 0) this.navigate()
+    else this.session.insert(this.input)
+  }
+
+  private navigate() {
+    if (this.key.backspace === true) this.session.backspace()
+    else if (this.key.delete === true) this.session.delete()
+    else this.cursor()
+  }
+
+  private cursor() {
+    if (this.key.leftArrow === true) this.session.moveCursor('left')
+    else if (this.key.rightArrow === true) this.session.moveCursor('right')
+    else if (this.key.home === true) this.session.moveCursor('home')
+    else if (this.key.end === true) this.session.moveCursor('end')
   }
 
   private isQuit() {
@@ -43,28 +71,4 @@ export class Keymap {
     return this.terminalReplyPattern.test(this.input) ||
       this.input.includes('\x1b')
   }
-
-  private editAction(): ReplAction | null {
-    if (this.key.return === true) return { kind: 'submit' }
-    else if (this.input.length === 0) return this.navigationAction()
-    return { kind: 'insert', text: this.input }
-  }
-
-  private navigationAction(): ReplAction | null {
-    if (this.key.backspace === true) return { kind: 'backspace' }
-    else if (this.key.delete === true) return { kind: 'delete' }
-    return this.cursorAction()
-  }
-
-  private cursorAction(): ReplAction | null {
-    if (this.key.leftArrow === true) return { kind: 'move', to: 'left' }
-    else if (this.key.rightArrow === true) return { kind: 'move', to: 'right' }
-    else if (this.key.home === true) return { kind: 'move', to: 'home' }
-    else if (this.key.end === true) return { kind: 'move', to: 'end' }
-    return null
-  }
-}
-
-export const keyToAction = (input: string, key: KeyFlags) => {
-  return new Keymap(input, key).action()
 }

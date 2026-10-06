@@ -1,30 +1,39 @@
-import { useEffect } from 'react'
-import { updateRepl } from '../repl-state.ts'
-import type { SetReplState } from '../../types.ts'
+import { useEffect, useReducer } from 'react'
+import { chatSession } from '../state.ts'
+import type { ChatSession } from '../state/chat-session.ts'
 
-const handleResize = (
-  stdout: NodeJS.WriteStream,
-  setState: SetReplState,
-) => {
-  setState((state) =>
-    updateRepl(state, { kind: 'resize' }, stdout.columns || 80)
-  )
+const bump = (count: number) => count + 1
+
+const measure = (stdout: NodeJS.WriteStream, session: ChatSession) => {
+  session.resize(stdout.columns || 80)
 }
 
-const unsubscribe = (
+const watch = (
   stdout: NodeJS.WriteStream,
-  onResize: () => void,
+  session: ChatSession,
+  rerender: () => void,
 ) => {
-  stdout.off('resize', onResize)
+  measure(stdout, session)
+  rerender()
+}
+
+const listen = (
+  stdout: NodeJS.WriteStream,
+  session: ChatSession,
+  rerender: () => void,
+) => {
+  const onResize = () => watch(stdout, session, rerender)
+  measure(stdout, session)
+  stdout.on('resize', onResize)
+  return () => {
+    stdout.off('resize', onResize)
+  }
 }
 
 export const useResize = (
   stdout: NodeJS.WriteStream,
-  setState: SetReplState,
+  session: ChatSession = chatSession,
 ) => {
-  useEffect(() => {
-    const onResize = () => handleResize(stdout, setState)
-    stdout.on('resize', onResize)
-    return () => unsubscribe(stdout, onResize)
-  }, [stdout, setState])
+  const [, rerender] = useReducer(bump, 0)
+  useEffect(() => listen(stdout, session, rerender), [stdout, session])
 }

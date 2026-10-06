@@ -1,147 +1,194 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { keyToAction } from '../../../src/tui/interactions/keymap.ts'
+import { spy } from '@std/testing/mock'
+import { Keymap } from '../../../src/tui/interactions/keymap.ts'
+import { ChatSession } from '../../../src/tui/interactions/state/chat-session.ts'
+import { chatSession } from '../../../src/tui/interactions/state.ts'
 
-describe('keyToAction', () => {
+describe('Keymap', () => {
   it('when ctrl+c arrives, quits', () => {
-    const key = { ctrl: true }
+    const session = new ChatSession(80)
+    const exit = spy()
+    const keymap = new Keymap(exit, session)
 
-    const action = keyToAction('c', key)
+    keymap.handle('c', { ctrl: true })
 
-    expect(action).toEqual({ kind: 'quit' })
+    expect(exit.calls.length).toBe(1)
+    expect(session.history.value).toEqual([])
   })
 
   it('when shift+return arrives, inserts a newline', () => {
-    const key = { return: true, shift: true }
+    const session = new ChatSession(80)
+    const keymap = new Keymap(spy(), session)
 
-    const action = keyToAction('\r', key)
+    keymap.handle('\r', { return: true, shift: true })
 
-    expect(action).toEqual({ kind: 'newline' })
+    expect(session.buffer.value.text).toBe('\n')
   })
 
   it('when meta+return arrives, inserts a newline', () => {
-    const key = { return: true, meta: true }
+    const session = new ChatSession(80)
+    const keymap = new Keymap(spy(), session)
 
-    const action = keyToAction('\r', key)
+    keymap.handle('\r', { return: true, meta: true })
 
-    expect(action).toEqual({ kind: 'newline' })
+    expect(session.buffer.value.text).toBe('\n')
   })
 
   it('when ctrl+j arrives as a bare linefeed, inserts a newline', () => {
-    const key = {}
+    const session = new ChatSession(80)
+    const keymap = new Keymap(spy(), session)
 
-    const action = keyToAction('\n', key)
+    keymap.handle('\n', {})
 
-    expect(action).toEqual({ kind: 'newline' })
+    expect(session.buffer.value.text).toBe('\n')
   })
 
   it('when bare return arrives, submits', () => {
-    const key = { return: true }
+    const session = new ChatSession(80)
+    const keymap = new Keymap(spy(), session)
 
-    const action = keyToAction('\r', key)
+    keymap.handle('\r', { return: true })
 
-    expect(action).toEqual({ kind: 'submit' })
+    expect(session.history.value).toEqual([{ id: 'entry-0', text: '' }])
   })
 
   it('when backspace arrives, deletes backward', () => {
-    const key = { backspace: true }
+    const session = new ChatSession(80)
+    const keymap = new Keymap(spy(), session)
+    session.insert('ab')
 
-    const action = keyToAction('', key)
+    keymap.handle('', { backspace: true })
 
-    expect(action).toEqual({ kind: 'backspace' })
+    expect(session.buffer.value.text).toBe('a')
   })
 
   it('when delete arrives, deletes forward', () => {
-    const key = { delete: true }
+    const session = new ChatSession(80)
+    const keymap = new Keymap(spy(), session)
+    session.insert('ab')
+    session.moveCursor('home')
 
-    const action = keyToAction('', key)
+    keymap.handle('', { delete: true })
 
-    expect(action).toEqual({ kind: 'delete' })
+    expect(session.buffer.value.text).toBe('b')
   })
 
   it('when arrows arrive, moves the cursor', () => {
-    const left = { leftArrow: true }
-    const right = { rightArrow: true }
+    const session = new ChatSession(80)
+    const keymap = new Keymap(spy(), session)
+    session.insert('ab')
 
-    const leftAction = keyToAction('', left)
-    const rightAction = keyToAction('', right)
+    keymap.handle('', { leftArrow: true })
+    const left = session.buffer.value.cursor
+    keymap.handle('', { rightArrow: true })
 
-    expect(leftAction).toEqual({ kind: 'move', to: 'left' })
-    expect(rightAction).toEqual({ kind: 'move', to: 'right' })
+    expect(left).toBe(1)
+    expect(session.buffer.value.cursor).toBe(2)
   })
 
   it('when home or end arrives, moves within the line', () => {
-    const home = { home: true }
-    const end = { end: true }
+    const session = new ChatSession(80)
+    const keymap = new Keymap(spy(), session)
+    session.insert('ab')
 
-    const homeAction = keyToAction('', home)
-    const endAction = keyToAction('', end)
+    keymap.handle('', { home: true })
+    const home = session.buffer.value.cursor
+    keymap.handle('', { end: true })
 
-    expect(homeAction).toEqual({ kind: 'move', to: 'home' })
-    expect(endAction).toEqual({ kind: 'move', to: 'end' })
+    expect(home).toBe(0)
+    expect(session.buffer.value.cursor).toBe(2)
   })
 
-  it('when a ctrl-modified key has no binding, returns null', () => {
-    const key = { ctrl: true }
+  it('when a ctrl-modified key has no binding, does nothing', () => {
+    const session = new ChatSession(80)
+    const exit = spy()
+    const keymap = new Keymap(exit, session)
 
-    const action = keyToAction('x', key)
+    keymap.handle('x', { ctrl: true })
 
-    expect(action).toBeNull()
+    expect(session.buffer.value.text).toBe('')
+    expect(exit.calls.length).toBe(0)
   })
 
-  it('when a meta-modified key has no binding, returns null', () => {
-    const key = { meta: true }
+  it('when a meta-modified key has no binding, does nothing', () => {
+    const session = new ChatSession(80)
+    const exit = spy()
+    const keymap = new Keymap(exit, session)
 
-    const action = keyToAction('a', key)
+    keymap.handle('a', { meta: true })
 
-    expect(action).toBeNull()
+    expect(session.buffer.value.text).toBe('')
+    expect(exit.calls.length).toBe(0)
   })
 
-  it('when a kitty query reply leaks, returns null', () => {
-    const key = {}
+  it('when a kitty query reply leaks, does nothing', () => {
+    const session = new ChatSession(80)
+    const exit = spy()
+    const keymap = new Keymap(exit, session)
 
-    const action = keyToAction('[?0u', key)
+    keymap.handle('[?0u', {})
 
-    expect(action).toBeNull()
+    expect(session.buffer.value.text).toBe('')
+    expect(exit.calls.length).toBe(0)
   })
 
-  it('when a cursor position reply leaks, returns null', () => {
-    const key = {}
+  it('when a cursor position reply leaks, does nothing', () => {
+    const session = new ChatSession(80)
+    const exit = spy()
+    const keymap = new Keymap(exit, session)
 
-    const action = keyToAction('[1;2R', key)
+    keymap.handle('[1;2R', {})
 
-    expect(action).toBeNull()
+    expect(session.buffer.value.text).toBe('')
+    expect(exit.calls.length).toBe(0)
   })
 
-  it('when input still carries an escape byte, returns null', () => {
-    const key = {}
+  it('when input still carries an escape byte, does nothing', () => {
+    const session = new ChatSession(80)
+    const exit = spy()
+    const keymap = new Keymap(exit, session)
 
-    const action = keyToAction('\x1b[?0u', key)
+    keymap.handle('\x1b[?0u', {})
 
-    expect(action).toBeNull()
+    expect(session.buffer.value.text).toBe('')
+    expect(exit.calls.length).toBe(0)
   })
 
   it('when a lone bracket arrives, inserts it', () => {
-    const key = {}
+    const session = new ChatSession(80)
+    const keymap = new Keymap(spy(), session)
 
-    const action = keyToAction('[', key)
+    keymap.handle('[', {})
 
-    expect(action).toEqual({ kind: 'insert', text: '[' })
+    expect(session.buffer.value.text).toBe('[')
   })
 
   it('when plain text arrives, inserts it', () => {
-    const key = {}
+    const session = new ChatSession(80)
+    const keymap = new Keymap(spy(), session)
 
-    const action = keyToAction('hello', key)
+    keymap.handle('hello', {})
 
-    expect(action).toEqual({ kind: 'insert', text: 'hello' })
+    expect(session.buffer.value.text).toBe('hello')
   })
 
   it('when a multi-char paste arrives, inserts the whole chunk', () => {
-    const key = {}
+    const session = new ChatSession(80)
+    const keymap = new Keymap(spy(), session)
 
-    const action = keyToAction('pasted text', key)
+    keymap.handle('pasted text', {})
 
-    expect(action).toEqual({ kind: 'insert', text: 'pasted text' })
+    expect(session.buffer.value.text).toBe('pasted text')
+  })
+
+  it('when no session is given, uses the singleton', () => {
+    const exit = spy()
+    const keymap = new Keymap(exit)
+
+    keymap.handle('a', {})
+
+    expect(chatSession.buffer.value.text).toBe('a')
+    chatSession.backspace()
   })
 })

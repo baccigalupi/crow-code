@@ -1,5 +1,5 @@
-import type { Dispatch, SetStateAction } from 'react'
 import type { Key, RenderOptions } from 'ink'
+import type { ChatSession } from './interactions/state/chat-session.ts'
 
 export interface InputBuffer {
   readonly text: string
@@ -16,8 +16,6 @@ export interface ReplState {
   readonly inputRows: number
   readonly history: readonly HistoryEntry[]
 }
-
-export type SetReplState = Dispatch<SetStateAction<ReplState>>
 
 export type AppViewModelArguments = {
   readonly stdout: NodeJS.WriteStream
@@ -37,15 +35,11 @@ export type InputViewModelArguments = {
 
 export type CursorMove = 'left' | 'right' | 'home' | 'end'
 
-export type ReplAction =
-  | { readonly kind: 'insert'; readonly text: string }
-  | { readonly kind: 'backspace' }
-  | { readonly kind: 'delete' }
-  | { readonly kind: 'move'; readonly to: CursorMove }
-  | { readonly kind: 'newline' }
-  | { readonly kind: 'submit' }
-  | { readonly kind: 'resize' }
-  | { readonly kind: 'quit' }
+export type AppProps = {
+  readonly session?: ChatSession
+}
+
+export type ExitApp = () => void
 
 export type KeyFlags = Partial<
   Pick<

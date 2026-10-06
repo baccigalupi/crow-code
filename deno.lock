@@ -13,6 +13,7 @@
     "jsr:@std/path@^1.1.5": "1.1.6",
     "jsr:@std/path@^1.1.6": "1.1.6",
     "jsr:@std/testing@1.0.19": "1.0.19",
+    "npm:@preact/signals-core@1.14.4": "1.14.4",
     "npm:@types/react@19.2.14": "19.2.14",
     "npm:better-sqlite3@13.0.3": "13.0.3",
     "npm:ink-testing-library@4.0.0": "4.0.0_@types+react@19.2.14",
@@ -76,6 +77,9 @@
     },
     "@pinojs/redact@0.4.0": {
       "integrity": "sha512-k2ENnmBugE/rzQfEcdWHcCY+/FM3VLzH9cYEsbdsoqrvzAKRhUZeRNhAZvB8OitQJ1TBed3yqWtdjzS6wJKBwg=="
+    },
+    "@preact/signals-core@1.14.4": {
+      "integrity": "sha512-HNB6HYeYKhQbJ1aKl+YRjrS4+QWHLKX6qKoUsfS/m0vqzsVaEBiZiaKbG/e+NKk2ch5ALQr/ihWaMHxiCuuWHA=="
     },
     "@types/react@19.2.14": {
       "integrity": "sha512-ilcTH/UniCkMdtexkoCN0bI7pMcJDvmQFPvuPvmEaYA/NSfFTAgdUSLAoVjaRJm7+6PvcM+q1zYOwS4wTYMF9w==",
@@ -486,6 +490,7 @@
       "jsr:@std/fs@1.0.24",
       "jsr:@std/path@1.1.6",
       "jsr:@std/testing@1.0.19",
+      "npm:@preact/signals-core@1.14.4",
       "npm:@types/react@19.2.14",
       "npm:better-sqlite3@13.0.3",
       "npm:ink-testing-library@4.0.0",
