@@ -7,3 +7,8 @@ export type ChangedFile = {
   path: string
   changeType: string
 }
+
+export type FileContent = {
+  path: string
+  text: string
+}
