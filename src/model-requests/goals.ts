@@ -1,6 +1,6 @@
 import type { ApplicationData } from '../application-data.ts'
 import { ModelApiRequest } from './framework/model-api-request.ts'
-import type { ModelEndpoint, RequestMessages } from './types.ts'
+import type { ModelEndpoint, ModelMessages } from './types.ts'
 
 const systemPrompt = `
 You are an agent focused on extracting goals from user provided information.
@@ -13,22 +13,25 @@ Goals you extract should be:
 Respond with only a JSON array of strings. No markdown, no explanation.
 `
 
-const requestMessages: RequestMessages<string> = (userText: string) => {
-  return [
-    { role: 'system', content: systemPrompt },
-    { role: 'user', content: userText },
-  ]
-}
-
 export class GetGoals extends ModelApiRequest<string, string[]> {
-  protected parseAsJson = true
-
-  protected override jsonErrorResponse() {
+  protected override errorResponse() {
     return []
   }
 
+  protected override validateResponse() {
+    return Array.isArray(this.parsedResponse) &&
+      this.parsedResponse.every((goal) => typeof goal === 'string')
+  }
+
   protected getMessages() {
-    return requestMessages(this.requestData)
+    return this.requestMessages()
+  }
+
+  private requestMessages(): ModelMessages[] {
+    return [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: this.requestData },
+    ]
   }
 }
 

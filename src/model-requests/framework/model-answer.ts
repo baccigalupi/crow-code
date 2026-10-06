@@ -34,12 +34,19 @@ export class ModelAnswer {
     return this.json.choices[0].message.content
   }
 
-  answerAsJson() {
-    const stripped = this.rawAnswer().trim()
+  answerAsJson(): unknown {
+    try {
+      return JSON.parse(this.strippedAnswer())
+    } catch {
+      // fall through: a parse failure yields undefined
+    }
+  }
+
+  private strippedAnswer() {
+    return this.rawAnswer().trim()
       .replace(/^```[a-zA-Z]*\n?/, '')
       .replace(/```$/, '')
       .trim()
-    return JSON.parse(stripped)
   }
 
   private completionTokens() {

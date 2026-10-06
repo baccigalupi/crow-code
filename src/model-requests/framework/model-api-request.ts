@@ -3,6 +3,7 @@ import type {
   ChatCompletionJson,
   ModelEndpoint,
   ModelMessages,
+  ModelRequestFailureReason,
 } from '../types.ts'
 import { type ModelAnswer, modelAnswer } from './model-answer.ts'
 import { OpenAiRequest } from './openai-request.ts'
@@ -13,7 +14,9 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
   private modelEndpoint: ModelEndpoint
   private applicationData: ApplicationData
   private succeeded: boolean
+  private reason: ModelRequestFailureReason = ''
   private answer!: ModelAnswer
+  protected parsedResponse: unknown
   protected requestData: TRequest
 
   constructor(
@@ -38,13 +41,20 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
     return this.succeeded
   }
 
+  failureReason() {
+    return this.reason
+  }
+
   metaData() {
     return this.answer.metaData()
   }
 
-  protected abstract parseAsJson: boolean
-  protected abstract jsonErrorResponse(): TResponse
+  protected abstract errorResponse(): TResponse
   protected abstract getMessages(): ModelMessages[]
+
+  protected validateResponse() {
+    return true
+  }
 
   constructMessages() {
     this.messages = this.getMessages()
@@ -57,32 +67,33 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
       this.applicationData,
     )
     await this.apiRequest.run()
-    this.succeeded = this.apiRequest.success()
   }
 
-  private async parseResponse(): Promise<TResponse> {
-    if (this.parseAsJson) {
-      return await this.parseJsonResponse()
-    } else {
-      return await this.parseRawResponse()
-    }
-  }
+  private async parseResponse() {
+    if (!this.apiRequest.success()) return this.fail('api-error')
 
-  private async parseJsonResponse(): Promise<TResponse> {
-    if (!this.apiRequest.success()) return this.jsonErrorResponse()
-    return await this.parseJsonAnswer()
-  }
-
-  private async parseJsonAnswer(): Promise<TResponse> {
     const json = await this.apiRequest.json() as ChatCompletionJson
     this.answer = modelAnswer(json, this.apiRequest.benchmark())
-    return this.answer.answerAsJson() as TResponse
+    this.parsedResponse = this.answer.answerAsJson()
+    return this.validateJson()
   }
 
-  private async parseRawResponse(): Promise<TResponse> {
-    if (!this.apiRequest.success()) return '' as TResponse
-    const json = await this.apiRequest.json() as ChatCompletionJson
-    this.answer = modelAnswer(json, this.apiRequest.benchmark())
-    return this.answer.rawAnswer() as TResponse
+  private validateJson() {
+    if (!this.parsedResponse) return this.fail('invalid-json')
+
+    return this.validateSchema()
+  }
+
+  private validateSchema() {
+    if (!this.validateResponse()) return this.fail('invalid-schema')
+
+    this.succeeded = true
+    return this.parsedResponse as TResponse
+  }
+
+  private fail(reason: ModelRequestFailureReason) {
+    this.succeeded = false
+    this.reason = reason
+    return this.errorResponse()
   }
 }

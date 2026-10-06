@@ -9,10 +9,20 @@ import type {
 
 export class GetCommitMessage
   extends ModelApiRequest<CommitMessageRequest, CommitMessage> {
-  protected parseAsJson = true
+  protected override errorResponse() {
+    return { subject: '', body: '' }
+  }
 
-  protected override jsonErrorResponse() {
-    return { success: false, subject: '', body: '' }
+  protected override validateResponse() {
+    if (typeof this.parsedResponse !== 'object') return false
+
+    const candidate = this.parsedResponse as Record<string, unknown>
+    return this.presentString(candidate.subject) &&
+      this.presentString(candidate.body)
+  }
+
+  private presentString(value: unknown) {
+    return typeof value === 'string' && value.trim() !== ''
   }
 
   protected getMessages() {

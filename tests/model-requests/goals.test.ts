@@ -44,6 +44,29 @@ describe('goals', () => {
     const goals = await getGoals.run()
 
     expect(goals).toEqual([])
+    expect(getGoals.failureReason()).toBe('api-error')
+  })
+
+  it('when the response is not an array of strings, returns an empty goals list and records invalid-schema', async () => {
+    const modelEndpoint = {
+      baseURL: 'https://example.com/api/v1',
+      apiKey: 'test-key',
+      model: 'test-model',
+      providerId: 1,
+    }
+    const applicationData = mockApplicationData({
+      fetch: mockFetchSuccess({
+        choices: [{ message: { content: '{"goals": []}' } }],
+        usage: { completion_tokens: 1 },
+      }),
+    })
+    const getGoals = new GetGoals(modelEndpoint, applicationData, 'build a cli')
+
+    const goals = await getGoals.run()
+
+    expect(goals).toEqual([])
+    expect(getGoals.success()).toBe(false)
+    expect(getGoals.failureReason()).toBe('invalid-schema')
   })
 
   it('when called through getGoals, runs and returns the request', async () => {

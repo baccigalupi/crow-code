@@ -14,7 +14,8 @@ Rules for the body:
 Never emit trailers, sign-offs, or attribution lines such as
 "Co-Authored-By" or "Generated with" — the committer adds those.
 
-Respond with only a JSON object: {"success": boolean, "subject": string, "body": string}.
+Respond with only a JSON object: {"subject": string, "body": string}.
+Both subject and body are required.
 No markdown, no explanation.
 `
 

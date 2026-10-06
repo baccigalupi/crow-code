@@ -27,10 +27,15 @@ export type CommitMessageRequest = {
 }
 
 export type CommitMessage = {
-  success: boolean
   subject: string
   body: string
 }
+
+export type ModelRequestFailureReason =
+  | ''
+  | 'api-error'
+  | 'invalid-json'
+  | 'invalid-schema'
 
 export type Timespan = {
   startTime: number

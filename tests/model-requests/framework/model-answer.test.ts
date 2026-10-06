@@ -117,4 +117,15 @@ describe('model-answer', () => {
       'Create test fixtures based on the captured JSON payloads',
     ])
   })
+
+  it('when the answer is not json, returns undefined', async () => {
+    const json = await loadFixture(
+      'model-requests/ollama-goals-response.json',
+    )
+    json.choices[0].message.content = 'not json'
+
+    const response = modelAnswer(json, { startTime: 10, endTime: 25 })
+
+    expect(response.answerAsJson()).toBeUndefined()
+  })
 })

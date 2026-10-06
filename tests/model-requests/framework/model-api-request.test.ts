@@ -23,9 +23,7 @@ describe('ModelApiRequest', () => {
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
-      protected parseAsJson = false
-
-      protected override jsonErrorResponse() {
+      protected override errorResponse() {
         return []
       }
 
@@ -51,9 +49,7 @@ describe('ModelApiRequest', () => {
     const applicationData = mockApplicationData()
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
-      protected parseAsJson = false
-
-      protected override jsonErrorResponse() {
+      protected override errorResponse() {
         return []
       }
 
@@ -65,6 +61,7 @@ describe('ModelApiRequest', () => {
     const succeeded = modelApiRequest.success()
 
     expect(succeeded).toBe(false)
+    expect(modelApiRequest.failureReason()).toBe('')
   })
 
   it('when run succeeds, writes the api request and reports success', async () => {
@@ -81,9 +78,7 @@ describe('ModelApiRequest', () => {
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
-      protected parseAsJson = false
-
-      protected override jsonErrorResponse() {
+      protected override errorResponse() {
         return []
       }
 
@@ -99,36 +94,7 @@ describe('ModelApiRequest', () => {
     expect(modelApiRequest.success()).toBe(true)
   })
 
-  it('when parseAsJson is false, returns the raw response', async () => {
-    const modelEndpoint = {
-      baseURL: 'https://example.com/api/v1',
-      apiKey: 'test-key',
-      model: 'test-model',
-      providerId: 1,
-    }
-    const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [{ message: { content: 'raw response' } }],
-      }),
-    })
-    const modelApiRequest = new class extends ModelApiRequest<string, string> {
-      protected parseAsJson = false
-
-      protected override jsonErrorResponse() {
-        return ''
-      }
-
-      protected getMessages(): ModelMessages[] {
-        return [{ role: 'user', content: this.requestData }]
-      }
-    }(modelEndpoint, applicationData, 'build a cli')
-
-    const response = await modelApiRequest.run()
-
-    expect(response).toBe('raw response')
-  })
-
-  it('when parseAsJson is true, returns the parsed response', async () => {
+  it('when the answer is valid json, returns the parsed response', async () => {
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
@@ -146,9 +112,7 @@ describe('ModelApiRequest', () => {
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
-      protected parseAsJson = true
-
-      protected override jsonErrorResponse() {
+      protected override errorResponse() {
         return []
       }
 
@@ -160,6 +124,8 @@ describe('ModelApiRequest', () => {
     const response = await modelApiRequest.run()
 
     expect(response).toEqual(['first goal'])
+    expect(modelApiRequest.success()).toBe(true)
+    expect(modelApiRequest.failureReason()).toBe('')
     expect(modelApiRequest.metaData()).toEqual({
       cost: 0.25,
       requestDuration: expect.any(Number),
@@ -167,7 +133,7 @@ describe('ModelApiRequest', () => {
     })
   })
 
-  it('when a raw api call fails, returns an empty string', async () => {
+  it('when the answer is not valid json, returns the error response and records invalid-json', async () => {
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
@@ -175,13 +141,15 @@ describe('ModelApiRequest', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchError(500),
+      fetch: mockFetchSuccess({
+        choices: [{ message: { content: 'not json' } }],
+        usage: { completion_tokens: 1 },
+      }),
     })
-    const modelApiRequest = new class extends ModelApiRequest<string, string> {
-      protected parseAsJson = false
-
-      protected override jsonErrorResponse() {
-        return ''
+    const modelApiRequest = new class
+      extends ModelApiRequest<string, string[]> {
+      protected override errorResponse() {
+        return []
       }
 
       protected getMessages(): ModelMessages[] {
@@ -191,8 +159,44 @@ describe('ModelApiRequest', () => {
 
     const response = await modelApiRequest.run()
 
-    expect(response).toBe('')
+    expect(response).toEqual([])
     expect(modelApiRequest.success()).toBe(false)
+    expect(modelApiRequest.failureReason()).toBe('invalid-json')
+  })
+
+  it('when the subclass rejects the response shape, returns the error response and records invalid-schema', async () => {
+    const modelEndpoint = {
+      baseURL: 'https://example.com/api/v1',
+      apiKey: 'test-key',
+      model: 'test-model',
+      providerId: 1,
+    }
+    const applicationData = mockApplicationData({
+      fetch: mockFetchSuccess({
+        choices: [{ message: { content: '["unexpected"]' } }],
+        usage: { completion_tokens: 1 },
+      }),
+    })
+    const modelApiRequest = new class
+      extends ModelApiRequest<string, string[]> {
+      protected override errorResponse() {
+        return []
+      }
+
+      protected getMessages(): ModelMessages[] {
+        return [{ role: 'user', content: this.requestData }]
+      }
+
+      protected override validateResponse() {
+        return false
+      }
+    }(modelEndpoint, applicationData, 'build a cli')
+
+    const response = await modelApiRequest.run()
+
+    expect(response).toEqual([])
+    expect(modelApiRequest.success()).toBe(false)
+    expect(modelApiRequest.failureReason()).toBe('invalid-schema')
   })
 
   it('when a json api call fails, returns an empty array', async () => {
@@ -207,9 +211,7 @@ describe('ModelApiRequest', () => {
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
-      protected parseAsJson = true
-
-      protected override jsonErrorResponse() {
+      protected override errorResponse() {
         return []
       }
 
@@ -221,6 +223,8 @@ describe('ModelApiRequest', () => {
     const response = await modelApiRequest.run()
 
     expect(response).toEqual([])
+    expect(modelApiRequest.success()).toBe(false)
+    expect(modelApiRequest.failureReason()).toBe('api-error')
   })
 
   it('when an api call fails without an api token, creates a provider availability record', async () => {
@@ -237,9 +241,7 @@ describe('ModelApiRequest', () => {
       fetch: mockFetchError(401),
     })
     const modelApiRequest = new class extends ModelApiRequest<string, string> {
-      protected parseAsJson = false
-
-      protected override jsonErrorResponse() {
+      protected override errorResponse() {
         return ''
       }
 
@@ -271,9 +273,7 @@ describe('ModelApiRequest', () => {
       fetch: mockFetchError(500),
     })
     const modelApiRequest = new class extends ModelApiRequest<string, string> {
-      protected parseAsJson = false
-
-      protected override jsonErrorResponse() {
+      protected override errorResponse() {
         return ''
       }
 
