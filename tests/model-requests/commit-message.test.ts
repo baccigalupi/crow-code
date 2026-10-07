@@ -235,7 +235,7 @@ describe('commit-message', () => {
       goal: 'add login',
       changes: [],
       recentSubjects: [],
-    })
+    }).run()
 
     expect(runner.success()).toBe(false)
     expect(runner.result()).toBeUndefined()
@@ -280,7 +280,7 @@ describe('commit-message', () => {
       goal: 'add login',
       changes: [],
       recentSubjects: [],
-    })
+    }).run()
 
     expect(runner.success()).toBe(true)
     expect(runner.result()).toEqual({

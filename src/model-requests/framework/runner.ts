@@ -1,30 +1,25 @@
-import type { ApplicationData } from '../../application-data.ts'
 import type { ModelEntity } from '../../domain/models/model.ts'
 import type { ModelFilterOptions } from '../../domain/models/types.ts'
-import type { ModelApiRequest } from './model-api-request.ts'
 import type { ModelApiRequestClass } from '../types.ts'
 import { modelFindAllByFilters } from '../../domain/models/find-all-by-filters.ts'
+import { OperationWithResult } from '../../operation.ts'
 
-export class Runner<TRequest, TResponse> {
-  private applicationData: ApplicationData
-  private modelFilters: ModelFilterOptions
-  private modelApiRequest: ModelApiRequestClass<TRequest, TResponse>
-  private requestData: TRequest
-  private request?: ModelApiRequest<TRequest, TResponse>
+type RunnerArguments<TRequest, TResponse> = {
+  modelFilters: ModelFilterOptions
+  modelApiRequest: ModelApiRequestClass<TRequest, TResponse>
+  requestData: TRequest
+}
+
+export class Runner<TRequest, TResponse> extends OperationWithResult<
+  RunnerArguments<TRequest, TResponse>,
+  TResponse | undefined
+> {
+  protected override logPrefix = 'Model API Request: '
   private response?: TResponse
   private _models?: ModelEntity[]
-  private succeeded = false
 
-  constructor(
-    applicationData: ApplicationData,
-    options: ModelFilterOptions,
-    modelApiRequest: ModelApiRequestClass<TRequest, TResponse>,
-    requestData: TRequest,
-  ) {
-    this.applicationData = applicationData
-    this.modelFilters = options
-    this.modelApiRequest = modelApiRequest
-    this.requestData = requestData
+  result() {
+    return this.response
   }
 
   async run() {
@@ -33,15 +28,8 @@ export class Runner<TRequest, TResponse> {
       (chain, model) => chain.then(() => this.makeModelRequest(model)),
       Promise.resolve(),
     )
+    if (this.response === undefined) this.fail('all model requests failed')
     return this
-  }
-
-  success() {
-    return this.succeeded
-  }
-
-  result() {
-    return this.response
   }
 
   private async models() {
@@ -49,28 +37,25 @@ export class Runner<TRequest, TResponse> {
 
     this._models = await modelFindAllByFilters(
       this.applicationData,
-      this.modelFilters,
+      this.operationArguments.modelFilters,
     ).all()
 
     return this._models
   }
 
   private async makeModelRequest(model: ModelEntity) {
-    if (this.success()) return
+    if (this.response !== undefined) return
 
-    this.request = this.createRequest(model)
-    await this.request.run()
-    if (this.request.success()) {
-      this.response = this.request.result()
-      this.succeeded = true
-    }
+    const request = this.createRequest(model)
+    await request.run()
+    if (request.success()) this.response = request.result()
   }
 
   private createRequest(model: ModelEntity) {
-    return new this.modelApiRequest(
+    return new this.operationArguments.modelApiRequest(
       model.endpoint(),
       this.applicationData,
-      this.requestData,
+      this.operationArguments.requestData,
     )
   }
 }

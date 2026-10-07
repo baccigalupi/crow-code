@@ -41,4 +41,12 @@ export const getGoals = (
   applicationData: ApplicationData,
   requestData: string,
   options: ModelFilterOptions = { type: 'chat', costTier: 'free', limit: 3 },
-) => new Runner(applicationData, options, GetGoals, requestData).run()
+) =>
+  new Runner({
+    applicationData,
+    operationArguments: {
+      modelFilters: options,
+      modelApiRequest: GetGoals,
+      requestData,
+    },
+  }).run()

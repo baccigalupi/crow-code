@@ -14,14 +14,15 @@ type TaskArguments = {
 type CommitArguments = ApplicationOperationArguments<TaskArguments>
 
 export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
-  protected override logPrefix = 'Task error'
+  protected override logPrefix = 'Commit: '
   private changes: GitFileDiff[] = []
   private message: CommitMessage = { subject: '', body: '' }
 
-  protected async runOperation() {
+  async run() {
     await this.collectChanges()
     await this.generateMessage()
     await this.commitFiles()
+    return this
   }
 
   result() {

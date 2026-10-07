@@ -18,6 +18,6 @@ export const commitMessage = async (
     goal,
     changes,
     recentSubjects: logged.result(),
-  })
+  }).run()
   return runner.result()
 }

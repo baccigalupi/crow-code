@@ -32,4 +32,12 @@ export const getCommitMessage = (
   applicationData: ApplicationData,
   requestData: CommitMessageRequest,
   options: ModelFilterOptions = { type: 'chat', costTier: 'budget', limit: 3 },
-) => new Runner(applicationData, options, GetCommitMessage, requestData).run()
+) =>
+  new Runner({
+    applicationData,
+    operationArguments: {
+      modelFilters: options,
+      modelApiRequest: GetCommitMessage,
+      requestData,
+    },
+  })

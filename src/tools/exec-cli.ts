@@ -12,12 +12,13 @@ export abstract class ExecCli<T extends Record<string, unknown>, U>
     this.denoCommand = this.applicationData.denoCommand()
   }
 
-  protected async runOperation() {
+  async run() {
     try {
       await this.runCommand()
     } catch (error) {
       this.fail((error as Error).message)
     }
+    return this
   }
 
   result() {

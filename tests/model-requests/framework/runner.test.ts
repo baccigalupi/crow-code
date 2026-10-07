@@ -65,12 +65,14 @@ describe('Runner', () => {
       Response.json({ choices: [{ message: { content: '["done"]' } }] }),
     ])
     const applicationData = mockApplicationData({ database, logger, fetch })
-    const runner = new Runner(
+    const runner = new Runner({
       applicationData,
-      { type: 'chat', limit: 3 },
-      GetGoals,
-      'build a cli',
-    )
+      operationArguments: {
+        modelFilters: { type: 'chat', limit: 3 },
+        modelApiRequest: GetGoals,
+        requestData: 'build a cli',
+      },
+    })
 
     await runner.run()
     await runner.run()
@@ -85,12 +87,14 @@ describe('Runner', () => {
     const database = await createTestDatabase(logger)
     const fetch = mockFetchSequence([])
     const applicationData = mockApplicationData({ database, logger, fetch })
-    const runner = new Runner(
+    const runner = new Runner({
       applicationData,
-      { type: 'chat' },
-      GetGoals,
-      'build a cli',
-    )
+      operationArguments: {
+        modelFilters: { type: 'chat' },
+        modelApiRequest: GetGoals,
+        requestData: 'build a cli',
+      },
+    })
 
     await runner.run()
 

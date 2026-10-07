@@ -9,7 +9,7 @@ import type {
 export abstract class Operation<OperationArguments> implements AsyncOperation {
   protected applicationData: ApplicationData
   protected operationArguments: OperationArguments
-  protected succeeded = false
+  protected succeeded = true
   protected logger: Logger
   protected reason = ''
   protected logPrefix = ''
@@ -33,13 +33,7 @@ export abstract class Operation<OperationArguments> implements AsyncOperation {
     return this.succeeded
   }
 
-  async run() {
-    this.succeeded = true
-    await this.runOperation()
-    return this
-  }
-
-  protected abstract runOperation(): Promise<void>
+  abstract run(): Promise<AsyncOperation>
 
   protected async runSubOperation<T extends AsyncOperation>(
     runningOperation: Promise<T>,

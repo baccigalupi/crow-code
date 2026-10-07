@@ -10,7 +10,7 @@ type GitCommitArguments = ApplicationOperationArguments<TaskArguments>
 
 export class GitCommit extends ExecCli<TaskArguments, string> {
   executable = 'git'
-  protected override logPrefix = 'Git error'
+  protected override logPrefix = 'Git commit: '
 
   executableOptions() {
     if (!this.operationArguments.paths) return { args: this.commitArgs() }

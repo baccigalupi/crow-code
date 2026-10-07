@@ -11,11 +11,12 @@ type TaskArguments = {
 type StageArguments = ApplicationOperationArguments<TaskArguments>
 
 export class StageAndCommit extends Operation<TaskArguments> {
-  protected override logPrefix = 'Task error'
+  protected override logPrefix = 'Stage and commit: '
 
-  protected async runOperation() {
+  async run() {
     await this.addFiles()
     await this.commitFiles()
+    return this
   }
 
   private async addFiles() {
