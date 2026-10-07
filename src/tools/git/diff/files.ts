@@ -1,5 +1,5 @@
 import type { ApplicationTaskArguments } from '../../../types.ts'
-import { ExecCommand } from '../../exec-command.ts'
+import { ExecCli } from '../../exec-cli.ts'
 import { FileDiffParser } from './files/parser.ts'
 import type { ChangedFile } from '../../types.ts'
 
@@ -11,7 +11,7 @@ type GitDiffArguments = ApplicationTaskArguments<TaskArguments>
 
 type OptionalGitDiffArguments = Pick<GitDiffArguments, 'applicationData'>
 
-export class GitDiffFiles extends ExecCommand<TaskArguments, ChangedFile[]> {
+export class GitDiffFiles extends ExecCli<TaskArguments, ChangedFile[]> {
   executable = 'git'
 
   executableOptions() {

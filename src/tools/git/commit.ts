@@ -1,5 +1,5 @@
 import type { ApplicationTaskArguments } from '../../types.ts'
-import { ExecCommand } from '../exec-command.ts'
+import { ExecCli } from '../exec-cli.ts'
 
 type TaskArguments = {
   message: string
@@ -8,7 +8,7 @@ type TaskArguments = {
 
 type GitCommitArguments = ApplicationTaskArguments<TaskArguments>
 
-export class GitCommit extends ExecCommand<TaskArguments, string> {
+export class GitCommit extends ExecCli<TaskArguments, string> {
   executable = 'git'
 
   executableOptions() {

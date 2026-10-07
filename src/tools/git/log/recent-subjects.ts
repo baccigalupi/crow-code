@@ -1,5 +1,5 @@
 import type { ApplicationTaskArguments } from '../../../types.ts'
-import { ExecCommand } from '../../exec-command.ts'
+import { ExecCli } from '../../exec-cli.ts'
 
 type TaskArguments = {
   count?: number
@@ -12,7 +12,7 @@ type OptionalGitRecentSubjectsArguments = Pick<
   'applicationData'
 >
 
-export class GitRecentSubjects extends ExecCommand<TaskArguments, string[]> {
+export class GitRecentSubjects extends ExecCli<TaskArguments, string[]> {
   executable = 'git'
 
   executableOptions() {

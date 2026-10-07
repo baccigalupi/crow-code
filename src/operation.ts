@@ -11,7 +11,10 @@ export abstract class Operation<TaskArguments> {
   ) {
     this.applicationData = applicationData
     this.taskArguments = taskArguments
+    this.unpackArguments()
   }
+
+  protected unpackArguments() {}
 
   success() {
     return this.succeeded

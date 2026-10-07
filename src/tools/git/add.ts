@@ -1,5 +1,5 @@
 import type { ApplicationTaskArguments } from '../../types.ts'
-import { ExecCommand } from '../exec-command.ts'
+import { ExecCli } from '../exec-cli.ts'
 
 type TaskArguments = {
   paths?: string[]
@@ -9,7 +9,7 @@ type GitAddArguments = ApplicationTaskArguments<TaskArguments>
 
 type OptionalGitAddArguments = Pick<GitAddArguments, 'applicationData'>
 
-export class GitAdd extends ExecCommand<TaskArguments, string> {
+export class GitAdd extends ExecCli<TaskArguments, string> {
   executable = 'git'
 
   executableOptions() {

@@ -1,5 +1,5 @@
 import type { ApplicationTaskArguments } from '../../../types.ts'
-import { ExecCommand } from '../../exec-command.ts'
+import { ExecCli } from '../../exec-cli.ts'
 import type { GitFileDiff } from '../../types.ts'
 import { trackedChangeParser } from './tracked-changes/parser.ts'
 
@@ -14,8 +14,7 @@ type OptionalGitTrackedChangesArguments = Pick<
   'applicationData'
 >
 
-export class GitTrackedChanges
-  extends ExecCommand<TaskArguments, GitFileDiff[]> {
+export class GitTrackedChanges extends ExecCli<TaskArguments, GitFileDiff[]> {
   executable = 'git'
 
   executableOptions() {

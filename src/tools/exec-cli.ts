@@ -1,28 +1,17 @@
-import type { ApplicationTaskArguments, DenoCommand, Logger } from '../types.ts'
+import { OperationWithResult } from '../operation.ts'
+import type { DenoCommand, Logger } from '../types.ts'
 
-export abstract class ExecCommand<
-  T extends Record<string, unknown>,
-  U,
-> {
-  taskArguments: T
-  denoCommand: DenoCommand
+export abstract class ExecCli<T extends Record<string, unknown>, U>
+  extends OperationWithResult<T, U> {
+  declare denoCommand: DenoCommand
   private command!: Deno.Command
   private response!: Deno.CommandOutput
   protected responseText!: string
-  private logger: Logger
-  private succeeded = false
+  declare private logger: Logger
 
-  constructor(
-    { applicationData, taskArguments }: ApplicationTaskArguments<T>,
-  ) {
-    this.taskArguments = taskArguments
-
-    this.denoCommand = applicationData.denoCommand()
-    this.logger = applicationData.logger()
-  }
-
-  success() {
-    return this.succeeded
+  protected override unpackArguments() {
+    this.denoCommand = this.applicationData.denoCommand()
+    this.logger = this.applicationData.logger()
   }
 
   async run() {
