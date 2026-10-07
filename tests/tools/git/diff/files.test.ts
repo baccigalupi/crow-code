@@ -51,7 +51,7 @@ describe('gitDiffFiles', () => {
 
     const gitDiff = gitDiffFiles({
       applicationData,
-      commandArguments: {
+      taskArguments: {
         filter: [
           'src/tools/git/diff/files.ts',
           'tests/tools/git/diff/files.test.ts',
@@ -75,7 +75,7 @@ describe('gitDiffFiles', () => {
 
     const gitDiff = gitDiffFiles({
       applicationData,
-      commandArguments: {
+      taskArguments: {
         filter: ['nonexistent/file.ts'],
       },
     })

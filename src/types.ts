@@ -1,6 +1,12 @@
 import type pino from 'pino'
+import type { ApplicationData } from './application-data.ts'
 
 export type Logger = pino.Logger
+
+export type AsyncTaskArgument<T> = {
+  applicationData: ApplicationData
+  taskArguments: T
+}
 
 export type ParsedArgumentsOptions = Record<string, string | boolean>
 

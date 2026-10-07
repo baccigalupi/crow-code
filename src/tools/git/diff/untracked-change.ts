@@ -1,29 +1,26 @@
-import type { ApplicationData } from '../../../application-data.ts'
+import type { AsyncTaskArgument } from '../../../types.ts'
 import { ExecCommand } from '../../exec-command.ts'
 import type { GitFileDiff } from '../../types.ts'
 
-type CommandArguments = {
+type TaskArguments = {
   path: string
 }
 
-type GitUntrackedChangeArguments = {
-  applicationData: ApplicationData
-  commandArguments: CommandArguments
-}
+type GitUntrackedChangeArguments = AsyncTaskArgument<TaskArguments>
 
 export class GitUntrackedChange
-  extends ExecCommand<CommandArguments, GitFileDiff> {
+  extends ExecCommand<TaskArguments, GitFileDiff> {
   executable = 'git'
 
   executableOptions() {
     return {
-      args: ['diff', '--no-index', '/dev/null', this.commandArguments.path],
+      args: ['diff', '--no-index', '/dev/null', this.taskArguments.path],
     }
   }
 
   parse() {
     return {
-      path: this.commandArguments.path,
+      path: this.taskArguments.path,
       diff: this.responseText,
     }
   }

@@ -21,7 +21,7 @@ describe('gitUntrackedChange', () => {
 
     const changes = gitUntrackedChange({
       applicationData,
-      commandArguments: { path: 'src/new-file.ts' },
+      taskArguments: { path: 'src/new-file.ts' },
     })
     await changes.run()
 
@@ -53,7 +53,7 @@ describe('gitUntrackedChange', () => {
 
     const changes = gitUntrackedChange({
       applicationData,
-      commandArguments: { path: 'src/new-file.ts' },
+      taskArguments: { path: 'src/new-file.ts' },
     })
     await changes.run()
 
@@ -82,7 +82,7 @@ describe('gitUntrackedChange', () => {
 
     const changes = gitUntrackedChange({
       applicationData,
-      commandArguments: { path: 'src/new-file.ts' },
+      taskArguments: { path: 'src/new-file.ts' },
     })
     await changes.run()
 

@@ -1,21 +1,19 @@
-import type { ApplicationData } from '../../application-data.ts'
-import type { Logger } from '../../types.ts'
+import type { AsyncTaskArgument, Logger } from '../../types.ts'
 import type { PathPermissions } from '../path-permissions.ts'
+import type { FileContent } from '../types.ts'
 
-type CommandArguments = {
+type TaskArguments = {
   path: string
   offset?: number
   limit?: number
 }
 
-type ReadFileArguments = {
-  applicationData: ApplicationData
-  commandArguments: CommandArguments
+type ReadFileArguments = AsyncTaskArgument<TaskArguments> & {
   pathPermissions?: PathPermissions
 }
 
 export class ReadFile {
-  commandArguments: CommandArguments
+  taskArguments: TaskArguments
   private permissions: PathPermissions
   private logger: Logger
   private text: string
@@ -24,11 +22,11 @@ export class ReadFile {
   constructor(
     {
       applicationData,
-      commandArguments,
+      taskArguments,
       pathPermissions = applicationData.pathPermissions(),
     }: ReadFileArguments,
   ) {
-    this.commandArguments = commandArguments
+    this.taskArguments = taskArguments
     this.permissions = pathPermissions
     this.logger = applicationData.logger()
     this.text = ''
@@ -46,21 +44,21 @@ export class ReadFile {
     return this
   }
 
-  result() {
-    return { path: this.commandArguments.path, text: this.text }
+  result(): FileContent {
+    return { path: this.taskArguments.path, text: this.text }
   }
 
   private async pathNotAllowed() {
-    const allowed = await this.permissions.allows(this.commandArguments.path)
+    const allowed = await this.permissions.allows(this.taskArguments.path)
     if (!allowed) {
-      this.handleError(`path not allowed: ${this.commandArguments.path}`)
+      this.handleError(`path not allowed: ${this.taskArguments.path}`)
     }
     return !allowed
   }
 
   private async read() {
     try {
-      const contents = await Deno.readTextFile(this.commandArguments.path)
+      const contents = await Deno.readTextFile(this.taskArguments.path)
       this.text = this.select(contents)
       this.succeeded = true
     } catch (error) {
@@ -76,15 +74,15 @@ export class ReadFile {
   }
 
   private firstLineIndex() {
-    if (this.commandArguments.offset === undefined) return 0
+    if (this.taskArguments.offset === undefined) return 0
 
-    return this.commandArguments.offset - 1
+    return this.taskArguments.offset - 1
   }
 
   private lastLineIndex(lines: string[]) {
-    if (this.commandArguments.limit === undefined) return lines.length
+    if (this.taskArguments.limit === undefined) return lines.length
 
-    return this.firstLineIndex() + this.commandArguments.limit
+    return this.firstLineIndex() + this.taskArguments.limit
   }
 
   private handleError(message: string) {

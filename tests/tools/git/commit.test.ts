@@ -13,13 +13,35 @@ describe('gitCommit', () => {
     })
     const commit = gitCommit({
       applicationData,
-      commandArguments: { message: 'Add login' },
+      taskArguments: { message: 'Add login' },
     })
 
     await commit.run()
 
     assertSpyCall(commandSpy, 0, {
       args: ['git', { args: ['commit', '-m', 'Add login'] }],
+    })
+    expect(commit.success()).toBe(true)
+    expect(commit.result()).toBe('committed')
+  })
+
+  it('when paths are given, commits only those paths', async () => {
+    const commandSpy = spy()
+    const applicationData = mockApplicationData({
+      denoCommand: mockDenoCommand({ stdout: 'committed', commandSpy }),
+    })
+    const commit = gitCommit({
+      applicationData,
+      taskArguments: { message: 'msg', paths: ['src/a.ts', 'src/b.ts'] },
+    })
+
+    await commit.run()
+
+    assertSpyCall(commandSpy, 0, {
+      args: [
+        'git',
+        { args: ['commit', '-m', 'msg', '--', 'src/a.ts', 'src/b.ts'] },
+      ],
     })
     expect(commit.success()).toBe(true)
     expect(commit.result()).toBe('committed')
@@ -32,7 +54,7 @@ describe('gitCommit', () => {
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
     const commit = gitCommit({
       applicationData,
-      commandArguments: { message: 'Add login' },
+      taskArguments: { message: 'Add login' },
     })
 
     await commit.run()

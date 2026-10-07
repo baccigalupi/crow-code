@@ -1,25 +1,22 @@
-import type { ApplicationData } from '../../../application-data.ts'
+import type { AsyncTaskArgument } from '../../../types.ts'
 import { ExecCommand } from '../../exec-command.ts'
 
-type CommandArguments = {
+type TaskArguments = {
   count?: number
 }
 
-type GitRecentSubjectsArguments = {
-  applicationData: ApplicationData
-  commandArguments: CommandArguments
-}
+type GitRecentSubjectsArguments = AsyncTaskArgument<TaskArguments>
 
 type OptionalGitRecentSubjectsArguments = Pick<
   GitRecentSubjectsArguments,
   'applicationData'
 >
 
-export class GitRecentSubjects extends ExecCommand<CommandArguments, string[]> {
+export class GitRecentSubjects extends ExecCommand<TaskArguments, string[]> {
   executable = 'git'
 
   executableOptions() {
-    const count = this.commandArguments.count || 10
+    const count = this.taskArguments.count || 10
     return { args: ['log', '--format=%s', '-n', String(count)] }
   }
 
@@ -41,6 +38,6 @@ export class GitRecentSubjects extends ExecCommand<CommandArguments, string[]> {
 export const gitRecentSubjects = (
   args: GitRecentSubjectsArguments | OptionalGitRecentSubjectsArguments,
 ) => {
-  const classArguments = { commandArguments: {}, ...args }
+  const classArguments = { taskArguments: {}, ...args }
   return new GitRecentSubjects(classArguments)
 }

@@ -1,4 +1,5 @@
 import type { ApplicationData } from '../../../application-data.ts'
+import type { AsyncTaskArgument } from '../../../types.ts'
 import { gitDiffFiles } from './files.ts'
 import type { ChangedFile } from '../../types.ts'
 import {
@@ -6,14 +7,11 @@ import {
   gitUntrackedChange,
 } from './untracked-change.ts'
 
-type CommandArguments = {
+type TaskArguments = {
   filter?: string[]
 }
 
-type GitUntrackedChangesArguments = {
-  applicationData: ApplicationData
-  commandArguments: CommandArguments
-}
+type GitUntrackedChangesArguments = AsyncTaskArgument<TaskArguments>
 
 type OptionalGitUntrackedChangesArguments = Pick<
   GitUntrackedChangesArguments,
@@ -22,16 +20,16 @@ type OptionalGitUntrackedChangesArguments = Pick<
 
 export class GitUntrackedChanges {
   applicationData: ApplicationData
-  commandArguments: CommandArguments
+  taskArguments: TaskArguments
   private untrackedFiles: ChangedFile[] = []
   private untrackedChanges: GitUntrackedChange[] = []
   private succeeded = false
 
   constructor(
-    { applicationData, commandArguments }: GitUntrackedChangesArguments,
+    { applicationData, taskArguments }: GitUntrackedChangesArguments,
   ) {
     this.applicationData = applicationData
-    this.commandArguments = commandArguments
+    this.taskArguments = taskArguments
   }
 
   success() {
@@ -54,7 +52,7 @@ export class GitUntrackedChanges {
   private async getChangedFiles() {
     const files = await gitDiffFiles({
       applicationData: this.applicationData,
-      commandArguments: this.commandArguments,
+      taskArguments: this.taskArguments,
     }).run()
     this.untrackedFiles = this.filterUntracked(files.result())
     this.succeeded = files.success()
@@ -76,7 +74,7 @@ export class GitUntrackedChanges {
   private getUntrackedChange(path: string) {
     return gitUntrackedChange({
       applicationData: this.applicationData,
-      commandArguments: { path },
+      taskArguments: { path },
     }).run()
   }
 }
@@ -84,6 +82,6 @@ export class GitUntrackedChanges {
 export const gitUntrackedChanges = (
   args: GitUntrackedChangesArguments | OptionalGitUntrackedChangesArguments,
 ) => {
-  const classArguments = { commandArguments: {}, ...args }
+  const classArguments = { taskArguments: {}, ...args }
   return new GitUntrackedChanges(classArguments)
 }

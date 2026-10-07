@@ -1,20 +1,21 @@
-import type { ApplicationData } from '../../application-data.ts'
+import type { AsyncTaskArgument } from '../../types.ts'
 import { ExecCommand } from '../exec-command.ts'
 
-type CommandArguments = {
-  paths: string[]
+type TaskArguments = {
+  paths?: string[]
 }
 
-type GitAddArguments = {
-  applicationData: ApplicationData
-  commandArguments: CommandArguments
-}
+type GitAddArguments = AsyncTaskArgument<TaskArguments>
 
-export class GitAdd extends ExecCommand<CommandArguments, string> {
+type OptionalGitAddArguments = Pick<GitAddArguments, 'applicationData'>
+
+export class GitAdd extends ExecCommand<TaskArguments, string> {
   executable = 'git'
 
   executableOptions() {
-    return { args: ['add', '--', ...this.commandArguments.paths] }
+    if (!this.taskArguments.paths) return { args: ['add', '--all'] }
+
+    return { args: ['add', '--', ...this.taskArguments.paths] }
   }
 
   parse() {
@@ -30,6 +31,9 @@ export class GitAdd extends ExecCommand<CommandArguments, string> {
   }
 }
 
-export const gitAdd = (args: GitAddArguments) => {
-  return new GitAdd(args)
+export const gitAdd = (
+  args: GitAddArguments | OptionalGitAddArguments,
+) => {
+  const classArguments = { taskArguments: {}, ...args }
+  return new GitAdd(classArguments)
 }

@@ -1,20 +1,26 @@
-import type { ApplicationData } from '../../application-data.ts'
+import type { AsyncTaskArgument } from '../../types.ts'
 import { ExecCommand } from '../exec-command.ts'
 
-type CommandArguments = {
+type TaskArguments = {
   message: string
+  paths?: string[]
 }
 
-type GitCommitArguments = {
-  applicationData: ApplicationData
-  commandArguments: CommandArguments
-}
+type GitCommitArguments = AsyncTaskArgument<TaskArguments>
 
-export class GitCommit extends ExecCommand<CommandArguments, string> {
+export class GitCommit extends ExecCommand<TaskArguments, string> {
   executable = 'git'
 
   executableOptions() {
-    return { args: ['commit', '-m', this.commandArguments.message] }
+    if (!this.taskArguments.paths) return { args: this.commitArgs() }
+
+    return {
+      args: [...this.commitArgs(), '--', ...this.taskArguments.paths],
+    }
+  }
+
+  private commitArgs() {
+    return ['commit', '-m', this.taskArguments.message]
   }
 
   parse() {

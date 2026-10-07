@@ -1,24 +1,21 @@
 import { walk } from '@std/fs'
 import { resolve } from '@std/path'
-import type { ApplicationData } from '../../application-data.ts'
-import type { Logger } from '../../types.ts'
+import type { AsyncTaskArgument, Logger } from '../../types.ts'
 import type { PathPermissions } from '../path-permissions.ts'
-import type { DirectoryEntry } from '../types.ts'
+import type { DirectoryEntry, DirectoryListing } from '../types.ts'
 import { directoryEntries } from './list/entries.ts'
 
-type CommandArguments = {
+type TaskArguments = {
   path: string
   recursive?: boolean
 }
 
-type ListDirectoryArguments = {
-  applicationData: ApplicationData
-  commandArguments: CommandArguments
+type ListDirectoryArguments = AsyncTaskArgument<TaskArguments> & {
   pathPermissions?: PathPermissions
 }
 
 export class ListDirectory {
-  commandArguments: CommandArguments
+  taskArguments: TaskArguments
   private permissions: PathPermissions
   private logger: Logger
   private entries: DirectoryEntry[]
@@ -27,11 +24,11 @@ export class ListDirectory {
   constructor(
     {
       applicationData,
-      commandArguments,
+      taskArguments,
       pathPermissions = applicationData.pathPermissions(),
     }: ListDirectoryArguments,
   ) {
-    this.commandArguments = commandArguments
+    this.taskArguments = taskArguments
     this.permissions = pathPermissions
     this.logger = applicationData.logger()
     this.entries = []
@@ -49,14 +46,14 @@ export class ListDirectory {
     return this
   }
 
-  result() {
-    return { path: this.commandArguments.path, entries: this.entries }
+  result(): DirectoryListing {
+    return { path: this.taskArguments.path, entries: this.entries }
   }
 
   private async pathNotAllowed() {
-    const allowed = await this.permissions.allows(this.commandArguments.path)
+    const allowed = await this.permissions.allows(this.taskArguments.path)
     if (!allowed) {
-      this.handleError(`path not allowed: ${this.commandArguments.path}`)
+      this.handleError(`path not allowed: ${this.taskArguments.path}`)
     }
     return !allowed
   }
@@ -76,13 +73,13 @@ export class ListDirectory {
   }
 
   private depth() {
-    if (this.commandArguments.recursive === true) return Infinity
+    if (this.taskArguments.recursive === true) return Infinity
 
     return 1
   }
 
   private root() {
-    return resolve(Deno.cwd(), this.commandArguments.path)
+    return resolve(Deno.cwd(), this.taskArguments.path)
   }
 
   private handleError(message: string) {

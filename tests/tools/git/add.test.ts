@@ -13,7 +13,7 @@ describe('gitAdd', () => {
     })
     const add = gitAdd({
       applicationData,
-      commandArguments: { paths: ['src/a.ts', 'src/b.ts'] },
+      taskArguments: { paths: ['src/a.ts', 'src/b.ts'] },
     })
 
     await add.run()
@@ -25,12 +25,28 @@ describe('gitAdd', () => {
     expect(add.result()).toBe('')
   })
 
+  it('when no paths are given, adds all changes', async () => {
+    const commandSpy = spy()
+    const applicationData = mockApplicationData({
+      denoCommand: mockDenoCommand({ commandSpy }),
+    })
+    const add = gitAdd({ applicationData })
+
+    await add.run()
+
+    assertSpyCall(commandSpy, 0, {
+      args: ['git', { args: ['add', '--all'] }],
+    })
+    expect(add.success()).toBe(true)
+    expect(add.result()).toBe('')
+  })
+
   it('when git fails, reports failure', async () => {
     const applicationData = mockApplicationData({
       denoCommand: mockDenoCommand({ success: false, stderr: 'add failed' }),
     })
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
-    const add = gitAdd({ applicationData, commandArguments: { paths: ['.'] } })
+    const add = gitAdd({ applicationData, taskArguments: { paths: ['.'] } })
 
     await add.run()
 
