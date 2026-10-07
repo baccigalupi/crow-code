@@ -20,7 +20,7 @@ export class StageAndCommit extends Operation<TaskArguments> {
   }
 
   private async addFiles() {
-    await this.runSubOperation(this.add().run())
+    await this.runSubOperation(this.add())
   }
 
   private add() {
@@ -32,7 +32,7 @@ export class StageAndCommit extends Operation<TaskArguments> {
 
   private async commitFiles() {
     if (!this.succeeded) return
-    await this.runSubOperation(this.commit().run())
+    await this.runSubOperation(this.commit())
   }
 
   private commit() {

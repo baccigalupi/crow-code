@@ -36,9 +36,9 @@ export abstract class Operation<OperationArguments> implements AsyncOperation {
   abstract run(): Promise<AsyncOperation>
 
   protected async runSubOperation<T extends AsyncOperation>(
-    runningOperation: Promise<T>,
+    subOperation: T,
   ) {
-    const operation = await runningOperation
+    const operation = await subOperation.run() as T
     this.subOperations.push(operation)
     if (!operation.success()) {
       this.fail(`Error running suboperation: ${operation}`)

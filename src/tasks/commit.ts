@@ -30,7 +30,7 @@ export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
   }
 
   private async collectChanges() {
-    const collected = await this.runSubOperation(this.collect().run())
+    const collected = await this.runSubOperation(this.collect())
     this.changes = collected.result()
     if (collected.success()) this.hasChanges()
   }
@@ -72,7 +72,7 @@ export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
 
   private async commitFiles() {
     if (!this.succeeded) return
-    await this.runSubOperation(stageAndCommit(this.stageArguments()).run())
+    await this.runSubOperation(stageAndCommit(this.stageArguments()))
   }
 
   private fullMessage() {
