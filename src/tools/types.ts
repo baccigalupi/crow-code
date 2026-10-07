@@ -24,3 +24,14 @@ export type DirectoryListing = {
   path: string
   entries: DirectoryEntry[]
 }
+
+export type SearchMatch = {
+  path: string
+  line: number
+  text: string
+}
+
+export type SearchListing = {
+  path: string
+  matches: SearchMatch[]
+}

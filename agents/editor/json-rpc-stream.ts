@@ -7,7 +7,7 @@ export class JsonRpcStream {
   private writer: WritableStreamDefaultWriter<Uint8Array>
   private encoder = new TextEncoder()
   private decoder = new TextDecoder()
-  private buffer = ''
+  private buffer = new Uint8Array(0)
   private handle: MessageHandler
 
   constructor(child: Deno.ChildProcess, handle: MessageHandler) {
@@ -27,25 +27,42 @@ export class JsonRpcStream {
 
   async listen() {
     for await (const chunk of this.child.stdout) {
-      this.buffer += this.decoder.decode(chunk)
+      this.append(chunk)
       this.drain()
     }
   }
 
+  private append(chunk: Uint8Array) {
+    const joined = new Uint8Array(this.buffer.length + chunk.length)
+    joined.set(this.buffer)
+    joined.set(chunk, this.buffer.length)
+    this.buffer = joined
+  }
+
   private drain() {
     while (true) {
-      const boundary = this.buffer.indexOf('\r\n\r\n')
+      const boundary = this.headerBoundary()
       if (boundary === -1) {
         return
       }
-      const length = this.messageLength(this.buffer.slice(0, boundary))
-      if (this.buffer.length < boundary + 4 + length) {
+      const length = this.messageLength(
+        this.decoder.decode(this.buffer.slice(0, boundary)),
+      )
+      const end = boundary + 4 + length
+      if (this.buffer.length < end) {
         return
       }
-      const body = this.buffer.slice(boundary + 4, boundary + 4 + length)
-      this.buffer = this.buffer.slice(boundary + 4 + length)
+      const body = this.decoder.decode(this.buffer.slice(boundary + 4, end))
+      this.buffer = this.buffer.slice(end)
       this.handle(JSON.parse(body))
     }
+  }
+
+  private headerBoundary() {
+    const separator = [13, 10, 13, 10]
+    return this.buffer.findIndex((_, index) =>
+      separator.every((byte, offset) => this.buffer[index + offset] === byte)
+    )
   }
 
   private messageLength(header: string) {

@@ -29,3 +29,12 @@ export const loadOllamaFixture = async () =>
 export const clearDirectory = async (path: string) => {
   await Deno.remove(path, { recursive: true }).catch(() => {})
 }
+
+export const searchFixtureNodeModules = () =>
+  join(fixturesDirectory, 'tools', 'search', 'node_modules')
+
+export const createSearchFixtureNodeModules = async () => {
+  const path = searchFixtureNodeModules()
+  await Deno.mkdir(path, { recursive: true })
+  await Deno.writeTextFile(join(path, 'skipped.txt'), 'two')
+}

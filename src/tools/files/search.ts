@@ -1,24 +1,27 @@
 import type { ApplicationData } from '../../application-data.ts'
 import type { Logger } from '../../types.ts'
 import type { PathPermissions } from '../path-permissions.ts'
+import type { SearchMatch } from '../types.ts'
+import { sortedMatches } from './search/sorted-matches.ts'
 
 type CommandArguments = {
   path: string
-  offset?: number
-  limit?: number
+  pattern: string
+  flags?: string
+  ignoredDirectories?: string[]
 }
 
-type ReadFileArguments = {
+type SearchFilesArguments = {
   applicationData: ApplicationData
   commandArguments: CommandArguments
   pathPermissions?: PathPermissions
 }
 
-export class ReadFile {
+export class SearchFiles {
   commandArguments: CommandArguments
   private permissions: PathPermissions
   private logger: Logger
-  private text: string
+  private matches: SearchMatch[]
   private succeeded: boolean
 
   constructor(
@@ -26,12 +29,12 @@ export class ReadFile {
       applicationData,
       commandArguments,
       pathPermissions = applicationData.pathPermissions(),
-    }: ReadFileArguments,
+    }: SearchFilesArguments,
   ) {
     this.commandArguments = commandArguments
     this.permissions = pathPermissions
     this.logger = applicationData.logger()
-    this.text = ''
+    this.matches = []
     this.succeeded = false
   }
 
@@ -42,12 +45,12 @@ export class ReadFile {
   async run() {
     if (await this.pathNotAllowed()) return this
 
-    await this.read()
+    await this.search()
     return this
   }
 
   result() {
-    return { path: this.commandArguments.path, text: this.text }
+    return { path: this.commandArguments.path, matches: this.matches }
   }
 
   private async pathNotAllowed() {
@@ -58,33 +61,13 @@ export class ReadFile {
     return !allowed
   }
 
-  private async read() {
+  private async search() {
     try {
-      const contents = await Deno.readTextFile(this.commandArguments.path)
-      this.text = this.select(contents)
+      this.matches = await sortedMatches(this.commandArguments).all()
       this.succeeded = true
     } catch (error) {
       this.handleError((error as Error).message)
     }
-  }
-
-  private select(contents: string) {
-    const lines = contents.split('\n')
-    return lines.slice(this.firstLineIndex(), this.lastLineIndex(lines)).join(
-      '\n',
-    )
-  }
-
-  private firstLineIndex() {
-    if (this.commandArguments.offset === undefined) return 0
-
-    return this.commandArguments.offset - 1
-  }
-
-  private lastLineIndex(lines: string[]) {
-    if (this.commandArguments.limit === undefined) return lines.length
-
-    return this.firstLineIndex() + this.commandArguments.limit
   }
 
   private handleError(message: string) {
@@ -92,6 +75,6 @@ export class ReadFile {
   }
 }
 
-export const readFile = (args: ReadFileArguments) => {
-  return new ReadFile(args)
+export const searchFiles = (searchFilesArguments: SearchFilesArguments) => {
+  return new SearchFiles(searchFilesArguments)
 }

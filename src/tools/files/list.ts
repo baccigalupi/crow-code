@@ -3,7 +3,7 @@ import { resolve } from '@std/path'
 import type { ApplicationData } from '../../application-data.ts'
 import type { Logger } from '../../types.ts'
 import type { PathPermissions } from '../path-permissions.ts'
-import type { DirectoryEntry, DirectoryListing } from '../types.ts'
+import type { DirectoryEntry } from '../types.ts'
 import { directoryEntries } from './list/entries.ts'
 
 type CommandArguments = {
@@ -49,7 +49,7 @@ export class ListDirectory {
     return this
   }
 
-  result(): DirectoryListing {
+  result() {
     return { path: this.commandArguments.path, entries: this.entries }
   }
 
