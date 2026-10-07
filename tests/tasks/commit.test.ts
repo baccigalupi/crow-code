@@ -147,7 +147,7 @@ describe('commit', () => {
 
     expect(task.success()).toBe(false)
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      'Task error: no changes to commit',
+      'Commit: no changes to commit',
     )
     expect(fetch.calls.length).toBe(0)
   })

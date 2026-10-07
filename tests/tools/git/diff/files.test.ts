@@ -99,7 +99,7 @@ describe('gitDiffFiles', () => {
     expect(gitDiff.success()).toBe(false)
     expect(gitDiff.result()).toEqual([])
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      'Git error: No such file or directory (os error 2): git',
+      'Git diff files: No such file or directory (os error 2): git',
     )
   })
 
@@ -119,7 +119,7 @@ describe('gitDiffFiles', () => {
     expect(gitDiff.success()).toBe(false)
     expect(gitDiff.result()).toEqual([])
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      'Git error: fatal: not a git repository',
+      'Git diff files: fatal: not a git repository',
     )
   })
 })

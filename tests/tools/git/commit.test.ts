@@ -61,6 +61,6 @@ describe('gitCommit', () => {
 
     expect(commit.success()).toBe(false)
     expect(commit.result()).toBe('')
-    expect(loggerErrorSpy.calls[0].args[0]).toBe('Git error: commit failed')
+    expect(loggerErrorSpy.calls[0].args[0]).toBe('Git commit: commit failed')
   })
 })

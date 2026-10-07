@@ -66,7 +66,7 @@ describe('gitTrackedChanges', () => {
     expect(diff.success()).toBe(false)
     expect(diff.result()).toEqual([])
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      'Git error: No such file or directory (os error 2): git',
+      'Git tracked changes: No such file or directory (os error 2): git',
     )
   })
 })

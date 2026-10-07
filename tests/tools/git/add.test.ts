@@ -55,6 +55,6 @@ describe('gitAdd', () => {
 
     expect(add.success()).toBe(false)
     expect(add.result()).toBe('')
-    expect(loggerErrorSpy.calls[0].args[0]).toBe('Git error: add failed')
+    expect(loggerErrorSpy.calls[0].args[0]).toBe('Git add: add failed')
   })
 })

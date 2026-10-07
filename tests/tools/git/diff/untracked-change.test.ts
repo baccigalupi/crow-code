@@ -66,7 +66,7 @@ describe('gitUntrackedChange', () => {
     expect(changes.success()).toBe(false)
     expect(changes.result()).toEqual({ path: '', diff: '' })
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      'Git error: No such file or directory (os error 2): git',
+      'Git untracked change: No such file or directory (os error 2): git',
     )
   })
 
@@ -89,7 +89,7 @@ describe('gitUntrackedChange', () => {
     expect(changes.success()).toBe(false)
     expect(changes.result()).toEqual({ path: '', diff: '' })
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      'Git error: fatal: not a git repository',
+      'Git untracked change: fatal: not a git repository',
     )
   })
 })

@@ -53,7 +53,7 @@ describe('gitRecentSubjects', () => {
     expect(subjects.success()).toBe(false)
     expect(subjects.result()).toEqual([])
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      'Git error: No such file or directory (os error 2): git',
+      'Git recent subjects: No such file or directory (os error 2): git',
     )
   })
 })

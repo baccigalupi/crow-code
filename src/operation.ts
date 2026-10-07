@@ -53,7 +53,7 @@ export abstract class Operation<OperationArguments> implements AsyncOperation {
   }
 
   protected logError(message: string) {
-    this.logger.error(`${this.logPrefix}: ${message}`)
+    this.logger.error(`${this.logPrefix}${message}`)
   }
 }
 

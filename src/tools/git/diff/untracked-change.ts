@@ -10,7 +10,7 @@ type GitUntrackedChangeArguments = ApplicationOperationArguments<TaskArguments>
 
 export class GitUntrackedChange extends ExecCli<TaskArguments, GitFileDiff> {
   executable = 'git'
-  protected override logPrefix = 'Git error'
+  protected override logPrefix = 'Git untracked change: '
 
   executableOptions() {
     return {
