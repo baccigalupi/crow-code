@@ -30,7 +30,10 @@ describe('ModelApiRequest', () => {
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
-    }(modelEndpoint, applicationData, 'build a cli')
+    }({
+      applicationData,
+      operationArguments: { modelEndpoint, requestData: 'build a cli' },
+    })
 
     await modelApiRequest.run()
 
@@ -56,7 +59,10 @@ describe('ModelApiRequest', () => {
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
-    }(modelEndpoint, applicationData, 'build a cli')
+    }({
+      applicationData,
+      operationArguments: { modelEndpoint, requestData: 'build a cli' },
+    })
 
     const succeeded = modelApiRequest.success()
 
@@ -85,7 +91,10 @@ describe('ModelApiRequest', () => {
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
-    }(modelEndpoint, applicationData, 'build a cli')
+    }({
+      applicationData,
+      operationArguments: { modelEndpoint, requestData: 'build a cli' },
+    })
 
     await modelApiRequest.run()
 
@@ -119,7 +128,10 @@ describe('ModelApiRequest', () => {
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
-    }(modelEndpoint, applicationData, 'build a cli')
+    }({
+      applicationData,
+      operationArguments: { modelEndpoint, requestData: 'build a cli' },
+    })
 
     await modelApiRequest.run()
 
@@ -155,7 +167,10 @@ describe('ModelApiRequest', () => {
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
-    }(modelEndpoint, applicationData, 'build a cli')
+    }({
+      applicationData,
+      operationArguments: { modelEndpoint, requestData: 'build a cli' },
+    })
 
     await modelApiRequest.run()
 
@@ -190,7 +205,10 @@ describe('ModelApiRequest', () => {
       protected override validateResponse() {
         return false
       }
-    }(modelEndpoint, applicationData, 'build a cli')
+    }({
+      applicationData,
+      operationArguments: { modelEndpoint, requestData: 'build a cli' },
+    })
 
     await modelApiRequest.run()
 
@@ -218,7 +236,10 @@ describe('ModelApiRequest', () => {
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
-    }(modelEndpoint, applicationData, 'build a cli')
+    }({
+      applicationData,
+      operationArguments: { modelEndpoint, requestData: 'build a cli' },
+    })
 
     await modelApiRequest.run()
 
@@ -248,7 +269,10 @@ describe('ModelApiRequest', () => {
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
-    }(modelEndpoint, applicationData, 'build a cli')
+    }({
+      applicationData,
+      operationArguments: { modelEndpoint, requestData: 'build a cli' },
+    })
 
     await modelApiRequest.run()
 
@@ -280,7 +304,10 @@ describe('ModelApiRequest', () => {
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
-    }(modelEndpoint, applicationData, 'build a cli')
+    }({
+      applicationData,
+      operationArguments: { modelEndpoint, requestData: 'build a cli' },
+    })
 
     await modelApiRequest.run()
 

@@ -52,10 +52,12 @@ export class Runner<TRequest, TResponse> extends OperationWithResult<
   }
 
   private createRequest(model: ModelEntity) {
-    return new this.operationArguments.modelApiRequest(
-      model.endpoint(),
-      this.applicationData,
-      this.operationArguments.requestData,
-    )
+    return new this.operationArguments.modelApiRequest({
+      applicationData: this.applicationData,
+      operationArguments: {
+        modelEndpoint: model.endpoint(),
+        requestData: this.operationArguments.requestData,
+      },
+    })
   }
 }

@@ -1,4 +1,4 @@
-import type { ApplicationData } from '../application-data.ts'
+import type { ApplicationOperationArguments } from '../types.ts'
 import type { GitFileDiff } from '../tools/types.ts'
 import type { ModelApiRequest } from './framework/model-api-request.ts'
 
@@ -21,10 +21,13 @@ export type ModelEndpoint = {
 
 export type RequestMessages<T> = (input: T) => ModelMessages[]
 
+export type ModelApiRequestArguments<TRequest> = {
+  modelEndpoint: ModelEndpoint
+  requestData: TRequest
+}
+
 export type ModelApiRequestClass<TRequest, TResponse> = new (
-  modelEndpoint: ModelEndpoint,
-  applicationData: ApplicationData,
-  requestData: TRequest,
+  args: ApplicationOperationArguments<ModelApiRequestArguments<TRequest>>,
 ) => ModelApiRequest<TRequest, TResponse>
 
 export type CommitMessageRequest = {

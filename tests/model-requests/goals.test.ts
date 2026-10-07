@@ -21,7 +21,10 @@ describe('goals', () => {
         choices: [{ message: { content: '[]' } }],
       }),
     })
-    const getGoals = new GetGoals(modelEndpoint, applicationData, 'build a cli')
+    const getGoals = new GetGoals({
+      applicationData,
+      operationArguments: { modelEndpoint, requestData: 'build a cli' },
+    })
 
     await getGoals.run()
 
@@ -41,7 +44,10 @@ describe('goals', () => {
     const applicationData = mockApplicationData({
       fetch: mockFetchError(500),
     })
-    const getGoals = new GetGoals(modelEndpoint, applicationData, 'build a cli')
+    const getGoals = new GetGoals({
+      applicationData,
+      operationArguments: { modelEndpoint, requestData: 'build a cli' },
+    })
 
     await getGoals.run()
 
@@ -62,7 +68,10 @@ describe('goals', () => {
         usage: { completion_tokens: 1 },
       }),
     })
-    const getGoals = new GetGoals(modelEndpoint, applicationData, 'build a cli')
+    const getGoals = new GetGoals({
+      applicationData,
+      operationArguments: { modelEndpoint, requestData: 'build a cli' },
+    })
 
     await getGoals.run()
 

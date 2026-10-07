@@ -1,34 +1,25 @@
-import type { ApplicationData } from '../../application-data.ts'
 import type {
   Json,
-  ModelEndpoint,
+  ModelApiRequestArguments,
   ModelMessages,
   ModelRequestFailureReason,
 } from '../types.ts'
 import type { ModelAnswer } from './model-answer.ts'
 import { OpenAiRequest } from './openai-request.ts'
 import { RequestParser } from './request-parser.ts'
+import { OperationWithResult } from '../../operation.ts'
 
-export abstract class ModelApiRequest<TRequest, TResponse> {
+export abstract class ModelApiRequest<TRequest, TResponse>
+  extends OperationWithResult<ModelApiRequestArguments<TRequest>, TResponse> {
+  protected override succeeded = false
   messages: ModelMessages[] = []
   apiRequest!: OpenAiRequest
-  private modelEndpoint: ModelEndpoint
-  private applicationData: ApplicationData
-  private succeeded: boolean
-  private reason: ModelRequestFailureReason = ''
+  private failureReasonValue: ModelRequestFailureReason = ''
   private answer!: ModelAnswer
   private validatedResponse!: TResponse
-  protected requestData: TRequest
 
-  constructor(
-    modelEndpoint: ModelEndpoint,
-    applicationData: ApplicationData,
-    requestData: TRequest,
-  ) {
-    this.modelEndpoint = modelEndpoint
-    this.applicationData = applicationData
-    this.requestData = requestData
-    this.succeeded = false
+  protected get requestData() {
+    return this.operationArguments.requestData
   }
 
   async run() {
@@ -43,12 +34,8 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
     return this.validatedResponse
   }
 
-  success() {
-    return this.succeeded
-  }
-
   failureReason() {
-    return this.reason
+    return this.failureReasonValue
   }
 
   metaData() {
@@ -64,7 +51,7 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
 
   private async fetchRequest() {
     this.apiRequest = new OpenAiRequest(
-      this.modelEndpoint,
+      this.operationArguments.modelEndpoint,
       this.messages,
       this.applicationData,
     )
@@ -86,7 +73,7 @@ export abstract class ModelApiRequest<TRequest, TResponse> {
   private recordParserResult(parser: RequestParser<TResponse>) {
     this.answer = parser.answer
     this.succeeded = parser.succeeded
-    this.reason = parser.reason as ModelRequestFailureReason
+    this.failureReasonValue = parser.reason as ModelRequestFailureReason
   }
 
   private parserResult(response: TResponse | undefined) {

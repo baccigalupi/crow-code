@@ -29,10 +29,18 @@ describe('commit-message', () => {
         usage: { completion_tokens: 1 },
       }),
     })
-    const request = new GetCommitMessage(modelEndpoint, applicationData, {
-      goal: 'add login',
-      changes: [{ path: 'src/a.ts', diff: 'diff --git a/src/a.ts b/src/a.ts' }],
-      recentSubjects: ['Fix tests'],
+    const request = new GetCommitMessage({
+      applicationData,
+      operationArguments: {
+        modelEndpoint,
+        requestData: {
+          goal: 'add login',
+          changes: [
+            { path: 'src/a.ts', diff: 'diff --git a/src/a.ts b/src/a.ts' },
+          ],
+          recentSubjects: ['Fix tests'],
+        },
+      },
     })
 
     await request.run()
@@ -65,10 +73,12 @@ describe('commit-message', () => {
         usage: { completion_tokens: 1 },
       }),
     })
-    const request = new GetCommitMessage(modelEndpoint, applicationData, {
-      goal: 'add login',
-      changes: [],
-      recentSubjects: [],
+    const request = new GetCommitMessage({
+      applicationData,
+      operationArguments: {
+        modelEndpoint,
+        requestData: { goal: 'add login', changes: [], recentSubjects: [] },
+      },
     })
 
     await request.run()
@@ -97,10 +107,12 @@ describe('commit-message', () => {
         usage: { completion_tokens: 1 },
       }),
     })
-    const request = new GetCommitMessage(modelEndpoint, applicationData, {
-      goal: 'add login',
-      changes: [],
-      recentSubjects: [],
+    const request = new GetCommitMessage({
+      applicationData,
+      operationArguments: {
+        modelEndpoint,
+        requestData: { goal: 'add login', changes: [], recentSubjects: [] },
+      },
     })
 
     await request.run()
@@ -129,10 +141,12 @@ describe('commit-message', () => {
         usage: { completion_tokens: 1 },
       }),
     })
-    const request = new GetCommitMessage(modelEndpoint, applicationData, {
-      goal: 'add login',
-      changes: [],
-      recentSubjects: [],
+    const request = new GetCommitMessage({
+      applicationData,
+      operationArguments: {
+        modelEndpoint,
+        requestData: { goal: 'add login', changes: [], recentSubjects: [] },
+      },
     })
 
     await request.run()
@@ -161,10 +175,12 @@ describe('commit-message', () => {
         usage: { completion_tokens: 1 },
       }),
     })
-    const request = new GetCommitMessage(modelEndpoint, applicationData, {
-      goal: 'add login',
-      changes: [],
-      recentSubjects: [],
+    const request = new GetCommitMessage({
+      applicationData,
+      operationArguments: {
+        modelEndpoint,
+        requestData: { goal: 'add login', changes: [], recentSubjects: [] },
+      },
     })
 
     await request.run()
@@ -193,10 +209,12 @@ describe('commit-message', () => {
         usage: { completion_tokens: 1 },
       }),
     })
-    const request = new GetCommitMessage(modelEndpoint, applicationData, {
-      goal: 'add login',
-      changes: [],
-      recentSubjects: [],
+    const request = new GetCommitMessage({
+      applicationData,
+      operationArguments: {
+        modelEndpoint,
+        requestData: { goal: 'add login', changes: [], recentSubjects: [] },
+      },
     })
 
     await request.run()
