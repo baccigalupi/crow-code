@@ -1,58 +1,49 @@
-import type { Logger } from '../types.ts'
-import type { DatabaseQuerySerializer } from './types.ts'
+import type { ApplicationOperationArguments } from '../types.ts'
+import type {
+  DatabaseQueryArguments,
+  DatabaseQuerySerializer,
+} from './types.ts'
+import { OperationWithResult } from '../operation.ts'
 
 const defaultSerializer = <T>(value: T): T => value // passes values through unchanged
 
-export class DatabaseQuery<Result, Serialized = Result[]> {
-  private query: PromiseLike<Result[]>
-  private logger: Logger
-  private queryResult: Result[]
-  private succeeded: boolean
-  private resultSerializer: DatabaseQuerySerializer<Result[], Serialized>
+export class DatabaseQuery<Result, Serialized = Result[]>
+  extends OperationWithResult<
+    DatabaseQueryArguments<Result, Serialized>,
+    Serialized
+  > {
+  private queryResult: Result[] = []
+  declare private resultSerializer: DatabaseQuerySerializer<
+    Result[],
+    Serialized
+  >
 
-  constructor(
-    query: PromiseLike<Result[]>,
-    logger: Logger,
-    resultSerializer: DatabaseQuerySerializer<Result[], Serialized> =
-      defaultSerializer as DatabaseQuerySerializer<Result[], Serialized>,
-  ) {
-    this.query = query
-    this.logger = logger
-    this.queryResult = []
-    this.succeeded = false
-    this.resultSerializer = resultSerializer
+  protected override unpackArguments() {
+    this.resultSerializer = defaultSerializer as DatabaseQuerySerializer<
+      Result[],
+      Serialized
+    >
+    if (this.operationArguments.resultSerializer) {
+      this.resultSerializer = this.operationArguments.resultSerializer
+    }
   }
 
   async run() {
     try {
-      await this.runQuery()
+      this.queryResult = await this.operationArguments.query
     } catch (error) {
-      this.handleError(error)
+      this.fail((error as Error).message)
     }
     return this
-  }
-
-  success() {
-    return this.succeeded
   }
 
   result() {
     return this.resultSerializer(this.queryResult)
   }
-
-  private async runQuery() {
-    this.queryResult = await this.query
-    this.succeeded = true
-  }
-
-  private handleError(error: unknown) {
-    this.logger.error((error as Error).message)
-  }
 }
 
-export const databaseQuery = async <Result, Serialized = Result[]>(
-  query: PromiseLike<Result[]>,
-  logger: Logger,
-  resultSerializer: DatabaseQuerySerializer<Result[], Serialized> =
-    defaultSerializer as DatabaseQuerySerializer<Result[], Serialized>,
-) => await new DatabaseQuery(query, logger, resultSerializer).run()
+export const databaseQuery = <Result, Serialized = Result[]>(
+  args: ApplicationOperationArguments<
+    DatabaseQueryArguments<Result, Serialized>
+  >,
+) => new DatabaseQuery<Result, Serialized>(args)

@@ -59,11 +59,10 @@ export class ModelFindAllByFilters {
   }
 
   private async runQuery(query: PromiseLike<ModelWithProviderRow[]>) {
-    const databaseQueryResult = await databaseQuery(
-      query,
-      this.applicationData.logger(),
-      this.serializer(),
-    )
+    const databaseQueryResult = await databaseQuery({
+      applicationData: this.applicationData,
+      operationArguments: { query, resultSerializer: this.serializer() },
+    }).run()
     return databaseQueryResult.result()
   }
 }

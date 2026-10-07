@@ -2,6 +2,11 @@ export type DatabaseQuerySerializer<Result, Serialized> = (
   result: Result,
 ) => Serialized
 
+export type DatabaseQueryArguments<Result, Serialized> = {
+  query: PromiseLike<Result[]>
+  resultSerializer?: DatabaseQuerySerializer<Result[], Serialized>
+}
+
 export type RecordParamValue =
   | string
   | number
