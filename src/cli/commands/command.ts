@@ -1,17 +1,29 @@
 import type { ApplicationData } from '../../application-data.ts'
-import type { ParsedArgumentsOptions } from '../types.ts'
+import { Operation } from '../../operation.ts'
+import type { ApplicationOperationArguments } from '../../types.ts'
+import type { ParsedArguments } from '../types.ts'
 
-export abstract class Command {
-  protected applicationData: ApplicationData
-  protected commands: string[]
-  protected options: ParsedArgumentsOptions
+export abstract class Command extends Operation<ParsedArguments> {
+  protected logPrefix = 'Command: '
 
-  constructor(applicationData: ApplicationData) {
-    this.applicationData = applicationData
-    this.commands = applicationData.parsedArguments().commands
-    this.options = applicationData.parsedArguments().options
+  protected get commands() {
+    return this.operationArguments.commands
+  }
+
+  protected get options() {
+    return this.operationArguments.options
   }
 
   abstract isMatch(): boolean
-  abstract run(): Promise<void>
 }
+
+export const command = <T extends Command>(
+  CommandClass: new (
+    args: ApplicationOperationArguments<ParsedArguments>,
+  ) => T,
+  applicationData: ApplicationData,
+): T =>
+  new CommandClass({
+    applicationData,
+    operationArguments: applicationData.parsedArguments(),
+  })

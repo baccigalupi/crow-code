@@ -9,6 +9,7 @@ export class Repl extends Command {
 
   async run() {
     await this.runner().run()
+    return this
   }
 
   runner() {

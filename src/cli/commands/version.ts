@@ -8,6 +8,6 @@ export class Version extends Command {
 
   run() {
     this.applicationData.consoleLog()(`crow ${denoConfig.version}`)
-    return Promise.resolve()
+    return Promise.resolve(this)
   }
 }

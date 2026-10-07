@@ -1,5 +1,5 @@
 import type { ApplicationData } from './application-data.ts'
-import type { Command } from './cli/commands/command.ts'
+import { type Command, command } from './cli/commands/command.ts'
 import { AddProvider } from './cli/commands/add-provider.ts'
 import { CreateModelCatalog } from './cli/commands/create-model-catalog.ts'
 import { Help } from './cli/commands/help.ts'
@@ -23,11 +23,11 @@ class Cli {
 
   private commands(): Command[] {
     return [
-      new Version(this.applicationData),
-      new CreateModelCatalog(this.applicationData),
-      new AddProvider(this.applicationData),
-      new Repl(this.applicationData),
-      new Help(this.applicationData),
+      command(Version, this.applicationData),
+      command(CreateModelCatalog, this.applicationData),
+      command(AddProvider, this.applicationData),
+      command(Repl, this.applicationData),
+      command(Help, this.applicationData),
     ]
   }
 

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, it, mock } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { AddProvider } from '../../../src/cli/commands/add-provider.ts'
+import { command } from '../../../src/cli/commands/command.ts'
 import { openAndMigrateDatabase } from '../../../src/database/open-and-migrate-database.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
@@ -14,17 +15,17 @@ describe('AddProvider', () => {
   it('when the command is add-provider, matches', () => {
     const applicationData = mockApplicationData({ args: ['add-provider'] })
 
-    const command = new AddProvider(applicationData)
+    const addProvider = command(AddProvider, applicationData)
 
-    expect(command.isMatch()).toBe(true)
+    expect(addProvider.isMatch()).toBe(true)
   })
 
   it('when the command is something else, does not match', () => {
     const applicationData = mockApplicationData({ args: ['git-commit'] })
 
-    const command = new AddProvider(applicationData)
+    const addProvider = command(AddProvider, applicationData)
 
-    expect(command.isMatch()).toBe(false)
+    expect(addProvider.isMatch()).toBe(false)
   })
 
   it('when run with provider params, creates the provider in the injected crow directory', async () => {
@@ -44,7 +45,7 @@ describe('AddProvider', () => {
       database,
     })
 
-    await new AddProvider(applicationData).run()
+    await command(AddProvider, applicationData).run()
 
     const rows = await database('providers').select('*')
     expect(rows).toEqual([{
@@ -76,7 +77,7 @@ describe('AddProvider', () => {
       consoleLog,
     })
 
-    await new AddProvider(applicationData).run()
+    await command(AddProvider, applicationData).run()
 
     expect(consoleLog.mock.calls[0].arguments[0]).toBe(
       'Provider added. Add your api key <api_key> to the .env file',
@@ -98,7 +99,7 @@ describe('AddProvider', () => {
       consoleLog,
     })
 
-    await new AddProvider(applicationData).run()
+    await command(AddProvider, applicationData).run()
 
     expect(consoleLog.mock.calls[0].arguments[0]).toBe(
       'Provider added. Add your api key <api_key> to the .env file',
@@ -124,7 +125,7 @@ describe('AddProvider', () => {
       consoleLog,
     })
 
-    await new AddProvider(applicationData).run()
+    await command(AddProvider, applicationData).run()
 
     expect(consoleLog.mock.calls[0].arguments[0]).toBe(
       'Unable to create a provider',

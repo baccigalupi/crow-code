@@ -1,6 +1,6 @@
 import { describe, it, mock } from 'node:test'
 import { expect } from '@std/expect'
-import { Command } from '../../../src/cli/commands/command.ts'
+import { Command, command } from '../../../src/cli/commands/command.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('Command', () => {
@@ -11,13 +11,16 @@ describe('Command', () => {
       }
 
       run() {
-        return Promise.resolve()
+        return Promise.resolve(this)
       }
     }
 
-    const command = new FirstCommand(mockApplicationData({ args: ['first'] }))
+    const first = command(
+      FirstCommand,
+      mockApplicationData({ args: ['first'] }),
+    )
 
-    expect(command.isMatch()).toBe(true)
+    expect(first.isMatch()).toBe(true)
   })
 
   it('when constructed, exposes the parsed options to subclasses', () => {
@@ -27,15 +30,16 @@ describe('Command', () => {
       }
 
       run() {
-        return Promise.resolve()
+        return Promise.resolve(this)
       }
     }
 
-    const command = new GoalCommand(
+    const goal = command(
+      GoalCommand,
       mockApplicationData({ args: ['--goal=ship'] }),
     )
 
-    expect(command.isMatch()).toBe(true)
+    expect(goal.isMatch()).toBe(true)
   })
 
   it('when constructed, exposes the application data to subclasses', async () => {
@@ -47,7 +51,7 @@ describe('Command', () => {
 
       run() {
         this.applicationData.consoleLog()(this.applicationData.crowDirectory())
-        return Promise.resolve()
+        return Promise.resolve(this)
       }
     }
     const applicationData = mockApplicationData({
@@ -55,7 +59,7 @@ describe('Command', () => {
       consoleLog,
     })
 
-    await new EchoDirectory(applicationData).run()
+    await command(EchoDirectory, applicationData).run()
 
     expect(consoleLog.mock.calls[0].arguments[0]).toBe('/tmp/crow')
   })

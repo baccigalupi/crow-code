@@ -7,6 +7,8 @@ import { Command } from './command.ts'
 export class AddProvider extends Command {
   private dbRecordCreator!: CreateProvider
 
+  protected override logPrefix = 'Add provider: '
+
   isMatch() {
     return this.commands[0] === 'add-provider'
   }
@@ -14,13 +16,13 @@ export class AddProvider extends Command {
   async run() {
     await this.createProvider()
     this.log()
+    return this
   }
 
   private async createProvider() {
-    this.dbRecordCreator = await createProvider(
-      this.applicationData,
-      this.options,
-    ).run()
+    this.dbRecordCreator = await this.runSubOperation(
+      createProvider(this.applicationData, this.options),
+    )
   }
 
   private log() {

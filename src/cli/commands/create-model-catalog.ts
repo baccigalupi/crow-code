@@ -8,5 +8,6 @@ export class CreateModelCatalog extends Command {
 
   async run() {
     await populateModels(this.applicationData)
+    return this
   }
 }

@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
+import { command } from '../../../src/cli/commands/command.ts'
 import { CreateModelCatalog } from '../../../src/cli/commands/create-model-catalog.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import { mockFetchSuccess } from '../../support/mock-fetch.ts'
@@ -21,17 +22,17 @@ describe('CreateModelCatalog', () => {
       args: ['create-model-catalog'],
     })
 
-    const command = new CreateModelCatalog(applicationData)
+    const catalog = command(CreateModelCatalog, applicationData)
 
-    expect(command.isMatch()).toBe(true)
+    expect(catalog.isMatch()).toBe(true)
   })
 
   it('when the command is something else, does not match', () => {
     const applicationData = mockApplicationData({ args: ['git-commit'] })
 
-    const command = new CreateModelCatalog(applicationData)
+    const catalog = command(CreateModelCatalog, applicationData)
 
-    expect(command.isMatch()).toBe(false)
+    expect(catalog.isMatch()).toBe(false)
   })
 
   it('when run, populates models from database providers', async () => {
@@ -52,7 +53,7 @@ describe('CreateModelCatalog', () => {
       fetch: fetchMock,
     })
 
-    await new CreateModelCatalog(applicationData).run()
+    await command(CreateModelCatalog, applicationData).run()
 
     expect(await database('models').select('identifier')).toEqual([
       { identifier: 'author/model' },

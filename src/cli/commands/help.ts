@@ -13,6 +13,6 @@ export class Help extends Command {
 
   run() {
     this.applicationData.consoleLog()(usageText)
-    return Promise.resolve()
+    return Promise.resolve(this)
   }
 }
