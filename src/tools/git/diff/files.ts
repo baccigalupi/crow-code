@@ -13,6 +13,7 @@ type OptionalGitDiffArguments = Pick<GitDiffArguments, 'applicationData'>
 
 export class GitDiffFiles extends ExecCli<TaskArguments, ChangedFile[]> {
   executable = 'git'
+  protected override logPrefix = 'Git error'
 
   executableOptions() {
     return {
@@ -29,10 +30,6 @@ export class GitDiffFiles extends ExecCli<TaskArguments, ChangedFile[]> {
 
   emptyResult() {
     return []
-  }
-
-  errorPrefix() {
-    return 'Git error:'
   }
 }
 

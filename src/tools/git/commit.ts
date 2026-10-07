@@ -10,6 +10,7 @@ type GitCommitArguments = ApplicationOperationArguments<TaskArguments>
 
 export class GitCommit extends ExecCli<TaskArguments, string> {
   executable = 'git'
+  protected override logPrefix = 'Git error'
 
   executableOptions() {
     if (!this.operationArguments.paths) return { args: this.commitArgs() }
@@ -29,10 +30,6 @@ export class GitCommit extends ExecCli<TaskArguments, string> {
 
   emptyResult() {
     return ''
-  }
-
-  errorPrefix() {
-    return 'Git error:'
   }
 }
 

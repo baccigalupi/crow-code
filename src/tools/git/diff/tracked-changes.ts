@@ -16,6 +16,7 @@ type OptionalGitTrackedChangesArguments = Pick<
 
 export class GitTrackedChanges extends ExecCli<TaskArguments, GitFileDiff[]> {
   executable = 'git'
+  protected override logPrefix = 'Git error'
 
   executableOptions() {
     if (!this.operationArguments.filter) return { args: ['diff', 'HEAD'] }
@@ -29,10 +30,6 @@ export class GitTrackedChanges extends ExecCli<TaskArguments, GitFileDiff[]> {
 
   emptyResult() {
     return []
-  }
-
-  errorPrefix() {
-    return 'Git error:'
   }
 }
 

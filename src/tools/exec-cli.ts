@@ -1,5 +1,5 @@
 import { OperationWithResult } from '../operation.ts'
-import type { DenoCommand, Logger } from '../types.ts'
+import type { DenoCommand } from '../types.ts'
 
 export abstract class ExecCli<T extends Record<string, unknown>, U>
   extends OperationWithResult<T, U> {
@@ -7,18 +7,16 @@ export abstract class ExecCli<T extends Record<string, unknown>, U>
   private command!: Deno.Command
   private response!: Deno.CommandOutput
   protected responseText!: string
-  declare private logger: Logger
 
   protected override unpackArguments() {
     this.denoCommand = this.applicationData.denoCommand()
-    this.logger = this.applicationData.logger()
   }
 
   async run() {
     try {
       await this.runCommand()
     } catch (error) {
-      this.handleError((error as Error).message)
+      this.fail((error as Error).message)
     }
 
     return this
@@ -36,7 +34,6 @@ export abstract class ExecCli<T extends Record<string, unknown>, U>
   abstract parse(): U
   abstract emptyResult(): U
   abstract executableOptions(): Deno.CommandOptions
-  abstract errorPrefix(): string
 
   protected isSuccessful(response: Deno.CommandOutput) {
     return response.success
@@ -57,12 +54,7 @@ export abstract class ExecCli<T extends Record<string, unknown>, U>
   private handleErrors() {
     if (this.success()) return
 
-    const errorMessage = new TextDecoder().decode(this.response.stderr)
-    this.handleError(errorMessage)
-  }
-
-  private handleError(errorMessage: string) {
-    this.logger.error(`${this.errorPrefix()} ${errorMessage}`)
+    this.fail(new TextDecoder().decode(this.response.stderr))
   }
 
   private setCommand() {

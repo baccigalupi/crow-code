@@ -14,6 +14,7 @@ type OptionalGitRecentSubjectsArguments = Pick<
 
 export class GitRecentSubjects extends ExecCli<TaskArguments, string[]> {
   executable = 'git'
+  protected override logPrefix = 'Git error'
 
   executableOptions() {
     const count = this.operationArguments.count || 10
@@ -28,10 +29,6 @@ export class GitRecentSubjects extends ExecCli<TaskArguments, string[]> {
 
   emptyResult() {
     return []
-  }
-
-  errorPrefix() {
-    return 'Git error:'
   }
 }
 

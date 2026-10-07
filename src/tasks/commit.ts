@@ -1,6 +1,6 @@
 import type { CommitMessage } from '../model-requests/types.ts'
 import type { GitFileDiff } from '../tools/types.ts'
-import type { ApplicationOperationArguments, Logger } from '../types.ts'
+import type { ApplicationOperationArguments } from '../types.ts'
 import { gitChanges } from '../tools/git/diff/changes.ts'
 import { commitMessage } from './commit/message.ts'
 import { stageAndCommit } from './commit/stage.ts'
@@ -14,13 +14,9 @@ type TaskArguments = {
 type CommitArguments = ApplicationOperationArguments<TaskArguments>
 
 export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
-  declare private logger: Logger
+  protected override logPrefix = 'Task error'
   private changes: GitFileDiff[] = []
   private message: CommitMessage = { subject: '', body: '' }
-
-  protected override unpackArguments() {
-    this.logger = this.applicationData.logger()
-  }
 
   async run() {
     await this.collectChanges()
@@ -40,6 +36,7 @@ export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
     }).run()
     this.changes = collected.result()
     this.succeeded = collected.success() && this.hasChanges()
+    if (!collected.success()) this.fail('failed to collect changes')
   }
 
   private files() {
@@ -49,7 +46,7 @@ export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
 
   private hasChanges() {
     const missing = this.changes.length === 0
-    if (missing) this.logger.error('Task error: no changes to commit')
+    if (missing) this.fail('no changes to commit')
     return !missing
   }
 
@@ -58,6 +55,7 @@ export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
     const message = await commitMessage(this.messageArguments())
     this.succeeded = message !== undefined
     if (message !== undefined) this.message = message
+    if (!this.succeeded) this.fail('failed to generate a commit message')
   }
 
   private messageArguments() {
@@ -74,6 +72,7 @@ export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
     if (!this.succeeded) return
     const staged = await stageAndCommit(this.stageArguments()).run()
     this.succeeded = staged.success()
+    if (!this.succeeded) this.fail('failed to stage and commit')
   }
 
   private fullMessage() {

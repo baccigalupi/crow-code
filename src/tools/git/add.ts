@@ -11,6 +11,7 @@ type OptionalGitAddArguments = Pick<GitAddArguments, 'applicationData'>
 
 export class GitAdd extends ExecCli<TaskArguments, string> {
   executable = 'git'
+  protected override logPrefix = 'Git error'
 
   executableOptions() {
     if (!this.operationArguments.paths) return { args: ['add', '--all'] }
@@ -24,10 +25,6 @@ export class GitAdd extends ExecCli<TaskArguments, string> {
 
   emptyResult() {
     return ''
-  }
-
-  errorPrefix() {
-    return 'Git error:'
   }
 }
 

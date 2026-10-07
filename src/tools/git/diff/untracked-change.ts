@@ -10,6 +10,7 @@ type GitUntrackedChangeArguments = ApplicationOperationArguments<TaskArguments>
 
 export class GitUntrackedChange extends ExecCli<TaskArguments, GitFileDiff> {
   executable = 'git'
+  protected override logPrefix = 'Git error'
 
   executableOptions() {
     return {
@@ -26,10 +27,6 @@ export class GitUntrackedChange extends ExecCli<TaskArguments, GitFileDiff> {
 
   emptyResult() {
     return { path: '', diff: '' }
-  }
-
-  errorPrefix() {
-    return 'Git error:'
   }
 
   protected override isSuccessful(response: Deno.CommandOutput) {
