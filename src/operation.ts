@@ -11,7 +11,7 @@ export abstract class Operation<OperationArguments> implements AsyncOperation {
   protected operationArguments: OperationArguments
   protected succeeded = true
   protected logger: Logger
-  protected reason = ''
+  reason = ''
   protected logPrefix = ''
   protected subOperations: AsyncOperation[]
 
@@ -32,6 +32,12 @@ export abstract class Operation<OperationArguments> implements AsyncOperation {
 
   abstract run(): Promise<AsyncOperation>
 
+  protected subResults<Result>() {
+    return this.subOperations.map(
+      (operation) => (operation as AsyncOperationWithResult<Result>).result(),
+    )
+  }
+
   protected async runSubOperation<T extends AsyncOperation>(
     operation: T,
   ) {
@@ -40,7 +46,7 @@ export abstract class Operation<OperationArguments> implements AsyncOperation {
     await operation.run()
     this.subOperations.push(operation)
     if (!operation.success()) {
-      this.fail(`Error running suboperation: ${operation}`)
+      this.fail(`Error running suboperation: ${operation.reason}`)
     }
     return operation
   }

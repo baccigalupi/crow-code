@@ -11,6 +11,7 @@ export type ApplicationOperationArguments<T> = {
 export interface AsyncOperation {
   run(): Promise<AsyncOperation>
   success(): boolean
+  reason: string
 }
 
 export interface AsyncOperationWithResult<Result> extends AsyncOperation {

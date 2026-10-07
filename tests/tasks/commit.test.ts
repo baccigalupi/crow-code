@@ -124,7 +124,7 @@ describe('commit', () => {
 
     await task.run()
 
-    expect(commandSpy.calls.length).toBe(2)
+    expect(commandSpy.calls.length).toBe(1)
     expect(fetch.calls.length).toBe(0)
     expect(task.success()).toBe(false)
     expect(task.result()).toEqual({ subject: '', body: '' })

@@ -1,7 +1,7 @@
-import type { ApplicationData } from '../../../application-data.ts'
 import type { ApplicationOperationArguments } from '../../../types.ts'
+import { OperationWithResult } from '../../../operation.ts'
 import { gitDiffFiles } from './files.ts'
-import type { ChangedFile } from '../../types.ts'
+import type { ChangedFile, GitFileDiff } from '../../types.ts'
 import {
   type GitUntrackedChange,
   gitUntrackedChange,
@@ -18,23 +18,10 @@ type OptionalGitUntrackedChangesArguments = Pick<
   'applicationData'
 >
 
-export class GitUntrackedChanges {
-  applicationData: ApplicationData
-  operationArguments: TaskArguments
+export class GitUntrackedChanges
+  extends OperationWithResult<TaskArguments, GitFileDiff[]> {
   private untrackedFiles: ChangedFile[] = []
   private untrackedChanges: GitUntrackedChange[] = []
-  private succeeded = false
-
-  constructor(
-    { applicationData, operationArguments }: GitUntrackedChangesArguments,
-  ) {
-    this.applicationData = applicationData
-    this.operationArguments = operationArguments
-  }
-
-  success() {
-    return this.succeeded
-  }
 
   async run() {
     await this.getChangedFiles()
@@ -55,7 +42,7 @@ export class GitUntrackedChanges {
       operationArguments: this.operationArguments,
     }).run()
     this.untrackedFiles = this.filterUntracked(files.result())
-    this.succeeded = files.success()
+    if (!files.success()) this.fail(files.reason)
   }
 
   private filterUntracked(files: ChangedFile[]) {
@@ -68,7 +55,8 @@ export class GitUntrackedChanges {
     this.untrackedChanges = await Promise.all(
       this.untrackedFiles.map((file) => this.getUntrackedChange(file.path)),
     )
-    this.succeeded = this.untrackedChanges.every((change) => change.success())
+    const failed = this.untrackedChanges.find((change) => !change.success())
+    if (failed) this.fail(failed.reason)
   }
 
   private getUntrackedChange(path: string) {
