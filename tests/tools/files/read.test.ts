@@ -58,15 +58,14 @@ describe('readFile', () => {
 
     const file = readFile({
       applicationData,
-      operationArguments: { path },
-      pathPermissions: permissions,
+      operationArguments: { path, pathPermissions: permissions },
     })
     await file.run()
 
     expect(file.success()).toBe(false)
     expect(file.result()).toEqual({ path, text: '' })
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      `File error: path not allowed: ${path}`,
+      `Read file: path not allowed: ${path}`,
     )
   })
 
@@ -81,7 +80,7 @@ describe('readFile', () => {
     expect(file.success()).toBe(false)
     expect(file.result()).toEqual({ path, text: '' })
     expect(loggerErrorSpy.calls[0].args[0]).toContain(
-      'File error: No such file or directory',
+      'Read file: No such file or directory',
     )
   })
 

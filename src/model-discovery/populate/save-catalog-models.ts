@@ -1,30 +1,39 @@
 import type { Knex } from 'knex'
 import type { ApplicationData } from '../../application-data.ts'
+import type { CatalogModel, SaveCatalogModelsArguments } from '../types.ts'
 import { createModel } from '../../domain/models/create.ts'
-import type { CatalogModel } from '../types.ts'
+import { Operation } from '../../operation.ts'
 
-class SaveCatalogModels {
-  private applicationData: ApplicationData
-  private providerId: number
-  private models: CatalogModel[]
-
-  constructor(
-    applicationData: ApplicationData,
-    providerId: number,
-    models: CatalogModel[],
-  ) {
-    this.applicationData = applicationData
-    this.providerId = providerId
-    this.models = models
-  }
+export class SaveCatalogModels extends Operation<SaveCatalogModelsArguments> {
+  protected override logPrefix = 'Save catalog models: '
 
   async run() {
-    if (this.models.length === 0) return
+    if (this.operationArguments.models.length === 0) return this
+
+    await this.tryRefresh()
+    return this
+  }
+
+  private async tryRefresh() {
     try {
       await this.refreshCatalog()
     } catch (error) {
-      this.logFailure(error)
+      this.fail(this.rollbackMessage(error))
     }
+  }
+
+  private rollbackMessage(error: unknown) {
+    return `Model catalog refresh for provider ${this.providerId()} rolled back: ${
+      (error as Error).message
+    }`
+  }
+
+  private providerId() {
+    return this.operationArguments.providerId
+  }
+
+  private models() {
+    return this.operationArguments.models
   }
 
   private async refreshCatalog() {
@@ -34,9 +43,9 @@ class SaveCatalogModels {
   }
 
   private async refresh(transaction: Knex.Transaction) {
-    await transaction('models').where('provider_id', this.providerId).delete()
+    await transaction('models').where('provider_id', this.providerId()).delete()
     const saveResults = await Promise.all(
-      this.models.map((model) => this.save(model, transaction)),
+      this.models().map((model) => this.save(model, transaction)),
     )
     await this.cancelIfNothingSaved(transaction, saveResults)
   }
@@ -47,7 +56,7 @@ class SaveCatalogModels {
   ) {
     if (saveResults.includes(true)) return
     this.applicationData.logger().error(
-      `No models could be saved for provider ${this.providerId}; catalog refresh rolled back`,
+      `No models could be saved for provider ${this.providerId()}; catalog refresh rolled back`,
     )
     await transaction.rollback()
   }
@@ -60,23 +69,18 @@ class SaveCatalogModels {
     return created.success()
   }
 
-  private logFailure(error: unknown) {
-    this.applicationData.logger().error(
-      `Model catalog refresh for provider ${this.providerId} rolled back: ${
-        (error as Error).message
-      }`,
-    )
-  }
-
   private toModelParams(model: CatalogModel) {
-    return { ...model, identifier: model.id, providerId: this.providerId }
+    return { ...model, identifier: model.id, providerId: this.providerId() }
   }
 }
 
-export const saveCatalogModels = async (
+export const saveCatalogModels = (
   applicationData: ApplicationData,
   providerId: number,
   models: CatalogModel[],
 ) => {
-  await new SaveCatalogModels(applicationData, providerId, models).run()
+  return new SaveCatalogModels({
+    applicationData,
+    operationArguments: { providerId, models },
+  })
 }

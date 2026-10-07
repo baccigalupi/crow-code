@@ -1,30 +1,22 @@
 import type { ApplicationData } from '../../application-data.ts'
+import type { FetchProviderArguments } from '../types.ts'
+import { OperationWithResult } from '../../operation.ts'
 
-class FetchProvider<ApiRecord, T> {
-  private applicationData: ApplicationData
-  private url: string
-  private parse: (raw: ApiRecord) => T[]
-  private timeoutMs: number
+export class FetchProvider<ApiRecord, T>
+  extends OperationWithResult<FetchProviderArguments<ApiRecord, T>, T[]> {
+  protected override logPrefix = 'Fetch provider: '
   private records: T[] = []
-
-  constructor(
-    applicationData: ApplicationData,
-    url: string,
-    parse: (raw: ApiRecord) => T[],
-    timeoutMs: number,
-  ) {
-    this.applicationData = applicationData
-    this.url = url
-    this.parse = parse
-    this.timeoutMs = timeoutMs
-  }
 
   async run() {
     try {
       await this.send()
     } catch {
-      this.fail()
+      this.fail(`Catalog request failed: ${this.operationArguments.url}`)
     }
+    return this
+  }
+
+  result() {
     return this.records
   }
 
@@ -34,40 +26,36 @@ class FetchProvider<ApiRecord, T> {
   }
 
   private async fetch() {
-    return await this.applicationData.fetch()(this.url, {
-      signal: AbortSignal.timeout(this.timeoutMs),
+    return await this.applicationData.fetch()(this.operationArguments.url, {
+      signal: AbortSignal.timeout(this.operationArguments.timeoutMs),
     })
   }
 
   private async handleResponse(response: Response) {
     if (response.ok) {
-      this.records = this.parse((await response.json()) as ApiRecord)
+      this.records = this.operationArguments.parse(
+        (await response.json()) as ApiRecord,
+      )
     } else {
-      this.logError(response.status)
+      this.failResponse(response)
     }
   }
 
-  private fail() {
-    this.applicationData.logger().error(`Catalog request failed: ${this.url}`)
-  }
-
-  private logError(status: number) {
-    this.applicationData.logger().error(
-      `Catalog request failed with status ${status}: ${this.url}`,
+  private failResponse(response: Response) {
+    this.fail(
+      `Catalog request failed with status ${response.status}: ${this.operationArguments.url}`,
     )
   }
 }
 
-export const fetchProvider = async <ApiRecord, T>(
+export const fetchProvider = <ApiRecord, T>(
   applicationData: ApplicationData,
   url: string,
   parse: (raw: ApiRecord) => T[],
   timeoutMs: number,
 ) => {
-  return await new FetchProvider(
+  return new FetchProvider<ApiRecord, T>({
     applicationData,
-    url,
-    parse,
-    timeoutMs,
-  ).run()
+    operationArguments: { url, parse, timeoutMs },
+  })
 }

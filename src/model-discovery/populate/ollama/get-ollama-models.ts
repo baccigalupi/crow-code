@@ -23,7 +23,8 @@ export const getOllamaModels = async (
   provider: ProviderEntity,
   applicationData: ApplicationData,
 ) => {
-  const models = await fetchOllamaModels(provider, applicationData)
-  await saveCatalogModels(applicationData, provider.id(), models)
+  const models = (await fetchOllamaModels(provider, applicationData)
+    .run()).result()
+  await saveCatalogModels(applicationData, provider.id(), models).run()
   return models
 }

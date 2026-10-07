@@ -1,46 +1,23 @@
-import type { ApplicationData } from '../../application-data.ts'
-import type { Logger } from '../../types.ts'
+import type { ApplicationOperationArguments } from '../../types.ts'
 import type { PathPermissions } from '../path-permissions.ts'
-import type { SearchMatch } from '../types.ts'
+import type { SearchListing } from '../types.ts'
 import { sortedMatches } from './search/sorted-matches.ts'
+import { OperationWithResult } from '../../operation.ts'
 
-type CommandArguments = {
+type TaskArguments = {
   path: string
   pattern: string
   flags?: string
   ignoredDirectories?: string[]
-}
-
-type SearchFilesArguments = {
-  applicationData: ApplicationData
-  commandArguments: CommandArguments
   pathPermissions?: PathPermissions
 }
 
-export class SearchFiles {
-  commandArguments: CommandArguments
-  private permissions: PathPermissions
-  private logger: Logger
-  private matches: SearchMatch[]
-  private succeeded: boolean
+type SearchFilesArguments = ApplicationOperationArguments<TaskArguments>
 
-  constructor(
-    {
-      applicationData,
-      commandArguments,
-      pathPermissions = applicationData.pathPermissions(),
-    }: SearchFilesArguments,
-  ) {
-    this.commandArguments = commandArguments
-    this.permissions = pathPermissions
-    this.logger = applicationData.logger()
-    this.matches = []
-    this.succeeded = false
-  }
-
-  success() {
-    return this.succeeded
-  }
+export class SearchFiles
+  extends OperationWithResult<TaskArguments, SearchListing> {
+  protected override logPrefix = 'Search files: '
+  private matches: SearchListing['matches'] = []
 
   async run() {
     if (await this.pathNotAllowed()) return this
@@ -49,29 +26,31 @@ export class SearchFiles {
     return this
   }
 
-  result() {
-    return { path: this.commandArguments.path, matches: this.matches }
+  result(): SearchListing {
+    return { path: this.operationArguments.path, matches: this.matches }
+  }
+
+  private get permissions() {
+    if (this.operationArguments.pathPermissions) {
+      return this.operationArguments.pathPermissions
+    }
+    return this.applicationData.pathPermissions()
   }
 
   private async pathNotAllowed() {
-    const allowed = await this.permissions.allows(this.commandArguments.path)
+    const allowed = await this.permissions.allows(this.operationArguments.path)
     if (!allowed) {
-      this.handleError(`path not allowed: ${this.commandArguments.path}`)
+      this.fail(`path not allowed: ${this.operationArguments.path}`)
     }
     return !allowed
   }
 
   private async search() {
     try {
-      this.matches = await sortedMatches(this.commandArguments).all()
-      this.succeeded = true
+      this.matches = await sortedMatches(this.operationArguments).all()
     } catch (error) {
-      this.handleError((error as Error).message)
+      this.fail((error as Error).message)
     }
-  }
-
-  private handleError(message: string) {
-    this.logger.error(`File error: ${message}`)
   }
 }
 

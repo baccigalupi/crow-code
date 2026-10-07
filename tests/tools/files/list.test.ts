@@ -59,15 +59,14 @@ describe('list', () => {
 
     const listing = listDirectory({
       applicationData,
-      operationArguments: { path },
-      pathPermissions: permissions,
+      operationArguments: { path, pathPermissions: permissions },
     })
     await listing.run()
 
     expect(listing.success()).toBe(false)
     expect(listing.result()).toEqual({ path, entries: [] })
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      `File error: path not allowed: ${path}`,
+      `List directory: path not allowed: ${path}`,
     )
   })
 
@@ -84,7 +83,7 @@ describe('list', () => {
 
     expect(listing.success()).toBe(false)
     expect(listing.result()).toEqual({ path, entries: [] })
-    expect(loggerErrorSpy.calls[0].args[0]).toContain('File error: ')
+    expect(loggerErrorSpy.calls[0].args[0]).toContain('List directory: ')
     expect(loggerErrorSpy.calls[0].args[0]).toContain(
       'No such file or directory',
     )

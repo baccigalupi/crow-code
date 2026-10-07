@@ -31,7 +31,7 @@ describe('saveCatalogModels', () => {
     await saveCatalogModels(mockApplicationData({ database, logger }), 7, [
       model,
       other,
-    ])
+    ]).run()
 
     const rows = await database('models').orderBy('identifier')
     expect(rows).toHaveLength(2)
@@ -62,7 +62,7 @@ describe('saveCatalogModels', () => {
 
     await saveCatalogModels(mockApplicationData({ database, logger }), 1, [
       model,
-    ])
+    ]).run()
 
     const row = await database('models').first()
     expect(row.identifier).toBe('author/model')
@@ -120,7 +120,7 @@ describe('saveCatalogModels', () => {
 
     await saveCatalogModels(mockApplicationData({ database, logger }), 1, [
       model,
-    ])
+    ]).run()
 
     const rows = await database('models').orderBy('identifier')
     expect(rows).toHaveLength(2)
@@ -154,7 +154,7 @@ describe('saveCatalogModels', () => {
       model,
       { ...model },
       { ...model, id: 'author/other' },
-    ])
+    ]).run()
 
     const rows = await database('models').orderBy('identifier')
     expect(rows).toHaveLength(2)
@@ -189,6 +189,7 @@ describe('saveCatalogModels', () => {
     await database('models').insert(storedModel)
 
     await saveCatalogModels(mockApplicationData({ database, logger }), 1, [])
+      .run()
 
     const rows = await database('models')
     expect(rows).toHaveLength(1)
@@ -232,7 +233,7 @@ describe('saveCatalogModels', () => {
 
     await saveCatalogModels(mockApplicationData({ database, logger }), 1, [
       model as unknown as CatalogModel,
-    ])
+    ]).run()
 
     const rows = await database('models')
     expect(rows).toHaveLength(1)
@@ -264,7 +265,7 @@ describe('saveCatalogModels', () => {
 
     await saveCatalogModels(mockApplicationData({ database, logger }), 9, [
       model,
-    ])
+    ]).run()
 
     expect(loggerErrorSpy.calls[0].args[0]).toContain('disk gone')
   })

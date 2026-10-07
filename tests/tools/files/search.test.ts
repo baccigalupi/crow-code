@@ -22,7 +22,7 @@ describe('search', () => {
 
     const search = searchFiles({
       applicationData,
-      commandArguments: { path, pattern: 'two' },
+      operationArguments: { path, pattern: 'two' },
     })
     await search.run()
 
@@ -42,7 +42,7 @@ describe('search', () => {
 
     const search = searchFiles({
       applicationData,
-      commandArguments: { path, pattern: 'two' },
+      operationArguments: { path, pattern: 'two' },
     })
     await search.run()
 
@@ -59,7 +59,7 @@ describe('search', () => {
 
     const search = searchFiles({
       applicationData,
-      commandArguments: { path, pattern: 'two', ignoredDirectories: [] },
+      operationArguments: { path, pattern: 'two', ignoredDirectories: [] },
     })
     await search.run()
 
@@ -77,7 +77,7 @@ describe('search', () => {
 
     const search = searchFiles({
       applicationData,
-      commandArguments: {
+      operationArguments: {
         path,
         pattern: 'two',
         ignoredDirectories: ['nested'],
@@ -98,7 +98,7 @@ describe('search', () => {
 
     const search = searchFiles({
       applicationData,
-      commandArguments: { path, pattern: 'BETA', flags: 'i' },
+      operationArguments: { path, pattern: 'BETA', flags: 'i' },
     })
     await search.run()
 
@@ -115,14 +115,14 @@ describe('search', () => {
 
     const search = searchFiles({
       applicationData,
-      commandArguments: { path, pattern: '(' },
+      operationArguments: { path, pattern: '(' },
     })
     await search.run()
 
     expect(search.success()).toBe(false)
     expect(search.result()).toEqual({ path, matches: [] })
     expect(loggerErrorSpy.calls[0].args[0]).toContain(
-      'File error: Invalid regular expression',
+      'Search files: Invalid regular expression',
     )
   })
 
@@ -137,15 +137,18 @@ describe('search', () => {
 
     const search = searchFiles({
       applicationData,
-      commandArguments: { path, pattern: 'two' },
-      pathPermissions: permissions,
+      operationArguments: {
+        path,
+        pattern: 'two',
+        pathPermissions: permissions,
+      },
     })
     await search.run()
 
     expect(search.success()).toBe(false)
     expect(search.result()).toEqual({ path, matches: [] })
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      `File error: path not allowed: ${path}`,
+      `Search files: path not allowed: ${path}`,
     )
   })
 
@@ -156,13 +159,13 @@ describe('search', () => {
 
     const search = searchFiles({
       applicationData,
-      commandArguments: { path, pattern: 'two' },
+      operationArguments: { path, pattern: 'two' },
     })
     await search.run()
 
     expect(search.success()).toBe(false)
     expect(search.result()).toEqual({ path, matches: [] })
-    expect(loggerErrorSpy.calls[0].args[0]).toContain('File error: ')
+    expect(loggerErrorSpy.calls[0].args[0]).toContain('Search files: ')
     expect(loggerErrorSpy.calls[0].args[0]).toContain(
       'No such file or directory',
     )
@@ -174,7 +177,7 @@ describe('search', () => {
 
     const search = searchFiles({
       applicationData,
-      commandArguments: { path, pattern: 'two' },
+      operationArguments: { path, pattern: 'two' },
     })
     await search.run()
 
@@ -191,7 +194,7 @@ describe('search', () => {
 
     const search = searchFiles({
       applicationData,
-      commandArguments: { path: 'tests', pattern: 'two' },
+      operationArguments: { path: 'tests', pattern: 'two' },
     })
 
     expect(search).toBeInstanceOf(SearchFiles)
