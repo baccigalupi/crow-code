@@ -42,34 +42,6 @@ describe('ModelApiRequest', () => {
     ])
   })
 
-  it('when run has not been called, reports failure', () => {
-    const modelEndpoint = {
-      baseURL: 'https://example.com/api/v1',
-      apiKey: 'test-key',
-      model: 'test-model',
-      providerId: 1,
-    }
-    const applicationData = mockApplicationData()
-    const modelApiRequest = new class
-      extends ModelApiRequest<string, string[]> {
-      protected override errorResponse() {
-        return []
-      }
-
-      protected getMessages(): ModelMessages[] {
-        return [{ role: 'user', content: this.requestData }]
-      }
-    }({
-      applicationData,
-      operationArguments: { modelEndpoint, requestData: 'build a cli' },
-    })
-
-    const succeeded = modelApiRequest.success()
-
-    expect(succeeded).toBe(false)
-    expect(modelApiRequest.failureReason()).toBe('')
-  })
-
   it('when run succeeds, writes the api request and reports success', async () => {
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',

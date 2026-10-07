@@ -11,7 +11,6 @@ import { OperationWithResult } from '../../operation.ts'
 
 export abstract class ModelApiRequest<TRequest, TResponse>
   extends OperationWithResult<ModelApiRequestArguments<TRequest>, TResponse> {
-  protected override succeeded = false
   messages: ModelMessages[] = []
   apiRequest!: OpenAiRequest
   private failureReasonValue: ModelRequestFailureReason = ''
@@ -25,7 +24,7 @@ export abstract class ModelApiRequest<TRequest, TResponse>
   async run() {
     this.messages = this.getMessages()
     await this.fetchRequest()
-    this.validatedResponse = await this.parseResponse()
+    this.validatedResponse = this.parseResponse()
 
     return this
   }
@@ -50,17 +49,22 @@ export abstract class ModelApiRequest<TRequest, TResponse>
   }
 
   private async fetchRequest() {
-    this.apiRequest = new OpenAiRequest(
-      this.operationArguments.modelEndpoint,
-      this.messages,
-      this.applicationData,
-    )
-    await this.apiRequest.run()
+    this.apiRequest = await this.runSubOperation(this.openAiRequest())
   }
 
-  private async parseResponse() {
+  private openAiRequest() {
+    return new OpenAiRequest({
+      applicationData: this.applicationData,
+      operationArguments: {
+        modelEndpoint: this.operationArguments.modelEndpoint,
+        messages: this.messages,
+      },
+    })
+  }
+
+  private parseResponse() {
     const parser = this.requestParser()
-    const response = await parser.run()
+    const response = parser.run()
     this.recordParserResult(parser)
     return this.parserResult(response)
   }

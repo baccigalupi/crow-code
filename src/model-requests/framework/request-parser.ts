@@ -23,10 +23,10 @@ export class RequestParser<TResponse> {
     this.schemaValidator = schemaValidator
   }
 
-  async run() {
+  run() {
     if (!this.apiRequest.success()) return this.fail('api-error')
 
-    const json = await this.apiRequest.json() as ChatCompletionJson
+    const json = this.apiRequest.result() as ChatCompletionJson
     this.answer = modelAnswer(json, this.apiRequest.benchmark())
     this.parsedResponse = this.answer.answerAsJson()
     return this.validateJson()

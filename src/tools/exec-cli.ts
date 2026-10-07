@@ -3,13 +3,12 @@ import type { DenoCommand } from '../types.ts'
 
 export abstract class ExecCli<T extends Record<string, unknown>, U>
   extends OperationWithResult<T, U> {
-  declare denoCommand: DenoCommand
   private command!: Deno.Command
   private response!: Deno.CommandOutput
   protected responseText!: string
 
-  protected override unpackArguments() {
-    this.denoCommand = this.applicationData.denoCommand()
+  private get denoCommand(): DenoCommand {
+    return this.applicationData.denoCommand()
   }
 
   async run() {

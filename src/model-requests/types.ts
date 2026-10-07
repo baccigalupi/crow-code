@@ -21,6 +21,11 @@ export type ModelEndpoint = {
 
 export type RequestMessages<T> = (input: T) => ModelMessages[]
 
+export type OpenAiRequestArguments = {
+  modelEndpoint: ModelEndpoint
+  messages: ModelMessages[]
+}
+
 export type ModelApiRequestArguments<TRequest> = {
   modelEndpoint: ModelEndpoint
   requestData: TRequest

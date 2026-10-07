@@ -16,21 +16,23 @@ describe('OpenAiRequest', () => {
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClient('["a goal"]'),
     })
-    const request = new OpenAiRequest(
-      {
-        baseURL: 'https://example.com/api/v1',
-        apiKey: 'test-key',
-        model: 'test-model',
-        providerId: 1,
-      },
-      [{ role: 'user', content: 'build a cli' }],
+    const request = new OpenAiRequest({
       applicationData,
-    )
+      operationArguments: {
+        modelEndpoint: {
+          baseURL: 'https://example.com/api/v1',
+          apiKey: 'test-key',
+          model: 'test-model',
+          providerId: 1,
+        },
+        messages: [{ role: 'user', content: 'build a cli' }],
+      },
+    })
 
     await request.run()
 
     expect(request.success()).toBe(true)
-    const json = await request.json()
+    const json = request.result()
     expect(json).toBeDefined()
     expect(json!.choices[0].message.content).toBe('["a goal"]')
   })
@@ -39,16 +41,18 @@ describe('OpenAiRequest', () => {
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClient('["a goal"]'),
     })
-    const request = new OpenAiRequest(
-      {
-        baseURL: 'https://example.com/api/v1',
-        apiKey: 'test-key',
-        model: 'test-model',
-        providerId: 1,
-      },
-      [{ role: 'user', content: 'build a cli' }],
+    const request = new OpenAiRequest({
       applicationData,
-    )
+      operationArguments: {
+        modelEndpoint: {
+          baseURL: 'https://example.com/api/v1',
+          apiKey: 'test-key',
+          model: 'test-model',
+          providerId: 1,
+        },
+        messages: [{ role: 'user', content: 'build a cli' }],
+      },
+    })
 
     await request.run()
 
@@ -67,7 +71,10 @@ describe('OpenAiRequest', () => {
     }
     const messages = [{ role: 'user', content: 'build a cli' }]
 
-    const request = new OpenAiRequest(modelEndpoint, messages, applicationData)
+    const request = new OpenAiRequest({
+      applicationData,
+      operationArguments: { modelEndpoint, messages },
+    })
 
     expect(request.url).toBe('https://example.com/api/v1/chat/completions')
   })
@@ -76,16 +83,18 @@ describe('OpenAiRequest', () => {
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClientNetworkError('down'),
     })
-    const request = new OpenAiRequest(
-      {
-        baseURL: 'https://example.com/api/v1',
-        apiKey: 'test-key',
-        model: 'test-model',
-        providerId: 1,
-      },
-      [{ role: 'user', content: 'build a cli' }],
+    const request = new OpenAiRequest({
       applicationData,
-    )
+      operationArguments: {
+        modelEndpoint: {
+          baseURL: 'https://example.com/api/v1',
+          apiKey: 'test-key',
+          model: 'test-model',
+          providerId: 1,
+        },
+        messages: [{ role: 'user', content: 'build a cli' }],
+      },
+    })
 
     await request.run()
 
@@ -97,16 +106,18 @@ describe('OpenAiRequest', () => {
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClientError(401),
     })
-    const request = new OpenAiRequest(
-      {
-        baseURL: 'https://example.com/api/v1',
-        apiKey: 'test-key',
-        model: 'test-model',
-        providerId: 1,
-      },
-      [{ role: 'user', content: 'build a cli' }],
+    const request = new OpenAiRequest({
       applicationData,
-    )
+      operationArguments: {
+        modelEndpoint: {
+          baseURL: 'https://example.com/api/v1',
+          apiKey: 'test-key',
+          model: 'test-model',
+          providerId: 1,
+        },
+        messages: [{ role: 'user', content: 'build a cli' }],
+      },
+    })
 
     await request.run()
 
@@ -117,16 +128,18 @@ describe('OpenAiRequest', () => {
   it('when the endpoint has an api key, constructs the client with it', async () => {
     const chatClient = mock.fn(mockOpenAiClient(''))
     const applicationData = mockApplicationData({ chatClient })
-    const request = new OpenAiRequest(
-      {
-        baseURL: 'https://example.com/api/v1',
-        apiKey: 'test-key',
-        model: 'test-model',
-        providerId: 1,
-      },
-      [{ role: 'user', content: 'build a cli' }],
+    const request = new OpenAiRequest({
       applicationData,
-    )
+      operationArguments: {
+        modelEndpoint: {
+          baseURL: 'https://example.com/api/v1',
+          apiKey: 'test-key',
+          model: 'test-model',
+          providerId: 1,
+        },
+        messages: [{ role: 'user', content: 'build a cli' }],
+      },
+    })
 
     await request.run()
 
@@ -139,16 +152,18 @@ describe('OpenAiRequest', () => {
   it('when the endpoint has no api key, constructs the client with the placeholder', async () => {
     const chatClient = mock.fn(mockOpenAiClient(''))
     const applicationData = mockApplicationData({ chatClient })
-    const request = new OpenAiRequest(
-      {
-        baseURL: 'https://example.com/api/v1',
-        apiKey: '',
-        model: 'test-model',
-        providerId: 1,
-      },
-      [{ role: 'user', content: 'build a cli' }],
+    const request = new OpenAiRequest({
       applicationData,
-    )
+      operationArguments: {
+        modelEndpoint: {
+          baseURL: 'https://example.com/api/v1',
+          apiKey: '',
+          model: 'test-model',
+          providerId: 1,
+        },
+        messages: [{ role: 'user', content: 'build a cli' }],
+      },
+    })
 
     await request.run()
 
@@ -164,16 +179,18 @@ describe('OpenAiRequest', () => {
       Response.json({ choices: [{ message: { content: '["a goal"]' } }] }),
     ])
     const applicationData = mockApplicationData({ fetch: fetchMock })
-    const request = new OpenAiRequest(
-      {
-        baseURL: 'https://example.com/api/v1',
-        apiKey: 'test-key',
-        model: 'test-model',
-        providerId: 1,
-      },
-      [{ role: 'user', content: 'build a cli' }],
+    const request = new OpenAiRequest({
       applicationData,
-    )
+      operationArguments: {
+        modelEndpoint: {
+          baseURL: 'https://example.com/api/v1',
+          apiKey: 'test-key',
+          model: 'test-model',
+          providerId: 1,
+        },
+        messages: [{ role: 'user', content: 'build a cli' }],
+      },
+    })
 
     await request.run()
 

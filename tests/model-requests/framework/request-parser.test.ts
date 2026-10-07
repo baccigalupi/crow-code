@@ -15,7 +15,10 @@ describe('RequestParser', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({ fetch: mockFetchError(500) })
-    const apiRequest = new OpenAiRequest(modelEndpoint, [], applicationData)
+    const apiRequest = new OpenAiRequest({
+      applicationData,
+      operationArguments: { modelEndpoint, messages: [] },
+    })
     await apiRequest.run()
     const parser = new RequestParser<string[]>(apiRequest, () => true)
 
@@ -39,7 +42,10 @@ describe('RequestParser', () => {
         usage: { completion_tokens: 1 },
       }),
     })
-    const apiRequest = new OpenAiRequest(modelEndpoint, [], applicationData)
+    const apiRequest = new OpenAiRequest({
+      applicationData,
+      operationArguments: { modelEndpoint, messages: [] },
+    })
     await apiRequest.run()
     const parser = new RequestParser<string[]>(apiRequest, () => true)
 
@@ -63,7 +69,10 @@ describe('RequestParser', () => {
         usage: { completion_tokens: 1 },
       }),
     })
-    const apiRequest = new OpenAiRequest(modelEndpoint, [], applicationData)
+    const apiRequest = new OpenAiRequest({
+      applicationData,
+      operationArguments: { modelEndpoint, messages: [] },
+    })
     await apiRequest.run()
     const parser = new RequestParser<string[]>(apiRequest, () => false)
 
@@ -87,7 +96,10 @@ describe('RequestParser', () => {
         usage: { completion_tokens: 3 },
       }),
     })
-    const apiRequest = new OpenAiRequest(modelEndpoint, [], applicationData)
+    const apiRequest = new OpenAiRequest({
+      applicationData,
+      operationArguments: { modelEndpoint, messages: [] },
+    })
     await apiRequest.run()
     const parser = new RequestParser<string[]>(apiRequest, () => true)
 

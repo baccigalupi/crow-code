@@ -1,34 +1,23 @@
 import type OpenAI from 'openai'
 import { ModelRequestErrorHandler } from './model-request-error-handler.ts'
-import type { ApplicationData } from '../../application-data.ts'
+import { OperationWithResult } from '../../operation.ts'
 import type {
   ChatCompletionJson,
-  ModelEndpoint,
-  ModelMessages,
   OpenAiClientOptions,
+  OpenAiRequestArguments,
 } from '../types.ts'
 
-export class OpenAiRequest {
-  url: string
+export class OpenAiRequest extends OperationWithResult<
+  OpenAiRequestArguments,
+  ChatCompletionJson | undefined
+> {
   error?: Error
-  modelEndpoint: ModelEndpoint
-  private messages: ModelMessages[]
-  applicationData: ApplicationData
   private completion?: ChatCompletionJson
-  private startTime: number
-  private endTime: number
+  private startTime = 0
+  private endTime = 0
 
-  constructor(
-    modelEndpoint: ModelEndpoint,
-    messages: ModelMessages[],
-    applicationData: ApplicationData,
-  ) {
-    this.modelEndpoint = modelEndpoint
-    this.messages = messages
-    this.applicationData = applicationData
-    this.url = `${modelEndpoint.baseURL}/chat/completions`
-    this.startTime = 0
-    this.endTime = 0
+  get url() {
+    return `${this.modelEndpoint.baseURL}/chat/completions`
   }
 
   async run() {
@@ -37,24 +26,30 @@ export class OpenAiRequest {
     } catch (error) {
       await this.recordFailure(error as Error)
     }
+    return this
   }
 
-  success() {
-    return this.completion !== undefined
+  result() {
+    return this.completion
   }
 
   benchmark() {
     return { startTime: this.startTime, endTime: this.endTime }
   }
 
-  async json() {
-    return await Promise.resolve(this.completion)
+  private get modelEndpoint() {
+    return this.operationArguments.modelEndpoint
+  }
+
+  private get messages() {
+    return this.operationArguments.messages
   }
 
   private async send() {
     this.startTime = performance.now()
     this.completion = await this.createCompletion()
     this.endTime = performance.now()
+    this.succeeded = true
   }
 
   private chatClient() {
@@ -84,6 +79,7 @@ export class OpenAiRequest {
   private async recordFailure(error: Error) {
     this.endTime = performance.now()
     this.error = error
+    this.succeeded = false
     await this.errorHandler().run()
   }
 

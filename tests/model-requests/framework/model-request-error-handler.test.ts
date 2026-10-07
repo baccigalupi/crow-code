@@ -21,7 +21,10 @@ describe('ModelRequestErrorHandler', () => {
       database,
       fetch: mockFetchError(401),
     })
-    const apiRequest = new OpenAiRequest(modelEndpoint, [], applicationData)
+    const apiRequest = new OpenAiRequest({
+      applicationData,
+      operationArguments: { modelEndpoint, messages: [] },
+    })
     await apiRequest.run()
 
     await new ModelRequestErrorHandler(
@@ -51,7 +54,10 @@ describe('ModelRequestErrorHandler', () => {
       database,
       fetch: mockFetchError(500),
     })
-    const apiRequest = new OpenAiRequest(modelEndpoint, [], applicationData)
+    const apiRequest = new OpenAiRequest({
+      applicationData,
+      operationArguments: { modelEndpoint, messages: [] },
+    })
     await apiRequest.run()
 
     await new ModelRequestErrorHandler(
@@ -82,7 +88,10 @@ describe('ModelRequestErrorHandler', () => {
       }),
     })
 
-    const apiRequest = new OpenAiRequest(modelEndpoint, [], applicationData)
+    const apiRequest = new OpenAiRequest({
+      applicationData,
+      operationArguments: { modelEndpoint, messages: [] },
+    })
     await apiRequest.run()
 
     const rows = await database('provider_availabilities')

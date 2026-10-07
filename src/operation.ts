@@ -23,11 +23,8 @@ export abstract class Operation<OperationArguments> implements AsyncOperation {
     this.applicationData = applicationData
     this.operationArguments = operationArguments
     this.logger = applicationData.logger()
-    this.unpackArguments()
     this.subOperations = []
   }
-
-  protected unpackArguments() {}
 
   success() {
     return this.succeeded

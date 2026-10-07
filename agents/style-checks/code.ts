@@ -138,6 +138,20 @@ const plugin: Deno.lint.Plugin = {
         }
       },
     },
+    'no-super': {
+      create(context) {
+        if (!isProductionFile(context.filename)) return {}
+        return {
+          Super(node) {
+            context.report({
+              node,
+              message:
+                'no super; subclass field initializers run after super() and clobber inherited constructor state',
+            })
+          },
+        }
+      },
+    },
     'no-ternary': {
       create(context) {
         if (!isProductionFile(context.filename)) return {}

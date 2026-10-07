@@ -13,20 +13,6 @@ export class DatabaseQuery<Result, Serialized = Result[]>
     Serialized
   > {
   private queryResult: Result[] = []
-  declare private resultSerializer: DatabaseQuerySerializer<
-    Result[],
-    Serialized
-  >
-
-  protected override unpackArguments() {
-    this.resultSerializer = defaultSerializer as DatabaseQuerySerializer<
-      Result[],
-      Serialized
-    >
-    if (this.operationArguments.resultSerializer) {
-      this.resultSerializer = this.operationArguments.resultSerializer
-    }
-  }
 
   async run() {
     try {
@@ -38,7 +24,14 @@ export class DatabaseQuery<Result, Serialized = Result[]>
   }
 
   result() {
-    return this.resultSerializer(this.queryResult)
+    return this.serializer()(this.queryResult)
+  }
+
+  private serializer() {
+    if (this.operationArguments.resultSerializer) {
+      return this.operationArguments.resultSerializer
+    }
+    return defaultSerializer as DatabaseQuerySerializer<Result[], Serialized>
   }
 }
 
