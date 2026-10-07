@@ -14,12 +14,11 @@ type TaskArguments = {
 type CommitArguments = ApplicationOperationArguments<TaskArguments>
 
 export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
-  private logger: Logger
+  declare private logger: Logger
   private changes: GitFileDiff[] = []
   private message: CommitMessage = { subject: '', body: '' }
 
-  constructor(args: CommitArguments) {
-    super(args)
+  protected override unpackArguments() {
     this.logger = this.applicationData.logger()
   }
 
