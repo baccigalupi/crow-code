@@ -71,7 +71,6 @@ export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
   }
 
   private async commitFiles() {
-    if (!this.succeeded) return
     await this.runSubOperation(stageAndCommit(this.stageArguments()))
   }
 

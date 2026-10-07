@@ -31,7 +31,6 @@ export class StageAndCommit extends Operation<TaskArguments> {
   }
 
   private async commitFiles() {
-    if (!this.succeeded) return
     await this.runSubOperation(this.commit())
   }
 

@@ -48,8 +48,7 @@ Never create scripts there to try to circumvent permissions.
 
 - NEVER commit, stage, or push unless the user explicitly asks
 - `git push` is denied to the agent by the exec allowlist
-- No `$(...)` or backtick substitution in commit messages. Plain `-m 'text'` or
-  a quoted heredoc (`<<'EOF'`) is fine.
+- Commit messages must use the `-F -` heredoc form: `git commit -F - <<'EOF'`
 - When asked to commit, stage everything `git status` shows — modified and
   untracked — unless the user says to commit only specific work.
 
