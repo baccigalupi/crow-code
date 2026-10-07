@@ -16,10 +16,10 @@ describe('create provider availability', () => {
         providerId: 1,
         reason: 'no-api-key',
       },
-    ).create()
+    ).run()
 
     expect(creator.success()).toBe(true)
-    expect(creator.record()).toEqual({
+    expect(creator.result()).toEqual({
       id: expect.any(Number),
       provider_id: 1,
       reason: 'no-api-key',

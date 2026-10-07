@@ -59,6 +59,6 @@ export class ModelRequestErrorHandler {
     await createProviderAvailability(this.applicationData, {
       providerId: this.modelEndpoint.providerId,
       reason: 'no-api-key',
-    }).create()
+    }).run()
   }
 }

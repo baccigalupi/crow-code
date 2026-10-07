@@ -56,7 +56,7 @@ class SaveCatalogModels {
     const created = await createModel(
       this.applicationData.withDatabase(transaction),
       this.toModelParams(model),
-    )
+    ).run()
     return created.success()
   }
 

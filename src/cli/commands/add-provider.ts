@@ -20,7 +20,7 @@ export class AddProvider extends Command {
     this.dbRecordCreator = await createProvider(
       this.applicationData,
       this.options,
-    )
+    ).run()
   }
 
   private log() {

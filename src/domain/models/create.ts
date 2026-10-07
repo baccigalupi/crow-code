@@ -10,7 +10,7 @@ export class CreateModel
   protected readonly tableName = 'models'
 
   protected override params(): RecordParams {
-    return parseModelParams(this.recordParams)
+    return parseModelParams(this.operationArguments)
   }
 
   protected override serialize(rows: ModelRow[]) {
@@ -22,7 +22,7 @@ export class CreateModel
   }
 }
 
-export const createModel = async (
+export const createModel = (
   applicationData: ApplicationData,
   params: RecordParams,
-) => await new CreateModel(applicationData, params).create()
+) => new CreateModel({ applicationData, operationArguments: params })

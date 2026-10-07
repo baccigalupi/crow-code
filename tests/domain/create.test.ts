@@ -19,18 +19,18 @@ describe('CreateRecord', () => {
     }
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
-    const creator = new CreateProvider(
-      mockApplicationData({ database, logger }),
-      {
+    const creator = new CreateProvider({
+      applicationData: mockApplicationData({ database, logger }),
+      operationArguments: {
         name: 'provider-name',
         base_url: 'https://www.example.com',
       },
-    )
+    })
 
-    await creator.create()
+    await creator.run()
 
     expect(creator.success()).toBe(true)
-    expect(creator.record()).toEqual({
+    expect(creator.result()).toEqual({
       id: expect.any(Number),
       name: 'provider-name',
       base_url: 'https://www.example.com',
@@ -55,25 +55,25 @@ describe('CreateRecord', () => {
 
       protected override params(): InsertParams {
         return {
-          name: this.recordParams.providerName,
-          base_url: this.recordParams.baseUrl,
+          name: this.operationArguments.providerName,
+          base_url: this.operationArguments.baseUrl,
         }
       }
     }
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
-    const creator = new CreateProvider(
-      mockApplicationData({ database, logger }),
-      {
+    const creator = new CreateProvider({
+      applicationData: mockApplicationData({ database, logger }),
+      operationArguments: {
         providerName: 'provider-name',
         baseUrl: 'https://www.example.com',
       },
-    )
+    })
 
-    await creator.create()
+    await creator.run()
 
     expect(creator.success()).toBe(true)
-    expect(creator.record()).toEqual({
+    expect(creator.result()).toEqual({
       id: expect.any(Number),
       name: 'provider-name',
       base_url: 'https://www.example.com',
@@ -97,15 +97,15 @@ describe('CreateRecord', () => {
       base_url: 'https://www.example.com',
     }
     await database('providers').insert(params)
-    const creator = new CreateProvider(
-      mockApplicationData({ database, logger }),
-      params,
-    )
+    const creator = new CreateProvider({
+      applicationData: mockApplicationData({ database, logger }),
+      operationArguments: params,
+    })
 
-    await creator.create()
+    await creator.run()
 
     expect(creator.success()).toBe(false)
-    expect(creator.record()).toEqual({})
+    expect(creator.result()).toEqual({})
     assertSpyCall(loggerErrorSpy, 0)
     await database.destroy()
   })

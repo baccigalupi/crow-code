@@ -22,10 +22,10 @@ describe('create', () => {
       extra: 'ignored',
     }
 
-    const creator = await createProvider(applicationData, options)
+    const creator = await createProvider(applicationData, options).run()
 
     expect(creator.success()).toBe(true)
-    expect(creator.record()).toEqual({
+    expect(creator.result()).toEqual({
       id: expect.any(Number),
       name: 'provider-name',
       base_url: 'https://www.example.com',
@@ -40,10 +40,13 @@ describe('create', () => {
     const database = await createTestDatabase(logger)
     const applicationData = mockApplicationData({ database, logger })
 
-    const creator = new CreateProvider(applicationData, {})
+    const creator = new CreateProvider({
+      applicationData,
+      operationArguments: {},
+    })
 
     expect(creator.success()).toBe(false)
-    expect(creator.record()).toEqual({})
+    expect(creator.result()).toEqual({})
     await database.destroy()
   })
 
@@ -61,10 +64,10 @@ describe('create', () => {
       'base-url': 'https://www.example.com',
     }
 
-    const creator = await createProvider(applicationData, options)
+    const creator = await createProvider(applicationData, options).run()
 
     expect(creator.success()).toBe(false)
-    expect(creator.record()).toEqual({})
+    expect(creator.result()).toEqual({})
     assertSpyCall(loggerErrorSpy, 0, {
       args: [
         "insert into `providers` (`base_url`, `name`) values ('https://www.example.com', 'provider-name') returning * - UNIQUE constraint failed: providers.base_url",

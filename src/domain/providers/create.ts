@@ -20,7 +20,7 @@ export class CreateProvider extends CreateRecord<
 
   protected override params(): Partial<ProviderRecord> {
     return parseParamKeys(
-      this.recordParams,
+      this.operationArguments,
       allowedProviderKeys,
     ) as Partial<ProviderRecord>
   }
@@ -29,4 +29,4 @@ export class CreateProvider extends CreateRecord<
 export const createProvider = (
   applicationData: ApplicationData,
   options: ParsedArgumentsOptions,
-) => new CreateProvider(applicationData, options).create()
+) => new CreateProvider({ applicationData, operationArguments: options })

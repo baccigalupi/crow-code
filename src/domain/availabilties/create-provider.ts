@@ -21,8 +21,8 @@ export class CreateProviderAvailability extends CreateRecord<
 
   protected override params(): Partial<ProviderAvailabilityRow> {
     return {
-      provider_id: this.recordParams.providerId,
-      reason: this.recordParams.reason,
+      provider_id: this.operationArguments.providerId,
+      reason: this.operationArguments.reason,
     }
   }
 }
@@ -30,4 +30,8 @@ export class CreateProviderAvailability extends CreateRecord<
 export const createProviderAvailability = (
   applicationData: ApplicationData,
   recordParams: RecordParams,
-) => new CreateProviderAvailability(applicationData, recordParams)
+) =>
+  new CreateProviderAvailability({
+    applicationData,
+    operationArguments: recordParams,
+  })

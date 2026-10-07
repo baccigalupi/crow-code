@@ -1,39 +1,33 @@
 import type { Knex } from 'knex'
-import type { ApplicationData } from '../application-data.ts'
 import type { EmptyRecord } from './types.ts'
+import { OperationWithResult } from '../operation.ts'
 
-export abstract class CreateRecord<TParams, TRow, TRecord = unknown> {
+export abstract class CreateRecord<TParams, TRow, TRecord = unknown>
+  extends OperationWithResult<TParams, TRecord | EmptyRecord> {
   protected abstract readonly tableName: string
-  protected readonly applicationData: ApplicationData
-  protected readonly recordParams: TParams
-  private result?: TRecord
-  private succeeded = false
+  protected override succeeded = false
+  private record?: TRecord
 
-  constructor(applicationData: ApplicationData, recordParams: TParams) {
-    this.applicationData = applicationData
-    this.recordParams = recordParams
-  }
-
-  async create() {
+  async run() {
     try {
       await this.save()
     } catch (error) {
-      this.applicationData.logger().error((error as Error).message)
+      this.fail((error as Error).message)
     }
     return this
   }
 
-  success() {
-    return this.succeeded
-  }
-
-  record(): TRecord | EmptyRecord {
-    if (this.result !== undefined) return this.result
+  result(): TRecord | EmptyRecord {
+    if (this.record !== undefined) return this.record
     return this.emptyRecord()
   }
 
   private async save() {
-    await this.insert()
+    const database = await this.database()
+    const rows = await database(this.tableName)
+      .insert(this.params())
+      .returning('*') as TRow[]
+    this.record = this.serialize(rows)
     this.succeeded = true
   }
 
@@ -41,16 +35,8 @@ export abstract class CreateRecord<TParams, TRow, TRecord = unknown> {
     return this.applicationData.database()
   }
 
-  private async insert() {
-    const database = await this.database()
-    const rows = await database(this.tableName)
-      .insert(this.params())
-      .returning('*') as TRow[]
-    this.result = this.serialize(rows)
-  }
-
   protected params(): TParams | Partial<TRow> {
-    return this.recordParams
+    return this.operationArguments
   }
 
   protected serialize(rows: TRow[]): TRecord {

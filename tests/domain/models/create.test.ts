@@ -26,9 +26,9 @@ describe('create', () => {
       canDisableReasoning: true,
       reasoningOptions: { mandatory: false },
       extra: 'ignored',
-    })
+    }).run()
 
-    const model = await creator.record()
+    const model = creator.result()
     expect(model.providerId()).toBe(1)
     expect(model.supportedParameters()).toEqual(['temperature'])
     await database.destroy()
@@ -53,11 +53,11 @@ describe('create', () => {
     }
 
     const applicationData = mockApplicationData({ database, logger })
-    const creator = await createModel(applicationData, params)
+    const creator = await createModel(applicationData, params).run()
     const row = await database('models').first()
 
     expect(await creator.success()).toBe(true)
-    const model = await creator.record()
+    const model = creator.result()
     expect(model.providerId()).toBe(1)
     expect(model.supportedParameters()).toEqual(['temperature'])
     expect(row.supported_parameters).toBe('["temperature"]')
@@ -85,10 +85,13 @@ describe('create', () => {
     }
 
     const applicationData = mockApplicationData({ database, logger })
-    const creator = new CreateModel(applicationData, params)
+    const creator = new CreateModel({
+      applicationData,
+      operationArguments: params,
+    })
 
     expect(creator.success()).toBe(false)
-    expect(creator.record().supportedParameters()).toEqual([])
+    expect(creator.result().supportedParameters()).toEqual([])
     await database.destroy()
   })
 
@@ -116,10 +119,10 @@ describe('create', () => {
     })
 
     const applicationData = mockApplicationData({ database, logger })
-    const creator = await createModel(applicationData, params)
+    const creator = await createModel(applicationData, params).run()
 
     expect(await creator.success()).toBe(false)
-    expect((await creator.record()).supportedParameters()).toEqual([])
+    expect(creator.result().supportedParameters()).toEqual([])
     assertSpyCall(loggerErrorSpy, 0)
     expect(loggerErrorSpy.calls[0].args[0]).toContain(
       'UNIQUE constraint failed: models.provider_id, models.identifier',

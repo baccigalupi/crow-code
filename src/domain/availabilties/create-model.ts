@@ -21,8 +21,8 @@ export class CreateModelAvailability extends CreateRecord<
 
   protected override params(): Partial<ModelAvailabilityRow> {
     return {
-      model_id: this.recordParams.modelId,
-      reason: this.recordParams.reason,
+      model_id: this.operationArguments.modelId,
+      reason: this.operationArguments.reason,
     }
   }
 }
@@ -30,4 +30,8 @@ export class CreateModelAvailability extends CreateRecord<
 export const createModelAvailability = (
   applicationData: ApplicationData,
   recordParams: RecordParams,
-) => new CreateModelAvailability(applicationData, recordParams)
+) =>
+  new CreateModelAvailability({
+    applicationData,
+    operationArguments: recordParams,
+  })
