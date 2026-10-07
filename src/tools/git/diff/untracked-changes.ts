@@ -38,12 +38,15 @@ export class GitUntrackedChanges
   }
 
   private async getChangedFiles() {
-    const files = await gitDiffFiles({
+    const files = await this.runSubOperation(this.diffFiles())
+    this.untrackedFiles = this.filterUntracked(files.result())
+  }
+
+  private diffFiles() {
+    return gitDiffFiles({
       applicationData: this.applicationData,
       operationArguments: this.operationArguments,
-    }).run()
-    this.untrackedFiles = this.filterUntracked(files.result())
-    if (!files.success()) this.fail(files.reason)
+    })
   }
 
   private filterUntracked(files: ChangedFile[]) {
@@ -54,17 +57,17 @@ export class GitUntrackedChanges
     if (!this.succeeded) return
 
     this.untrackedChanges = await Promise.all(
-      this.untrackedFiles.map((file) => this.getUntrackedChange(file.path)),
+      this.untrackedFiles.map((file) =>
+        this.runSubOperation(this.untrackedChange(file.path))
+      ),
     )
-    const failed = this.untrackedChanges.find((change) => !change.success())
-    if (failed) this.fail(failed.reason)
   }
 
-  private getUntrackedChange(path: string) {
+  private untrackedChange(path: string) {
     return gitUntrackedChange({
       applicationData: this.applicationData,
       operationArguments: { path },
-    }).run()
+    })
   }
 }
 
