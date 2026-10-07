@@ -51,7 +51,7 @@ describe('commitMessage', () => {
       }),
     })
 
-    const message = await commitMessage({
+    const operation = await commitMessage({
       applicationData,
       operationArguments: {
         goal: 'add login',
@@ -60,12 +60,12 @@ describe('commitMessage', () => {
           diff: 'diff --git a/src/a.ts b/src/a.ts',
         }],
       },
-    })
+    }).run()
 
     assertSpyCall(commandSpy, 0, {
       args: ['git', { args: ['log', '--format=%s', '-n', '10'] }],
     })
-    expect(message).toEqual({
+    expect(operation.result()).toEqual({
       subject: 'Add login',
       body: 'Adds the login form.',
     })
@@ -112,7 +112,7 @@ describe('commitMessage', () => {
       }),
     })
 
-    const message = await commitMessage({
+    const operation = await commitMessage({
       applicationData,
       operationArguments: {
         goal: 'add login',
@@ -121,9 +121,9 @@ describe('commitMessage', () => {
           diff: 'diff --git a/src/a.ts b/src/a.ts',
         }],
       },
-    })
+    }).run()
 
-    expect(message).toEqual({
+    expect(operation.result()).toEqual({
       subject: 'Add login',
       body: 'Adds the login form.',
     })
@@ -159,7 +159,7 @@ describe('commitMessage', () => {
       denoCommand: mockDenoCommand({ stdout: 'Fix tests\n' }),
     })
 
-    const message = await commitMessage({
+    const operation = await commitMessage({
       applicationData,
       operationArguments: {
         goal: 'add login',
@@ -168,9 +168,9 @@ describe('commitMessage', () => {
           diff: 'diff --git a/src/a.ts b/src/a.ts',
         }],
       },
-    })
+    }).run()
 
-    expect(message).toBeUndefined()
+    expect(operation.result()).toBeUndefined()
     await database.destroy()
   })
 
@@ -185,7 +185,7 @@ describe('commitMessage', () => {
       denoCommand: mockDenoCommand({ stdout: 'Fix tests\n' }),
     })
 
-    const message = await commitMessage({
+    const operation = await commitMessage({
       applicationData,
       operationArguments: {
         goal: 'add login',
@@ -194,9 +194,9 @@ describe('commitMessage', () => {
           diff: 'diff --git a/src/a.ts b/src/a.ts',
         }],
       },
-    })
+    }).run()
 
-    expect(message).toBeUndefined()
+    expect(operation.result()).toBeUndefined()
     expect(fetch.calls.length).toBe(0)
     await database.destroy()
   })

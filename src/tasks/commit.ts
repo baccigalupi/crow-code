@@ -15,11 +15,12 @@ type CommitArguments = ApplicationOperationArguments<TaskArguments>
 
 export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
   protected override logPrefix = 'Commit: '
+  private nullMessage: CommitMessage = { subject: '', body: '' }
   private changes: GitFileDiff[] = []
-  private message: CommitMessage = { subject: '', body: '' }
+  private message: CommitMessage = this.nullMessage
 
   async run() {
-    await this.collectChanges()
+    await this.collectGitChanges()
     await this.generateMessage()
     await this.commitFiles()
     return this
@@ -29,17 +30,20 @@ export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
     return this.message
   }
 
-  private async collectChanges() {
-    const collected = await this.runSubOperation(this.collect())
-    this.changes = collected.result()
-    if (collected.success()) this.hasChanges()
-  }
-
-  private collect() {
-    return gitChanges({
+  private async collectGitChanges() {
+    const args = {
       applicationData: this.applicationData,
       operationArguments: { filter: this.files() },
-    })
+    }
+    const collected = await this.runSubOperation(gitChanges(args))
+    this.changes = collected.result()
+    this.failIfNoChanges(collected)
+  }
+
+  private failIfNoChanges(collected: ReturnType<typeof gitChanges>) {
+    if (collected.success() && this.noChanges()) {
+      this.fail('no changes to commit')
+    }
   }
 
   private files() {
@@ -47,42 +51,30 @@ export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
     return this.operationArguments.files
   }
 
-  private hasChanges() {
-    const missing = this.changes.length === 0
-    if (missing) this.fail('no changes to commit')
-    return !missing
+  private noChanges() {
+    return this.changes.length === 0
   }
 
   private async generateMessage() {
-    if (!this.succeeded) return
-    const message = await commitMessage(this.messageArguments())
-    if (message !== undefined) this.message = message
-    if (message === undefined) this.fail('failed to generate a commit message')
-  }
-
-  private messageArguments() {
-    return {
-      applicationData: this.applicationData,
-      operationArguments: {
-        goal: this.operationArguments.goal,
-        changes: this.changes,
-      },
+    const operationArguments = {
+      goal: this.operationArguments.goal,
+      changes: this.changes,
     }
+    const args = { applicationData: this.applicationData, operationArguments }
+    const generated = await this.runSubOperation(commitMessage(args))
+    this.message = generated.result() || this.nullMessage
   }
 
   private async commitFiles() {
-    await this.runSubOperation(stageAndCommit(this.stageArguments()))
+    const args = {
+      applicationData: this.applicationData,
+      operationArguments: { files: this.files(), message: this.fullMessage() },
+    }
+    await this.runSubOperation(stageAndCommit(args))
   }
 
   private fullMessage() {
     return `${this.message.subject}\n\n${this.message.body}`
-  }
-
-  private stageArguments() {
-    return {
-      applicationData: this.applicationData,
-      operationArguments: { files: this.files(), message: this.fullMessage() },
-    }
   }
 }
 
