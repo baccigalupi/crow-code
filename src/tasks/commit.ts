@@ -4,7 +4,7 @@ import type { ApplicationTaskArguments, Logger } from '../types.ts'
 import { gitChanges } from '../tools/git/diff/changes.ts'
 import { commitMessage } from './commit/message.ts'
 import { stageAndCommit } from './commit/stage.ts'
-import { TaskWithResult } from '../task.ts'
+import { OperationWithResult } from '../operation.ts'
 
 type TaskArguments = {
   goal: string
@@ -13,7 +13,7 @@ type TaskArguments = {
 
 type CommitArguments = ApplicationTaskArguments<TaskArguments>
 
-export class Commit extends TaskWithResult<TaskArguments, CommitMessage> {
+export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
   private logger: Logger
   private changes: GitFileDiff[] = []
   private message: CommitMessage = { subject: '', body: '' }

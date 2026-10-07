@@ -1,7 +1,7 @@
 import type { ApplicationData } from './application-data.ts'
 import type { ApplicationTaskArguments } from './types.ts'
 
-export abstract class Task<TaskArguments> {
+export abstract class Operation<TaskArguments> {
   protected applicationData: ApplicationData
   protected taskArguments: TaskArguments
   protected succeeded = false
@@ -20,7 +20,7 @@ export abstract class Task<TaskArguments> {
   abstract run(): Promise<this>
 }
 
-export abstract class TaskWithResult<TaskArguments, Result>
-  extends Task<TaskArguments> {
+export abstract class OperationWithResult<TaskArguments, Result>
+  extends Operation<TaskArguments> {
   abstract result(): Result
 }

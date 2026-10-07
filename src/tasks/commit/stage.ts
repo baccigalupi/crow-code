@@ -1,7 +1,7 @@
 import type { ApplicationTaskArguments } from '../../types.ts'
 import { gitAdd } from '../../tools/git/add.ts'
 import { gitCommit } from '../../tools/git/commit.ts'
-import { Task } from '../../task.ts'
+import { Operation } from '../../operation.ts'
 
 type TaskArguments = {
   files?: string[]
@@ -10,7 +10,7 @@ type TaskArguments = {
 
 type StageArguments = ApplicationTaskArguments<TaskArguments>
 
-export class StageAndCommit extends Task<TaskArguments> {
+export class StageAndCommit extends Operation<TaskArguments> {
   async run() {
     await this.addFiles()
     await this.commitFiles()
