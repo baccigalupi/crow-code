@@ -50,7 +50,7 @@ describe('gitChanges', () => {
     })
     const changes = gitChanges({
       applicationData,
-      taskArguments: { filter: ['src/a.ts'] },
+      operationArguments: { filter: ['src/a.ts'] },
     })
 
     await changes.run()

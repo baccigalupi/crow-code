@@ -14,7 +14,7 @@ describe('list', () => {
 
     const listing = listDirectory({
       applicationData,
-      taskArguments: { path },
+      operationArguments: { path },
     })
     await listing.run()
 
@@ -35,7 +35,7 @@ describe('list', () => {
 
     const listing = listDirectory({
       applicationData,
-      taskArguments: { path, recursive: true },
+      operationArguments: { path, recursive: true },
     })
     await listing.run()
 
@@ -59,7 +59,7 @@ describe('list', () => {
 
     const listing = listDirectory({
       applicationData,
-      taskArguments: { path },
+      operationArguments: { path },
       pathPermissions: permissions,
     })
     await listing.run()
@@ -78,7 +78,7 @@ describe('list', () => {
 
     const listing = listDirectory({
       applicationData,
-      taskArguments: { path },
+      operationArguments: { path },
     })
     await listing.run()
 
@@ -96,7 +96,7 @@ describe('list', () => {
 
     const listing = listDirectory({
       applicationData,
-      taskArguments: { path },
+      operationArguments: { path },
     })
     await listing.run()
 
@@ -112,7 +112,7 @@ describe('list', () => {
 
     const listing = listDirectory({
       applicationData,
-      taskArguments: { path: 'tests' },
+      operationArguments: { path: 'tests' },
     })
 
     expect(listing).toBeInstanceOf(ListDirectory)

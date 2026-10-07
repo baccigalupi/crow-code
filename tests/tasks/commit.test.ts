@@ -60,7 +60,7 @@ describe('commit', () => {
     })
     const task = commit({
       applicationData,
-      taskArguments: {
+      operationArguments: {
         goal: 'add login',
         files: ['src/a.ts', 'src/b.ts'],
       },
@@ -119,7 +119,7 @@ describe('commit', () => {
     })
     const task = commit({
       applicationData,
-      taskArguments: { goal: 'add login', files: ['src/a.ts'] },
+      operationArguments: { goal: 'add login', files: ['src/a.ts'] },
     })
 
     await task.run()
@@ -140,7 +140,7 @@ describe('commit', () => {
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
     const task = commit({
       applicationData,
-      taskArguments: { goal: 'add login', files: ['src/a.ts'] },
+      operationArguments: { goal: 'add login', files: ['src/a.ts'] },
     })
 
     await task.run()
@@ -203,7 +203,7 @@ describe('commit', () => {
     })
     const task = commit({
       applicationData,
-      taskArguments: { goal: 'add login', files: [] },
+      operationArguments: { goal: 'add login', files: [] },
     })
 
     await task.run()
@@ -266,7 +266,7 @@ describe('commit', () => {
     })
     const task = commit({
       applicationData,
-      taskArguments: { goal: 'add login', files: ['src/a.ts'] },
+      operationArguments: { goal: 'add login', files: ['src/a.ts'] },
     })
 
     await task.run()
@@ -324,7 +324,7 @@ describe('commit', () => {
     })
     const task = commit({
       applicationData,
-      taskArguments: { goal: 'add login', files: ['src/a.ts'] },
+      operationArguments: { goal: 'add login', files: ['src/a.ts'] },
     })
 
     await task.run()
@@ -383,7 +383,7 @@ describe('commit', () => {
     })
     const task = commit({
       applicationData,
-      taskArguments: { goal: 'add login', files: ['src/a.ts'] },
+      operationArguments: { goal: 'add login', files: ['src/a.ts'] },
     })
 
     await task.run()
@@ -443,7 +443,7 @@ describe('commit', () => {
     })
     const task = commit({
       applicationData,
-      taskArguments: {
+      operationArguments: {
         goal: 'add login',
         files: ['src/a.ts', 'src/b.ts'],
       },

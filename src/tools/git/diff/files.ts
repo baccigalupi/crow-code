@@ -1,4 +1,4 @@
-import type { ApplicationTaskArguments } from '../../../types.ts'
+import type { ApplicationOperationArguments } from '../../../types.ts'
 import { ExecCli } from '../../exec-cli.ts'
 import { FileDiffParser } from './files/parser.ts'
 import type { ChangedFile } from '../../types.ts'
@@ -7,7 +7,7 @@ type TaskArguments = {
   filter?: string[]
 }
 
-type GitDiffArguments = ApplicationTaskArguments<TaskArguments>
+type GitDiffArguments = ApplicationOperationArguments<TaskArguments>
 
 type OptionalGitDiffArguments = Pick<GitDiffArguments, 'applicationData'>
 
@@ -23,7 +23,7 @@ export class GitDiffFiles extends ExecCli<TaskArguments, ChangedFile[]> {
   parse() {
     return new FileDiffParser(
       this.responseText,
-      this.taskArguments.filter,
+      this.operationArguments.filter,
     ).parse()
   }
 
@@ -39,6 +39,6 @@ export class GitDiffFiles extends ExecCli<TaskArguments, ChangedFile[]> {
 export const gitDiffFiles = (
   args: GitDiffArguments | OptionalGitDiffArguments,
 ) => {
-  const classArguments = { taskArguments: {}, ...args }
+  const classArguments = { operationArguments: {}, ...args }
   return new GitDiffFiles(classArguments)
 }

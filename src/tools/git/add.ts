@@ -1,11 +1,11 @@
-import type { ApplicationTaskArguments } from '../../types.ts'
+import type { ApplicationOperationArguments } from '../../types.ts'
 import { ExecCli } from '../exec-cli.ts'
 
 type TaskArguments = {
   paths?: string[]
 }
 
-type GitAddArguments = ApplicationTaskArguments<TaskArguments>
+type GitAddArguments = ApplicationOperationArguments<TaskArguments>
 
 type OptionalGitAddArguments = Pick<GitAddArguments, 'applicationData'>
 
@@ -13,9 +13,9 @@ export class GitAdd extends ExecCli<TaskArguments, string> {
   executable = 'git'
 
   executableOptions() {
-    if (!this.taskArguments.paths) return { args: ['add', '--all'] }
+    if (!this.operationArguments.paths) return { args: ['add', '--all'] }
 
-    return { args: ['add', '--', ...this.taskArguments.paths] }
+    return { args: ['add', '--', ...this.operationArguments.paths] }
   }
 
   parse() {
@@ -34,6 +34,6 @@ export class GitAdd extends ExecCli<TaskArguments, string> {
 export const gitAdd = (
   args: GitAddArguments | OptionalGitAddArguments,
 ) => {
-  const classArguments = { taskArguments: {}, ...args }
+  const classArguments = { operationArguments: {}, ...args }
   return new GitAdd(classArguments)
 }

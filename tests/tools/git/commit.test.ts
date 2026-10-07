@@ -13,7 +13,7 @@ describe('gitCommit', () => {
     })
     const commit = gitCommit({
       applicationData,
-      taskArguments: { message: 'Add login' },
+      operationArguments: { message: 'Add login' },
     })
 
     await commit.run()
@@ -32,7 +32,7 @@ describe('gitCommit', () => {
     })
     const commit = gitCommit({
       applicationData,
-      taskArguments: { message: 'msg', paths: ['src/a.ts', 'src/b.ts'] },
+      operationArguments: { message: 'msg', paths: ['src/a.ts', 'src/b.ts'] },
     })
 
     await commit.run()
@@ -54,7 +54,7 @@ describe('gitCommit', () => {
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
     const commit = gitCommit({
       applicationData,
-      taskArguments: { message: 'Add login' },
+      operationArguments: { message: 'Add login' },
     })
 
     await commit.run()

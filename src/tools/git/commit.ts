@@ -1,4 +1,4 @@
-import type { ApplicationTaskArguments } from '../../types.ts'
+import type { ApplicationOperationArguments } from '../../types.ts'
 import { ExecCli } from '../exec-cli.ts'
 
 type TaskArguments = {
@@ -6,21 +6,21 @@ type TaskArguments = {
   paths?: string[]
 }
 
-type GitCommitArguments = ApplicationTaskArguments<TaskArguments>
+type GitCommitArguments = ApplicationOperationArguments<TaskArguments>
 
 export class GitCommit extends ExecCli<TaskArguments, string> {
   executable = 'git'
 
   executableOptions() {
-    if (!this.taskArguments.paths) return { args: this.commitArgs() }
+    if (!this.operationArguments.paths) return { args: this.commitArgs() }
 
     return {
-      args: [...this.commitArgs(), '--', ...this.taskArguments.paths],
+      args: [...this.commitArgs(), '--', ...this.operationArguments.paths],
     }
   }
 
   private commitArgs() {
-    return ['commit', '-m', this.taskArguments.message]
+    return ['commit', '-m', this.operationArguments.message]
   }
 
   parse() {

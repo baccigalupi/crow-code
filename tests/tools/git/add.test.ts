@@ -13,7 +13,7 @@ describe('gitAdd', () => {
     })
     const add = gitAdd({
       applicationData,
-      taskArguments: { paths: ['src/a.ts', 'src/b.ts'] },
+      operationArguments: { paths: ['src/a.ts', 'src/b.ts'] },
     })
 
     await add.run()
@@ -46,7 +46,10 @@ describe('gitAdd', () => {
       denoCommand: mockDenoCommand({ success: false, stderr: 'add failed' }),
     })
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
-    const add = gitAdd({ applicationData, taskArguments: { paths: ['.'] } })
+    const add = gitAdd({
+      applicationData,
+      operationArguments: { paths: ['.'] },
+    })
 
     await add.run()
 

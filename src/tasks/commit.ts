@@ -1,6 +1,6 @@
 import type { CommitMessage } from '../model-requests/types.ts'
 import type { GitFileDiff } from '../tools/types.ts'
-import type { ApplicationTaskArguments, Logger } from '../types.ts'
+import type { ApplicationOperationArguments, Logger } from '../types.ts'
 import { gitChanges } from '../tools/git/diff/changes.ts'
 import { commitMessage } from './commit/message.ts'
 import { stageAndCommit } from './commit/stage.ts'
@@ -11,7 +11,7 @@ type TaskArguments = {
   files: string[]
 }
 
-type CommitArguments = ApplicationTaskArguments<TaskArguments>
+type CommitArguments = ApplicationOperationArguments<TaskArguments>
 
 export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
   private logger: Logger
@@ -37,15 +37,15 @@ export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
   private async collectChanges() {
     const collected = await gitChanges({
       applicationData: this.applicationData,
-      taskArguments: { filter: this.files() },
+      operationArguments: { filter: this.files() },
     }).run()
     this.changes = collected.result()
     this.succeeded = collected.success() && this.hasChanges()
   }
 
   private files() {
-    if (this.taskArguments.files.length === 0) return
-    return this.taskArguments.files
+    if (this.operationArguments.files.length === 0) return
+    return this.operationArguments.files
   }
 
   private hasChanges() {
@@ -64,7 +64,10 @@ export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
   private messageArguments() {
     return {
       applicationData: this.applicationData,
-      taskArguments: { goal: this.taskArguments.goal, changes: this.changes },
+      operationArguments: {
+        goal: this.operationArguments.goal,
+        changes: this.changes,
+      },
     }
   }
 
@@ -81,7 +84,7 @@ export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
   private stageArguments() {
     return {
       applicationData: this.applicationData,
-      taskArguments: { files: this.files(), message: this.fullMessage() },
+      operationArguments: { files: this.files(), message: this.fullMessage() },
     }
   }
 }

@@ -1,6 +1,6 @@
 import { walk } from '@std/fs'
 import { resolve } from '@std/path'
-import type { ApplicationTaskArguments, Logger } from '../../types.ts'
+import type { ApplicationOperationArguments, Logger } from '../../types.ts'
 import type { PathPermissions } from '../path-permissions.ts'
 import type { DirectoryEntry, DirectoryListing } from '../types.ts'
 import { directoryEntries } from './list/entries.ts'
@@ -10,12 +10,12 @@ type TaskArguments = {
   recursive?: boolean
 }
 
-type ListDirectoryArguments = ApplicationTaskArguments<TaskArguments> & {
+type ListDirectoryArguments = ApplicationOperationArguments<TaskArguments> & {
   pathPermissions?: PathPermissions
 }
 
 export class ListDirectory {
-  taskArguments: TaskArguments
+  operationArguments: TaskArguments
   private permissions: PathPermissions
   private logger: Logger
   private entries: DirectoryEntry[]
@@ -24,11 +24,11 @@ export class ListDirectory {
   constructor(
     {
       applicationData,
-      taskArguments,
+      operationArguments,
       pathPermissions = applicationData.pathPermissions(),
     }: ListDirectoryArguments,
   ) {
-    this.taskArguments = taskArguments
+    this.operationArguments = operationArguments
     this.permissions = pathPermissions
     this.logger = applicationData.logger()
     this.entries = []
@@ -47,13 +47,13 @@ export class ListDirectory {
   }
 
   result(): DirectoryListing {
-    return { path: this.taskArguments.path, entries: this.entries }
+    return { path: this.operationArguments.path, entries: this.entries }
   }
 
   private async pathNotAllowed() {
-    const allowed = await this.permissions.allows(this.taskArguments.path)
+    const allowed = await this.permissions.allows(this.operationArguments.path)
     if (!allowed) {
-      this.handleError(`path not allowed: ${this.taskArguments.path}`)
+      this.handleError(`path not allowed: ${this.operationArguments.path}`)
     }
     return !allowed
   }
@@ -73,13 +73,13 @@ export class ListDirectory {
   }
 
   private depth() {
-    if (this.taskArguments.recursive === true) return Infinity
+    if (this.operationArguments.recursive === true) return Infinity
 
     return 1
   }
 
   private root() {
-    return resolve(Deno.cwd(), this.taskArguments.path)
+    return resolve(Deno.cwd(), this.operationArguments.path)
   }
 
   private handleError(message: string) {

@@ -30,7 +30,7 @@ describe('gitRecentSubjects', () => {
 
     const subjects = gitRecentSubjects({
       applicationData,
-      taskArguments: { count: 3 },
+      operationArguments: { count: 3 },
     })
     await subjects.run()
 

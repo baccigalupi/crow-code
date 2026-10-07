@@ -1,5 +1,5 @@
 import type { ApplicationData } from '../../../application-data.ts'
-import type { ApplicationTaskArguments } from '../../../types.ts'
+import type { ApplicationOperationArguments } from '../../../types.ts'
 import type { GitFileDiff } from '../../types.ts'
 import { gitTrackedChanges } from './tracked-changes.ts'
 import { gitUntrackedChanges } from './untracked-changes.ts'
@@ -8,7 +8,7 @@ type TaskArguments = {
   filter?: string[]
 }
 
-type GitChangesArguments = ApplicationTaskArguments<TaskArguments>
+type GitChangesArguments = ApplicationOperationArguments<TaskArguments>
 
 type OptionalGitChangesArguments = Pick<
   GitChangesArguments,
@@ -17,15 +17,15 @@ type OptionalGitChangesArguments = Pick<
 
 export class GitChanges {
   applicationData: ApplicationData
-  taskArguments: TaskArguments
+  operationArguments: TaskArguments
   private changes: GitFileDiff[] = []
   private succeeded = false
 
   constructor(
-    { applicationData, taskArguments }: GitChangesArguments,
+    { applicationData, operationArguments }: GitChangesArguments,
   ) {
     this.applicationData = applicationData
-    this.taskArguments = taskArguments
+    this.operationArguments = operationArguments
   }
 
   success() {
@@ -47,14 +47,14 @@ export class GitChanges {
   private trackedChanges() {
     return gitTrackedChanges({
       applicationData: this.applicationData,
-      taskArguments: this.taskArguments,
+      operationArguments: this.operationArguments,
     })
   }
 
   private untrackedChanges() {
     return gitUntrackedChanges({
       applicationData: this.applicationData,
-      taskArguments: this.taskArguments,
+      operationArguments: this.operationArguments,
     })
   }
 }
@@ -62,6 +62,6 @@ export class GitChanges {
 export const gitChanges = (
   args: GitChangesArguments | OptionalGitChangesArguments,
 ) => {
-  const classArguments = { taskArguments: {}, ...args }
+  const classArguments = { operationArguments: {}, ...args }
   return new GitChanges(classArguments)
 }

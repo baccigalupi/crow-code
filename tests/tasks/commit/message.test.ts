@@ -53,7 +53,7 @@ describe('commitMessage', () => {
 
     const message = await commitMessage({
       applicationData,
-      taskArguments: {
+      operationArguments: {
         goal: 'add login',
         changes: [{
           path: 'src/a.ts',
@@ -114,7 +114,7 @@ describe('commitMessage', () => {
 
     const message = await commitMessage({
       applicationData,
-      taskArguments: {
+      operationArguments: {
         goal: 'add login',
         changes: [{
           path: 'src/a.ts',
@@ -161,7 +161,7 @@ describe('commitMessage', () => {
 
     const message = await commitMessage({
       applicationData,
-      taskArguments: {
+      operationArguments: {
         goal: 'add login',
         changes: [{
           path: 'src/a.ts',
@@ -187,7 +187,7 @@ describe('commitMessage', () => {
 
     const message = await commitMessage({
       applicationData,
-      taskArguments: {
+      operationArguments: {
         goal: 'add login',
         changes: [{
           path: 'src/a.ts',

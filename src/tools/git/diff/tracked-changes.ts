@@ -1,4 +1,4 @@
-import type { ApplicationTaskArguments } from '../../../types.ts'
+import type { ApplicationOperationArguments } from '../../../types.ts'
 import { ExecCli } from '../../exec-cli.ts'
 import type { GitFileDiff } from '../../types.ts'
 import { trackedChangeParser } from './tracked-changes/parser.ts'
@@ -7,7 +7,7 @@ type TaskArguments = {
   filter?: string[]
 }
 
-type GitTrackedChangesArguments = ApplicationTaskArguments<TaskArguments>
+type GitTrackedChangesArguments = ApplicationOperationArguments<TaskArguments>
 
 type OptionalGitTrackedChangesArguments = Pick<
   GitTrackedChangesArguments,
@@ -18,9 +18,9 @@ export class GitTrackedChanges extends ExecCli<TaskArguments, GitFileDiff[]> {
   executable = 'git'
 
   executableOptions() {
-    if (!this.taskArguments.filter) return { args: ['diff', 'HEAD'] }
+    if (!this.operationArguments.filter) return { args: ['diff', 'HEAD'] }
 
-    return { args: ['diff', 'HEAD', '--', ...this.taskArguments.filter] }
+    return { args: ['diff', 'HEAD', '--', ...this.operationArguments.filter] }
   }
 
   parse() {
@@ -39,6 +39,6 @@ export class GitTrackedChanges extends ExecCli<TaskArguments, GitFileDiff[]> {
 export const gitTrackedChanges = (
   args: GitTrackedChangesArguments | OptionalGitTrackedChangesArguments,
 ) => {
-  const classArguments = { taskArguments: {}, ...args }
+  const classArguments = { operationArguments: {}, ...args }
   return new GitTrackedChanges(classArguments)
 }

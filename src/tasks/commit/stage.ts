@@ -1,4 +1,4 @@
-import type { ApplicationTaskArguments } from '../../types.ts'
+import type { ApplicationOperationArguments } from '../../types.ts'
 import { gitAdd } from '../../tools/git/add.ts'
 import { gitCommit } from '../../tools/git/commit.ts'
 import { Operation } from '../../operation.ts'
@@ -8,7 +8,7 @@ type TaskArguments = {
   message: string
 }
 
-type StageArguments = ApplicationTaskArguments<TaskArguments>
+type StageArguments = ApplicationOperationArguments<TaskArguments>
 
 export class StageAndCommit extends Operation<TaskArguments> {
   async run() {
@@ -20,7 +20,7 @@ export class StageAndCommit extends Operation<TaskArguments> {
   private async addFiles() {
     const added = await gitAdd({
       applicationData: this.applicationData,
-      taskArguments: { paths: this.taskArguments.files },
+      operationArguments: { paths: this.operationArguments.files },
     }).run()
     this.succeeded = added.success()
   }
@@ -29,13 +29,13 @@ export class StageAndCommit extends Operation<TaskArguments> {
     if (!this.succeeded) return
     const committed = await gitCommit({
       applicationData: this.applicationData,
-      taskArguments: this.commitTaskArguments(),
+      operationArguments: this.commitTaskArguments(),
     }).run()
     this.succeeded = committed.success()
   }
 
   private commitTaskArguments() {
-    const { message, files: paths } = this.taskArguments
+    const { message, files: paths } = this.operationArguments
     return { message, paths }
   }
 }

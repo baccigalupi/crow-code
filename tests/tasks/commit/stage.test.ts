@@ -17,7 +17,7 @@ describe('stageAndCommit', () => {
 
     const staged = await stageAndCommit({
       applicationData,
-      taskArguments: { files: ['src/a.ts'], message: 'Subject\n\nBody.' },
+      operationArguments: { files: ['src/a.ts'], message: 'Subject\n\nBody.' },
     }).run()
 
     assertSpyCall(commandSpy, 0, {
@@ -43,7 +43,7 @@ describe('stageAndCommit', () => {
 
     const staged = await stageAndCommit({
       applicationData,
-      taskArguments: { message: 'Subject\n\nBody.' },
+      operationArguments: { message: 'Subject\n\nBody.' },
     }).run()
 
     assertSpyCall(commandSpy, 0, {
@@ -66,7 +66,7 @@ describe('stageAndCommit', () => {
 
     const staged = await stageAndCommit({
       applicationData,
-      taskArguments: { files: ['src/a.ts'], message: 'Subject\n\nBody.' },
+      operationArguments: { files: ['src/a.ts'], message: 'Subject\n\nBody.' },
     }).run()
 
     expect(commandSpy.calls.length).toBe(1)
@@ -84,7 +84,7 @@ describe('stageAndCommit', () => {
 
     const staged = await stageAndCommit({
       applicationData,
-      taskArguments: { files: ['src/a.ts'], message: 'Subject\n\nBody.' },
+      operationArguments: { files: ['src/a.ts'], message: 'Subject\n\nBody.' },
     }).run()
 
     expect(commandSpy.calls.length).toBe(2)

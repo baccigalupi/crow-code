@@ -12,7 +12,7 @@ describe('readFile', () => {
     const applicationData = mockApplicationData()
     const path = join(fixturesDirectory, 'tools', 'files', 'alpha.txt')
 
-    const file = readFile({ applicationData, taskArguments: { path } })
+    const file = readFile({ applicationData, operationArguments: { path } })
     await file.run()
 
     expect(file.success()).toBe(true)
@@ -25,7 +25,7 @@ describe('readFile', () => {
 
     const file = readFile({
       applicationData,
-      taskArguments: { path, offset: 2 },
+      operationArguments: { path, offset: 2 },
     })
     await file.run()
 
@@ -39,7 +39,7 @@ describe('readFile', () => {
 
     const file = readFile({
       applicationData,
-      taskArguments: { path, offset: 2, limit: 1 },
+      operationArguments: { path, offset: 2, limit: 1 },
     })
     await file.run()
 
@@ -58,7 +58,7 @@ describe('readFile', () => {
 
     const file = readFile({
       applicationData,
-      taskArguments: { path },
+      operationArguments: { path },
       pathPermissions: permissions,
     })
     await file.run()
@@ -75,7 +75,7 @@ describe('readFile', () => {
     const path = join(fixturesDirectory, 'tools', 'files', 'missing.txt')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
-    const file = readFile({ applicationData, taskArguments: { path } })
+    const file = readFile({ applicationData, operationArguments: { path } })
     await file.run()
 
     expect(file.success()).toBe(false)
@@ -96,7 +96,7 @@ describe('readFile', () => {
       'alpha.txt',
     )
 
-    const file = readFile({ applicationData, taskArguments: { path } })
+    const file = readFile({ applicationData, operationArguments: { path } })
     await file.run()
 
     expect(file.success()).toBe(true)
@@ -108,7 +108,7 @@ describe('readFile', () => {
 
     const file = readFile({
       applicationData,
-      taskArguments: { path: 'alpha.txt' },
+      operationArguments: { path: 'alpha.txt' },
     })
 
     expect(file).toBeInstanceOf(ReadFile)

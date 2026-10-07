@@ -38,7 +38,7 @@ describe('gitTrackedChanges', () => {
 
     const diff = gitTrackedChanges({
       applicationData,
-      taskArguments: {
+      operationArguments: {
         filter: ['src/a.ts', 'tests/a.test.ts'],
       },
     })

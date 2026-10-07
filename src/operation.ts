@@ -1,16 +1,18 @@
 import type { ApplicationData } from './application-data.ts'
-import type { ApplicationTaskArguments } from './types.ts'
+import type { ApplicationOperationArguments } from './types.ts'
 
-export abstract class Operation<TaskArguments> {
+export abstract class Operation<OperationArguments> {
   protected applicationData: ApplicationData
-  protected taskArguments: TaskArguments
+  protected operationArguments: OperationArguments
   protected succeeded = false
 
   constructor(
-    { applicationData, taskArguments }: ApplicationTaskArguments<TaskArguments>,
+    { applicationData, operationArguments }: ApplicationOperationArguments<
+      OperationArguments
+    >,
   ) {
     this.applicationData = applicationData
-    this.taskArguments = taskArguments
+    this.operationArguments = operationArguments
     this.unpackArguments()
   }
 
@@ -23,7 +25,7 @@ export abstract class Operation<TaskArguments> {
   abstract run(): Promise<this>
 }
 
-export abstract class OperationWithResult<TaskArguments, Result>
-  extends Operation<TaskArguments> {
+export abstract class OperationWithResult<OperationArguments, Result>
+  extends Operation<OperationArguments> {
   abstract result(): Result
 }

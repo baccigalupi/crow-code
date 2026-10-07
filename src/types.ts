@@ -3,9 +3,9 @@ import type { ApplicationData } from './application-data.ts'
 
 export type Logger = pino.Logger
 
-export type ApplicationTaskArguments<T> = {
+export type ApplicationOperationArguments<T> = {
   applicationData: ApplicationData
-  taskArguments: T
+  operationArguments: T
 }
 
 export type ConsoleLog = typeof console.log
