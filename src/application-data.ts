@@ -1,13 +1,8 @@
 import type { Knex } from 'knex'
 import { join } from '@std/path'
 import { OpenAI } from 'openai'
-import type {
-  ConsoleLog,
-  DenoCommand,
-  Logger,
-  ParsedArguments,
-  RealPath,
-} from './types.ts'
+import type { ParsedArguments } from './cli/types.ts'
+import type { ConsoleLog, DenoCommand, Logger, RealPath } from './types.ts'
 import type { OpenAiClientOptions } from './model-requests/types.ts'
 import { openAndMigrateDatabase } from './database/open-and-migrate-database.ts'
 import { createLogger } from './logger.ts'

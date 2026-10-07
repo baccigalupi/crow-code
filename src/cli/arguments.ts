@@ -1,5 +1,5 @@
 import { parseArgs } from '@std/cli/parse-args'
-import type { ParsedArguments, ParsedArgumentsOptions } from '../types.ts'
+import type { ParsedArguments, ParsedArgumentsOptions } from './types.ts'
 
 export const parseArguments = (argumentsList: string[]): ParsedArguments => {
   const { _, ...options } = parseArgs(argumentsList, { boolean: true })

@@ -1,5 +1,5 @@
 import type { ApplicationData } from '../../application-data.ts'
-import type { ParsedArgumentsOptions } from '../../types.ts'
+import type { ParsedArgumentsOptions } from '../types.ts'
 
 export abstract class Command {
   protected applicationData: ApplicationData

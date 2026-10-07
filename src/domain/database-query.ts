@@ -1,4 +1,5 @@
-import type { DatabaseQuerySerializer, Logger } from '../types.ts'
+import type { Logger } from '../types.ts'
+import type { DatabaseQuerySerializer } from './types.ts'
 
 const defaultSerializer = <T>(value: T): T => value // passes values through unchanged
 

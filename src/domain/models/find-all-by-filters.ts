@@ -1,6 +1,6 @@
 import type { Knex } from 'knex'
 import type { ApplicationData } from '../../application-data.ts'
-import type { DatabaseQuerySerializer } from '../../types.ts'
+import type { DatabaseQuerySerializer } from '../types.ts'
 import { databaseQuery } from '../database-query.ts'
 import type { ModelWithProviderRow } from '../types.ts'
 import type { ModelEntity } from './model.ts'

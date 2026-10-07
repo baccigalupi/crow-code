@@ -1,4 +1,4 @@
-import type { RecordParams } from '../../types.ts'
+import type { RecordParams } from '../types.ts'
 import { filterKeys } from './parse-params/filter-keys.ts'
 import { normalizeParamKeys } from './parse-params/normalize-param-keys.ts'
 

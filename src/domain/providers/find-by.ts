@@ -1,5 +1,5 @@
 import type { ApplicationData } from '../../application-data.ts'
-import type { DatabaseQuerySerializer } from '../../types.ts'
+import type { DatabaseQuerySerializer } from '../types.ts'
 import { databaseQuery } from '../database-query.ts'
 import type { ProviderRecord } from '../types.ts'
 import type { ProviderEntity } from './entity.ts'

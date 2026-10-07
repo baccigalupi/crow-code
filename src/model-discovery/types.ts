@@ -1,4 +1,4 @@
-import type { DefaultReasoning } from '../types.ts'
+import type { DefaultReasoning } from '../domain/types.ts'
 
 export type EnvironmentValues = Record<string, string>
 export type ReasoningOption = 'toggle' | 'effort' | 'budget_tokens'

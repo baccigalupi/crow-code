@@ -1,4 +1,4 @@
-import type { DefaultReasoning } from '../../types.ts'
+import type { DefaultReasoning } from '../types.ts'
 import { Environment } from '../../env-vars.ts'
 import type { ModelEndpoint } from '../../model-requests/types.ts'
 import type { ModelEntityRow, ModelRow } from '../types.ts'

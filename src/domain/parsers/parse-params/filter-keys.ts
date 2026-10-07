@@ -1,4 +1,4 @@
-import type { RecordParams, RecordParamValue } from '../../../types.ts'
+import type { RecordParams, RecordParamValue } from '../../types.ts'
 
 const addAllowedKey = (
   result: RecordParams,

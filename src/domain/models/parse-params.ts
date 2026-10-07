@@ -1,4 +1,4 @@
-import type { RecordParams } from '../../types.ts'
+import type { RecordParams } from '../types.ts'
 import { parseParamKeys } from '../parsers/parse-param-keys.ts'
 import type { ModelParams } from '../types.ts'
 
