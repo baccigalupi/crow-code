@@ -18,11 +18,10 @@ export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
   private changes: GitFileDiff[] = []
   private message: CommitMessage = { subject: '', body: '' }
 
-  async run() {
+  protected async runOperation() {
     await this.collectChanges()
     await this.generateMessage()
     await this.commitFiles()
-    return this
   }
 
   result() {
@@ -30,13 +29,16 @@ export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
   }
 
   private async collectChanges() {
-    const collected = await gitChanges({
+    const collected = await this.runSubOperation(this.collect().run())
+    this.changes = collected.result()
+    if (collected.success()) this.hasChanges()
+  }
+
+  private collect() {
+    return gitChanges({
       applicationData: this.applicationData,
       operationArguments: { filter: this.files() },
-    }).run()
-    this.changes = collected.result()
-    this.succeeded = collected.success() && this.hasChanges()
-    if (!collected.success()) this.fail('failed to collect changes')
+    })
   }
 
   private files() {
@@ -53,9 +55,8 @@ export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
   private async generateMessage() {
     if (!this.succeeded) return
     const message = await commitMessage(this.messageArguments())
-    this.succeeded = message !== undefined
     if (message !== undefined) this.message = message
-    if (!this.succeeded) this.fail('failed to generate a commit message')
+    if (message === undefined) this.fail('failed to generate a commit message')
   }
 
   private messageArguments() {
@@ -70,9 +71,7 @@ export class Commit extends OperationWithResult<TaskArguments, CommitMessage> {
 
   private async commitFiles() {
     if (!this.succeeded) return
-    const staged = await stageAndCommit(this.stageArguments()).run()
-    this.succeeded = staged.success()
-    if (!this.succeeded) this.fail('failed to stage and commit')
+    await this.runSubOperation(stageAndCommit(this.stageArguments()).run())
   }
 
   private fullMessage() {

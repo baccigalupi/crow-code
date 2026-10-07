@@ -12,14 +12,12 @@ export abstract class ExecCli<T extends Record<string, unknown>, U>
     this.denoCommand = this.applicationData.denoCommand()
   }
 
-  async run() {
+  protected async runOperation() {
     try {
       await this.runCommand()
     } catch (error) {
       this.fail((error as Error).message)
     }
-
-    return this
   }
 
   result() {
@@ -47,13 +45,7 @@ export abstract class ExecCli<T extends Record<string, unknown>, U>
   }
 
   private handleResponse() {
-    this.succeeded = this.isSuccessful(this.response)
-    this.handleErrors()
-  }
-
-  private handleErrors() {
-    if (this.success()) return
-
+    if (this.isSuccessful(this.response)) return
     this.fail(new TextDecoder().decode(this.response.stderr))
   }
 

@@ -13,29 +13,32 @@ type StageArguments = ApplicationOperationArguments<TaskArguments>
 export class StageAndCommit extends Operation<TaskArguments> {
   protected override logPrefix = 'Task error'
 
-  async run() {
+  protected async runOperation() {
     await this.addFiles()
     await this.commitFiles()
-    return this
   }
 
   private async addFiles() {
-    const added = await gitAdd({
+    await this.runSubOperation(this.add().run())
+  }
+
+  private add() {
+    return gitAdd({
       applicationData: this.applicationData,
       operationArguments: { paths: this.operationArguments.files },
-    }).run()
-    this.succeeded = added.success()
-    if (!this.succeeded) this.fail('failed to stage files')
+    })
   }
 
   private async commitFiles() {
     if (!this.succeeded) return
-    const committed = await gitCommit({
+    await this.runSubOperation(this.commit().run())
+  }
+
+  private commit() {
+    return gitCommit({
       applicationData: this.applicationData,
       operationArguments: this.commitTaskArguments(),
-    }).run()
-    this.succeeded = committed.success()
-    if (!this.succeeded) this.fail('failed to commit staged files')
+    })
   }
 
   private commitTaskArguments() {

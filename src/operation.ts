@@ -13,6 +13,7 @@ export abstract class Operation<OperationArguments> implements AsyncOperation {
   protected logger: Logger
   protected reason = ''
   protected logPrefix = ''
+  protected subOperations: AsyncOperation[]
 
   constructor(
     { applicationData, operationArguments }: ApplicationOperationArguments<
@@ -23,6 +24,7 @@ export abstract class Operation<OperationArguments> implements AsyncOperation {
     this.operationArguments = operationArguments
     this.logger = applicationData.logger()
     this.unpackArguments()
+    this.subOperations = []
   }
 
   protected unpackArguments() {}
@@ -31,7 +33,24 @@ export abstract class Operation<OperationArguments> implements AsyncOperation {
     return this.succeeded
   }
 
-  abstract run(): Promise<this>
+  async run() {
+    this.succeeded = true
+    await this.runOperation()
+    return this
+  }
+
+  protected abstract runOperation(): Promise<void>
+
+  protected async runSubOperation<T extends AsyncOperation>(
+    runningOperation: Promise<T>,
+  ) {
+    const operation = await runningOperation
+    this.subOperations.push(operation)
+    if (!operation.success()) {
+      this.fail(`Error running suboperation: ${operation}`)
+    }
+    return operation
+  }
 
   protected fail(reason: string) {
     this.succeeded = false
