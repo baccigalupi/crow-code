@@ -8,6 +8,15 @@ export type ApplicationOperationArguments<T> = {
   operationArguments: T
 }
 
+export interface AsyncOperation {
+  run(): Promise<AsyncOperation>
+  success(): boolean
+}
+
+export interface AsyncOperationWithResult<Result> extends AsyncOperation {
+  result(): Result
+}
+
 export type ConsoleLog = typeof console.log
 export type DenoCommand = typeof Deno.Command
 export type RealPath = typeof Deno.realPath

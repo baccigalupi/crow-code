@@ -1,7 +1,12 @@
 import type { ApplicationData } from './application-data.ts'
-import type { ApplicationOperationArguments, Logger } from './types.ts'
+import type {
+  ApplicationOperationArguments,
+  AsyncOperation,
+  AsyncOperationWithResult,
+  Logger,
+} from './types.ts'
 
-export abstract class Operation<OperationArguments> {
+export abstract class Operation<OperationArguments> implements AsyncOperation {
   protected applicationData: ApplicationData
   protected operationArguments: OperationArguments
   protected succeeded = false
@@ -40,6 +45,7 @@ export abstract class Operation<OperationArguments> {
 }
 
 export abstract class OperationWithResult<OperationArguments, Result>
-  extends Operation<OperationArguments> {
+  extends Operation<OperationArguments>
+  implements AsyncOperationWithResult<Result> {
   abstract result(): Result
 }
