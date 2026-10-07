@@ -1,4 +1,4 @@
-import type { AsyncTaskArgument } from '../../../types.ts'
+import type { ApplicationTaskArguments } from '../../../types.ts'
 import { ExecCommand } from '../../exec-command.ts'
 import type { GitFileDiff } from '../../types.ts'
 
@@ -6,7 +6,7 @@ type TaskArguments = {
   path: string
 }
 
-type GitUntrackedChangeArguments = AsyncTaskArgument<TaskArguments>
+type GitUntrackedChangeArguments = ApplicationTaskArguments<TaskArguments>
 
 export class GitUntrackedChange
   extends ExecCommand<TaskArguments, GitFileDiff> {

@@ -1,11 +1,11 @@
-import type { AsyncTaskArgument } from '../../../types.ts'
+import type { ApplicationTaskArguments } from '../../../types.ts'
 import { ExecCommand } from '../../exec-command.ts'
 
 type TaskArguments = {
   count?: number
 }
 
-type GitRecentSubjectsArguments = AsyncTaskArgument<TaskArguments>
+type GitRecentSubjectsArguments = ApplicationTaskArguments<TaskArguments>
 
 type OptionalGitRecentSubjectsArguments = Pick<
   GitRecentSubjectsArguments,

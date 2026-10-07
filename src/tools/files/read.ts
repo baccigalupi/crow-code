@@ -1,4 +1,4 @@
-import type { AsyncTaskArgument, Logger } from '../../types.ts'
+import type { ApplicationTaskArguments, Logger } from '../../types.ts'
 import type { PathPermissions } from '../path-permissions.ts'
 import type { FileContent } from '../types.ts'
 
@@ -8,7 +8,7 @@ type TaskArguments = {
   limit?: number
 }
 
-type ReadFileArguments = AsyncTaskArgument<TaskArguments> & {
+type ReadFileArguments = ApplicationTaskArguments<TaskArguments> & {
   pathPermissions?: PathPermissions
 }
 

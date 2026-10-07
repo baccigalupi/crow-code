@@ -1,4 +1,4 @@
-import type { AsyncTaskArgument } from '../../../types.ts'
+import type { ApplicationTaskArguments } from '../../../types.ts'
 import { ExecCommand } from '../../exec-command.ts'
 import type { GitFileDiff } from '../../types.ts'
 import { trackedChangeParser } from './tracked-changes/parser.ts'
@@ -7,7 +7,7 @@ type TaskArguments = {
   filter?: string[]
 }
 
-type GitTrackedChangesArguments = AsyncTaskArgument<TaskArguments>
+type GitTrackedChangesArguments = ApplicationTaskArguments<TaskArguments>
 
 type OptionalGitTrackedChangesArguments = Pick<
   GitTrackedChangesArguments,

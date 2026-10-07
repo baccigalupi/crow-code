@@ -1,4 +1,4 @@
-import type { AsyncTaskArgument, DenoCommand, Logger } from '../types.ts'
+import type { ApplicationTaskArguments, DenoCommand, Logger } from '../types.ts'
 
 export abstract class ExecCommand<
   T extends Record<string, unknown>,
@@ -13,7 +13,7 @@ export abstract class ExecCommand<
   private succeeded = false
 
   constructor(
-    { applicationData, taskArguments }: AsyncTaskArgument<T>,
+    { applicationData, taskArguments }: ApplicationTaskArguments<T>,
   ) {
     this.taskArguments = taskArguments
 

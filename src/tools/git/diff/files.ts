@@ -1,4 +1,4 @@
-import type { AsyncTaskArgument } from '../../../types.ts'
+import type { ApplicationTaskArguments } from '../../../types.ts'
 import { ExecCommand } from '../../exec-command.ts'
 import { FileDiffParser } from './files/parser.ts'
 import type { ChangedFile } from '../../types.ts'
@@ -7,7 +7,7 @@ type TaskArguments = {
   filter?: string[]
 }
 
-type GitDiffArguments = AsyncTaskArgument<TaskArguments>
+type GitDiffArguments = ApplicationTaskArguments<TaskArguments>
 
 type OptionalGitDiffArguments = Pick<GitDiffArguments, 'applicationData'>
 

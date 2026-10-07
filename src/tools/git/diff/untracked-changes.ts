@@ -1,5 +1,5 @@
 import type { ApplicationData } from '../../../application-data.ts'
-import type { AsyncTaskArgument } from '../../../types.ts'
+import type { ApplicationTaskArguments } from '../../../types.ts'
 import { gitDiffFiles } from './files.ts'
 import type { ChangedFile } from '../../types.ts'
 import {
@@ -11,7 +11,7 @@ type TaskArguments = {
   filter?: string[]
 }
 
-type GitUntrackedChangesArguments = AsyncTaskArgument<TaskArguments>
+type GitUntrackedChangesArguments = ApplicationTaskArguments<TaskArguments>
 
 type OptionalGitUntrackedChangesArguments = Pick<
   GitUntrackedChangesArguments,

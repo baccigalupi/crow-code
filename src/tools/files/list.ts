@@ -1,6 +1,6 @@
 import { walk } from '@std/fs'
 import { resolve } from '@std/path'
-import type { AsyncTaskArgument, Logger } from '../../types.ts'
+import type { ApplicationTaskArguments, Logger } from '../../types.ts'
 import type { PathPermissions } from '../path-permissions.ts'
 import type { DirectoryEntry, DirectoryListing } from '../types.ts'
 import { directoryEntries } from './list/entries.ts'
@@ -10,7 +10,7 @@ type TaskArguments = {
   recursive?: boolean
 }
 
-type ListDirectoryArguments = AsyncTaskArgument<TaskArguments> & {
+type ListDirectoryArguments = ApplicationTaskArguments<TaskArguments> & {
   pathPermissions?: PathPermissions
 }
 

@@ -1,29 +1,16 @@
-import type { ApplicationData } from '../../application-data.ts'
-import type { AsyncTaskArgument } from '../../types.ts'
+import type { ApplicationTaskArguments } from '../../types.ts'
 import { gitAdd } from '../../tools/git/add.ts'
 import { gitCommit } from '../../tools/git/commit.ts'
+import { Task } from '../../task.ts'
 
 type TaskArguments = {
   files?: string[]
   message: string
 }
 
-type StageArguments = AsyncTaskArgument<TaskArguments>
+type StageArguments = ApplicationTaskArguments<TaskArguments>
 
-export class StageAndCommit {
-  private applicationData: ApplicationData
-  private taskArguments: TaskArguments
-  private succeeded = false
-
-  constructor({ applicationData, taskArguments }: StageArguments) {
-    this.applicationData = applicationData
-    this.taskArguments = taskArguments
-  }
-
-  success() {
-    return this.succeeded
-  }
-
+export class StageAndCommit extends Task<TaskArguments> {
   async run() {
     await this.addFiles()
     await this.commitFiles()

@@ -3,7 +3,7 @@ import type { ApplicationData } from './application-data.ts'
 
 export type Logger = pino.Logger
 
-export type AsyncTaskArgument<T> = {
+export type ApplicationTaskArguments<T> = {
   applicationData: ApplicationData
   taskArguments: T
 }

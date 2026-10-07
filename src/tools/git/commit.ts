@@ -1,4 +1,4 @@
-import type { AsyncTaskArgument } from '../../types.ts'
+import type { ApplicationTaskArguments } from '../../types.ts'
 import { ExecCommand } from '../exec-command.ts'
 
 type TaskArguments = {
@@ -6,7 +6,7 @@ type TaskArguments = {
   paths?: string[]
 }
 
-type GitCommitArguments = AsyncTaskArgument<TaskArguments>
+type GitCommitArguments = ApplicationTaskArguments<TaskArguments>
 
 export class GitCommit extends ExecCommand<TaskArguments, string> {
   executable = 'git'

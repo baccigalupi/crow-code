@@ -1,34 +1,26 @@
-import type { ApplicationData } from '../application-data.ts'
 import type { CommitMessage } from '../model-requests/types.ts'
 import type { GitFileDiff } from '../tools/types.ts'
-import type { AsyncTaskArgument, Logger } from '../types.ts'
+import type { ApplicationTaskArguments, Logger } from '../types.ts'
 import { gitChanges } from '../tools/git/diff/changes.ts'
 import { commitMessage } from './commit/message.ts'
 import { stageAndCommit } from './commit/stage.ts'
+import { TaskWithResult } from '../task.ts'
 
 type TaskArguments = {
   goal: string
   files: string[]
 }
 
-type CommitArguments = AsyncTaskArgument<TaskArguments>
+type CommitArguments = ApplicationTaskArguments<TaskArguments>
 
-export class Commit {
-  private applicationData: ApplicationData
-  private taskArguments: TaskArguments
+export class Commit extends TaskWithResult<TaskArguments, CommitMessage> {
   private logger: Logger
   private changes: GitFileDiff[] = []
   private message: CommitMessage = { subject: '', body: '' }
-  private succeeded = false
 
-  constructor({ applicationData, taskArguments }: CommitArguments) {
-    this.applicationData = applicationData
-    this.taskArguments = taskArguments
-    this.logger = applicationData.logger()
-  }
-
-  success() {
-    return this.succeeded
+  constructor(args: CommitArguments) {
+    super(args)
+    this.logger = this.applicationData.logger()
   }
 
   async run() {

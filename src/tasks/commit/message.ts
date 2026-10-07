@@ -1,4 +1,4 @@
-import type { AsyncTaskArgument } from '../../types.ts'
+import type { ApplicationTaskArguments } from '../../types.ts'
 import type { GitFileDiff } from '../../tools/types.ts'
 import { getCommitMessage } from '../../model-requests/commit-message.ts'
 import { gitRecentSubjects } from '../../tools/git/log/recent-subjects.ts'
@@ -8,7 +8,7 @@ type TaskArguments = {
   changes: GitFileDiff[]
 }
 
-type MessageArguments = AsyncTaskArgument<TaskArguments>
+type MessageArguments = ApplicationTaskArguments<TaskArguments>
 
 export const commitMessage = async (
   { applicationData, taskArguments: { goal, changes } }: MessageArguments,
