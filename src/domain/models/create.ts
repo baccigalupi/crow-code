@@ -8,6 +8,7 @@ import { parseModelParams } from './parse-params.ts'
 export class CreateModel
   extends CreateRecord<RecordParams, ModelRow, ModelEntity> {
   protected readonly tableName = 'models'
+  protected override logPrefix = 'Create model: '
 
   protected override params(): RecordParams {
     return parseModelParams(this.operationArguments)

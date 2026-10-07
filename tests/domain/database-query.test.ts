@@ -32,7 +32,9 @@ describe('databaseQuery', () => {
 
     expect(query.success()).toBe(false)
     expect(query.result()).toEqual([])
-    assertSpyCall(loggerErrorSpy, 0, { args: ['query failed'] })
+    assertSpyCall(loggerErrorSpy, 0, {
+      args: ['Database query: query failed'],
+    })
   })
 
   describe('resultSerializer', () => {

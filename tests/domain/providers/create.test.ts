@@ -70,7 +70,7 @@ describe('create', () => {
     expect(creator.result()).toEqual({})
     assertSpyCall(loggerErrorSpy, 0, {
       args: [
-        "insert into `providers` (`base_url`, `name`) values ('https://www.example.com', 'provider-name') returning * - UNIQUE constraint failed: providers.base_url",
+        "Create provider: insert into `providers` (`base_url`, `name`) values ('https://www.example.com', 'provider-name') returning * - UNIQUE constraint failed: providers.base_url",
       ],
     })
     await database.destroy()

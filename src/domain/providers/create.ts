@@ -17,6 +17,7 @@ export class CreateProvider extends CreateRecord<
   ProviderRecord | EmptyRecord
 > {
   protected readonly tableName = 'providers'
+  protected override logPrefix = 'Create provider: '
 
   protected override params(): Partial<ProviderRecord> {
     return parseParamKeys(

@@ -11,6 +11,7 @@ export class OpenAiRequest extends OperationWithResult<
   OpenAiRequestArguments,
   ChatCompletionJson | undefined
 > {
+  protected override logPrefix = 'OpenAI request: '
   error?: Error
   private completion?: ChatCompletionJson
   private startTime = 0

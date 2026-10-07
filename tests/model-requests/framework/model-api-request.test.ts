@@ -23,6 +23,8 @@ describe('ModelApiRequest', () => {
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
+      protected override logPrefix = 'Test request: '
+
       protected override errorResponse() {
         return []
       }
@@ -56,6 +58,8 @@ describe('ModelApiRequest', () => {
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
+      protected override logPrefix = 'Test request: '
+
       protected override errorResponse() {
         return []
       }
@@ -93,6 +97,8 @@ describe('ModelApiRequest', () => {
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
+      protected override logPrefix = 'Test request: '
+
       protected override errorResponse() {
         return []
       }
@@ -132,6 +138,8 @@ describe('ModelApiRequest', () => {
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
+      protected override logPrefix = 'Test request: '
+
       protected override errorResponse() {
         return []
       }
@@ -166,6 +174,8 @@ describe('ModelApiRequest', () => {
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
+      protected override logPrefix = 'Test request: '
+
       protected override errorResponse() {
         return []
       }
@@ -201,6 +211,8 @@ describe('ModelApiRequest', () => {
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
+      protected override logPrefix = 'Test request: '
+
       protected override errorResponse() {
         return []
       }
@@ -234,6 +246,8 @@ describe('ModelApiRequest', () => {
       fetch: mockFetchError(401),
     })
     const modelApiRequest = new class extends ModelApiRequest<string, string> {
+      protected override logPrefix = 'Test request: '
+
       protected override errorResponse() {
         return ''
       }
@@ -269,6 +283,8 @@ describe('ModelApiRequest', () => {
       fetch: mockFetchError(500),
     })
     const modelApiRequest = new class extends ModelApiRequest<string, string> {
+      protected override logPrefix = 'Test request: '
+
       protected override errorResponse() {
         return ''
       }

@@ -12,6 +12,7 @@ export class DatabaseQuery<Result, Serialized = Result[]>
     DatabaseQueryArguments<Result, Serialized>,
     Serialized
   > {
+  protected override logPrefix = 'Database query: '
   private queryResult: Result[] = []
 
   async run() {

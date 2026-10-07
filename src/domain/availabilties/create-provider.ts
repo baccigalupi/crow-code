@@ -18,6 +18,7 @@ export class CreateProviderAvailability extends CreateRecord<
   ProviderAvailabilityRow | EmptyRecord
 > {
   protected readonly tableName = 'provider_availabilities'
+  protected override logPrefix = 'Create provider availability: '
 
   protected override params(): Partial<ProviderAvailabilityRow> {
     return {

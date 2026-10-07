@@ -14,7 +14,7 @@ export class Runner<TRequest, TResponse> extends OperationWithResult<
   RunnerArguments<TRequest, TResponse>,
   TResponse | undefined
 > {
-  protected override logPrefix = 'Model API Request: '
+  protected override logPrefix = 'Runner: '
   private response?: TResponse
   private _models?: ModelEntity[]
 

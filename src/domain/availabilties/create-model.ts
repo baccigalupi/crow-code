@@ -18,6 +18,7 @@ export class CreateModelAvailability extends CreateRecord<
   ModelAvailabilityRow | EmptyRecord
 > {
   protected readonly tableName = 'model_availabilities'
+  protected override logPrefix = 'Create model availability: '
 
   protected override params(): Partial<ModelAvailabilityRow> {
     return {

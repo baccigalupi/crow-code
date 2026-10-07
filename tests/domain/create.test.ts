@@ -16,6 +16,7 @@ describe('CreateRecord', () => {
     }
     class CreateProvider extends CreateRecord<Params, Row> {
       protected readonly tableName = 'providers'
+      protected override logPrefix = 'Create provider: '
     }
     const logger = pino({ enabled: false })
     const database = await createTestDatabase(logger)
@@ -52,6 +53,7 @@ describe('CreateRecord', () => {
     }
     class CreateProvider extends CreateRecord<Params, Row, InsertParams> {
       protected readonly tableName = 'providers'
+      protected override logPrefix = 'Create provider: '
 
       protected override params(): InsertParams {
         return {
@@ -88,6 +90,7 @@ describe('CreateRecord', () => {
     type Row = Params & { id: number }
     class CreateProvider extends CreateRecord<Params, Row> {
       protected readonly tableName = 'providers'
+      protected override logPrefix = 'Create provider: '
     }
     const logger = pino({ enabled: false })
     using loggerErrorSpy = spy(logger, 'error')

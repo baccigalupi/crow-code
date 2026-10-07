@@ -17,6 +17,8 @@ type OptionalGitChangesArguments = Pick<
 
 export class GitChanges
   extends OperationWithResult<TaskArguments, GitFileDiff[]> {
+  protected override logPrefix = 'Git changes: '
+
   async run() {
     await this.runSubOperation(this.trackedChanges())
     await this.runSubOperation(this.untrackedChanges())

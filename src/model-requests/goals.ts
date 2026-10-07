@@ -16,6 +16,8 @@ Respond with only a JSON array of strings. No markdown, no explanation.
 `
 
 export class GetGoals extends ModelApiRequest<string, string[]> {
+  protected override logPrefix = 'Get goals: '
+
   protected override errorResponse() {
     return []
   }

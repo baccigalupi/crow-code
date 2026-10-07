@@ -12,7 +12,7 @@ export abstract class Operation<OperationArguments> implements AsyncOperation {
   protected succeeded = true
   protected logger: Logger
   reason = ''
-  protected logPrefix = ''
+  protected abstract logPrefix: string
   protected subOperations: AsyncOperation[]
 
   constructor(

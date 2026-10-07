@@ -20,6 +20,7 @@ type OptionalGitUntrackedChangesArguments = Pick<
 
 export class GitUntrackedChanges
   extends OperationWithResult<TaskArguments, GitFileDiff[]> {
+  protected override logPrefix = 'Git untracked changes: '
   private untrackedFiles: ChangedFile[] = []
   private untrackedChanges: GitUntrackedChange[] = []
 

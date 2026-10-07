@@ -7,6 +7,8 @@ import type { CommitMessage, CommitMessageRequest, Json } from './types.ts'
 
 export class GetCommitMessage
   extends ModelApiRequest<CommitMessageRequest, CommitMessage> {
+  protected override logPrefix = 'Get commit message: '
+
   protected override errorResponse() {
     return { subject: '', body: '' }
   }
