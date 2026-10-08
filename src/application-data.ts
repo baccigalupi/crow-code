@@ -56,14 +56,9 @@ export class ApplicationData {
   }
 
   withDatabase(database: Knex) {
-    const clone = Object.create(
-      Object.getPrototypeOf(this),
-      Object.getOwnPropertyDescriptors(this),
-    ) as ApplicationData
-    Object.defineProperty(clone, 'database', {
-      value: () => Promise.resolve(database),
-    })
-    return clone
+    return Object.create(this, {
+      database: { value: () => Promise.resolve(database) },
+    }) as ApplicationData
   }
 
   async close() {

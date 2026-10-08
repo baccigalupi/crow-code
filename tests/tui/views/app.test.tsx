@@ -118,23 +118,6 @@ describe('App', () => {
     unmount()
   })
 
-  it('when left arrow then typing, inserts before the cursor', async () => {
-    const { stdin, lastFrame, unmount } = render(
-      <App session={new ChatSession(80)} />,
-    )
-
-    stdin.write('ac')
-    await new Promise((resolve) => setTimeout(resolve, 0))
-    stdin.write('\x1b[D')
-    await new Promise((resolve) => setTimeout(resolve, 0))
-    stdin.write('b')
-    await new Promise((resolve) => setTimeout(resolve, 0))
-
-    expect(lastFrame()).toContain('abc')
-
-    unmount()
-  })
-
   it('when mounted, the header renders', async () => {
     const { lastFrame, unmount } = render(
       <App session={new ChatSession(80)} />,

@@ -70,6 +70,20 @@ describe('ChatSession', () => {
     expect(session.inputRows.value).toBe(1)
   })
 
+  // Assert on the buffer, not the rendered frame: Input wraps the char under
+  // the cursor in <Text inverse>, so ANSI escapes split mid-cursor text in
+  // lastFrame(). Frame assertions are unreliable whenever the cursor is not
+  // at the end of the buffer.
+  it('when inserting after moving left, lands before the cursor', () => {
+    const session = new ChatSession(80)
+
+    session.insert('ac')
+    session.moveCursor('left')
+    session.insert('b')
+
+    expect(session.buffer.value).toEqual({ text: 'abc', cursor: 2 })
+  })
+
   it('notifies buffer subscribers on change and stops after dispose', () => {
     const session = new ChatSession(80)
     const seen: string[] = []

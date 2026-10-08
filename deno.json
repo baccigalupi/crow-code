@@ -2,9 +2,6 @@
   "name": "crow-code",
   "version": "0.0.1",
   "description": "task oriented coding agent",
-  "exports": {
-    ".": "./src/cli.ts"
-  },
   "bin": {
     "crow": "bin/crow"
   },
