@@ -51,7 +51,12 @@ export class Runner {
   }
 
   private writeError(error: unknown) {
-    Deno.stderr.writeSync(new TextEncoder().encode(`${String(error)}\n`))
+    const message = `${String(error)}\n`
+    if (this.io.stderr) {
+      this.io.stderr.write(message)
+    } else {
+      Deno.stderr.writeSync(new TextEncoder().encode(message))
+    }
   }
 
   private listen() {

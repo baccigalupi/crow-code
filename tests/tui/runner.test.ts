@@ -78,6 +78,22 @@ describe('runner', () => {
   it('when the app fails, writes the error to stderr and resolves interrupted', async () => {
     const terminal = mockTerminal({ rawMode: false })
     const runner = createRunner(terminal.io)
+    using write = spy(terminal.stderr, 'write')
+
+    const status = await runner.status()
+
+    expect(status).toBe('interrupted')
+    expect(String(write.calls[0].args[0])).toContain(
+      'setRawMode is not a function',
+    )
+  })
+
+  it('when no stderr is provided, writes the error to Deno.stderr', async () => {
+    const terminal = mockTerminal({ rawMode: false })
+    const runner = createRunner({
+      stdin: terminal.io.stdin,
+      stdout: terminal.io.stdout,
+    })
     using write = stub(Deno.stderr, 'writeSync', () => 0)
 
     const status = await runner.status()
