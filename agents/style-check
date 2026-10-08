@@ -19,16 +19,16 @@ test_files=()
 if [ "$scope" == all ]; then
   while IFS= read -r file; do
     if [ -f "$file" ]; then ts_files+=("$file"); fi
-  done < <(git ls-files 'src/**/*.ts' 'src/**/*.tsx')
+  done < <(git ls-files 'src/*.ts' 'src/*.tsx' 'src/**/*.ts' 'src/**/*.tsx')
   while IFS= read -r file; do
     ts_files+=("$file")
-  done < <(git ls-files --others --exclude-standard 'src/**/*.ts' 'src/**/*.tsx')
+  done < <(git ls-files --others --exclude-standard 'src/*.ts' 'src/*.tsx' 'src/**/*.ts' 'src/**/*.tsx')
   while IFS= read -r file; do
     if [ -f "$file" ]; then test_files+=("$file"); fi
-  done < <(git ls-files 'tests/**/*.test.ts' 'tests/**/*.test.tsx')
+  done < <(git ls-files 'tests/*.test.ts' 'tests/*.test.tsx' 'tests/**/*.test.ts' 'tests/**/*.test.tsx')
   while IFS= read -r file; do
     test_files+=("$file")
-  done < <(git ls-files --others --exclude-standard 'tests/**/*.test.ts' 'tests/**/*.test.tsx')
+  done < <(git ls-files --others --exclude-standard 'tests/*.test.ts' 'tests/*.test.tsx' 'tests/**/*.test.ts' 'tests/**/*.test.tsx')
 else
   changed_files=$(
     git diff --name-only --diff-filter=ACMR

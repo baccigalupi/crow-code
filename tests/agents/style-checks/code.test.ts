@@ -436,4 +436,30 @@ describe('style-check code plugin', () => {
 
     expect(diagnostics).toHaveLength(0)
   })
+
+  it('when enumerating all scope, includes top-level src files', async () => {
+    const script = await Deno.readTextFile('agents/style-check')
+    const args = ['ls-files']
+
+    for (const match of script.matchAll(/'src\/[^']+'/g)) {
+      args.push(match[0].slice(1, -1))
+    }
+    const output = await new Deno.Command('git', { args }).output()
+
+    expect(new TextDecoder().decode(output.stdout)).toContain('src/types.ts')
+  })
+
+  it('when enumerating all scope, includes top-level test files', async () => {
+    const script = await Deno.readTextFile('agents/style-check')
+    const args = ['ls-files']
+
+    for (const match of script.matchAll(/'tests\/[^']+'/g)) {
+      args.push(match[0].slice(1, -1))
+    }
+    const output = await new Deno.Command('git', { args }).output()
+
+    expect(new TextDecoder().decode(output.stdout)).toContain(
+      'tests/cli.test.ts',
+    )
+  })
 })
