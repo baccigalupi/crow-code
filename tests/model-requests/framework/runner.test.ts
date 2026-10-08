@@ -79,7 +79,6 @@ describe('Runner', () => {
 
     expect(runner.result()).toEqual(['done'])
     expect(fetch.calls).toHaveLength(2)
-    await database.destroy()
   })
 
   it('when no models are available, returns undefined', async () => {
@@ -100,6 +99,5 @@ describe('Runner', () => {
 
     expect(runner.result()).toBeUndefined()
     expect(fetch.calls).toHaveLength(0)
-    await database.destroy()
   })
 })

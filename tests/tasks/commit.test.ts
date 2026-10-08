@@ -107,7 +107,6 @@ describe('commit', () => {
       subject: 'Add login',
       body: 'Adds the login form.',
     })
-    await database.destroy()
   })
 
   it('when the diff collection fails, stops without the model or staging', async () => {
@@ -225,7 +224,6 @@ describe('commit', () => {
       subject: 'Add login',
       body: 'Adds the login form.',
     })
-    await database.destroy()
   })
 
   it('when the model request fails, does not stage or commit', async () => {
@@ -273,7 +271,6 @@ describe('commit', () => {
 
     expect(commandSpy.calls.length).toBe(3)
     expect(task.success()).toBe(false)
-    await database.destroy()
   })
 
   it('when staging fails, reports failure', async () => {
@@ -331,7 +328,6 @@ describe('commit', () => {
 
     expect(commandSpy.calls.length).toBe(4)
     expect(task.success()).toBe(false)
-    await database.destroy()
   })
 
   it('when the commit fails, reports failure', async () => {
@@ -390,7 +386,6 @@ describe('commit', () => {
 
     expect(commandSpy.calls.length).toBe(5)
     expect(task.success()).toBe(false)
-    await database.destroy()
   })
 
   it('when git log fails, still stages and commits', async () => {
@@ -456,6 +451,5 @@ describe('commit', () => {
       subject: 'Add login',
       body: 'Adds the login form.',
     })
-    await database.destroy()
   })
 })

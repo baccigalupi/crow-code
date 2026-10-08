@@ -55,7 +55,6 @@ describe('AddProvider', () => {
       models_path: null,
       api_key_env_var: 'OLLAMA_KEY',
     }])
-    await database.destroy()
   })
 
   it('when run succeeds, writes the .env key reminder', async () => {
@@ -82,7 +81,6 @@ describe('AddProvider', () => {
     expect(consoleLog.mock.calls[0].arguments[0]).toBe(
       'Provider added. Add your api key <api_key> to the .env file',
     )
-    await database.destroy()
   })
 
   it('when the provider has no api key env var, writes the reminder with a placeholder key', async () => {
@@ -104,7 +102,6 @@ describe('AddProvider', () => {
     expect(consoleLog.mock.calls[0].arguments[0]).toBe(
       'Provider added. Add your api key <api_key> to the .env file',
     )
-    await database.destroy()
   })
 
   it('when creation fails, writes the failure message', async () => {
@@ -132,6 +129,5 @@ describe('AddProvider', () => {
     )
     const rows = await database('providers').select('*')
     expect(rows).toHaveLength(1)
-    await database.destroy()
   })
 })

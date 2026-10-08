@@ -32,7 +32,6 @@ describe('reasoningFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('delegated')
-      await database.destroy()
     })
 
     it('excludes non-dynamic delegation models', async () => {
@@ -60,7 +59,6 @@ describe('reasoningFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('returns only dynamic models when mixed with static models', async () => {
@@ -103,7 +101,6 @@ describe('reasoningFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('delegated')
-      await database.destroy()
     })
   })
 
@@ -133,7 +130,6 @@ describe('reasoningFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('includes models where supports_reasoning is false', async () => {
@@ -162,7 +158,6 @@ describe('reasoningFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('no-reasoning')
-      await database.destroy()
     })
 
     it('includes models with disableable reasoning', async () => {
@@ -191,7 +186,6 @@ describe('reasoningFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('disableable')
-      await database.destroy()
     })
 
     it('excludes models with mandatory reasoning', async () => {
@@ -219,7 +213,6 @@ describe('reasoningFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
   })
 
@@ -249,7 +242,6 @@ describe('reasoningFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('excludes toggle-only models', async () => {
@@ -277,7 +269,6 @@ describe('reasoningFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('includes models with a reasoning token budget', async () => {
@@ -306,7 +297,6 @@ describe('reasoningFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('token-budget')
-      await database.destroy()
     })
 
     it('includes models supporting low effort', async () => {
@@ -336,7 +326,6 @@ describe('reasoningFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('low-effort')
-      await database.destroy()
     })
 
     it('includes models supporting minimal effort', async () => {
@@ -366,7 +355,6 @@ describe('reasoningFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('minimal-effort')
-      await database.destroy()
     })
 
     it('excludes models whose only lower effort is none', async () => {
@@ -395,7 +383,6 @@ describe('reasoningFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('excludes mandatory reasoning models without efforts', async () => {
@@ -423,7 +410,6 @@ describe('reasoningFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('excludes models supporting only high effort', async () => {
@@ -451,7 +437,6 @@ describe('reasoningFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('includes models advertising a reasoning_effort parameter', async () => {
@@ -480,7 +465,6 @@ describe('reasoningFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('effort-param')
-      await database.destroy()
     })
   })
 
@@ -510,7 +494,6 @@ describe('reasoningFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('excludes toggle-only models', async () => {
@@ -538,7 +521,6 @@ describe('reasoningFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('includes models with a reasoning token budget', async () => {
@@ -567,7 +549,6 @@ describe('reasoningFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('token-budget')
-      await database.destroy()
     })
 
     it('includes models supporting medium effort', async () => {
@@ -597,7 +578,6 @@ describe('reasoningFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('medium-effort')
-      await database.destroy()
     })
 
     it('excludes models supporting only low and high effort', async () => {
@@ -626,7 +606,6 @@ describe('reasoningFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('excludes mandatory reasoning models without efforts', async () => {
@@ -654,7 +633,6 @@ describe('reasoningFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('excludes models supporting only high effort', async () => {
@@ -683,7 +661,6 @@ describe('reasoningFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('includes models advertising a reasoning_effort parameter', async () => {
@@ -712,7 +689,6 @@ describe('reasoningFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('effort-param')
-      await database.destroy()
     })
   })
 
@@ -742,7 +718,6 @@ describe('reasoningFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('excludes toggle-only models', async () => {
@@ -770,7 +745,6 @@ describe('reasoningFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('includes models with a reasoning token budget', async () => {
@@ -799,7 +773,6 @@ describe('reasoningFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('token-budget')
-      await database.destroy()
     })
 
     it('includes models supporting high effort', async () => {
@@ -829,7 +802,6 @@ describe('reasoningFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('high-effort')
-      await database.destroy()
     })
 
     it('includes models supporting xhigh effort', async () => {
@@ -859,7 +831,6 @@ describe('reasoningFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('xhigh-effort')
-      await database.destroy()
     })
 
     it('includes models supporting max effort', async () => {
@@ -889,7 +860,6 @@ describe('reasoningFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('max-effort')
-      await database.destroy()
     })
 
     it('excludes models supporting only low and medium effort', async () => {
@@ -918,7 +888,6 @@ describe('reasoningFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('excludes mandatory reasoning models without efforts', async () => {
@@ -946,7 +915,6 @@ describe('reasoningFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('includes models advertising a reasoning_effort parameter', async () => {
@@ -975,7 +943,6 @@ describe('reasoningFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('effort-param')
-      await database.destroy()
     })
   })
 })

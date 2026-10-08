@@ -32,7 +32,6 @@ describe('create', () => {
       models_path: '/v1/models',
       api_key_env_var: 'X',
     })
-    await database.destroy()
   })
 
   it('when create has not been called, success is false and the record is empty', async () => {
@@ -47,7 +46,6 @@ describe('create', () => {
 
     expect(creator.success()).toBe(false)
     expect(creator.result()).toEqual({})
-    await database.destroy()
   })
 
   it('when the provider already exists, reports failure', async () => {
@@ -73,6 +71,5 @@ describe('create', () => {
         "Create provider: insert into `providers` (`base_url`, `name`) values ('https://www.example.com', 'provider-name') returning * - UNIQUE constraint failed: providers.base_url",
       ],
     })
-    await database.destroy()
   })
 })

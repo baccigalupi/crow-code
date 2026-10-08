@@ -36,7 +36,6 @@ describe('run', () => {
     await run(applicationData, () => {})
 
     expect(fetchMock.calls).toHaveLength(1)
-    await database.destroy()
   })
 
   it('when add-provider is requested, creates the provider', async () => {
@@ -66,7 +65,6 @@ describe('run', () => {
       models_path: null,
       api_key_env_var: 'OLLAMA_KEY',
     }])
-    await database.destroy()
   })
 
   it('when git-commit is requested without a goal, exits with a non-zero code', async () => {

@@ -38,7 +38,6 @@ describe('CreateRecord', () => {
       models_path: null,
       api_key_env_var: null,
     })
-    await database.destroy()
   })
 
   it('allows subclasses to override params', async () => {
@@ -82,7 +81,6 @@ describe('CreateRecord', () => {
       models_path: null,
       api_key_env_var: null,
     })
-    await database.destroy()
   })
 
   it('logs insert failures and leaves the record empty', async () => {
@@ -110,6 +108,5 @@ describe('CreateRecord', () => {
     expect(creator.success()).toBe(false)
     expect(creator.result()).toEqual({})
     assertSpyCall(loggerErrorSpy, 0)
-    await database.destroy()
   })
 })

@@ -34,7 +34,6 @@ describe('providerFindBy', () => {
       expect(foundProvider.baseUrl()).toBe('https://www.example.com')
       expect(foundProvider.modelsUrl()).toBe('https://www.example.com/models')
       expect(foundProvider.apiKey()).toBe('secret')
-      await database.destroy()
     })
 
     it('returns undefined when the provider does not exist', async () => {
@@ -51,7 +50,6 @@ describe('providerFindBy', () => {
         .getByName('missing')
 
       expect(provider).toBeUndefined()
-      await database.destroy()
     })
 
     it('returns the matching provider among several', async () => {
@@ -84,7 +82,6 @@ describe('providerFindBy', () => {
       expect(provider).toBeInstanceOf(ProviderEntity)
       const foundProvider = provider as ProviderEntity
       expect(foundProvider.name()).toBe('provider-two')
-      await database.destroy()
     })
   })
 
@@ -111,7 +108,6 @@ describe('providerFindBy', () => {
       expect(provider).toBeInstanceOf(ProviderEntity)
       const foundProvider = provider as ProviderEntity
       expect(foundProvider.name()).toBe('provider-name')
-      await database.destroy()
     })
 
     it('returns undefined when the provider does not exist', async () => {
@@ -128,7 +124,6 @@ describe('providerFindBy', () => {
         .getById(999)
 
       expect(provider).toBeUndefined()
-      await database.destroy()
     })
 
     it('returns the matching provider among several', async () => {
@@ -159,7 +154,6 @@ describe('providerFindBy', () => {
       expect(provider).toBeInstanceOf(ProviderEntity)
       const foundProvider = provider as ProviderEntity
       expect(foundProvider.name()).toBe('provider-two')
-      await database.destroy()
     })
   })
 })

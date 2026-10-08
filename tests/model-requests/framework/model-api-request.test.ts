@@ -266,7 +266,6 @@ describe('ModelApiRequest', () => {
     expect(rows).toHaveLength(1)
     expect(rows[0].provider_id).toBe(1)
     expect(rows[0].reason).toBe('no-api-key')
-    await database.destroy()
   })
 
   it('when an api call fails with an api token, does not create a provider availability record', async () => {
@@ -301,6 +300,5 @@ describe('ModelApiRequest', () => {
 
     const rows = await database('provider_availabilities')
     expect(rows).toHaveLength(0)
-    await database.destroy()
   })
 })

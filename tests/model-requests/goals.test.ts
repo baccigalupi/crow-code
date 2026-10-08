@@ -109,7 +109,6 @@ describe('goals', () => {
 
     expect(runner.success()).toBe(false)
     expect(runner.result()).toBeUndefined()
-    await database.destroy()
   })
 
   it('when the api call succeeds, the runner returns the goals', async () => {
@@ -151,6 +150,5 @@ describe('goals', () => {
       'Generate fixtures using the specified prompt in chat completion requests',
       'Reference .crow/models.json to identify available models',
     ])
-    await database.destroy()
   })
 })

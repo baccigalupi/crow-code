@@ -21,7 +21,6 @@ describe('populateModels', () => {
 
     expect(result).toEqual([])
     expect(mockFetch.calls).toHaveLength(0)
-    await database.destroy()
   })
 
   it('dispatches a known provider to its getter and saves models', async () => {
@@ -59,7 +58,6 @@ describe('populateModels', () => {
     expect(rows).toHaveLength(1)
     expect(rows[0].provider_id).toBe(1)
     expect(rows[0].identifier).toBe('author/model')
-    await database.destroy()
   })
 
   it('dispatches ollama providers to the ollama getter', async () => {
@@ -88,7 +86,6 @@ describe('populateModels', () => {
     expect(rows).toHaveLength(1)
     expect(rows[0].provider_id).toBe(1)
     expect(rows[0].identifier).toBe('author/model')
-    await database.destroy()
   })
 
   it('dispatches openrouter providers to the openrouter getter', async () => {
@@ -122,7 +119,6 @@ describe('populateModels', () => {
     const rows = await database('models')
     expect(rows).toHaveLength(1)
     expect(rows[0].provider_id).toBe(1)
-    await database.destroy()
   })
 
   it('skips providers with an unknown name', async () => {
@@ -146,7 +142,6 @@ describe('populateModels', () => {
     expect(result).toEqual([])
     expect(mockFetch.calls).toHaveLength(0)
     expect(await database('models')).toEqual([])
-    await database.destroy()
   })
 
   it('populates multiple providers concurrently', async () => {
@@ -212,6 +207,5 @@ describe('populateModels', () => {
     expect(rows[0].identifier).toBe('nous/model')
     expect(rows[1].provider_id).toBe(ollamaId.id)
     expect(rows[1].identifier).toBe('ollama/model')
-    await database.destroy()
   })
 })

@@ -38,7 +38,6 @@ describe('ModelRequestErrorHandler', () => {
     expect(rows).toHaveLength(1)
     expect(rows[0].provider_id).toBe(1)
     expect(rows[0].reason).toBe('no-api-key')
-    await database.destroy()
   })
 
   it('when the request failed with an api token, does not create a provider availability record', async () => {
@@ -69,7 +68,6 @@ describe('ModelRequestErrorHandler', () => {
 
     const rows = await database('provider_availabilities')
     expect(rows).toHaveLength(0)
-    await database.destroy()
   })
 
   it('when the request succeeded, does not create a provider availability record', async () => {
@@ -96,6 +94,5 @@ describe('ModelRequestErrorHandler', () => {
 
     const rows = await database('provider_availabilities')
     expect(rows).toHaveLength(0)
-    await database.destroy()
   })
 })

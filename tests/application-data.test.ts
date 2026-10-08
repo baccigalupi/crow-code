@@ -66,7 +66,6 @@ describe('ApplicationData', () => {
     expect(clonedData).not.toBe(data)
     expect(await clonedData.database()).toBe(newDatabase)
     expect(await data.database()).not.toBe(newDatabase)
-    await newDatabase.destroy()
     await originalDatabase.destroy()
   })
 
@@ -81,7 +80,7 @@ describe('ApplicationData', () => {
     const database = await data.database()
 
     expect(await database.schema.hasTable('providers')).toBe(true)
-    await database.destroy()
+    expect(await data.database()).toBe(database)
   })
 
   it('when closed, destroys the database connection', async () => {

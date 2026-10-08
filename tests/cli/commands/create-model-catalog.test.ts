@@ -58,6 +58,5 @@ describe('CreateModelCatalog', () => {
     expect(await database('models').select('identifier')).toEqual([
       { identifier: 'author/model' },
     ])
-    await database.destroy()
   })
 })

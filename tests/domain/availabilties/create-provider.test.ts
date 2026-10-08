@@ -26,6 +26,5 @@ describe('create provider availability', () => {
       retry_at: null,
       updated_at: expect.any(String),
     })
-    await database.destroy()
   })
 })

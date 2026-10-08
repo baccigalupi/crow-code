@@ -38,7 +38,6 @@ describe('getNousModels', () => {
     expect(result).toHaveLength(400)
     expect(result[0].id).toBe('xiaomi/mimo-v2.6-pro-ultraspeed')
     expect(result[0].provider).toBe('nous')
-    await database.destroy()
   })
 
   it('when fetched, saves each retrieved model to the models table', async () => {
@@ -75,7 +74,6 @@ describe('getNousModels', () => {
     expect(rows[0].identifier).toBe('author/model')
     expect(rows[0].name).toBe('Model')
     expect(rows[0].supported_parameters).toBe('["temperature"]')
-    await database.destroy()
   })
 
   it('when fetched, requests the configured base url plus v1 models', async () => {
@@ -100,7 +98,6 @@ describe('getNousModels', () => {
 
     expect(mockFetch.calls).toHaveLength(1)
     expect(mockFetch.calls[0]).toBe('https://example.com/v1/models')
-    await database.destroy()
   })
 
   it('when the response is not ok, returns an empty list', async () => {
@@ -125,7 +122,6 @@ describe('getNousModels', () => {
 
     expect(result).toEqual([])
     expect(await database('models')).toEqual([])
-    await database.destroy()
   })
 
   it('when the network request fails, returns an empty list', async () => {
@@ -150,6 +146,5 @@ describe('getNousModels', () => {
 
     expect(result).toEqual([])
     expect(await database('models')).toEqual([])
-    await database.destroy()
   })
 })

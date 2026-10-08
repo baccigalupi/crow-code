@@ -6,8 +6,8 @@ import { ModelEntity } from '../../../src/domain/models/model.ts'
 import { Environment } from '../../../src/application-data/env-vars.ts'
 import { modelFindAllByFilters } from '../../../src/domain/models/find-all-by-filters.ts'
 import {
-  cleanDatabase,
   createTestDatabase,
+  dropAllTables,
 } from '../../support/test-database.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
@@ -69,7 +69,6 @@ describe('modelFindAllByFilters', () => {
       model: 'disableable',
       providerId: 1,
     })
-    await database.destroy()
   })
 
   it('when limit is given, returns at most that many models', async () => {
@@ -128,14 +127,13 @@ describe('modelFindAllByFilters', () => {
 
     expect(models).toHaveLength(1)
     expect(models[0].identifier()).toBe('disableable')
-    await database.destroy()
   })
 
   it('when the query fails, logs the error and returns an empty array', async () => {
     const logger = pino({ enabled: false })
     using loggerErrorSpy = spy(logger, 'error')
     const database = await createTestDatabase(logger)
-    await cleanDatabase(database)
+    await dropAllTables(database)
     const applicationData = mockApplicationData({ database, logger })
 
     const models = await modelFindAllByFilters(applicationData, {
@@ -144,7 +142,6 @@ describe('modelFindAllByFilters', () => {
 
     expect(models).toEqual([])
     assertSpyCall(loggerErrorSpy, 0)
-    await database.destroy()
   })
 
   it('when type is given, filters with reasoningFilter', async () => {
@@ -188,7 +185,6 @@ describe('modelFindAllByFilters', () => {
 
     expect(models).toHaveLength(1)
     expect(models[0].identifier()).toBe('delegated')
-    await database.destroy()
   })
 
   it('when costTier is given, filters with costFilter', async () => {
@@ -246,7 +242,6 @@ describe('modelFindAllByFilters', () => {
 
     expect(models).toHaveLength(1)
     expect(models[0].identifier()).toBe('budget')
-    await database.destroy()
   })
 
   it('when a model outputs embeddings, excludes it', async () => {
@@ -290,7 +285,6 @@ describe('modelFindAllByFilters', () => {
 
     expect(models).toHaveLength(1)
     expect(models[0].identifier()).toBe('free')
-    await database.destroy()
   })
 
   it('when costTier and type are given, applies both filters', async () => {
@@ -349,7 +343,6 @@ describe('modelFindAllByFilters', () => {
 
     expect(models).toHaveLength(1)
     expect(models[0].identifier()).toBe('cheap-chat')
-    await database.destroy()
   })
 
   it('when costTier and type are given, groups each filter so the standard-tier OR cannot bypass the type filter', async () => {
@@ -394,7 +387,6 @@ describe('modelFindAllByFilters', () => {
 
     expect(models).toHaveLength(1)
     expect(models[0].identifier()).toBe('standard-chat')
-    await database.destroy()
   })
 
   it('when limit is omitted, returns at most five models', async () => {
@@ -498,6 +490,5 @@ describe('modelFindAllByFilters', () => {
     expect(models[2].identifier()).toBe('m3')
     expect(models[3].identifier()).toBe('m4')
     expect(models[4].identifier()).toBe('m5')
-    await database.destroy()
   })
 })

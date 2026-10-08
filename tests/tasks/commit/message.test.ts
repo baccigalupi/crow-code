@@ -69,7 +69,6 @@ describe('commitMessage', () => {
       subject: 'Add login',
       body: 'Adds the login form.',
     })
-    await database.destroy()
   })
 
   it('when git log fails, still returns the message', async () => {
@@ -127,7 +126,6 @@ describe('commitMessage', () => {
       subject: 'Add login',
       body: 'Adds the login form.',
     })
-    await database.destroy()
   })
 
   it('when every model fails, returns undefined', async () => {
@@ -171,7 +169,6 @@ describe('commitMessage', () => {
     }).run()
 
     expect(operation.result()).toBeUndefined()
-    await database.destroy()
   })
 
   it('when no models are registered, returns undefined without calling fetch', async () => {
@@ -198,6 +195,5 @@ describe('commitMessage', () => {
 
     expect(operation.result()).toBeUndefined()
     expect(fetch.calls.length).toBe(0)
-    await database.destroy()
   })
 })

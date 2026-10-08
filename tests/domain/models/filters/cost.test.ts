@@ -45,7 +45,6 @@ describe('costFilter', () => {
 
     expect(models).toHaveLength(1)
     expect(models[0].identifier).toBe('free')
-    await database.destroy()
   })
 
   it('does not match low-cost models when costTier is free', async () => {
@@ -73,7 +72,6 @@ describe('costFilter', () => {
     const models = await builder
 
     expect(models).toEqual([])
-    await database.destroy()
   })
 
   describe('when costTier is cheap', () => {
@@ -103,7 +101,6 @@ describe('costFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('mid')
-      await database.destroy()
     })
 
     it('returns models at the upper boundary', async () => {
@@ -132,7 +129,6 @@ describe('costFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('upper')
-      await database.destroy()
     })
 
     it('does not return free models below the range', async () => {
@@ -160,7 +156,6 @@ describe('costFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('does not return models above the range', async () => {
@@ -188,7 +183,6 @@ describe('costFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
   })
 
@@ -219,7 +213,6 @@ describe('costFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('mid')
-      await database.destroy()
     })
 
     it('returns models at the upper boundary', async () => {
@@ -248,7 +241,6 @@ describe('costFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('upper')
-      await database.destroy()
     })
 
     it('does not return models at the lower boundary', async () => {
@@ -276,7 +268,6 @@ describe('costFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('does not return models above the range', async () => {
@@ -304,7 +295,6 @@ describe('costFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
   })
 
@@ -335,7 +325,6 @@ describe('costFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('mid')
-      await database.destroy()
     })
 
     it('returns models at the upper boundary', async () => {
@@ -364,7 +353,6 @@ describe('costFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('upper')
-      await database.destroy()
     })
 
     it('does not return models at the lower boundary', async () => {
@@ -392,7 +380,6 @@ describe('costFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('does not return models above the range', async () => {
@@ -420,7 +407,6 @@ describe('costFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('includes dynamic delegation models', async () => {
@@ -449,7 +435,6 @@ describe('costFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('delegated')
-      await database.destroy()
     })
   })
 
@@ -480,7 +465,6 @@ describe('costFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('mid')
-      await database.destroy()
     })
 
     it('returns models at the upper boundary', async () => {
@@ -509,7 +493,6 @@ describe('costFilter', () => {
 
       expect(models).toHaveLength(1)
       expect(models[0].identifier).toBe('upper')
-      await database.destroy()
     })
 
     it('does not return models at the lower boundary', async () => {
@@ -537,7 +520,6 @@ describe('costFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
 
     it('does not return models above the range', async () => {
@@ -565,7 +547,6 @@ describe('costFilter', () => {
       const models = await builder
 
       expect(models).toEqual([])
-      await database.destroy()
     })
   })
 
@@ -595,7 +576,6 @@ describe('costFilter', () => {
 
     expect(models).toHaveLength(1)
     expect(models[0].identifier).toBe('expensive')
-    await database.destroy()
   })
 
   it('when costTier is ultra, does not return models at the lower boundary', async () => {
@@ -623,6 +603,5 @@ describe('costFilter', () => {
     const models = await builder
 
     expect(models).toEqual([])
-    await database.destroy()
   })
 })

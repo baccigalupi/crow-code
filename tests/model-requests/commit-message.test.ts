@@ -257,7 +257,6 @@ describe('commit-message', () => {
 
     expect(runner.success()).toBe(false)
     expect(runner.result()).toBeUndefined()
-    await database.destroy()
   })
 
   it('when the api call succeeds, the runner returns the commit message', async () => {
@@ -305,6 +304,5 @@ describe('commit-message', () => {
       subject: 'Add login',
       body: 'Adds the login form.',
     })
-    await database.destroy()
   })
 })

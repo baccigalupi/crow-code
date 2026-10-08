@@ -31,7 +31,6 @@ describe('create', () => {
     const model = creator.result()
     expect(model.providerId()).toBe(1)
     expect(model.supportedParameters()).toEqual(['temperature'])
-    await database.destroy()
   })
 
   it('when created, stores json columns as text and returns the parsed record', async () => {
@@ -63,7 +62,6 @@ describe('create', () => {
     expect(row.supported_parameters).toBe('["temperature"]')
     expect(row.reasoning_options).toBe('{"mandatory":false}')
     expect(row.supports_reasoning).toBe(1)
-    await database.destroy()
   })
 
   it('when create has not been called, reports failure and an empty model', async () => {
@@ -92,7 +90,6 @@ describe('create', () => {
 
     expect(creator.success()).toBe(false)
     expect(creator.result().supportedParameters()).toEqual([])
-    await database.destroy()
   })
 
   it('when the provider and identifier pair already exists, reports failure', async () => {
@@ -127,6 +124,5 @@ describe('create', () => {
     expect(loggerErrorSpy.calls[0].args[0]).toContain(
       'UNIQUE constraint failed: models.provider_id, models.identifier',
     )
-    await database.destroy()
   })
 })

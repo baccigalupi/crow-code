@@ -26,6 +26,5 @@ describe('create model availability', () => {
       retry_at: null,
       updated_at: expect.any(String),
     })
-    await database.destroy()
   })
 })

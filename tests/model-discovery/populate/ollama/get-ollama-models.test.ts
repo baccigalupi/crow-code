@@ -38,7 +38,6 @@ describe('getOllamaModels', () => {
     expect(result).toHaveLength(3)
     expect(result[0].id).toBe('qwen3-coder:30b')
     expect(result[0].provider).toBe('ollama')
-    await database.destroy()
   })
 
   it('when fetched, saves each retrieved model to the models table', async () => {
@@ -69,7 +68,6 @@ describe('getOllamaModels', () => {
     expect(rows[0].identifier).toBe('author/model')
     expect(rows[0].name).toBe('author/model')
     expect(rows[0].supported_parameters).toBe('[]')
-    await database.destroy()
   })
 
   it('when fetched, requests the configured modelsUrl', async () => {
@@ -94,7 +92,6 @@ describe('getOllamaModels', () => {
 
     expect(mockFetch.calls).toHaveLength(1)
     expect(mockFetch.calls[0]).toBe('http://other.local:11434/api/tags')
-    await database.destroy()
   })
 
   it('when the response is not ok, returns an empty list', async () => {
@@ -119,7 +116,6 @@ describe('getOllamaModels', () => {
 
     expect(result).toEqual([])
     expect(await database('models')).toEqual([])
-    await database.destroy()
   })
 
   it('when the network request fails, returns an empty list', async () => {
@@ -144,6 +140,5 @@ describe('getOllamaModels', () => {
 
     expect(result).toEqual([])
     expect(await database('models')).toEqual([])
-    await database.destroy()
   })
 })

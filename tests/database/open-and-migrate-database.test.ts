@@ -6,7 +6,7 @@ import {
   openAndMigrateDatabase,
 } from '../../src/database/open-and-migrate-database.ts'
 import { clearDirectory, fixturesDirectory } from '../support/fixtures.ts'
-import { cleanDatabase, createTestDatabase } from '../support/test-database.ts'
+import { createTestDatabase, dropAllTables } from '../support/test-database.ts'
 import pino from 'pino'
 
 describe('openAndMigrateDatabase', () => {
@@ -21,10 +21,9 @@ describe('openAndMigrateDatabase', () => {
     const crowDirectory = join(fixturesDirectory, 'open-database', '.crow')
     const logger = pino({ enabled: false })
 
-    const database = await openAndMigrateDatabase(crowDirectory, logger)
+    await openAndMigrateDatabase(crowDirectory, logger)
 
     expect(Deno.statSync(defaultDatabasePath(crowDirectory)).isFile).toBe(true)
-    await database.destroy()
   })
 
   it('when opened, returns a writable database', async () => {
@@ -37,7 +36,6 @@ describe('openAndMigrateDatabase', () => {
     })
     await database('notes').insert({ content: 'hello' })
     const rows = await database('notes').select('content')
-    await database.destroy()
 
     expect(rows).toEqual([{ content: 'hello' }])
   })
@@ -50,11 +48,9 @@ describe('openAndMigrateDatabase', () => {
       table.text('content')
     })
     await first('notes').insert({ content: 'persisted' })
-    await first.destroy()
 
     const second = await openAndMigrateDatabase(crowDirectory, logger)
     const rows = await second('notes').select('content')
-    await second.destroy()
 
     expect(rows).toEqual([{ content: 'persisted' }])
   })
@@ -67,14 +63,13 @@ describe('openAndMigrateDatabase', () => {
       table.text('content')
     })
 
-    await cleanDatabase(database)
+    await dropAllTables(database)
 
     const tables = await database.raw(`
       SELECT name FROM sqlite_master
       WHERE type = 'table' AND name NOT LIKE 'sqlite_%'
     `)
     expect(tables).toEqual([])
-    await database.destroy()
   })
 
   it('when created via the helper, returns a migrated database', async () => {
@@ -85,7 +80,6 @@ describe('openAndMigrateDatabase', () => {
     const tables = await database.raw(
       "SELECT name FROM sqlite_master WHERE name LIKE 'knex_%'",
     )
-    await database.destroy()
 
     expect(foreignKeys).toEqual([{ foreign_keys: 1 }])
     expect(tables.length).toBeGreaterThan(0)

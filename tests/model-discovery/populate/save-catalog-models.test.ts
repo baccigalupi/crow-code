@@ -39,7 +39,6 @@ describe('saveCatalogModels', () => {
     expect(rows[0].identifier).toBe('author/model')
     expect(rows[1].provider_id).toBe(7)
     expect(rows[1].identifier).toBe('author/other')
-    await database.destroy()
   })
 
   it('when given a model, maps catalog fields onto the model columns', async () => {
@@ -77,7 +76,6 @@ describe('saveCatalogModels', () => {
     expect(row.can_disable_reasoning).toBe(1)
     expect(row.reasoning_options).toBe('{"mandatory":false}')
     expect(Object.keys(row)).not.toContain('provider')
-    await database.destroy()
   })
 
   it('when the provider already has models, replaces them with the new set', async () => {
@@ -128,7 +126,6 @@ describe('saveCatalogModels', () => {
     expect(rows[0].identifier).toBe('author/kept')
     expect(rows[1].provider_id).toBe(1)
     expect(rows[1].identifier).toBe('author/model')
-    await database.destroy()
   })
 
   it('when the payload lists the same model twice, logs the error and saves the rest', async () => {
@@ -165,7 +162,6 @@ describe('saveCatalogModels', () => {
       'UNIQUE constraint failed',
     )
     expect(loggerErrorSpy.calls).toHaveLength(1)
-    await database.destroy()
   })
 
   it('when given no models, leaves existing rows unchanged', async () => {
@@ -195,7 +191,6 @@ describe('saveCatalogModels', () => {
     expect(rows).toHaveLength(1)
     expect(rows[0].identifier).toBe('author/old')
     expect(loggerErrorSpy.calls).toHaveLength(0)
-    await database.destroy()
   })
 
   it('when no model can be saved, rolls back the refresh and logs an error', async () => {
@@ -239,7 +234,6 @@ describe('saveCatalogModels', () => {
     expect(rows).toHaveLength(1)
     expect(rows[0].identifier).toBe('author/kept')
     expect(loggerErrorSpy.calls.length).toBeGreaterThan(0)
-    await database.destroy()
   })
 
   it('when the transaction fails, logs the rollback error', async () => {

@@ -43,7 +43,6 @@ describe('providerFindAll', () => {
       expect(first.apiKey()).toBe('secret')
       expect(second).toBeInstanceOf(ProviderEntity)
       expect(second.name()).toBe('provider-two')
-      await database.destroy()
     })
 
     it('returns an empty array when there are no providers', async () => {
@@ -59,7 +58,6 @@ describe('providerFindAll', () => {
       const providers = await providerFindAll(applicationData).all()
 
       expect(providers).toEqual([])
-      await database.destroy()
     })
 
     it('returns an empty api key when the env var is unset', async () => {
@@ -82,7 +80,6 @@ describe('providerFindAll', () => {
 
       expect(providers).toHaveLength(1)
       expect(providers[0].apiKey()).toBe('')
-      await database.destroy()
     })
   })
 })

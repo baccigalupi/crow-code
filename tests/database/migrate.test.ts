@@ -20,6 +20,5 @@ describe('migrate', () => {
     expect(String(infoSpy.calls[0].args[0])).toMatch(
       /^Applied migration \d{14}_/,
     )
-    await database.destroy()
   })
 })
