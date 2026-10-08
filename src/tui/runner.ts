@@ -11,7 +11,7 @@ export class Runner {
 
   constructor(io: ReplIo) {
     this.io = io
-    this.onSignal = this.onSignal.bind(this)
+    this.interrupt = this.interrupt.bind(this)
   }
 
   async run() {
@@ -56,17 +56,17 @@ export class Runner {
 
   private listen() {
     this.signals.forEach((signal) =>
-      Deno.addSignalListener(signal, this.onSignal)
+      Deno.addSignalListener(signal, this.interrupt)
     )
   }
 
   private unlisten() {
     this.signals.forEach((signal) =>
-      Deno.removeSignalListener(signal, this.onSignal)
+      Deno.removeSignalListener(signal, this.interrupt)
     )
   }
 
-  private onSignal() {
+  interrupt() {
     this.instance.unmount()
     Deno.exit(1)
   }

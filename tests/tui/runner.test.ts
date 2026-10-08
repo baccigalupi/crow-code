@@ -62,20 +62,16 @@ describe('runner', () => {
     assertSpyCallArg(remove, 1, 0, 'SIGTERM')
   })
 
-  it('when SIGTERM is sent to the process, unmounts and exits with code 1', async () => {
+  it('when interrupted, unmounts and exits with code 1', async () => {
     const terminal = mockTerminal({})
     const runner = createRunner(terminal.io)
-    const keepAlive = () => {}
-    Deno.addSignalListener('SIGTERM', keepAlive)
     using exit = stub(Deno, 'exit', () => undefined as never)
 
-    const pending = runner.status()
+    const status = runner.status()
     await new Promise((resolve) => setTimeout(resolve, 0))
-    Deno.kill(Deno.pid, 'SIGTERM')
-    await pending
-    await new Promise((resolve) => setTimeout(resolve, 0))
-    Deno.removeSignalListener('SIGTERM', keepAlive)
+    runner.interrupt()
 
+    expect(await status).toBe('completed')
     expect(exit.calls[0].args).toEqual([1])
   })
 
