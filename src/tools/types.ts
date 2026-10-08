@@ -1,3 +1,10 @@
+export type GitLogEntry = {
+  sha: string
+  author: string
+  date: string
+  subject: string
+}
+
 export type GitFileDiff = {
   path: string
   diff: string
