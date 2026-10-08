@@ -7,13 +7,13 @@ import { createLogger } from './application-data/logger.ts'
 import { loadEnvironmentalVariables } from './application-data/env-vars.ts'
 import { parseArguments } from './cli/arguments.ts'
 import { memoize } from './decorators.ts'
-import { pathPermissions } from './application-data/path-permissions.ts'
+import {
+  type PathPermissions,
+  pathPermissions,
+} from './application-data/path-permissions.ts'
 import { gitPathPermissions } from './application-data/git-path-permissions.ts'
 
-type ApplicationDataOverrides = {
-  deno?: typeof Deno,
-  crowDirectory?: string
-}
+type ApplicationDataOverrides = { deno?: typeof Deno; crowDirectory?: string }
 
 export class ApplicationData {
   private deno: typeof Deno
@@ -88,7 +88,7 @@ export class ApplicationData {
   }
 
   @memoize
-  gitPathPermissions() {
+  gitPathPermissions(): PathPermissions {
     return gitPathPermissions({ applicationData: this })
   }
 

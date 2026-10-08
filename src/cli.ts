@@ -21,7 +21,10 @@ class Cli {
   private applicationData: ApplicationData
   private quit: (exitCode: number) => void
 
-  constructor(applicationData: ApplicationData, quit?: (exitCode: number) => void) {
+  constructor(
+    applicationData: ApplicationData,
+    quit?: (exitCode: number) => void,
+  ) {
     this.applicationData = applicationData
     this.quit = quit || ((exitCode) => Deno.exit(exitCode))
   }

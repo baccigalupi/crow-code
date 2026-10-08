@@ -85,6 +85,21 @@ describe('run', () => {
     expect(consoleLog.mock.calls[0].arguments[0]).toContain('--goal')
   })
 
+  it('when no quit handler is given, exits the process with the code', async () => {
+    const exit = mock.fn()
+    using _exit = stub(Deno, 'exit', exit as unknown as typeof Deno.exit)
+    const applicationData = mockApplicationData({
+      args: ['-V'],
+      crowDirectory: join(fixturesDirectory, 'cli', '.crow'),
+      consoleLog: () => {},
+    })
+
+    const exitCode = await run(applicationData)
+
+    expect(exitCode).toBe(0)
+    expect(exit.mock.calls[0].arguments[0]).toBe(0)
+  })
+
   it('when the command succeeds, exits with code 0', async () => {
     const quit = mock.fn()
     const applicationData = mockApplicationData({

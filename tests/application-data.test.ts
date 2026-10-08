@@ -22,12 +22,13 @@ describe('ApplicationData', () => {
       'application-data',
       'attributes',
     )
+
     const data = new ApplicationData({ crowDirectory })
 
     expect(data.crowDirectory()).toBe(crowDirectory)
     expect(data.consoleLog()).toBe(console.log)
     expect(data.args()).toEqual(Deno.args)
-    expect(data.parsedArguments()).toEqual({commands: [], options: {}})
+    expect(data.parsedArguments()).toEqual({ commands: [], options: {} })
     expect(data.logger().constructor.name).toBe('Pino')
     expect(data.fetch()).toBe(globalThis.fetch)
     expect(data.denoCommand()).toBe(Deno.Command)
