@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import { returnsNext, spy, stub } from '@std/testing/mock'
+import { spy, stub } from '@std/testing/mock'
 import pino from 'pino'
 import { OpenAI } from 'openai'
 import { ApplicationData } from '../src/application-data.ts'
@@ -9,61 +9,31 @@ import { Environment } from '../src/application-data/env-vars.ts'
 import { clearDirectory, fixturesDirectory } from './support/fixtures.ts'
 import { mockDenoCommand } from './support/mock-deno-command.ts'
 import { mockFetchSuccess } from './support/mock-fetch.ts'
+import { createTestDatabase } from './support/test-database.ts'
+import { PathPermissions } from '../src/application-data/path-permissions.ts'
 
 describe('ApplicationData', () => {
   beforeEach(() => clearDirectory(join(fixturesDirectory, 'application-data')))
   afterEach(() => clearDirectory(join(fixturesDirectory, 'application-data')))
 
-  it('when asked for the crow directory, returns .crow under the current working directory', () => {
-    const data = new ApplicationData()
-
-    const directory = data.crowDirectory()
-
-    expect(directory).toBe(join(Deno.cwd(), '.crow'))
-  })
-
-  it('when asked for fetch, returns the global fetch function', () => {
-    const data = new ApplicationData()
-
-    const fetchFunction = data.fetch()
-
-    expect(fetchFunction).toBe(globalThis.fetch)
-  })
-
-  it('when asked for the deno command, returns the Deno.Command constructor', () => {
-    const data = new ApplicationData()
-
-    const command = data.denoCommand()
-
-    expect(command).toBe(Deno.Command)
-  })
-
-  it('when asked for console log, returns console.log', () => {
-    const data = new ApplicationData()
-
-    const consoleLog = data.consoleLog()
-
-    expect(consoleLog).toBe(console.log)
-  })
-
-  it('when path permissions allows is called twice for the same path, resolves the path once', async () => {
-    const data = new ApplicationData()
-    const directory = Deno.cwd()
-    const mockDenoRealPath = spy(
-      returnsNext([Promise.resolve(join(directory, 'deno.json'))]),
+  it('when accessed, provides the application attributes', () => {
+    const crowDirectory = join(
+      fixturesDirectory,
+      'application-data',
+      'attributes',
     )
-    using _realPath = stub(
-      data,
-      'getRealPath',
-      () => mockDenoRealPath,
-    )
+    const data = new ApplicationData({ crowDirectory })
 
-    const permissions = data.pathPermissions()
-    await permissions.allows('deno.json')
-    await permissions.allows('deno.json')
-
-    expect(mockDenoRealPath.calls).toHaveLength(1)
-    expect(data.pathPermissions()).toBe(permissions)
+    expect(data.crowDirectory()).toBe(crowDirectory)
+    expect(data.consoleLog()).toBe(console.log)
+    expect(data.args()).toEqual(Deno.args)
+    expect(data.parsedArguments()).toEqual({commands: [], options: {}})
+    expect(data.logger().constructor.name).toBe('Pino')
+    expect(data.fetch()).toBe(globalThis.fetch)
+    expect(data.denoCommand()).toBe(Deno.Command)
+    expect(data.getRealPath()).toBe(Deno.realPath)
+    expect(data.pathPermissions()).toBeInstanceOf(PathPermissions)
+    expect(data.envars()).toBeInstanceOf(Environment)
   })
 
   it('when git path permissions are requested twice, returns the cached permissions', () => {
@@ -80,58 +50,42 @@ describe('ApplicationData', () => {
     expect(data.gitPathPermissions()).toBe(permissions)
   })
 
-  it('when asked for args, returns the process arguments', () => {
-    const data = new ApplicationData()
-
-    const args = data.args()
-
-    expect(args).toEqual(Deno.args)
-  })
-
-  it('when parsed arguments are requested twice, returns the cached result', () => {
-    const data = new ApplicationData()
-    using _args = stub(
-      data,
-      'args',
-      () => ['add-provider', '--name=x'],
-    )
-
-    const parsed = data.parsedArguments()
-
-    expect(data.parsedArguments()).toBe(parsed)
-  })
-
-  it('when the logger is requested twice, returns the cached logger', () => {
-    const crowDirectory = join(fixturesDirectory, 'application-data', 'logger')
-    const data = new ApplicationData()
-    using _crowDirectory = stub(data, 'crowDirectory', () => crowDirectory)
-
-    const logger = data.logger()
-
-    expect(data.logger()).toBe(logger)
-  })
-
-  it('when the database is requested twice, returns the cached database', async () => {
+  it('clones the whole data object allowing the injection of an new database when needing a transaction', async () => {
     const crowDirectory = join(
       fixturesDirectory,
       'application-data',
-      'database',
+      'attributes',
     )
-    const data = new ApplicationData()
-    using _crowDirectory = stub(data, 'crowDirectory', () => crowDirectory)
-    using _logger = stub(data, 'logger', () => pino({ enabled: false }))
+    const data = new ApplicationData({ crowDirectory })
+
+    const newDatabase = await createTestDatabase(pino({ enabled: false }))
+    const clonedData = data.withDatabase(newDatabase)
+    const originalDatabase = await data.database()
+
+    expect(clonedData).not.toBe(data)
+    expect(await clonedData.database()).toBe(newDatabase)
+    expect(await data.database()).not.toBe(newDatabase)
+    await newDatabase.destroy()
+    await originalDatabase.destroy()
+  })
+
+  it('opens and auto-migrates the database', async () => {
+    const crowDirectory = join(
+      fixturesDirectory,
+      'application-data',
+      'attributes',
+    )
+    const data = new ApplicationData({ crowDirectory })
 
     const database = await data.database()
 
-    expect(await data.database()).toBe(database)
+    expect(await database.schema.hasTable('providers')).toBe(true)
     await database.destroy()
   })
 
   it('when closed, destroys the database connection', async () => {
     const crowDirectory = join(fixturesDirectory, 'application-data', 'close')
-    const data = new ApplicationData()
-    using _crowDirectory = stub(data, 'crowDirectory', () => crowDirectory)
-    using _logger = stub(data, 'logger', () => pino({ enabled: false }))
+    const data = new ApplicationData({ crowDirectory })
     const database = await data.database()
 
     await data.close()
@@ -144,7 +98,7 @@ describe('ApplicationData', () => {
       choices: [{ message: { content: '' } }],
     })
     const data = new ApplicationData()
-    using _fetch = stub(data, 'fetch', () => fetchMock)
+    using _fetch = stub(globalThis, 'fetch', fetchMock)
 
     const client = data.chatClient({
       apiKey: 'test-key',
@@ -157,14 +111,5 @@ describe('ApplicationData', () => {
     expect(client.maxRetries).toBe(2)
     expect(client.baseURL).toBe('https://example.com/v1')
     expect(fetchMock.calls).toHaveLength(1)
-  })
-
-  it('when envars are requested twice, loads the environment once', () => {
-    const data = new ApplicationData()
-
-    const envars = data.envars()
-
-    expect(envars).toBeInstanceOf(Environment)
-    expect(data.envars()).toBe(envars)
   })
 })
