@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { Environment } from '../../../src/env-vars.ts'
+import { Environment } from '../../../src/application-data/env-vars.ts'
 import {
   ProviderEntity,
   providerEntity,

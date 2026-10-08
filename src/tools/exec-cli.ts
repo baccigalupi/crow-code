@@ -12,6 +12,8 @@ export abstract class ExecCli<T extends Record<string, unknown>, U>
   }
 
   async run() {
+    if (!await this.allowedToRun()) return this
+
     try {
       await this.runCommand()
     } catch (error) {
@@ -35,6 +37,10 @@ export abstract class ExecCli<T extends Record<string, unknown>, U>
 
   protected isSuccessful(response: Deno.CommandOutput) {
     return response.success
+  }
+
+  protected allowedToRun(): Promise<boolean> {
+    return Promise.resolve(true)
   }
 
   private async runCommand() {

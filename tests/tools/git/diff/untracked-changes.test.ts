@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { assertSpyCall, spy } from '@std/testing/mock'
+import { assertSpyCall, spy, stub } from '@std/testing/mock'
 import { gitUntrackedChanges } from '../../../../src/tools/git/diff/untracked-changes.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { mockDenoCommand } from '../../../support/mock-deno-command.ts'
@@ -18,6 +18,11 @@ describe('gitUntrackedChanges', () => {
         ],
       }),
     })
+    using _realPath = stub(
+      applicationData,
+      'getRealPath',
+      () => (path: string | URL) => Promise.resolve(String(path)),
+    )
 
     const changes = gitUntrackedChanges({ applicationData })
     await changes.run()
@@ -49,6 +54,11 @@ describe('gitUntrackedChanges', () => {
         ],
       }),
     })
+    using _realPath = stub(
+      applicationData,
+      'getRealPath',
+      () => (path: string | URL) => Promise.resolve(String(path)),
+    )
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const changes = gitUntrackedChanges({ applicationData })

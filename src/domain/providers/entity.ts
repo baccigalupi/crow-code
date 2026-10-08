@@ -1,6 +1,6 @@
 import type { ProviderRecord } from '../types.ts'
 import { normalizeModelKeys } from '../parsers/normalize-model-keys.ts'
-import type { Environment } from '../../env-vars.ts'
+import type { Environment } from '../../application-data/env-vars.ts'
 
 type NormalizedEntityRecord = {
   id: number

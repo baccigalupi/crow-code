@@ -5,7 +5,7 @@ import { returnsNext, spy, stub } from '@std/testing/mock'
 import {
   PathPermissions,
   pathPermissions,
-} from '../../src/tools/path-permissions.ts'
+} from '../../src/application-data/path-permissions.ts'
 import { mockApplicationData } from '../support/mock-application-data.ts'
 import { fixturesDirectory } from '../support/fixtures.ts'
 

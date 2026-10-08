@@ -5,8 +5,9 @@ import { returnsNext, spy, stub } from '@std/testing/mock'
 import pino from 'pino'
 import { OpenAI } from 'openai'
 import { ApplicationData } from '../src/application-data.ts'
-import { Environment } from '../src/env-vars.ts'
+import { Environment } from '../src/application-data/env-vars.ts'
 import { clearDirectory, fixturesDirectory } from './support/fixtures.ts'
+import { mockDenoCommand } from './support/mock-deno-command.ts'
 import { mockFetchSuccess } from './support/mock-fetch.ts'
 
 describe('ApplicationData', () => {
@@ -63,6 +64,20 @@ describe('ApplicationData', () => {
 
     expect(mockDenoRealPath.calls).toHaveLength(1)
     expect(data.pathPermissions()).toBe(permissions)
+  })
+
+  it('when git path permissions are requested twice, returns the cached permissions', () => {
+    const data = new ApplicationData()
+    using _denoCommand = stub(
+      data,
+      'denoCommand',
+      () => mockDenoCommand({ commandSpy: spy(), stdout: `${Deno.cwd()}\n` }),
+    )
+    using _logger = stub(data, 'logger', () => pino({ enabled: false }))
+
+    const permissions = data.gitPathPermissions()
+
+    expect(data.gitPathPermissions()).toBe(permissions)
   })
 
   it('when asked for args, returns the process arguments', () => {

@@ -1,17 +1,15 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import { createLogger } from '../src/logger.ts'
-import { clearDirectory, fixturesDirectory } from './support/fixtures.ts'
-
-const loggerDirectory = join(fixturesDirectory, 'logger')
+import { createLogger } from '../../src/application-data/logger.ts'
+import { clearDirectory, fixturesDirectory } from '../support/fixtures.ts'
 
 describe('createLogger', () => {
-  beforeEach(() => clearDirectory(loggerDirectory))
-  afterEach(() => clearDirectory(loggerDirectory))
+  beforeEach(() => clearDirectory(join(fixturesDirectory, 'logger')))
+  afterEach(() => clearDirectory(join(fixturesDirectory, 'logger')))
 
   it('when created, creates the development log file', () => {
-    const crowDirectory = join(loggerDirectory, 'creates-file')
+    const crowDirectory = join(fixturesDirectory, 'logger', 'creates-file')
     const logPath = join(crowDirectory, 'logs', 'development.log')
 
     createLogger(crowDirectory, 'error')
@@ -20,7 +18,7 @@ describe('createLogger', () => {
   })
 
   it('when an info message is logged, writes a JSON line', () => {
-    const crowDirectory = join(loggerDirectory, 'writes-message')
+    const crowDirectory = join(fixturesDirectory, 'logger', 'writes-message')
     const logPath = join(crowDirectory, 'logs', 'development.log')
     const logger = createLogger(crowDirectory, 'info')
 
@@ -31,7 +29,7 @@ describe('createLogger', () => {
   })
 
   it('when a message is below the level, skips it', () => {
-    const crowDirectory = join(loggerDirectory, 'skips-message')
+    const crowDirectory = join(fixturesDirectory, 'logger', 'skips-message')
     const logPath = join(crowDirectory, 'logs', 'development.log')
     const logger = createLogger(crowDirectory, 'error')
 

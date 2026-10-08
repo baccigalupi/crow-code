@@ -1,9 +1,13 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
+import { join } from '@std/path'
 import { assertSpyCall, spy } from '@std/testing/mock'
+import { ApplicationData } from '../../../../src/application-data.ts'
 import { gitUntrackedChange } from '../../../../src/tools/git/diff/untracked-change.ts'
+import { pathPermissions } from '../../../../src/application-data/path-permissions.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { mockDenoCommand } from '../../../support/mock-deno-command.ts'
+import { fixturesDirectory } from '../../../support/fixtures.ts'
 
 describe('gitUntrackedChange', () => {
   it('when git diff exits with code 1, returns the diff for the given path', async () => {
@@ -90,6 +94,31 @@ describe('gitUntrackedChange', () => {
     expect(changes.result()).toEqual({ path: '', diff: '' })
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
       'Git untracked change: fatal: not a git repository',
+    )
+  })
+
+  it('when the path is outside the repository, fails without running git', async () => {
+    const commandSpy = spy()
+    const applicationData = mockApplicationData({
+      denoCommand: mockDenoCommand({ commandSpy }),
+      gitPathPermissions: pathPermissions({
+        applicationData: new ApplicationData(),
+        allowedDirectories: [join(fixturesDirectory, 'tools', 'git')],
+      }),
+    })
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+
+    const changes = gitUntrackedChange({
+      applicationData,
+      operationArguments: { path: 'src/new-file.ts' },
+    })
+    await changes.run()
+
+    expect(commandSpy.calls.length).toBe(0)
+    expect(changes.success()).toBe(false)
+    expect(changes.result()).toEqual({ path: '', diff: '' })
+    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+      'Git untracked change: path not allowed: src/new-file.ts',
     )
   })
 })

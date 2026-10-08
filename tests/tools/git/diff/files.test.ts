@@ -1,8 +1,14 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
+import { join } from '@std/path'
 import { spy } from '@std/testing/mock'
+import { ApplicationData } from '../../../../src/application-data.ts'
 import { gitDiffFiles } from '../../../../src/tools/git/diff/files.ts'
-import { loadTextFixture } from '../../../../tests/support/fixtures.ts'
+import { pathPermissions } from '../../../../src/application-data/path-permissions.ts'
+import {
+  fixturesDirectory,
+  loadTextFixture,
+} from '../../../../tests/support/fixtures.ts'
 import { mockApplicationData } from '../../../../tests/support/mock-application-data.ts'
 import { mockDenoCommand } from '../../../../tests/support/mock-deno-command.ts'
 
@@ -120,6 +126,31 @@ describe('gitDiffFiles', () => {
     expect(gitDiff.result()).toEqual([])
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
       'Git diff files: fatal: not a git repository',
+    )
+  })
+
+  it('when a filter path is outside the repository, fails without running git', async () => {
+    const commandSpy = spy()
+    const applicationData = mockApplicationData({
+      denoCommand: mockDenoCommand({ commandSpy }),
+      gitPathPermissions: pathPermissions({
+        applicationData: new ApplicationData(),
+        allowedDirectories: [join(fixturesDirectory, 'tools', 'git')],
+      }),
+    })
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+
+    const gitDiff = gitDiffFiles({
+      applicationData,
+      operationArguments: { filter: ['tests/tools/git/diff/files.test.ts'] },
+    })
+    await gitDiff.run()
+
+    expect(commandSpy.calls.length).toBe(0)
+    expect(gitDiff.success()).toBe(false)
+    expect(gitDiff.result()).toEqual([])
+    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+      'Git diff files: path not allowed: tests/tools/git/diff/files.test.ts',
     )
   })
 })

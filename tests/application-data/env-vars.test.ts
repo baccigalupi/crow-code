@@ -1,9 +1,16 @@
-import { describe, it } from 'node:test'
+import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import { Environment, loadEnvironmentalVariables } from '../src/env-vars.ts'
+import {
+  Environment,
+  loadEnvironmentalVariables,
+} from '../../src/application-data/env-vars.ts'
+import { clearDirectory, fixturesDirectory } from '../support/fixtures.ts'
 
 describe('env-vars', () => {
+  beforeEach(() => clearDirectory(join(fixturesDirectory, 'env-vars')))
+  afterEach(() => clearDirectory(join(fixturesDirectory, 'env-vars')))
+
   it('when a value exists, returns it', () => {
     const environment = new Environment({ API_KEY: 'secret' })
 
@@ -23,18 +30,18 @@ describe('env-vars', () => {
   })
 
   it('when an environment file exists, loads its values', () => {
-    const directory = Deno.makeTempDirSync()
+    const directory = join(fixturesDirectory, 'env-vars', 'present')
+    Deno.mkdirSync(directory, { recursive: true })
     const path = join(directory, 'values.env')
     Deno.writeTextFileSync(path, 'FILE_ONLY_KEY=file-value\n')
 
     const environment = loadEnvironmentalVariables(path)
 
     expect(environment.value('FILE_ONLY_KEY')).toBe('file-value')
-    Deno.removeSync(directory, { recursive: true })
   })
 
   it('when an environment file is missing, loads process values', () => {
-    const path = join(Deno.makeTempDirSync(), 'missing.env')
+    const path = join(fixturesDirectory, 'env-vars', 'missing', 'missing.env')
 
     const environment = loadEnvironmentalVariables(path)
 

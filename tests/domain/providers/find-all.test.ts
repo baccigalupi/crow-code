@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import pino from 'pino'
-import { Environment } from '../../../src/env-vars.ts'
+import { Environment } from '../../../src/application-data/env-vars.ts'
 import { ProviderEntity } from '../../../src/domain/providers/entity.ts'
 import { providerFindAll } from '../../../src/domain/providers/find-all.ts'
 import { createTestDatabase } from '../../support/test-database.ts'

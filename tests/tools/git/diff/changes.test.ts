@@ -111,4 +111,20 @@ describe('gitChanges', () => {
       args: ['git', { args: ['diff', 'HEAD'] }],
     })
   })
+
+  it('when a filter path is outside the repository, fails without running git', async () => {
+    const commandSpy = spy()
+    const applicationData = mockApplicationData({
+      denoCommand: mockDenoCommand({ commandSpy }),
+    })
+    const changes = gitChanges({
+      applicationData,
+      operationArguments: { filter: ['../outside.ts'] },
+    })
+
+    await changes.run()
+
+    expect(commandSpy.calls.length).toBe(0)
+    expect(changes.success()).toBe(false)
+  })
 })

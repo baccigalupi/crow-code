@@ -3,7 +3,7 @@ import { expect } from '@std/expect'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import pino from 'pino'
 import { ModelEntity } from '../../../src/domain/models/model.ts'
-import { Environment } from '../../../src/env-vars.ts'
+import { Environment } from '../../../src/application-data/env-vars.ts'
 import { modelFindAllByFilters } from '../../../src/domain/models/find-all-by-filters.ts'
 import {
   cleanDatabase,

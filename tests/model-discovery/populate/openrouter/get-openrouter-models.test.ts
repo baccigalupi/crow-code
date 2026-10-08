@@ -11,7 +11,7 @@ import { getOpenRouterModels } from '../../../../src/model-discovery/populate/op
 import { createTestDatabase } from '../../../support/test-database.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { ProviderEntity } from '../../../../src/domain/providers/entity.ts'
-import { Environment } from '../../../../src/env-vars.ts'
+import { Environment } from '../../../../src/application-data/env-vars.ts'
 
 describe('getOpenRouterModels', () => {
   it('when fetched, returns parsed records', async () => {

@@ -1,5 +1,5 @@
 import type { ApplicationOperationArguments } from '../../types.ts'
-import type { PathPermissions } from '../path-permissions.ts'
+import type { PathPermissions } from '../../application-data/path-permissions.ts'
 import type { FileContent } from '../types.ts'
 import { OperationWithResult } from '../../operation.ts'
 

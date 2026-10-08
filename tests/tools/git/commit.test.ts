@@ -1,9 +1,13 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
+import { join } from '@std/path'
 import { assertSpyCall, spy } from '@std/testing/mock'
+import { ApplicationData } from '../../../src/application-data.ts'
 import { gitCommit } from '../../../src/tools/git/commit.ts'
+import { pathPermissions } from '../../../src/application-data/path-permissions.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { mockDenoCommand } from '../../support/mock-deno-command.ts'
+import { fixturesDirectory } from '../../support/fixtures.ts'
 
 describe('gitCommit', () => {
   it('commits with the requested message', async () => {
@@ -62,5 +66,51 @@ describe('gitCommit', () => {
     expect(commit.success()).toBe(false)
     expect(commit.result()).toBe('')
     expect(loggerErrorSpy.calls[0].args[0]).toBe('Git commit: commit failed')
+  })
+
+  it('when a path is outside the repository, fails without running git', async () => {
+    const commandSpy = spy()
+    const applicationData = mockApplicationData({
+      denoCommand: mockDenoCommand({ commandSpy }),
+      gitPathPermissions: pathPermissions({
+        applicationData: new ApplicationData(),
+        allowedDirectories: [join(fixturesDirectory, 'tools', 'git')],
+      }),
+    })
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const commit = gitCommit({
+      applicationData,
+      operationArguments: { message: 'msg', paths: ['src/a.ts'] },
+    })
+
+    await commit.run()
+
+    expect(commandSpy.calls.length).toBe(0)
+    expect(commit.success()).toBe(false)
+    expect(commit.result()).toBe('')
+    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+      'Git commit: path not allowed: src/a.ts',
+    )
+  })
+
+  it('when a path uses git pathspec magic, fails without running git', async () => {
+    const commandSpy = spy()
+    const applicationData = mockApplicationData({
+      denoCommand: mockDenoCommand({ commandSpy }),
+    })
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const commit = gitCommit({
+      applicationData,
+      operationArguments: { message: 'msg', paths: [':/'] },
+    })
+
+    await commit.run()
+
+    expect(commandSpy.calls.length).toBe(0)
+    expect(commit.success()).toBe(false)
+    expect(commit.result()).toBe('')
+    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+      'Git commit: path not allowed: :/',
+    )
   })
 })

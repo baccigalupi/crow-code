@@ -3,9 +3,11 @@ import pino from 'pino'
 import type OpenAI from 'openai'
 import { stub } from '@std/testing/mock'
 import { ApplicationData } from '../../src/application-data.ts'
-import { Environment } from '../../src/env-vars.ts'
+import { Environment } from '../../src/application-data/env-vars.ts'
 import type { ConsoleLog, DenoCommand, Logger } from '../../src/types.ts'
 import type { OpenAiClientOptions } from '../../src/model-requests/types.ts'
+import type { PathPermissions } from '../../src/application-data/path-permissions.ts'
+import { pathPermissions } from '../../src/application-data/path-permissions.ts'
 import { mockFetchSuccess } from './mock-fetch.ts'
 
 export type MockApplicationDataOverrides = {
@@ -19,6 +21,7 @@ export type MockApplicationDataOverrides = {
   chatClient?: (options: OpenAiClientOptions) => OpenAI
   denoCommand?: DenoCommand
   envars?: Environment
+  gitPathPermissions?: PathPermissions
 }
 
 export const mockApplicationData = (
@@ -55,6 +58,12 @@ export const mockApplicationData = (
   stub(data, 'fetch', () => fetchClient)
   stub(data, 'denoCommand', () => denoCommand)
   stub(data, 'envars', () => envars)
+  stub(data, 'gitPathPermissions', () =>
+    overrides.gitPathPermissions ??
+      pathPermissions({
+        applicationData: data,
+        allowedDirectories: [Deno.cwd()],
+      }))
 
   if (overrides.chatClient) {
     stub(data, 'chatClient', overrides.chatClient)

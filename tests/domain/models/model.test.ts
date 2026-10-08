@@ -9,7 +9,7 @@ import type {
   ModelRow,
   ModelWithProviderRow,
 } from '../../../src/domain/types.ts'
-import { Environment } from '../../../src/env-vars.ts'
+import { Environment } from '../../../src/application-data/env-vars.ts'
 
 describe('model', () => {
   it('exposes pass-through attributes', () => {

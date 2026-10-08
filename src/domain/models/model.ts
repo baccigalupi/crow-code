@@ -1,5 +1,5 @@
 import type { DefaultReasoning } from '../types.ts'
-import { Environment } from '../../env-vars.ts'
+import { Environment } from '../../application-data/env-vars.ts'
 import type { ModelEndpoint } from '../../model-requests/types.ts'
 import type { ModelEntityRow, ModelRow } from '../types.ts'
 

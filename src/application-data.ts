@@ -5,13 +5,17 @@ import type { ParsedArguments } from './cli/types.ts'
 import type { ConsoleLog, DenoCommand, Logger, RealPath } from './types.ts'
 import type { OpenAiClientOptions } from './model-requests/types.ts'
 import { openAndMigrateDatabase } from './database/open-and-migrate-database.ts'
-import { createLogger } from './logger.ts'
-import { type Environment, loadEnvironmentalVariables } from './env-vars.ts'
+import { createLogger } from './application-data/logger.ts'
+import {
+  type Environment,
+  loadEnvironmentalVariables,
+} from './application-data/env-vars.ts'
 import { parseArguments } from './cli/arguments.ts'
 import {
   type PathPermissions,
   pathPermissions,
-} from './tools/path-permissions.ts'
+} from './application-data/path-permissions.ts'
+import { gitPathPermissions } from './application-data/git-path-permissions.ts'
 
 export class ApplicationData {
   private _database?: Knex
@@ -19,6 +23,7 @@ export class ApplicationData {
   private _envars?: Environment
   private _parsedArguments?: ParsedArguments
   private _pathPermissions?: ReturnType<typeof pathPermissions>
+  private _gitPathPermissions?: PathPermissions
 
   crowDirectory(): string {
     return join(Deno.cwd(), '.crow')
@@ -99,6 +104,14 @@ export class ApplicationData {
     this._pathPermissions = pathPermissions({ applicationData: this })
 
     return this._pathPermissions
+  }
+
+  gitPathPermissions(): PathPermissions {
+    if (this._gitPathPermissions) return this._gitPathPermissions
+
+    this._gitPathPermissions = gitPathPermissions({ applicationData: this })
+
+    return this._gitPathPermissions
   }
 
   envars(): Environment {

@@ -5,7 +5,7 @@ import { assertSpyCall, returnsNext, spy, stub } from '@std/testing/mock'
 import {
   RequestedPath,
   requestedPath,
-} from '../../../src/tools/path-permissions/requested-path.ts'
+} from '../../../src/application-data/path-permissions/requested-path.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { fixturesDirectory } from '../../support/fixtures.ts'
 

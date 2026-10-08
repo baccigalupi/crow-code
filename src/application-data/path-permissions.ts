@@ -5,19 +5,20 @@ import { requestedPath } from './path-permissions/requested-path.ts'
 
 type PathPermissionsArguments = {
   applicationData: ApplicationData
-  allowedDirectories?: string[]
+  allowedDirectories?: string[] | Promise<string[]>
 }
 
 export class PathPermissions {
-  private allowedDirectories: string[]
+  protected applicationData: ApplicationData
+  private allowedDirectories: string[] | Promise<string[]>
   private getRealPath: RealPath
   private cache: Map<string, boolean>
 
   constructor(
-    { applicationData, allowedDirectories = [Deno.cwd()] }:
-      PathPermissionsArguments,
+    { applicationData, allowedDirectories }: PathPermissionsArguments,
   ) {
-    this.allowedDirectories = allowedDirectories
+    this.applicationData = applicationData
+    this.allowedDirectories = allowedDirectories || [Deno.cwd()]
     this.getRealPath = applicationData.getRealPath()
     this.cache = new Map()
   }
@@ -25,7 +26,7 @@ export class PathPermissions {
   async allows(path: string): Promise<boolean> {
     if (this.cache.has(path)) return this.cache.get(path)!
 
-    const allowed = await this.requested(path).isAllowed()
+    const allowed = await (await this.requested(path)).isAllowed()
     this.cache.set(path, allowed)
     return allowed
   }
@@ -40,16 +41,15 @@ export class PathPermissions {
     return paths.filter((_, index) => verdicts[index])
   }
 
-  private absoluteDirectories() {
-    return this.allowedDirectories.map((directory) =>
-      resolve(Deno.cwd(), directory)
-    )
+  protected async absoluteDirectories(): Promise<string[]> {
+    const directories = await this.allowedDirectories
+    return directories.map((directory) => resolve(Deno.cwd(), directory))
   }
 
-  private requested(path: string) {
+  private async requested(path: string) {
     return requestedPath({
       path,
-      allowedDirectories: this.absoluteDirectories(),
+      allowedDirectories: await this.absoluteDirectories(),
       getRealPath: this.getRealPath,
     })
   }

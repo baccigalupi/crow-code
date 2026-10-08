@@ -1,7 +1,7 @@
 import { walk } from '@std/fs'
 import { resolve } from '@std/path'
 import type { ApplicationOperationArguments } from '../../types.ts'
-import type { PathPermissions } from '../path-permissions.ts'
+import type { PathPermissions } from '../../application-data/path-permissions.ts'
 import type { DirectoryEntry, DirectoryListing } from '../types.ts'
 import { directoryEntries } from './list/entries.ts'
 import { OperationWithResult } from '../../operation.ts'
