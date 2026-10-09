@@ -1,4 +1,4 @@
-import type { InputBuffer } from '../types.ts'
+import type { InputBuffer } from './types.ts'
 
 const cursorCharacter = (buffer: InputBuffer) => {
   if (buffer.cursor >= buffer.text.length) return ' '

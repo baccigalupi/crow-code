@@ -27,5 +27,6 @@ describe('Help', () => {
       'Usage: crow <command>',
     )
     expect(consoleLog.mock.calls[0].arguments[0]).toContain('add-provider')
+    expect(consoleLog.mock.calls[0].arguments[0]).toContain('install')
   })
 })

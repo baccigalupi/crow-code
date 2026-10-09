@@ -5,6 +5,7 @@ import { AddProvider } from './cli/commands/add-provider.ts'
 import { CreateModelCatalog } from './cli/commands/create-model-catalog.ts'
 import { GitCommit } from './cli/commands/git-commit.ts'
 import { Help } from './cli/commands/help.ts'
+import { Install } from './cli/commands/install.ts'
 import { Repl } from './cli/commands/repl.ts'
 import { Version } from './cli/commands/version.ts'
 
@@ -13,6 +14,7 @@ const commandClasses = [
   CreateModelCatalog,
   AddProvider,
   GitCommit,
+  Install,
   Repl,
   Help,
 ]

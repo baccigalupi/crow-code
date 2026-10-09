@@ -18,7 +18,7 @@ export const Header = () => (
   <Box flexDirection='column' width='100%'>
     <Bar />
     <Bar>
-      <Text color={chrome.textColor}>Crow Code - context is King</Text>
+      <Text color={chrome.textColor}>Installing Crow Code</Text>
       <Text color={chrome.textColor}>ctrl-c quit</Text>
     </Bar>
     <Bar />

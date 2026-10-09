@@ -6,7 +6,7 @@ import {
   insertText,
   measureRows,
   moveCursor,
-} from '../../../src/tui/interactions/input-buffer.ts'
+} from '../../src/tui/input-buffer.ts'
 
 describe('input buffer', () => {
   it('when inserting in the middle, inserts at the cursor', () => {

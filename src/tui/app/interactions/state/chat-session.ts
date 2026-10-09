@@ -6,8 +6,9 @@ import {
   insertText,
   measureRows,
   moveCursor,
-} from '../input-buffer.ts'
-import type { CursorMove, HistoryEntry, InputBuffer } from '../../types.ts'
+} from '../../../input-buffer.ts'
+import type { CursorMove, InputBuffer } from '../../../types.ts'
+import type { HistoryEntry } from '../../types.ts'
 
 export class ChatSession {
   readonly buffer = signal<InputBuffer>(emptyBuffer())

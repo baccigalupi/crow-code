@@ -1,4 +1,4 @@
-import type { CursorMove, InputBuffer } from '../types.ts'
+import type { CursorMove, InputBuffer } from './types.ts'
 
 const inputRowCap = 8
 

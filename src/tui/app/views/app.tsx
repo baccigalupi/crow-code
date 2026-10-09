@@ -1,7 +1,7 @@
 import { Box, useStdout } from 'ink'
 import { useReplKeys } from '../interactions/hooks/use-repl-keys.ts'
 import { useResize } from '../interactions/hooks/use-resize.ts'
-import { useSignalValue } from '../interactions/hooks/use-signal-value.ts'
+import { useSignalValue } from '../../use-signal-value.ts'
 import { chatSession } from '../interactions/state.ts'
 import { appViewModel } from './app-view-model.ts'
 import { Chat } from './chat.tsx'

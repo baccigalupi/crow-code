@@ -1,6 +1,6 @@
 import { chatSession } from './state.ts'
 import type { ChatSession } from './state/chat-session.ts'
-import type { ExitApp, KeyFlags } from '../types.ts'
+import type { ExitApp, KeyFlags } from '../../types.ts'
 
 export class Keymap {
   private exit: ExitApp

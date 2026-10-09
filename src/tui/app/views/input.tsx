@@ -1,6 +1,7 @@
 import { Box, Text } from 'ink'
-import type { InputBuffer, InputViewModelArguments } from '../types.ts'
-import { bufferViewModel } from './buffer-view-model.ts'
+import type { InputBuffer } from '../../types.ts'
+import type { InputViewModelArguments } from '../types.ts'
+import { bufferViewModel } from '../../buffer-view-model.ts'
 import { inputViewModel } from './input-view-model.ts'
 
 const Placeholder = ({ isEmpty }: { readonly isEmpty: boolean }) => {

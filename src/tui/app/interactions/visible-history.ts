@@ -1,4 +1,4 @@
-import { measureLines } from './input-buffer.ts'
+import { measureLines } from '../../input-buffer.ts'
 import type { HistoryEntry } from '../types.ts'
 
 interface HistoryAccumulator {

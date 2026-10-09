@@ -3,7 +3,7 @@ import { expect } from '@std/expect'
 import { render } from 'ink-testing-library'
 import { Text } from 'ink'
 import { signal } from '@preact/signals-core'
-import { useSignalValue } from '../../../../src/tui/interactions/hooks/use-signal-value.ts'
+import { useSignalValue } from '../../src/tui/use-signal-value.ts'
 import type { ReadonlySignal } from '@preact/signals-core'
 
 const Probe = ({ source }: { source: ReadonlySignal<string> }) => {
