@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from 'react'
 import { Box, Text } from 'ink'
-import { chrome } from '../themes/chrome.ts'
+import { chrome } from '../../themes/chrome.ts'
 
 const Bar = ({ children }: PropsWithChildren) => (
   <Box

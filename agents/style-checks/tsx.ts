@@ -11,6 +11,16 @@ const isReactStateCallee = (node: Deno.lint.Node): boolean => {
   return reactStateHooks.has(node.name)
 }
 
+const isHookOrViewModel = (name: string): boolean =>
+  /^use[A-Z]/.test(name) || name.endsWith('ViewModel')
+
+const isAllowedViewCall = (callee: Deno.lint.Node): boolean => {
+  if (callee.type === 'Identifier') return isHookOrViewModel(callee.name)
+  if (callee.type !== 'MemberExpression') return false
+  return callee.property.type === 'Identifier' &&
+    callee.property.name === 'map'
+}
+
 const plugin: Deno.lint.Plugin = {
   name: 'crow-style-tsx',
   rules: {
@@ -73,6 +83,21 @@ const plugin: Deno.lint.Plugin = {
                   'input handling lives in dedicated hooks/, not inline useInput in a view',
               })
             }
+          },
+        }
+      },
+    },
+    'views-only-call-view-models': {
+      create(context) {
+        if (!isTsxFile(context.filename)) return {}
+        return {
+          CallExpression(node) {
+            if (isAllowedViewCall(node.callee)) return
+            context.report({
+              node,
+              message:
+                'views may only call hooks (use*), view models (*ViewModel), and .map in JSX; derivation belongs in a view model',
+            })
           },
         }
       },

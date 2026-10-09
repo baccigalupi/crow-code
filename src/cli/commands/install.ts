@@ -1,5 +1,5 @@
 import { createRunner } from '../../tui/runner.ts'
-import { InstallApp } from '../../tui/install/install-app.tsx'
+import { InstallApp } from '../../tui/install/views/install-app.tsx'
 import { Command } from './command.ts'
 
 export class Install extends Command {

@@ -217,6 +217,15 @@ describe('style-check code plugin', () => {
     expect(diagnostics[0].message).toContain('file exceeds 100 lines')
   })
 
+  it('when a tsx file exceeds one hundred lines, reports it', () => {
+    const source = Array.from({ length: 110 }, () => '// line').join('\n')
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.tsx', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('file exceeds 100 lines')
+  })
+
   it('when three consecutive ifs test the same variable, reports it', () => {
     const source = `const example = (x: string) => {
       if (x === 'a') return 1

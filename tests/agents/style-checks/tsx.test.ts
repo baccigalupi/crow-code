@@ -99,6 +99,62 @@ describe('style-check tsx plugin', () => {
     expect(diagnostics).toHaveLength(0)
   })
 
+  it('when a view splits text into lines, reports it', () => {
+    const diagnostics = check(
+      "const App = () => <div>{'a\\nb'.split('\\n').map(l => <b key={l}>{l}</b>)}</div>",
+    )
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('view model')
+  })
+
+  it('when a view renders multi-line text in one Text, ignores it', () => {
+    const diagnostics = check(
+      "const App = () => <div>{'a\\nb'}</div>",
+    )
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
+  it('when a view calls a plain helper with arguments, reports it', () => {
+    const diagnostics = check(
+      "const App = ({ u }: { u: string }) => <div>{directory(u, '~/.crow')}</div>",
+    )
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('view model')
+  })
+
+  it('when a view calls JSON.stringify, reports it', () => {
+    const diagnostics = check(
+      'const App = ({ o }: { o: object }) => <div>{JSON.stringify(o)}</div>',
+    )
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('view model')
+  })
+
+  it('when a view only calls hooks and view models, ignores it', () => {
+    const diagnostics = check(
+      `const App = ({ session }) => {
+        const buffer = useSignalValue(session.buffer)
+        const { rowHeight } = appViewModel({ buffer })
+        useKeys(session)
+        return <div>{rowHeight}</div>
+      }`,
+    )
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
+  it('when JSX maps entries to elements, ignores the map call', () => {
+    const diagnostics = check(
+      'const Chat = ({ items }) => <div>{items.map((e) => <b key={e.id}>{e.t}</b>)}</div>',
+    )
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
   it('when a non-jsx && expression exists, ignores it', () => {
     const diagnostics = check(
       'const ok = (a: boolean, b: boolean) => a && b',

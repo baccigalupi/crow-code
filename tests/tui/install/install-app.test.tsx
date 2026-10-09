@@ -3,12 +3,12 @@ import { expect } from '@std/expect'
 import { render } from 'ink-testing-library'
 import { render as inkRender } from 'ink'
 import { signal } from '@preact/signals-core'
-import { InstallApp } from '../../../src/tui/install/install-app.tsx'
+import { InstallApp } from '../../../src/tui/install/views/install-app.tsx'
 import {
   installStep,
   repoDirectoryBuffer,
   userDirectoryBuffer,
-} from '../../../src/tui/install/directory-buffer.ts'
+} from '../../../src/tui/install/interactions/state/directory-buffer.ts'
 import { emptyBuffer, insertText } from '../../../src/tui/input-buffer.ts'
 import { mockTerminal } from '../../support/mock-terminal.ts'
 
