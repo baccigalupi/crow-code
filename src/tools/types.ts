@@ -5,6 +5,15 @@ export type GitLogEntry = {
   subject: string
 }
 
+export type GitBlameLine = {
+  line: number
+  sha: string
+  author: string
+  date: string
+  summary: string
+  content: string
+}
+
 export type GitFileDiff = {
   path: string
   diff: string
