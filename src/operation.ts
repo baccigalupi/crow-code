@@ -6,6 +6,12 @@ import type {
   Logger,
 } from './types.ts'
 
+export const humanName = (name: string) =>
+  name.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase()
+
+const failedOperationReason = (operation: AsyncOperation) =>
+  operation.reason || `${humanName(operation.constructor.name)} failed`
+
 export abstract class Operation<OperationArguments> implements AsyncOperation {
   protected applicationData: ApplicationData
   protected operationArguments: OperationArguments
@@ -45,9 +51,7 @@ export abstract class Operation<OperationArguments> implements AsyncOperation {
 
     await operation.run()
     this.subOperations.push(operation)
-    if (!operation.success()) {
-      this.fail(`Error running suboperation: ${operation.reason}`)
-    }
+    if (!operation.success()) this.fail(failedOperationReason(operation))
     return operation
   }
 

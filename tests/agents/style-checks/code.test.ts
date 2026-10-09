@@ -421,6 +421,25 @@ describe('style-check code plugin', () => {
     expect(diagnostics[0].message).toContain('types.ts')
   })
 
+  it('when an interface merges with a delegate-decorated class, does not report it', () => {
+    const source = `@delegate({}, 'x')
+export class Host {}
+export interface Host {}`
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
+  it('when an interface merges with an undecorated class, reports it', () => {
+    const source = 'export class Host {}\nexport interface Host {}'
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('types.ts')
+  })
+
   it('when a type is exported from types.ts, does not report it', () => {
     const source = 'export type Foo = string'
 

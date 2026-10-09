@@ -42,6 +42,57 @@ describe('Command', () => {
     expect(goal.isMatch()).toBe(true)
   })
 
+  it('when a command fails, reports the reason for the command word on stderr', async () => {
+    const consoleError = mock.fn()
+    class FailingCommand extends Command {
+      isMatch() {
+        return this.commands[0] === 'first'
+      }
+
+      run() {
+        this.fail('no widgets')
+        return Promise.resolve(this)
+      }
+    }
+    const applicationData = mockApplicationData({
+      args: ['first', 'arg'],
+      consoleError,
+    })
+    const failing = command(FailingCommand, applicationData)
+
+    await failing.run()
+    failing.reportFailure()
+
+    expect(consoleError.mock.calls[0].arguments[0]).toBe(
+      'Error: no widgets for first',
+    )
+  })
+
+  it('when a command fails without a command word, names the command in words', async () => {
+    const consoleError = mock.fn()
+    class SilentFailure extends Command {
+      isMatch() {
+        return true
+      }
+
+      run() {
+        this.fail('no widgets')
+        return Promise.resolve(this)
+      }
+    }
+    const failing = command(
+      SilentFailure,
+      mockApplicationData({ args: [], consoleError }),
+    )
+
+    await failing.run()
+    failing.reportFailure()
+
+    expect(consoleError.mock.calls[0].arguments[0]).toBe(
+      'Error: no widgets for silent failure',
+    )
+  })
+
   it('when constructed, exposes the application data to subclasses', async () => {
     const consoleLog = mock.fn()
     class EchoDirectory extends Command {

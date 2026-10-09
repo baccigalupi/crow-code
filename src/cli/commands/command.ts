@@ -1,5 +1,5 @@
 import type { ApplicationData } from '../../application-data.ts'
-import { Operation } from '../../operation.ts'
+import { humanName, Operation } from '../../operation.ts'
 import type { ApplicationOperationArguments } from '../../types.ts'
 import type { ParsedArguments } from '../types.ts'
 
@@ -15,6 +15,23 @@ export abstract class Command extends Operation<ParsedArguments> {
   }
 
   abstract isMatch(): boolean
+
+  reportFailure() {
+    this.applicationData.consoleError()(this.failureMessage())
+  }
+
+  private failureMessage() {
+    return `Error: ${this.errorReason()} for ${this.commandText()}`
+  }
+
+  protected errorReason() {
+    return this.reason
+  }
+
+  private commandText() {
+    if (!this.commands[0]) return humanName(this.constructor.name)
+    return this.commands[0]
+  }
 }
 
 export const command = <T extends Command>(

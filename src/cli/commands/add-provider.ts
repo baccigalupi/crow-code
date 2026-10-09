@@ -25,21 +25,15 @@ export class AddProvider extends Command {
     )
   }
 
+  protected override errorReason() {
+    return 'unable to create a provider'
+  }
+
   private log() {
     if (this.dbRecordCreator.success()) {
-      this.logSuccess()
-    } else {
-      this.logFailure()
+      this.applicationData.consoleLog()(
+        'Provider added. Add your api key <api_key> to the .env file',
+      )
     }
-  }
-
-  private logSuccess() {
-    this.applicationData.consoleLog()(
-      'Provider added. Add your api key <api_key> to the .env file',
-    )
-  }
-
-  private logFailure() {
-    this.applicationData.consoleLog()('Unable to create a provider')
   }
 }

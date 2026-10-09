@@ -115,18 +115,23 @@ describe('AddProvider', () => {
       base_url: 'http://x',
     })
     const consoleLog = mock.fn()
+    const consoleError = mock.fn()
     const applicationData = mockApplicationData({
       args: ['add-provider', '--name=other', '--base-url=http://x'],
       crowDirectory,
       database,
       consoleLog,
+      consoleError,
     })
 
-    await command(AddProvider, applicationData).run()
+    const addProvider = command(AddProvider, applicationData)
+    await addProvider.run()
+    addProvider.reportFailure()
 
-    expect(consoleLog.mock.calls[0].arguments[0]).toBe(
-      'Unable to create a provider',
+    expect(consoleError.mock.calls[0].arguments[0]).toBe(
+      'Error: unable to create a provider for add-provider',
     )
+    expect(consoleLog.mock.calls).toHaveLength(0)
     const rows = await database('providers').select('*')
     expect(rows).toHaveLength(1)
   })

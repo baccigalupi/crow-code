@@ -49,7 +49,9 @@ class Cli {
   }
 
   private async runMatched() {
-    await this.matchedCommand().run()
+    const matched = this.matchedCommand()
+    await matched.run()
+    if (!matched.success()) matched.reportFailure()
     return this.exitCode()
   }
 

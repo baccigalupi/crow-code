@@ -27,6 +27,7 @@ describe('ApplicationData', () => {
 
     expect(data.crowDirectory()).toBe(crowDirectory)
     expect(data.consoleLog()).toBe(console.log)
+    expect(data.consoleError()).toBe(console.error)
     expect(data.args()).toEqual(Deno.args)
     expect(data.parsedArguments()).toEqual({ commands: [], options: {} })
     expect(data.logger().constructor.name).toBe('Pino')

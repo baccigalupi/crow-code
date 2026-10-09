@@ -17,7 +17,6 @@ export class GitCommit extends Command {
 
   private failEarly() {
     this.fail('missing --goal=<goal>')
-    this.logReason()
     return this
   }
 
@@ -44,12 +43,6 @@ export class GitCommit extends Command {
   private log(committed: ReturnType<typeof commit>) {
     if (committed.success()) {
       this.applicationData.consoleLog()(committed.result().subject)
-    } else {
-      this.logReason()
     }
-  }
-
-  private logReason() {
-    this.applicationData.consoleLog()(this.reason)
   }
 }

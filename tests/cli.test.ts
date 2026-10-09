@@ -67,20 +67,25 @@ describe('run', () => {
     }])
   })
 
-  it('when git-commit is requested without a goal, exits with a non-zero code', async () => {
+  it('when git-commit is requested without a goal, reports the error on stderr and exits with a non-zero code', async () => {
     const consoleLog = mock.fn()
+    const consoleError = mock.fn()
     const quit = mock.fn()
     const applicationData = mockApplicationData({
       args: ['git-commit', 'src/a.ts'],
       crowDirectory: join(fixturesDirectory, 'cli', '.crow'),
       consoleLog,
+      consoleError,
     })
 
     const exitCode = await run(applicationData, quit)
 
     expect(exitCode).not.toBe(0)
     expect(quit.mock.calls[0].arguments[0]).toBe(exitCode)
-    expect(consoleLog.mock.calls[0].arguments[0]).toContain('--goal')
+    expect(consoleError.mock.calls[0].arguments[0]).toBe(
+      'Error: missing --goal=<goal> for git-commit',
+    )
+    expect(consoleLog.mock.calls).toHaveLength(0)
   })
 
   it('when no quit handler is given, exits the process with the code', async () => {
@@ -120,9 +125,9 @@ describe('run', () => {
       args: ['-V'],
       crowDirectory: join(fixturesDirectory, 'cli', '.crow'),
       logger,
-    })
-    using _ = stub(applicationData, 'parsedArguments', () => {
-      throw new Error('boom')
+      parsedArguments: () => {
+        throw new Error('boom')
+      },
     })
 
     const exitCode = await run(applicationData, quit)
@@ -134,16 +139,19 @@ describe('run', () => {
 
   it('when git-commit is requested, does not write usage', async () => {
     const consoleLog = mock.fn()
+    const consoleError = mock.fn()
     const applicationData = mockApplicationData({
       args: ['git-commit', '--goal=add login'],
       crowDirectory: join(fixturesDirectory, 'cli', '.crow'),
       consoleLog,
+      consoleError,
       denoCommand: mockDenoCommand({ success: false }),
     })
 
     await run(applicationData, () => {})
 
-    expect(consoleLog.mock.calls[0].arguments[0]).not.toContain(
+    expect(consoleLog.mock.calls).toHaveLength(0)
+    expect(consoleError.mock.calls[0].arguments[0]).not.toContain(
       'Usage: crow <command>',
     )
   })

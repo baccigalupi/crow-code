@@ -83,6 +83,43 @@ const singleReturn = (
   return null
 }
 
+const isDelegateDecorator = (decorator: unknown): boolean => {
+  const expression = (decorator as { expression: Deno.lint.Node }).expression
+  if (expression.type === 'Identifier') return expression.name === 'delegate'
+  if (expression.type !== 'CallExpression') return false
+  return expression.callee.type === 'Identifier' &&
+    expression.callee.name === 'delegate'
+}
+
+const isDelegateDecoratedClass = (
+  statement: Deno.lint.Statement,
+  name: string,
+): boolean => {
+  const declaration = statement.type === 'ExportNamedDeclaration'
+    ? statement.declaration
+    : statement
+  if (declaration?.type !== 'ClassDeclaration') return false
+  const klass = declaration as unknown as {
+    id: { name: string } | null
+    decorators?: unknown[]
+  }
+  if (klass.id?.name !== name) return false
+  return (klass.decorators ?? []).some(isDelegateDecorator)
+}
+
+const delegatedInterface = (
+  context: Deno.lint.RuleContext,
+  node: Deno.lint.Node,
+  declaration: Deno.lint.Node,
+): boolean => {
+  if (declaration.type !== 'TSInterfaceDeclaration') return false
+  const name = (declaration as unknown as { id: { name: string } }).id.name
+  const program = context.sourceCode.getAncestors(node)[0]
+  return (program as Deno.lint.Program).body.some((statement) =>
+    isDelegateDecoratedClass(statement, name)
+  )
+}
+
 const plugin: Deno.lint.Plugin = {
   name: 'crow-style-code',
   rules: {
@@ -289,6 +326,11 @@ const plugin: Deno.lint.Plugin = {
         return {
           ExportNamedDeclaration(node) {
             if (node.exportKind === 'type') {
+              const declaration = node.declaration
+              if (
+                declaration &&
+                delegatedInterface(context, node, declaration)
+              ) return
               context.report({
                 node,
                 message: 'type exports are only allowed in types.ts files',
@@ -296,14 +338,13 @@ const plugin: Deno.lint.Plugin = {
               return
             }
             const declaration = node.declaration
+            if (!declaration) return
+            if (delegatedInterface(context, node, declaration)) return
             if (
-              declaration &&
-              (
-                declaration.type === 'TSTypeAliasDeclaration' ||
-                declaration.type === 'TSInterfaceDeclaration' ||
-                declaration.type === 'TSEnumDeclaration' ||
-                declaration.type === 'TSModuleDeclaration'
-              )
+              declaration.type === 'TSTypeAliasDeclaration' ||
+              declaration.type === 'TSInterfaceDeclaration' ||
+              declaration.type === 'TSEnumDeclaration' ||
+              declaration.type === 'TSModuleDeclaration'
             ) {
               context.report({
                 node,
