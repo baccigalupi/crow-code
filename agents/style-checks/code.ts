@@ -5,6 +5,11 @@ const isProductionFile = (fileName: string): boolean => {
 const isTestFile = (fileName: string): boolean =>
   /(^|\/)tests\/.*\.test\.ts$/.test(fileName)
 
+const isAnySourceFile = (fileName: string): boolean => {
+  return /(^|\/)src\/.*\.tsx?$/.test(fileName) &&
+    !fileName.endsWith('.test.ts') && !fileName.endsWith('.test.tsx')
+}
+
 const functionLikeAncestorTypes = new Set([
   'FunctionDeclaration',
   'FunctionExpression',
@@ -515,7 +520,7 @@ const plugin: Deno.lint.Plugin = {
     },
     'max-file-lines': {
       create(context) {
-        if (!isProductionFile(context.filename)) return {}
+        if (!isAnySourceFile(context.filename)) return {}
         if (context.filename.endsWith('/types.ts')) return {}
         return {
           Program(node) {

@@ -5,7 +5,8 @@ const usageText = `Usage: crow <command>
 Available commands:
   add-provider   add a provider (--name= --base-url= [--models-path=] [--api-key-env-var=])
   create-model-catalog   populate models from configured providers
-  git-commit   stage and commit changes (--goal= [files...])`
+  git-commit   stage and commit changes (--goal= [files...])
+  install   install and configure crow`
 
 export class Help extends Command {
   isMatch() {

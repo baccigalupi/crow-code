@@ -1,16 +1,18 @@
-import { createElement } from 'react'
+import { createElement, type FunctionComponent } from 'react'
 import { render } from 'ink'
 import type { Instance } from 'ink'
-import { App } from './views/app.tsx'
+import { App } from './app/views/app.tsx'
 import type { ReplIo, ReplStatus } from './types.ts'
 
 export class Runner {
   private io: ReplIo
+  private view: FunctionComponent
   private instance!: Instance
   private signals: Deno.Signal[] = ['SIGINT', 'SIGTERM']
 
-  constructor(io: ReplIo) {
+  constructor(io: ReplIo, view: FunctionComponent = App) {
     this.io = io
+    this.view = view
     this.interrupt = this.interrupt.bind(this)
   }
 
@@ -29,7 +31,7 @@ export class Runner {
   }
 
   private render() {
-    return render(createElement(App), {
+    return render(createElement(this.view), {
       ...this.io,
       exitOnCtrlC: false,
       patchConsole: false,
@@ -82,4 +84,5 @@ export class Runner {
   }
 }
 
-export const createRunner = (io: ReplIo = {}) => new Runner(io)
+export const createRunner = (io: ReplIo = {}, view?: FunctionComponent) =>
+  new Runner(io, view)
