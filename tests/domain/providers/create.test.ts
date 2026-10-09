@@ -66,10 +66,8 @@ describe('create', () => {
 
     expect(creator.success()).toBe(false)
     expect(creator.result()).toEqual({})
-    assertSpyCall(loggerErrorSpy, 0, {
-      args: [
-        "Create provider: insert into `providers` (`base_url`, `name`) values ('https://www.example.com', 'provider-name') returning * - UNIQUE constraint failed: providers.base_url",
-      ],
-    })
+    assertSpyCall(loggerErrorSpy, 0)
+    const logged = loggerErrorSpy.calls[0].args[0] as string
+    expect(logged).toContain('Create provider:')
   })
 })

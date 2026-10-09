@@ -7,6 +7,7 @@ import {
   databaseQuery,
 } from '../../src/domain/database-query.ts'
 import { mockApplicationData } from '../support/mock-application-data.ts'
+import { createTestDatabase } from '../support/test-database.ts'
 
 describe('databaseQuery', () => {
   it('when the query succeeds, returns its result', async () => {
@@ -35,6 +36,25 @@ describe('databaseQuery', () => {
     assertSpyCall(loggerErrorSpy, 0, {
       args: ['Database query: query failed'],
     })
+  })
+
+  it('when a knex query fails, logs the rendered sql', async () => {
+    const logger = pino({ enabled: false })
+    using loggerErrorSpy = spy(logger, 'error')
+    const database = await createTestDatabase(logger)
+    const query = database('missing_table').where({ name: 'x' }).select('*')
+
+    const result = await databaseQuery({
+      applicationData: mockApplicationData({ database, logger }),
+      operationArguments: { query },
+    }).run()
+
+    expect(result.success()).toBe(false)
+    const logged = loggerErrorSpy.calls[0].args[0] as string
+    expect(logged).toContain('Database query:')
+    expect(logged).toContain('select * from `missing_table`')
+    expect(logged).toContain("`name` = 'x'")
+    expect(logged).toContain('no such table: missing_table')
   })
 
   describe('resultSerializer', () => {

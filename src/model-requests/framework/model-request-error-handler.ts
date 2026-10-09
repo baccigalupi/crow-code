@@ -2,24 +2,27 @@ import { APIError } from 'openai'
 import { createProviderAvailability } from '../../domain/availabilties/create-provider.ts'
 import { requestLogger } from './request-logger.ts'
 import type { ApplicationData } from '../../application-data.ts'
-import type { ModelEndpoint } from '../types.ts'
+import type { ModelEndpoint, RequestDetails } from '../types.ts'
 
 export class ModelRequestErrorHandler {
   private applicationData: ApplicationData
   private modelEndpoint: ModelEndpoint
   private url: string
   private error: Error
+  private requestDetails: RequestDetails
 
   constructor(
     applicationData: ApplicationData,
     modelEndpoint: ModelEndpoint,
     url: string,
     error: Error,
+    requestDetails: RequestDetails,
   ) {
     this.applicationData = applicationData
     this.modelEndpoint = modelEndpoint
     this.url = url
     this.error = error
+    this.requestDetails = requestDetails
   }
 
   async run() {
@@ -28,7 +31,11 @@ export class ModelRequestErrorHandler {
   }
 
   private requestLogger() {
-    return requestLogger(this.applicationData.logger(), this.url, this.error)
+    return requestLogger(this.applicationData.logger(), this.url, this.error, {
+      modelEndpoint: this.modelEndpoint,
+      messages: this.requestDetails.messages,
+      timespan: this.requestDetails.timespan,
+    })
   }
 
   private async handleApiError() {

@@ -10,8 +10,8 @@ export class FetchProvider<ApiRecord, T>
   async run() {
     try {
       await this.send()
-    } catch {
-      this.fail(`Catalog request failed: ${this.operationArguments.url}`)
+    } catch (error) {
+      this.failNetwork(error)
     }
     return this
   }
@@ -37,13 +37,21 @@ export class FetchProvider<ApiRecord, T>
         (await response.json()) as ApiRecord,
       )
     } else {
-      this.failResponse(response)
+      await this.failResponse(response)
     }
   }
 
-  private failResponse(response: Response) {
+  private failNetwork(error: unknown) {
     this.fail(
-      `Catalog request failed with status ${response.status}: ${this.operationArguments.url}`,
+      `Catalog request failed: ${this.operationArguments.url} — ` +
+        `${(error as Error).message}`,
+    )
+  }
+
+  private async failResponse(response: Response) {
+    this.fail(
+      `Catalog request failed with status ${response.status}: ${this.operationArguments.url}` +
+        `\n${await response.text()}`,
     )
   }
 }

@@ -261,6 +261,11 @@ describe('saveCatalogModels', () => {
       model,
     ]).run()
 
-    expect(loggerErrorSpy.calls[0].args[0]).toContain('disk gone')
+    const logged = loggerErrorSpy.calls[0].args[0] as string
+    expect(logged).toContain('Model catalog refresh rolled back:')
+    expect(logged).toContain(
+      'failed delete/insert on "models" for provider_id=9',
+    )
+    expect(logged).toContain('disk gone')
   })
 })

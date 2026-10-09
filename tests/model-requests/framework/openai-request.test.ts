@@ -102,6 +102,31 @@ describe('OpenAiRequest', () => {
     expect(request.error).toBeInstanceOf(APIConnectionError)
   })
 
+  it('when the api call fails, records the error message as its reason', async () => {
+    const applicationData = mockApplicationData({
+      chatClient: mockOpenAiClientNetworkError('down'),
+    })
+    const request = new OpenAiRequest({
+      applicationData,
+      operationArguments: {
+        modelEndpoint: {
+          baseURL: 'https://example.com/api/v1',
+          apiKey: 'test-key',
+          model: 'test-model',
+          providerId: 1,
+        },
+        messages: [{ role: 'user', content: 'build a cli' }],
+      },
+    })
+
+    await request.run()
+
+    expect(request.success()).toBe(false)
+    const error = request.error as Error
+    expect(request.reason).toBe(error.message)
+    expect(request.reason).toBe('Connection error.')
+  })
+
   it('when the api returns 401, reports failure with the status', async () => {
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClientError(401),

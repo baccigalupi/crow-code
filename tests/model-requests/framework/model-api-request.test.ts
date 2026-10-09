@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
+import { assertSpyCall, spy } from '@std/testing/mock'
 import { OpenAiRequest } from '../../../src/model-requests/framework/openai-request.ts'
 import { ModelApiRequest } from '../../../src/model-requests/framework/model-api-request.ts'
 import type { ModelMessages } from '../../../src/model-requests/types.ts'
@@ -157,6 +158,45 @@ describe('ModelApiRequest', () => {
     expect(modelApiRequest.result()).toEqual([])
     expect(modelApiRequest.success()).toBe(false)
     expect(modelApiRequest.failureReason()).toBe('invalid-json')
+  })
+
+  it('when the answer is not valid json, logs the raw answer', async () => {
+    const logger = pino({ enabled: false })
+    using loggerErrorSpy = spy(logger, 'error')
+    const modelEndpoint = {
+      baseURL: 'https://example.com/api/v1',
+      apiKey: 'test-key',
+      model: 'test-model',
+      providerId: 1,
+    }
+    const applicationData = mockApplicationData({
+      logger,
+      fetch: mockFetchSuccess({
+        choices: [{ message: { content: 'not json' } }],
+        usage: { completion_tokens: 1 },
+      }),
+    })
+    const modelApiRequest = new class
+      extends ModelApiRequest<string, string[]> {
+      protected override logPrefix = 'Test request: '
+
+      protected override errorResponse() {
+        return []
+      }
+
+      protected getMessages(): ModelMessages[] {
+        return [{ role: 'user', content: this.requestData }]
+      }
+    }({
+      applicationData,
+      operationArguments: { modelEndpoint, requestData: 'build a cli' },
+    })
+
+    await modelApiRequest.run()
+
+    assertSpyCall(loggerErrorSpy, 0, {
+      args: ['Test request: invalid-json: `not json`'],
+    })
   })
 
   it('when the subclass rejects the response shape, returns the error response and records invalid-schema', async () => {

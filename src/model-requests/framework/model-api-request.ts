@@ -78,6 +78,19 @@ export abstract class ModelApiRequest<TRequest, TResponse>
     this.answer = parser.answer
     this.succeeded = parser.succeeded
     this.failureReasonValue = parser.reason as ModelRequestFailureReason
+    this.logParseFailure()
+  }
+
+  private logParseFailure() {
+    if (this.unloggedFailure()) return
+    this.logError(
+      `${this.failureReasonValue}: \`${this.answer.rawAnswer()}\``,
+    )
+  }
+
+  private unloggedFailure() {
+    return this.failureReasonValue === '' ||
+      this.failureReasonValue === 'api-error'
   }
 
   private parserResult(response: TResponse | undefined) {

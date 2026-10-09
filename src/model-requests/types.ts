@@ -58,6 +58,17 @@ export type Timespan = {
   endTime: number
 }
 
+export type RequestDetails = {
+  messages: ModelMessages[]
+  timespan: Timespan
+}
+
+export type RequestContext = {
+  modelEndpoint: ModelEndpoint
+  messages: ModelMessages[]
+  timespan: Timespan
+}
+
 type ChatChoices = {
   message: {
     content: string

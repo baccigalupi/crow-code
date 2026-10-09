@@ -1,6 +1,7 @@
 import type { ModelEntity } from '../../domain/models/model.ts'
 import type { ModelFilterOptions } from '../../domain/models/types.ts'
 import type { ModelApiRequestClass } from '../types.ts'
+import type { ModelApiRequest } from './model-api-request.ts'
 import { modelFindAllByFilters } from '../../domain/models/find-all-by-filters.ts'
 import { OperationWithResult } from '../../operation.ts'
 
@@ -48,7 +49,19 @@ export class Runner<TRequest, TResponse> extends OperationWithResult<
 
     const request = this.createRequest(model)
     await request.run()
+    this.recordResult(model, request)
+  }
+
+  private recordResult(
+    model: ModelEntity,
+    request: ModelApiRequest<TRequest, TResponse>,
+  ) {
     if (request.success()) this.response = request.result()
+    else {
+      this.logError(
+        `model \`${model.identifier()}\`: ${request.failureReason()}`,
+      )
+    }
   }
 
   private createRequest(model: ModelEntity) {

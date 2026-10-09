@@ -108,5 +108,12 @@ describe('CreateRecord', () => {
     expect(creator.success()).toBe(false)
     expect(creator.result()).toEqual({})
     assertSpyCall(loggerErrorSpy, 0)
+    const logged = loggerErrorSpy.calls[0].args[0] as string
+    expect(logged).toContain('Create provider:')
+    expect(logged).toContain('insert into providers failed:')
+    expect(logged).toContain('UNIQUE constraint failed: providers.base_url')
+    expect(logged).toContain('params:')
+    expect(logged).toContain('"name":"provider-name"')
+    expect(logged).toContain('"base_url":"https://www.example.com"')
   })
 })

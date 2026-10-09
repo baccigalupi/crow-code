@@ -23,7 +23,7 @@ export class SaveCatalogModels extends Operation<SaveCatalogModelsArguments> {
   }
 
   private rollbackMessage(error: unknown) {
-    return `Model catalog refresh for provider ${this.providerId()} rolled back: ${
+    return `Model catalog refresh rolled back: failed delete/insert on "models" for provider_id=${this.providerId()}: ${
       (error as Error).message
     }`
   }

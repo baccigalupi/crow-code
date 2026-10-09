@@ -80,6 +80,7 @@ export class OpenAiRequest extends OperationWithResult<
   private async recordFailure(error: Error) {
     this.endTime = performance.now()
     this.error = error
+    this.reason = error.message
     this.succeeded = false
     await this.errorHandler().run()
   }
@@ -90,6 +91,7 @@ export class OpenAiRequest extends OperationWithResult<
       this.modelEndpoint,
       this.url,
       this.error as Error,
+      { messages: this.messages, timespan: this.benchmark() },
     )
   }
 }

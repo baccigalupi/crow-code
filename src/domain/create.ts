@@ -9,17 +9,26 @@ export abstract class CreateRecord<TParams, TRow, TRecord = unknown>
   private record?: TRecord
 
   async run() {
+    await this.trySave()
+    return this
+  }
+
+  private async trySave() {
     try {
       await this.save()
     } catch (error) {
-      this.fail((error as Error).message)
+      this.fail(this.failureMessage(error as Error))
     }
-    return this
   }
 
   result(): TRecord | EmptyRecord {
     if (this.record !== undefined) return this.record
     return this.emptyRecord()
+  }
+
+  private failureMessage(error: Error) {
+    return `insert into ${this.tableName} failed: ${error.message}; ` +
+      `params: ${JSON.stringify(this.params())}`
   }
 
   private async save() {
