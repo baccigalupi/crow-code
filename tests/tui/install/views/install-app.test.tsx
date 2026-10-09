@@ -3,14 +3,14 @@ import { expect } from '@std/expect'
 import { render } from 'ink-testing-library'
 import { render as inkRender } from 'ink'
 import { signal } from '@preact/signals-core'
-import { InstallApp } from '../../../src/tui/install/views/install-app.tsx'
+import { InstallApp } from '../../../../src/tui/install/views/install-app.tsx'
 import {
   installStep,
   repoDirectoryBuffer,
   userDirectoryBuffer,
-} from '../../../src/tui/install/interactions/state/directory-buffer.ts'
-import { emptyBuffer, insertText } from '../../../src/tui/input-buffer.ts'
-import { mockTerminal } from '../../support/mock-terminal.ts'
+} from '../../../../src/tui/install/interactions/state/directory-buffer.ts'
+import { emptyBuffer, insertText } from '../../../../src/tui/input-buffer.ts'
+import { mockTerminal } from '../../../support/mock-terminal.ts'
 
 const buffer = (text: string) => signal(insertText(emptyBuffer(), text))
 
@@ -262,6 +262,24 @@ describe('InstallApp', () => {
     await settle()
 
     expect(terminal.lastFrame().split('\n')).toHaveLength(8)
+
+    instance.unmount()
+  })
+
+  it('when stdout reports no columns, falls back to 80', async () => {
+    const terminal = mockTerminal({ columns: 0 })
+    const instance = inkRender(
+      <InstallApp
+        repo={buffer('')}
+        user={buffer('')}
+        step={signal<'repo' | 'user'>('repo')}
+      />,
+      { ...terminal.io, debug: true, exitOnCtrlC: false },
+    )
+
+    await settle()
+
+    expect(terminal.lastFrame()).toContain('Installing Crow Code')
 
     instance.unmount()
   })

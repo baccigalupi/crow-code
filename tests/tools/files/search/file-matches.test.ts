@@ -17,6 +17,49 @@ describe('file-matches', () => {
     ])
   })
 
+  it('when context is given, each match carries before and after lines', async () => {
+    const root = join(fixturesDirectory, 'tools', 'search')
+
+    const matches = await fileMatches({
+      root,
+      path: 'alpha.txt',
+      pattern: /t/,
+      context: 1,
+    }).all()
+
+    expect(matches).toEqual([
+      {
+        path: 'alpha.txt',
+        line: 2,
+        text: 'two',
+        before: ['one'],
+        after: ['three'],
+      },
+      { path: 'alpha.txt', line: 3, text: 'three', before: ['two'], after: [] },
+    ])
+  })
+
+  it('when context exceeds file bounds, windows clamp', async () => {
+    const root = join(fixturesDirectory, 'tools', 'search')
+
+    const matches = await fileMatches({
+      root,
+      path: 'nested/beta.md',
+      pattern: /Beta/,
+      context: 2,
+    }).all()
+
+    expect(matches).toEqual([
+      {
+        path: 'nested/beta.md',
+        line: 1,
+        text: '# Beta',
+        before: [],
+        after: ['', 'two of them'],
+      },
+    ])
+  })
+
   it('when nothing matches, returns []', async () => {
     const root = join(fixturesDirectory, 'tools', 'search')
 

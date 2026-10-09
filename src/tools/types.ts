@@ -45,6 +45,8 @@ export type SearchMatch = {
   path: string
   line: number
   text: string
+  before?: string[]
+  after?: string[]
 }
 
 export type SearchListing = {

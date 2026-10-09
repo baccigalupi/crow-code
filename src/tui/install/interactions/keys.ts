@@ -5,12 +5,7 @@ import {
   moveCursor,
 } from '../../input-buffer.ts'
 import type { Signal } from '@preact/signals-core'
-import type {
-  CursorMove,
-  ExitApp,
-  InputBuffer,
-  KeyFlags,
-} from '../../types.ts'
+import type { CursorMove, ExitApp, InputBuffer, KeyFlags } from '../../types.ts'
 import type { InstallKeysArgs } from '../types.ts'
 
 export class InstallKeys {

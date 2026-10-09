@@ -92,6 +92,35 @@ describe('search', () => {
     ])
   })
 
+  it('when context is given, matches include surrounding lines', async () => {
+    const applicationData = mockApplicationData()
+    const path = join(fixturesDirectory, 'tools', 'search')
+
+    const search = searchFiles({
+      applicationData,
+      operationArguments: { path, pattern: 'two', context: 1 },
+    })
+    await search.run()
+
+    expect(search.success()).toBe(true)
+    expect(search.result().matches).toEqual([
+      {
+        path: 'alpha.txt',
+        line: 2,
+        text: 'two',
+        before: ['one'],
+        after: ['three'],
+      },
+      {
+        path: 'nested/beta.md',
+        line: 3,
+        text: 'two of them',
+        before: [''],
+        after: [],
+      },
+    ])
+  })
+
   it('when flags are given, the pattern honours them', async () => {
     const applicationData = mockApplicationData()
     const path = join(fixturesDirectory, 'tools', 'search')

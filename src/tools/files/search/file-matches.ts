@@ -1,20 +1,24 @@
 import { join } from '@std/path'
+import type { SearchMatch } from '../../types.ts'
 
 type FileMatchesArguments = {
   root: string
   path: string
   pattern: RegExp
+  context?: number
 }
 
 export class FileMatches {
   private root: string
   private path: string
   private pattern: RegExp
+  private context: number
 
-  constructor({ root, path, pattern }: FileMatchesArguments) {
+  constructor({ root, path, pattern, context = 0 }: FileMatchesArguments) {
     this.root = root
     this.path = path
     this.pattern = pattern
+    this.context = context
   }
 
   async all() {
@@ -24,13 +28,20 @@ export class FileMatches {
   private lines(text: string) {
     if (text.includes('\0')) return []
 
-    return text.split('\n').flatMap((line, index) => this.line(line, index + 1))
+    const lines = text.split('\n')
+    if (lines[lines.length - 1] === '') lines.pop()
+    return lines.flatMap((line, index) => this.line(lines, line, index + 1))
   }
 
-  private line(text: string, line: number) {
+  private line(lines: string[], text: string, line: number) {
     if (text.search(this.pattern) === -1) return []
 
-    return [{ path: this.path, line, text }]
+    const match: SearchMatch = { path: this.path, line, text }
+    if (this.context > 0) {
+      match.before = lines.slice(Math.max(0, line - 1 - this.context), line - 1)
+      match.after = lines.slice(line, line + this.context)
+    }
+    return [match]
   }
 }
 
