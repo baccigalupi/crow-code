@@ -154,6 +154,27 @@ describe('style-check code plugin', () => {
     expect(diagnostics[0].message).toContain('no ?.')
   })
 
+  it('when return undefined is used, reports it', () => {
+    const source = `const example = () => {
+      return undefined
+    }`
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('bare return')
+  })
+
+  it('when a bare return is used, does not report it', () => {
+    const source = `const example = () => {
+      return
+    }`
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
   it('when a throw is used, reports it', () => {
     const source = 'throw new Error("bad")'
 

@@ -288,6 +288,24 @@ const plugin: Deno.lint.Plugin = {
         }
       },
     },
+    'no-return-undefined': {
+      create(context) {
+        if (!isProductionFile(context.filename)) return {}
+        return {
+          ReturnStatement(node) {
+            if (
+              node.argument?.type === 'Identifier' &&
+              node.argument.name === 'undefined'
+            ) {
+              context.report({
+                node,
+                message: 'use bare return, not return undefined',
+              })
+            }
+          },
+        }
+      },
+    },
     'no-throw': {
       create(context) {
         if (!isProductionFile(context.filename)) return {}

@@ -56,6 +56,7 @@ Apply when creating or changing production TypeScript in this repo.
 25. Constructors do no work — only single-line `this.field = value` statements
     (nested targets like `this.signal.value` allowed). No branching, no locals,
     no multi-line derivation — move that work to methods or factories
+26. Bare `return`, never `return undefined`
 
 ## Examples
 
