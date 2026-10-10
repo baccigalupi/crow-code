@@ -55,8 +55,8 @@ Apply when creating or changing production TypeScript in this repo.
     satisfying an interface, or narrowing a union)
 25. Constructors do no work — only single-line `this.field = value` statements
     (nested targets like `this.signal.value` allowed) and single-line `const`
-    locals that feed them. No branching, no multi-line derivation — move that
-    work to methods or factories
+    locals that feed them. No branching, no multi-line derivation, and no
+    `this.*()` calls — lazy-build derived state inside the methods that use it
 26. Bare `return`, never `return undefined`
 
 ## Examples

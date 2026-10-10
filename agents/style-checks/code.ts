@@ -104,6 +104,16 @@ const isConstructorAssignment = (
   return target.type === 'ThisExpression'
 }
 
+const insideConstructor = (
+  context: Deno.lint.RuleContext,
+  node: Deno.lint.Node,
+): boolean => {
+  return context.sourceCode.getAncestors(node).some((ancestor) =>
+    ancestor.type === 'MethodDefinition' &&
+    (ancestor as { kind?: string }).kind === 'constructor'
+  )
+}
+
 const isDelegateDecorator = (decorator: unknown): boolean => {
   const expression = (decorator as { expression: Deno.lint.Node }).expression
   if (expression.type === 'Identifier') return expression.name === 'delegate'
@@ -198,6 +208,20 @@ const plugin: Deno.lint.Plugin = {
                   'constructors do no work; only this.field = value assignments allowed',
               })
             }
+          },
+          CallExpression(node) {
+            if (!insideConstructor(context, node)) return
+            if (node.callee.type !== 'MemberExpression') return
+            let target: Deno.lint.Node = node.callee
+            while (target.type === 'MemberExpression') {
+              target = target.object as Deno.lint.Node
+            }
+            if (target.type !== 'ThisExpression') return
+            context.report({
+              node,
+              message:
+                'no this.*() calls in constructors; assign values directly',
+            })
           },
         }
       },

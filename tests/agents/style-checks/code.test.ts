@@ -92,6 +92,32 @@ describe('style-check code plugin', () => {
     expect(diagnostics).toHaveLength(0)
   })
 
+  it('when a constructor calls a this method, reports it', () => {
+    const source = `class Example {
+      constructor(filter?: string[]) {
+        this.filter = this.buildFilter(filter)
+      }
+    }`
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('no this.*() calls')
+  })
+
+  it('when a constructor calls a collaborator, does not report it', () => {
+    const source = `class Example {
+      constructor(data: Data) {
+        this.logger = data.logger()
+        this.io = new Io(data.path)
+      }
+    }`
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
   it('when a constructor declares a let, reports it', () => {
     const source = `class Example {
       constructor(dir: string) {
