@@ -88,6 +88,19 @@ const singleReturn = (
   return null
 }
 
+const isConstructorAssignment = (
+  statement: Deno.lint.Statement,
+): boolean => {
+  if (statement.type !== 'ExpressionStatement') return false
+  const expression = statement.expression
+  if (
+    expression.type !== 'AssignmentExpression' || expression.operator !== '='
+  ) return false
+  let target = expression.left
+  while (target.type === 'MemberExpression') target = target.object
+  return target.type === 'ThisExpression'
+}
+
 const isDelegateDecorator = (decorator: unknown): boolean => {
   const expression = (decorator as { expression: Deno.lint.Node }).expression
   if (expression.type === 'Identifier') return expression.name === 'delegate'
@@ -154,6 +167,34 @@ const plugin: Deno.lint.Plugin = {
               message:
                 'constructors must use explicit typed attributes, no parameter properties',
             })
+          },
+        }
+      },
+    },
+    'constructor-assign-only': {
+      create(context) {
+        if (!isProductionFile(context.filename)) return {}
+        return {
+          MethodDefinition(node) {
+            if (node.kind !== 'constructor') return
+            const body = node.value.body
+            if (body === null) return
+            for (const statement of body.body) {
+              if (context.sourceCode.getText(statement).includes('\n')) {
+                context.report({
+                  node: statement,
+                  message:
+                    'constructors do no work; only single-line this.field = value assignments allowed',
+                })
+                continue
+              }
+              if (isConstructorAssignment(statement)) continue
+              context.report({
+                node: statement,
+                message:
+                  'constructors do no work; only this.field = value assignments allowed',
+              })
+            }
           },
         }
       },

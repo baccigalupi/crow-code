@@ -53,6 +53,9 @@ Apply when creating or changing production TypeScript in this repo.
 24. Omit explicit return types when TypeScript can infer them; add a return type
     only when inference fails or would be too wide (e.g. empty body, recursion,
     satisfying an interface, or narrowing a union)
+25. Constructors do no work — only single-line `this.field = value` statements
+    (nested targets like `this.signal.value` allowed). No branching, no locals,
+    no multi-line derivation — move that work to methods or factories
 
 ## Examples
 

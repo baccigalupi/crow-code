@@ -10,6 +10,7 @@ type TaskArguments = {
   flags?: string
   context?: number
   ignoredDirectories?: string[]
+  filePattern?: string
   pathPermissions?: PathPermissions
 }
 

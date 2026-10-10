@@ -23,6 +23,62 @@ describe('style-check code plugin', () => {
     expect(diagnostics[0].message).toContain('no parameter properties')
   })
 
+  it('when a constructor branches, reports it', () => {
+    const source = `class Example {
+      constructor(name: string | undefined) {
+        if (name) {
+          this.name = name
+        }
+      }
+    }`
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('constructors do no work')
+  })
+
+  it('when a constructor assignment spans lines, reports it', () => {
+    const source = `class Example {
+      constructor(pattern: string) {
+        this.include = globToRegExp(pattern, {
+          globstar: true,
+        })
+      }
+    }`
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('constructors do no work')
+  })
+
+  it('when a constructor has a small derived assignment, does not report it', () => {
+    const source = `class Example {
+      constructor(pattern: string) {
+        this.include = globToRegExp(pattern, { globstar: true })
+        this.quit = quit || ((code) => Deno.exit(code))
+      }
+    }`
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
+  it('when a constructor only assigns fields, does not report it', () => {
+    const source = `class Example {
+      constructor(name: string, size: number) {
+        this.name = name
+        this.size = size
+      }
+    }`
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
   it('when a class field is static, reports it', () => {
     const source = 'class Example { static x = 1 }'
 
