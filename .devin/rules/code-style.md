@@ -54,8 +54,9 @@ Apply when creating or changing production TypeScript in this repo.
     only when inference fails or would be too wide (e.g. empty body, recursion,
     satisfying an interface, or narrowing a union)
 25. Constructors do no work — only single-line `this.field = value` statements
-    (nested targets like `this.signal.value` allowed). No branching, no locals,
-    no multi-line derivation — move that work to methods or factories
+    (nested targets like `this.signal.value` allowed) and single-line `const`
+    locals that feed them. No branching, no multi-line derivation — move that
+    work to methods or factories
 26. Bare `return`, never `return undefined`
 
 ## Examples

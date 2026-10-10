@@ -79,6 +79,33 @@ describe('style-check code plugin', () => {
     expect(diagnostics).toHaveLength(0)
   })
 
+  it('when a constructor declares a single-line const local, does not report it', () => {
+    const source = `class Example {
+      constructor(dir: string) {
+        const path = dir || './default'
+        this.io = new Io(path)
+      }
+    }`
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
+  it('when a constructor declares a let, reports it', () => {
+    const source = `class Example {
+      constructor(dir: string) {
+        let path = dir
+        this.path = path
+      }
+    }`
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('constructors do no work')
+  })
+
   it('when a class field is static, reports it', () => {
     const source = 'class Example { static x = 1 }'
 

@@ -91,6 +91,9 @@ const singleReturn = (
 const isConstructorAssignment = (
   statement: Deno.lint.Statement,
 ): boolean => {
+  if (statement.type === 'VariableDeclaration') {
+    return statement.kind === 'const' && statement.declarations.length === 1
+  }
   if (statement.type !== 'ExpressionStatement') return false
   const expression = statement.expression
   if (
