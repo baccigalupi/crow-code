@@ -2,17 +2,19 @@ import type { ChangedFile } from '../../../types.ts'
 
 export class FileDiffParser {
   private output: string
+  private filterInput?: string[]
   private filter?: Set<string>
   parts!: string[]
 
   constructor(output: string, filter?: string[]) {
     this.output = output
-    this.filter = this.buildFilter(filter)
+    this.filterInput = filter
   }
 
-  private buildFilter(filter?: string[]) {
-    if (filter) return new Set(filter)
-    return undefined
+  private filters() {
+    if (this.filter) return this.filter
+    this.filter = new Set(this.filterInput!)
+    return this.filter
   }
 
   parse() {
@@ -25,9 +27,9 @@ export class FileDiffParser {
   }
 
   private pathMatchesFilter(path: string) {
-    if (!this.filter) return true
+    if (!this.filterInput) return true
 
-    return this.filter.has(path)
+    return this.filters().has(path)
   }
 
   private split() {

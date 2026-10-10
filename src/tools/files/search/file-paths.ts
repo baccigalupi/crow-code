@@ -1,9 +1,10 @@
 import { walk } from '@std/fs'
-import { relative } from '@std/path'
+import { basename, globToRegExp, relative } from '@std/path'
 
 type FilePathsArguments = {
   root: string
   ignoredDirectories?: string[]
+  filePattern?: string
 }
 
 const defaultIgnoredDirectories = ['node_modules', '.git']
@@ -11,18 +12,45 @@ const defaultIgnoredDirectories = ['node_modules', '.git']
 export class FilePaths {
   private root: string
   private ignoredDirectories: string[]
+  private filePattern?: string
+  private include?: RegExp
 
   constructor(
-    { root, ignoredDirectories = defaultIgnoredDirectories }:
-      FilePathsArguments,
+    {
+      root,
+      ignoredDirectories = defaultIgnoredDirectories,
+      filePattern,
+    }: FilePathsArguments,
   ) {
     this.root = root
     this.ignoredDirectories = ignoredDirectories
+    this.filePattern = filePattern
   }
 
   async all() {
     const walked = await Array.fromAsync(walk(this.root, this.walkOptions()))
-    return walked.map((entry) => relative(this.root, entry.path))
+    return walked
+      .map((entry) => relative(this.root, entry.path))
+      .filter((path) => this.included(path))
+  }
+
+  private included(path: string) {
+    if (!this.filePattern) return true
+
+    return this.compiled().test(this.subject(path))
+  }
+
+  private compiled() {
+    if (this.include) return this.include
+    this.include = globToRegExp(this.filePattern!, { globstar: true })
+    return this.include
+  }
+
+  private subject(path: string) {
+    if (this.filePattern === undefined || this.filePattern.includes('/')) {
+      return path
+    }
+    return basename(path)
   }
 
   private walkOptions() {

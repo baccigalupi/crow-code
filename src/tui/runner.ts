@@ -13,7 +13,6 @@ export class Runner {
   constructor(io: ReplIo, view: FunctionComponent = App) {
     this.io = io
     this.view = view
-    this.interrupt = this.interrupt.bind(this)
   }
 
   async run() {
@@ -73,7 +72,7 @@ export class Runner {
     )
   }
 
-  interrupt() {
+  interrupt = () => {
     this.instance.unmount()
     Deno.exit(1)
   }

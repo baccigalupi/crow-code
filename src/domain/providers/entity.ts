@@ -66,7 +66,7 @@ export const providerEntity = (
   environment: Environment,
 ) => {
   if (!record) {
-    return undefined
+    return
   }
   return new ProviderEntity(
     normalizeModelKeys<NormalizedEntityRecord>(record),

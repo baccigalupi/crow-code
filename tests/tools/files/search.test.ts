@@ -92,6 +92,22 @@ describe('search', () => {
     ])
   })
 
+  it('when filePattern is given, only matching files are searched', async () => {
+    const applicationData = mockApplicationData()
+    const path = join(fixturesDirectory, 'tools', 'search')
+
+    const search = searchFiles({
+      applicationData,
+      operationArguments: { path, pattern: 'two', filePattern: '*.md' },
+    })
+    await search.run()
+
+    expect(search.success()).toBe(true)
+    expect(search.result().matches).toEqual([
+      { path: 'nested/beta.md', line: 3, text: 'two of them' },
+    ])
+  })
+
   it('when context is given, matches include surrounding lines', async () => {
     const applicationData = mockApplicationData()
     const path = join(fixturesDirectory, 'tools', 'search')

@@ -9,6 +9,7 @@ type SortedMatchesArguments = {
   flags?: string
   context?: number
   ignoredDirectories?: string[]
+  filePattern?: string
 }
 
 export class SortedMatches {
@@ -16,15 +17,17 @@ export class SortedMatches {
   private pattern: RegExp
   private context: number
   private ignoredDirectories?: string[]
+  private filePattern?: string
 
   constructor(
-    { path, pattern, flags = '', context = 0, ignoredDirectories }:
+    { path, pattern, flags = '', context = 0, ignoredDirectories, filePattern }:
       SortedMatchesArguments,
   ) {
     this.root = resolve(Deno.cwd(), path)
     this.pattern = new RegExp(pattern, flags)
     this.context = context
     this.ignoredDirectories = ignoredDirectories
+    this.filePattern = filePattern
   }
 
   async all() {
@@ -37,8 +40,8 @@ export class SortedMatches {
   }
 
   private paths() {
-    const { root, ignoredDirectories } = this
-    return filePaths({ root, ignoredDirectories }).all()
+    const { root, ignoredDirectories, filePattern } = this
+    return filePaths({ root, ignoredDirectories, filePattern }).all()
   }
 
   private async append(previous: Promise<SearchMatch[]>, path: string) {

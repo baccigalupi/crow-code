@@ -44,6 +44,22 @@ describe('file-paths', () => {
     expect(paths).toContain('node_modules/skipped.txt')
   })
 
+  it('when a filePattern glob is given, only matching paths are returned', async () => {
+    const root = join(fixturesDirectory, 'tools', 'search')
+
+    const paths = await filePaths({ root, filePattern: '*.md' }).all()
+
+    expect(paths).toEqual(['nested/beta.md'])
+  })
+
+  it('when a filePattern has a directory part, it matches the relative path', async () => {
+    const root = join(fixturesDirectory, 'tools', 'search')
+
+    const paths = await filePaths({ root, filePattern: 'nested/**' }).all()
+
+    expect(paths).toEqual(['nested/blob.bin', 'nested/beta.md'])
+  })
+
   it('when an ignored name contains regex characters, does not skip similar names', async () => {
     const root = join(fixturesDirectory, 'tools', 'search')
 

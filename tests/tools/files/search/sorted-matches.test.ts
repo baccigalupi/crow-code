@@ -54,6 +54,21 @@ describe('sorted-matches', () => {
     })
   })
 
+  it('when filePattern is given, matches come only from matching files', async () => {
+    const path = join(fixturesDirectory, 'tools', 'search')
+
+    const matches = await sortedMatches({
+      path,
+      pattern: 'two|one',
+      filePattern: '*.txt',
+    }).all()
+
+    expect(matches).toEqual([
+      { path: 'alpha.txt', line: 1, text: 'one' },
+      { path: 'alpha.txt', line: 2, text: 'two' },
+    ])
+  })
+
   it('when the pattern is an invalid regex, throws', () => {
     const path = join(fixturesDirectory, 'tools', 'search')
 

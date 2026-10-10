@@ -47,9 +47,9 @@ export class RequestParser<TResponse> {
     return this.parsedResponse as TResponse
   }
 
-  private fail(reason: ModelRequestFailureReason) {
+  private fail(reason: ModelRequestFailureReason): undefined {
     this.succeeded = false
     this.reason = reason
-    return undefined
+    return
   }
 }
