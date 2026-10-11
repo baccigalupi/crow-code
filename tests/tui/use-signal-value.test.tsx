@@ -4,25 +4,18 @@ import { render } from 'ink-testing-library'
 import { Text } from 'ink'
 import { signal } from '@preact/signals-core'
 import { useSignalValue } from '../../src/tui/use-signal-value.ts'
+import { SignalProbe } from '../support/signal-probe.tsx'
 import type { ReadonlySignal } from '@preact/signals-core'
-
-const Probe = ({ source }: { source: ReadonlySignal<string> }) => {
-  const value = useSignalValue(source)
-  return <Text>{value}</Text>
-}
 
 describe('useSignalValue', () => {
   it('re-renders when the signal changes', async () => {
     const source = signal('one')
-    const { lastFrame, unmount } = render(<Probe source={source} />)
-
-    expect(lastFrame()).toBe('one')
+    const { lastFrame, unmount } = render(<SignalProbe source={source} />)
 
     source.value = 'two'
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(lastFrame()).toBe('two')
-
     unmount()
   })
 
@@ -34,13 +27,12 @@ describe('useSignalValue', () => {
       return <Text>{useSignalValue(source)}</Text>
     }
     const { unmount } = render(<Counting source={source} />)
-
     const before = renders
+
     source.value = 'one'
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(renders).toBe(before)
-
     unmount()
   })
 })

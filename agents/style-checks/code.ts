@@ -3,7 +3,7 @@ const isProductionFile = (fileName: string): boolean => {
 }
 
 const isTestFile = (fileName: string): boolean =>
-  /(^|\/)tests\/.*\.test\.ts$/.test(fileName)
+  /(^|\/)tests\/.*\.test\.tsx?$/.test(fileName)
 
 const isAnySourceFile = (fileName: string): boolean => {
   return /(^|\/)src\/.*\.tsx?$/.test(fileName) &&

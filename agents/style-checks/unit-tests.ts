@@ -1,5 +1,5 @@
 const isTestFile = (fileName: string): boolean => {
-  return /(^|\/)tests\/.*\.test\.ts$/.test(fileName)
+  return /(^|\/)tests\/.*\.test\.tsx?$/.test(fileName)
 }
 
 const isInsideItCallback = (

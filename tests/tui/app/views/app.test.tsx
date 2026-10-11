@@ -16,7 +16,6 @@ describe('App', () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(lastFrame()).toContain('hello')
-
     unmount()
   })
 
@@ -32,7 +31,6 @@ describe('App', () => {
 
     expect(lastFrame()).toContain('hi')
     expect(lastFrame()).toContain('type a message')
-
     unmount()
   })
 
@@ -47,7 +45,6 @@ describe('App', () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(lastFrame()).toContain('after')
-
     unmount()
   })
 
@@ -64,7 +61,6 @@ describe('App', () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(lastFrame()).toMatch(/a[^\n]*\n[^\n]*b/)
-
     unmount()
   })
 
@@ -81,7 +77,6 @@ describe('App', () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(lastFrame()).toMatch(/a[^\n]*\n[^\n]*b/)
-
     unmount()
   })
 
@@ -98,7 +93,6 @@ describe('App', () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(lastFrame()).toMatch(/a[^\n]*\n[^\n]*b/)
-
     unmount()
   })
 
@@ -114,7 +108,6 @@ describe('App', () => {
 
     expect(lastFrame()).toContain('a')
     expect(lastFrame()).not.toContain('ab')
-
     unmount()
   })
 
@@ -127,7 +120,6 @@ describe('App', () => {
 
     expect(lastFrame()).toContain('Crow Code - context is King')
     expect(lastFrame()).toContain('ctrl-c quit')
-
     unmount()
   })
 
@@ -140,7 +132,6 @@ describe('App', () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(lastFrame()).toContain('type a message')
-
     unmount()
   })
 
@@ -160,7 +151,6 @@ describe('App', () => {
     await new Promise((resolve) => setTimeout(resolve, 50))
 
     expect(terminal.lastFrame()).toMatch(/x{200}/)
-
     instance.unmount()
   })
 
@@ -206,7 +196,6 @@ describe('App', () => {
     expect(terminal.lastFrame()).toContain('msg3')
     expect(terminal.lastFrame()).toContain('msg6')
     expect(terminal.lastFrame()).toContain('type a message')
-
     instance.unmount()
   })
 
@@ -221,7 +210,6 @@ describe('App', () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(terminal.lastFrame().split('\n')).toHaveLength(8)
-
     instance.unmount()
   })
 
@@ -239,7 +227,6 @@ describe('App', () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(terminal.lastFrame()).toContain('Crow Code')
-
     instance.unmount()
   })
 
@@ -254,7 +241,6 @@ describe('App', () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(terminal.lastFrame()).toContain('Crow Code - context is King')
-
     instance.unmount()
   })
 })

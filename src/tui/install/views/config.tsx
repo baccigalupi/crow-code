@@ -32,7 +32,7 @@ export const ConfigPanel = ({ step, user, repo }: {
   readonly user: InputBuffer
   readonly repo: InputBuffer
 }) => {
-  if (step !== 'user') return null
+  if (step === 'repo') return null
 
   return <Config user={user} repo={repo} />
 }
