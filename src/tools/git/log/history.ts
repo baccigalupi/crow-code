@@ -18,10 +18,9 @@ type OptionalGitLogHistoryArguments = Pick<
 export class GitLogHistory extends ExecCli<TaskArguments, GitLogEntry[]> {
   executable = 'git'
   protected override logPrefix = 'Git log history: '
-  private pathsGuard = gitPathsGuard({ applicationData: this.applicationData })
 
   protected override async allowedToRun() {
-    if (await this.pathsGuard.allowed(this.requestedPaths())) return true
+    if (await this.pathsGuard().allowed(this.requestedPaths())) return true
     this.fail(`path not allowed: ${this.requestedPaths().join(', ')}`)
     return false
   }
@@ -43,6 +42,10 @@ export class GitLogHistory extends ExecCli<TaskArguments, GitLogEntry[]> {
   private requestedPaths() {
     if (!this.operationArguments.filter) return []
     return this.operationArguments.filter
+  }
+
+  private pathsGuard() {
+    return gitPathsGuard({ applicationData: this.applicationData })
   }
 
   parse() {

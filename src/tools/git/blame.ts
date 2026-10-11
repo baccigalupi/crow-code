@@ -16,10 +16,9 @@ type GitBlameArguments = ApplicationOperationArguments<TaskArguments>
 export class GitBlame extends ExecCli<TaskArguments, GitBlameLine[]> {
   executable = 'git'
   protected override logPrefix = 'Git blame: '
-  private pathsGuard = gitPathsGuard({ applicationData: this.applicationData })
 
   protected override async allowedToRun() {
-    if (await this.pathsGuard.allowed([this.operationArguments.path])) {
+    if (await this.pathsGuard().allowed([this.operationArguments.path])) {
       return true
     }
     this.fail(`path not allowed: ${this.operationArguments.path}`)
@@ -28,6 +27,10 @@ export class GitBlame extends ExecCli<TaskArguments, GitBlameLine[]> {
 
   executableOptions() {
     return { args: this.blameArgs() }
+  }
+
+  private pathsGuard() {
+    return gitPathsGuard({ applicationData: this.applicationData })
   }
 
   private blameArgs() {

@@ -15,10 +15,9 @@ type OptionalGitDiffArguments = Pick<GitDiffArguments, 'applicationData'>
 export class GitDiffFiles extends ExecCli<TaskArguments, ChangedFile[]> {
   executable = 'git'
   protected override logPrefix = 'Git diff files: '
-  private pathsGuard = gitPathsGuard({ applicationData: this.applicationData })
 
   protected override async allowedToRun() {
-    if (await this.pathsGuard.allowed(this.requestedPaths())) return true
+    if (await this.pathsGuard().allowed(this.requestedPaths())) return true
     this.fail(`path not allowed: ${this.requestedPaths().join(', ')}`)
     return false
   }
@@ -32,6 +31,10 @@ export class GitDiffFiles extends ExecCli<TaskArguments, ChangedFile[]> {
   private requestedPaths() {
     if (!this.operationArguments.filter) return []
     return this.operationArguments.filter
+  }
+
+  private pathsGuard() {
+    return gitPathsGuard({ applicationData: this.applicationData })
   }
 
   parse() {

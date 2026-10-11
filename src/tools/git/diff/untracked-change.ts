@@ -12,10 +12,9 @@ type GitUntrackedChangeArguments = ApplicationOperationArguments<TaskArguments>
 export class GitUntrackedChange extends ExecCli<TaskArguments, GitFileDiff> {
   executable = 'git'
   protected override logPrefix = 'Git untracked change: '
-  private pathsGuard = gitPathsGuard({ applicationData: this.applicationData })
 
   protected override async allowedToRun() {
-    if (await this.pathsGuard.allowed(this.requestedPaths())) return true
+    if (await this.pathsGuard().allowed(this.requestedPaths())) return true
     this.fail(`path not allowed: ${this.requestedPaths().join(', ')}`)
     return false
   }
@@ -39,6 +38,10 @@ export class GitUntrackedChange extends ExecCli<TaskArguments, GitFileDiff> {
 
   private requestedPaths() {
     return [this.operationArguments.path]
+  }
+
+  private pathsGuard() {
+    return gitPathsGuard({ applicationData: this.applicationData })
   }
 
   protected override isSuccessful(response: Deno.CommandOutput) {
