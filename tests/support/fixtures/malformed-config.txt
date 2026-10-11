@@ -1,0 +1,4 @@
+{
+  "userDirectory": "/custom/crow",
+  "permissions":
+}

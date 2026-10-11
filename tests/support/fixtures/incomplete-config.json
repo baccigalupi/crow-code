@@ -1,0 +1,6 @@
+{
+  "userDirectory": "/custom/crow",
+  "permissions": {
+    "ignore": ["vendor"]
+  }
+}
