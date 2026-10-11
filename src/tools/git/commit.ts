@@ -1,6 +1,5 @@
 import type { ApplicationOperationArguments } from '../../types.ts'
-import { ExecCli } from '../exec-cli.ts'
-import { gitPathsGuard } from './paths-guard.ts'
+import { GitExec } from './git-exec.ts'
 
 type TaskArguments = {
   message: string
@@ -9,15 +8,8 @@ type TaskArguments = {
 
 type GitCommitArguments = ApplicationOperationArguments<TaskArguments>
 
-export class GitCommit extends ExecCli<TaskArguments, string> {
-  executable = 'git'
+export class GitCommit extends GitExec<TaskArguments, string> {
   protected override logPrefix = 'Git commit: '
-
-  protected override async allowedToRun() {
-    if (await this.pathsGuard().allowed(this.requestedPaths())) return true
-    this.fail(`path not allowed: ${this.requestedPaths().join(', ')}`)
-    return false
-  }
 
   executableOptions() {
     if (!this.operationArguments.paths) return { args: this.commitArgs() }
@@ -27,13 +19,9 @@ export class GitCommit extends ExecCli<TaskArguments, string> {
     }
   }
 
-  private requestedPaths() {
+  protected requestedPaths() {
     if (!this.operationArguments.paths) return []
     return this.operationArguments.paths
-  }
-
-  private pathsGuard() {
-    return gitPathsGuard({ applicationData: this.applicationData })
   }
 
   private commitArgs() {

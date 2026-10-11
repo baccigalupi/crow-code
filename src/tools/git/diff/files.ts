@@ -1,6 +1,5 @@
 import type { ApplicationOperationArguments } from '../../../types.ts'
-import { ExecCli } from '../../exec-cli.ts'
-import { gitPathsGuard } from '../paths-guard.ts'
+import { GitExec } from '../git-exec.ts'
 import { FileDiffParser } from './files/parser.ts'
 import type { ChangedFile } from '../../types.ts'
 
@@ -12,15 +11,8 @@ type GitDiffArguments = ApplicationOperationArguments<TaskArguments>
 
 type OptionalGitDiffArguments = Pick<GitDiffArguments, 'applicationData'>
 
-export class GitDiffFiles extends ExecCli<TaskArguments, ChangedFile[]> {
-  executable = 'git'
+export class GitDiffFiles extends GitExec<TaskArguments, ChangedFile[]> {
   protected override logPrefix = 'Git diff files: '
-
-  protected override async allowedToRun() {
-    if (await this.pathsGuard().allowed(this.requestedPaths())) return true
-    this.fail(`path not allowed: ${this.requestedPaths().join(', ')}`)
-    return false
-  }
 
   executableOptions() {
     return {
@@ -28,13 +20,9 @@ export class GitDiffFiles extends ExecCli<TaskArguments, ChangedFile[]> {
     }
   }
 
-  private requestedPaths() {
+  protected requestedPaths() {
     if (!this.operationArguments.filter) return []
     return this.operationArguments.filter
-  }
-
-  private pathsGuard() {
-    return gitPathsGuard({ applicationData: this.applicationData })
   }
 
   parse() {

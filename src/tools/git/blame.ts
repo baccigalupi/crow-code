@@ -1,6 +1,5 @@
 import type { ApplicationOperationArguments } from '../../types.ts'
-import { ExecCli } from '../exec-cli.ts'
-import { gitPathsGuard } from './paths-guard.ts'
+import { GitExec } from './git-exec.ts'
 import { blameParser } from './blame/parser.ts'
 import type { GitBlameLine } from '../types.ts'
 
@@ -13,24 +12,15 @@ type TaskArguments = {
 
 type GitBlameArguments = ApplicationOperationArguments<TaskArguments>
 
-export class GitBlame extends ExecCli<TaskArguments, GitBlameLine[]> {
-  executable = 'git'
+export class GitBlame extends GitExec<TaskArguments, GitBlameLine[]> {
   protected override logPrefix = 'Git blame: '
-
-  protected override async allowedToRun() {
-    if (await this.pathsGuard().allowed([this.operationArguments.path])) {
-      return true
-    }
-    this.fail(`path not allowed: ${this.operationArguments.path}`)
-    return false
-  }
 
   executableOptions() {
     return { args: this.blameArgs() }
   }
 
-  private pathsGuard() {
-    return gitPathsGuard({ applicationData: this.applicationData })
+  protected requestedPaths() {
+    return [this.operationArguments.path]
   }
 
   private blameArgs() {

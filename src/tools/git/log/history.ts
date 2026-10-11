@@ -1,6 +1,5 @@
 import type { ApplicationOperationArguments } from '../../../types.ts'
-import { ExecCli } from '../../exec-cli.ts'
-import { gitPathsGuard } from '../paths-guard.ts'
+import { GitExec } from '../git-exec.ts'
 import type { GitLogEntry } from '../../types.ts'
 
 type TaskArguments = {
@@ -15,15 +14,8 @@ type OptionalGitLogHistoryArguments = Pick<
   'applicationData'
 >
 
-export class GitLogHistory extends ExecCli<TaskArguments, GitLogEntry[]> {
-  executable = 'git'
+export class GitLogHistory extends GitExec<TaskArguments, GitLogEntry[]> {
   protected override logPrefix = 'Git log history: '
-
-  protected override async allowedToRun() {
-    if (await this.pathsGuard().allowed(this.requestedPaths())) return true
-    this.fail(`path not allowed: ${this.requestedPaths().join(', ')}`)
-    return false
-  }
 
   executableOptions() {
     return { args: this.logArgs() }
@@ -39,13 +31,9 @@ export class GitLogHistory extends ExecCli<TaskArguments, GitLogEntry[]> {
     return args
   }
 
-  private requestedPaths() {
+  protected requestedPaths() {
     if (!this.operationArguments.filter) return []
     return this.operationArguments.filter
-  }
-
-  private pathsGuard() {
-    return gitPathsGuard({ applicationData: this.applicationData })
   }
 
   parse() {

@@ -1,6 +1,5 @@
 import type { ApplicationOperationArguments } from '../../types.ts'
-import { ExecCli } from '../exec-cli.ts'
-import { gitPathsGuard } from './paths-guard.ts'
+import { GitExec } from './git-exec.ts'
 import { trackedChangeParser } from './diff/tracked-changes/parser.ts'
 import type { FileContent, GitFileDiff } from '../types.ts'
 
@@ -12,15 +11,8 @@ type TaskArguments = {
 type GitShowArguments = ApplicationOperationArguments<TaskArguments>
 
 export class GitShow
-  extends ExecCli<TaskArguments, FileContent | GitFileDiff[]> {
-  executable = 'git'
+  extends GitExec<TaskArguments, FileContent | GitFileDiff[]> {
   protected override logPrefix = 'Git show: '
-
-  protected override async allowedToRun() {
-    if (await this.pathsGuard().allowed(this.requestedPaths())) return true
-    this.fail(`path not allowed: ${this.requestedPaths().join(', ')}`)
-    return false
-  }
 
   executableOptions() {
     return { args: ['show', this.target()] }
@@ -35,13 +27,9 @@ export class GitShow
     return this.operationArguments.rev || 'HEAD'
   }
 
-  private requestedPaths() {
+  protected requestedPaths() {
     if (this.operationArguments.path === undefined) return []
     return [this.operationArguments.path]
-  }
-
-  private pathsGuard() {
-    return gitPathsGuard({ applicationData: this.applicationData })
   }
 
   parse() {

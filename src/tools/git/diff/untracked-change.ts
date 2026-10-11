@@ -1,6 +1,5 @@
 import type { ApplicationOperationArguments } from '../../../types.ts'
-import { ExecCli } from '../../exec-cli.ts'
-import { gitPathsGuard } from '../paths-guard.ts'
+import { GitExec } from '../git-exec.ts'
 import type { GitFileDiff } from '../../types.ts'
 
 type TaskArguments = {
@@ -9,15 +8,8 @@ type TaskArguments = {
 
 type GitUntrackedChangeArguments = ApplicationOperationArguments<TaskArguments>
 
-export class GitUntrackedChange extends ExecCli<TaskArguments, GitFileDiff> {
-  executable = 'git'
+export class GitUntrackedChange extends GitExec<TaskArguments, GitFileDiff> {
   protected override logPrefix = 'Git untracked change: '
-
-  protected override async allowedToRun() {
-    if (await this.pathsGuard().allowed(this.requestedPaths())) return true
-    this.fail(`path not allowed: ${this.requestedPaths().join(', ')}`)
-    return false
-  }
 
   executableOptions() {
     return {
@@ -36,12 +28,8 @@ export class GitUntrackedChange extends ExecCli<TaskArguments, GitFileDiff> {
     return { path: '', diff: '' }
   }
 
-  private requestedPaths() {
+  protected requestedPaths() {
     return [this.operationArguments.path]
-  }
-
-  private pathsGuard() {
-    return gitPathsGuard({ applicationData: this.applicationData })
   }
 
   protected override isSuccessful(response: Deno.CommandOutput) {

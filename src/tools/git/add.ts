@@ -1,6 +1,5 @@
 import type { ApplicationOperationArguments } from '../../types.ts'
-import { ExecCli } from '../exec-cli.ts'
-import { gitPathsGuard } from './paths-guard.ts'
+import { GitExec } from './git-exec.ts'
 
 type TaskArguments = {
   paths?: string[]
@@ -10,15 +9,8 @@ type GitAddArguments = ApplicationOperationArguments<TaskArguments>
 
 type OptionalGitAddArguments = Pick<GitAddArguments, 'applicationData'>
 
-export class GitAdd extends ExecCli<TaskArguments, string> {
-  executable = 'git'
+export class GitAdd extends GitExec<TaskArguments, string> {
   protected override logPrefix = 'Git add: '
-
-  protected override async allowedToRun() {
-    if (await this.pathsGuard().allowed(this.requestedPaths())) return true
-    this.fail(`path not allowed: ${this.requestedPaths().join(', ')}`)
-    return false
-  }
 
   executableOptions() {
     if (!this.operationArguments.paths) return { args: ['add', '--all'] }
@@ -26,13 +18,9 @@ export class GitAdd extends ExecCli<TaskArguments, string> {
     return { args: ['add', '--', ...this.operationArguments.paths] }
   }
 
-  private requestedPaths() {
+  protected requestedPaths() {
     if (!this.operationArguments.paths) return []
     return this.operationArguments.paths
-  }
-
-  private pathsGuard() {
-    return gitPathsGuard({ applicationData: this.applicationData })
   }
 
   parse() {

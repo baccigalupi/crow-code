@@ -1,6 +1,5 @@
 import type { ApplicationOperationArguments } from '../../../types.ts'
-import { ExecCli } from '../../exec-cli.ts'
-import { gitPathsGuard } from '../paths-guard.ts'
+import { GitExec } from '../git-exec.ts'
 import type { GitFileDiff } from '../../types.ts'
 import { trackedChangeParser } from './tracked-changes/parser.ts'
 
@@ -15,15 +14,8 @@ type OptionalGitTrackedChangesArguments = Pick<
   'applicationData'
 >
 
-export class GitTrackedChanges extends ExecCli<TaskArguments, GitFileDiff[]> {
-  executable = 'git'
+export class GitTrackedChanges extends GitExec<TaskArguments, GitFileDiff[]> {
   protected override logPrefix = 'Git tracked changes: '
-
-  protected override async allowedToRun() {
-    if (await this.pathsGuard().allowed(this.requestedPaths())) return true
-    this.fail(`path not allowed: ${this.requestedPaths().join(', ')}`)
-    return false
-  }
 
   executableOptions() {
     if (!this.operationArguments.filter) return { args: ['diff', 'HEAD'] }
@@ -31,13 +23,9 @@ export class GitTrackedChanges extends ExecCli<TaskArguments, GitFileDiff[]> {
     return { args: ['diff', 'HEAD', '--', ...this.operationArguments.filter] }
   }
 
-  private requestedPaths() {
+  protected requestedPaths() {
     if (!this.operationArguments.filter) return []
     return this.operationArguments.filter
-  }
-
-  private pathsGuard() {
-    return gitPathsGuard({ applicationData: this.applicationData })
   }
 
   parse() {
