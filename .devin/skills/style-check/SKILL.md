@@ -6,17 +6,18 @@ allowed-tools:
 permissions:
   allow:
     - Exec(agents/style-check)
-    - Exec(agents/style-check code)
-    - Exec(agents/style-check tests)
-    - Exec(agents/style-check code all)
-    - Exec(agents/style-check tests all)
-    - Exec(agents/style-check both all)
+    - Exec(agents/style-check --all)
+    - Exec(agents/style-check --changed)
 triggers:
   - user
   - model
 ---
 
 Run `agents/style-check` to enforce the mechanical style and test conventions on
-changed files.
+every file in the codebase.
 
-Use `agents/style-check [code|tests|both] all` to audit every tracked file.
+Use `agents/style-check --changed` to limit the audit to changed, staged, and
+untracked files, or `agents/style-check FILE...` to check named files. Any path
+may be named — checks for files under `src/` and `tests/` are
+verification-blocking; other files get advisory lint that reports but never
+fails the run.

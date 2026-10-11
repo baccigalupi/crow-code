@@ -56,7 +56,7 @@ Work through these in order; stop when a clean structure emerges.
 ## Repo constraints
 
 Extractions must satisfy the same style rules as everything else — run
-`agents/style-check code changed` after editing. Notably:
+`agents/style-check --changed` after editing. Notably:
 
 - ≤ 7 non-blank lines per function/method body; guard clause on the first line.
 - No module-level function declarations — use exported `const` arrows or
@@ -68,6 +68,6 @@ Extractions must satisfy the same style rules as everything else — run
 
 - Behavior unchanged: `dev/test` passes.
 - `agents/typecheck` passes.
-- `agents/style-check code changed` passes.
+- `agents/style-check --changed` passes.
 - Self-check: is the result easier to understand than before? If the honest
   answer is "no, but it's under the limit," the work is not done.

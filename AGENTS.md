@@ -31,8 +31,10 @@ Never create scripts there to try to circumvent permissions.
 ### Gates
 
 - Run `agents/style-check` before finishing TypeScript changes.
-  - `agents/style-check [code|tests|both] [changed|all]` — defaults to changed
-    files only; use `all` to audit the whole tracked codebase.
+  - `agents/style-check` audits the whole codebase. Narrow it with
+    `agents/style-check --changed` (changed/staged/untracked files) or
+    `agents/style-check FILE...` (named files; `src/` and `tests/` checks are
+    blocking, other paths get advisory lint).
 - Before finishing a requested task, run `agents/pre-commit`.
 
 ## Database conventions

@@ -596,7 +596,7 @@ export interface Host {}`
   })
 
   it('when enumerating all scope, includes top-level src files', async () => {
-    const script = await Deno.readTextFile('agents/style-check')
+    const script = await Deno.readTextFile('agents/style-checks/cli.ts')
     const args = ['ls-files']
 
     for (const match of script.matchAll(/'src\/[^']+'/g)) {
@@ -608,7 +608,7 @@ export interface Host {}`
   })
 
   it('when enumerating all scope, includes top-level test files', async () => {
-    const script = await Deno.readTextFile('agents/style-check')
+    const script = await Deno.readTextFile('agents/style-checks/cli.ts')
     const args = ['ls-files']
 
     for (const match of script.matchAll(/'tests\/[^']+'/g)) {
