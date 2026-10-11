@@ -29,6 +29,11 @@ export type FileContent = {
   text: string
 }
 
+export type EditResult = {
+  path: string
+  replacements: number
+}
+
 export type DirectoryEntryKind = 'file' | 'directory' | 'symlink'
 
 export type DirectoryEntry = {
