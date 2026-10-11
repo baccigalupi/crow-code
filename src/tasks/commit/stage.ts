@@ -1,6 +1,6 @@
 import type { ApplicationOperationArguments } from '../../types.ts'
-import { gitAdd } from '../../tools/git/add.ts'
-import { gitCommit } from '../../tools/git/commit.ts'
+import { gitAdd } from '../../tools/git/mutations/add.ts'
+import { gitCommit } from '../../tools/git/mutations/commit.ts'
 import { Operation } from '../../operation.ts'
 
 type TaskArguments = {

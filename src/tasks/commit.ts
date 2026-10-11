@@ -1,7 +1,7 @@
 import type { CommitMessage } from '../model-requests/types.ts'
 import type { GitFileDiff } from '../tools/types.ts'
 import type { ApplicationOperationArguments } from '../types.ts'
-import { gitChanges } from '../tools/git/diff/changes.ts'
+import { gitChanges } from '../tools/git/read-only/diff/changes.ts'
 import { commitMessage } from './commit/message.ts'
 import { stageAndCommit } from './commit/stage.ts'
 import { OperationWithResult } from '../operation.ts'

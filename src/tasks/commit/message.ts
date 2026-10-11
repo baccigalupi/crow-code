@@ -2,7 +2,7 @@ import type { CommitMessage as CommitMessageResult } from '../../model-requests/
 import type { GitFileDiff } from '../../tools/types.ts'
 import type { ApplicationOperationArguments } from '../../types.ts'
 import { getCommitMessage } from '../../model-requests/commit-message.ts'
-import { gitRecentSubjects } from '../../tools/git/log/recent-subjects.ts'
+import { gitRecentSubjects } from '../../tools/git/read-only/log/recent-subjects.ts'
 import { OperationWithResult } from '../../operation.ts'
 
 type TaskArguments = {
