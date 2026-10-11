@@ -138,6 +138,26 @@ const isDelegateDecoratedClass = (
   return (klass.decorators ?? []).some(isDelegateDecorator)
 }
 
+const decoratorLineSpan = (
+  context: Deno.lint.RuleContext,
+  decorator: unknown,
+): number => {
+  const text = context.sourceCode.getText(decorator as Deno.lint.Node)
+  return text.split('\n').length
+}
+
+const delegateDecoratorLines = (
+  context: Deno.lint.RuleContext,
+  klass: Deno.lint.Node,
+): number => {
+  const decorators = (klass as unknown as { decorators?: unknown[] })
+    .decorators ?? []
+  return decorators.filter(isDelegateDecorator).reduce<number>(
+    (lines, decorator) => lines + decoratorLineSpan(context, decorator),
+    0,
+  )
+}
+
 const delegatedInterface = (
   context: Deno.lint.RuleContext,
   node: Deno.lint.Node,
@@ -608,9 +628,16 @@ const plugin: Deno.lint.Plugin = {
       create(context) {
         if (!isAnySourceFile(context.filename)) return {}
         if (context.filename.endsWith('/types.ts')) return {}
+        let delegateLines = 0
+        const addDelegateLines = (node: Deno.lint.Node) => {
+          delegateLines += delegateDecoratorLines(context, node)
+        }
         return {
-          Program(node) {
-            const lines = fileLineCount(context.sourceCode.getText())
+          ClassDeclaration: addDelegateLines,
+          ClassExpression: addDelegateLines,
+          'Program:exit'(node) {
+            const lines = fileLineCount(context.sourceCode.getText()) -
+              delegateLines
             if (lines > 100) {
               context.report({
                 node,

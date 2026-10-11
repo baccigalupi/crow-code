@@ -356,6 +356,130 @@ describe('style-check code plugin', () => {
     expect(diagnostics[0].message).toContain('file exceeds 100 lines')
   })
 
+  it('when delegate decorator lines bring an over-limit file under one hundred lines, does not report it', () => {
+    const source = [
+      ...Array.from({ length: 90 }, () => '// line'),
+      '@delegate(',
+      '  {',
+      "    alpha: 'alpha',",
+      "    beta: 'beta',",
+      "    gamma: 'gamma',",
+      "    delta: 'delta',",
+      '  },',
+      "  'first',",
+      ')',
+      '@delegate(',
+      '  {',
+      "    epsilon: 'epsilon',",
+      "    zeta: 'zeta',",
+      "    eta: 'eta',",
+      "    theta: 'theta',",
+      '  },',
+      "  'second',",
+      ')',
+      'export class Host {}',
+    ].join('\n')
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
+  it('when a delegate-decorated class is nested below top level, its decorator lines are excluded', () => {
+    const source = [
+      ...Array.from({ length: 95 }, () => '// line'),
+      'if (flag) {',
+      '  @delegate(',
+      '    {',
+      "      alpha: 'alpha',",
+      "      beta: 'beta',",
+      "      gamma: 'gamma',",
+      "      delta: 'delta',",
+      '    },',
+      "    'first',",
+      '  )',
+      '  class Host {}',
+      '}',
+    ].join('\n')
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
+  it('when a file still exceeds one hundred lines after excluding delegate decorators, reports it', () => {
+    const source = [
+      ...Array.from({ length: 105 }, () => '// line'),
+      '@delegate(',
+      '  {',
+      "    alpha: 'alpha',",
+      "    beta: 'beta',",
+      "    gamma: 'gamma',",
+      "    delta: 'delta',",
+      '  },',
+      "  'first',",
+      ')',
+      'export class Host {}',
+    ].join('\n')
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('file exceeds 100 lines')
+  })
+
+  it('when a merged interface would take the file under the limit, still reports', () => {
+    const source = [
+      ...Array.from({ length: 90 }, () => '// line'),
+      '@delegate(',
+      '  {',
+      "    alpha: 'alpha',",
+      "    beta: 'beta',",
+      "    gamma: 'gamma',",
+      "    delta: 'delta',",
+      '  },',
+      "  'first',",
+      ')',
+      'export class Host {}',
+      'export interface Host {',
+      '  a(): void',
+      '  b(): void',
+      '  c(): void',
+      '  d(): void',
+      '  e(): void',
+      '  f(): void',
+      '  g(): void',
+      '  h(): void',
+      '}',
+    ].join('\n')
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('file exceeds 100 lines')
+  })
+
+  it('when a non-delegate decorator spans lines, still reports', () => {
+    const source = [
+      ...Array.from({ length: 95 }, () => '// line'),
+      '@other(',
+      '  {',
+      "    alpha: 'alpha',",
+      "    beta: 'beta',",
+      "    gamma: 'gamma',",
+      "    delta: 'delta',",
+      '  },',
+      "  'first',",
+      ')',
+      'export class Host {}',
+    ].join('\n')
+
+    const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('file exceeds 100 lines')
+  })
+
   it('when three consecutive ifs test the same variable, reports it', () => {
     const source = `const example = (x: string) => {
       if (x === 'a') return 1
