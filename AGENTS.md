@@ -53,7 +53,8 @@ Never create scripts there to try to circumvent permissions.
 
 ## Git rules
 
-- NEVER commit, stage, or push unless the user explicitly asks
+- NEVER commit, stage, or push unless the user explicitly asks — approval to
+  land a plan is that explicit ask (see Worktrees › Landing)
 - `git push` is denied to the agent by the exec allowlist
 - Commit messages must use the `-F -` heredoc form: `git commit -F - <<'EOF'`
 - When asked to commit, stage everything `git status` shows — modified and
@@ -71,10 +72,26 @@ Never create scripts there to try to circumvent permissions.
   from the Beads issue or feature name).
 - Do all subsequent work inside the worktree — file paths, exec `workdir`, and
   verification commands all target `.worktrees/<name>`, not the main checkout.
-- A worktree branch is rebased onto `main` only after explicit user approval.
-  Never rebase, merge, or fast-forward onto `main` unprompted.
-- After the work lands, remove the worktree with
-  `git worktree remove .worktrees/<name>`.
+
+### Landing
+
+Landing is a fixed sequence. Request approval once — "approval to land the work"
+— and a granted approval authorizes the entire sequence, including the commit
+(it counts as the explicit ask Git rules require):
+
+1. In the worktree, stage everything `git status` shows — including
+   `.beads/*.jsonl` state from `bd create`/`--claim` (mirror it into the
+   worktree if `bd` wrote it to the main checkout) — and commit with
+   `git commit -F - <<'EOF'`.
+2. `git rebase main` in the worktree.
+3. `git merge --ff-only <branch>` in the main checkout. If it fails because
+   `main` moved, repeat step 2, rerun `agents/pre-commit`, and retry — never
+   create a merge commit.
+4. `bd close <id>`.
+5. `git worktree remove .worktrees/<name>`.
+
+The work is not landed until `main` points at the branch tip. Never rebase,
+merge, or fast-forward onto `main` unprompted.
 
 ## Planning
 
@@ -102,7 +119,8 @@ bd close <id>         # Complete work
 - When plan implementation begins (never during planning), `bd create` an issue
   for it — unless the plan names an existing issue — and
   `bd update <id> --claim`
-- Close an issue when the work is done: `bd close <id>`
+- Close the issue as part of landing: `bd close <id>` after the merge (see
+  Worktrees › Landing)
 - Run `bd prime` for detailed command reference and session close protocol
 - Use `bd remember` for persistent knowledge — do NOT use MEMORY.md files
 - `.beads/*.jsonl` is tracked state — always stage it with the work it records.

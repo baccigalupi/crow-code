@@ -77,11 +77,24 @@ values, and creating it is the first step of implementation:
    `git worktree add .worktrees/<name> -b <branch>` from the repo root.
 3. All file paths, exec working directories, and verification commands then
    target the worktree, not the main checkout.
-4. The worktree branch is rebased onto `main` only after explicit user approval.
-   After `agents/pre-commit` passes, request approval to rebase; never rebase,
-   merge, or fast-forward onto `main` unprompted.
-5. Once the work has landed (or is abandoned), remove the worktree with
-   `git worktree remove .worktrees/<name>`.
+4. Landing is a fixed sequence. After `agents/pre-commit` passes, request
+   approval to land the work; a granted approval authorizes the entire sequence,
+   including the commit. Never rebase, merge, or fast-forward onto `main`
+   unprompted.
+   1. In the worktree, stage everything `git status` shows — including
+      `.beads/*.jsonl` state from `bd create`/`--claim` (mirror it into the
+      worktree if `bd` wrote it to the main checkout) — and commit with
+      `git commit -F - <<'EOF'`.
+   2. `git rebase main` in the worktree.
+   3. `git merge --ff-only <branch>` in the main checkout. If it fails because
+      `main` moved, repeat step 2, rerun `agents/pre-commit`, and retry — never
+      create a merge commit.
+   4. `bd close <id>`.
+   5. `git worktree remove .worktrees/<name>`.
+
+   The work is not landed until `main` points at the branch tip. If the work is
+   abandoned instead, remove the worktree with
+   `git worktree remove .worktrees/<name>` and leave the issue open.
 
 ## Beads issue
 
@@ -229,9 +242,9 @@ Nothing may follow the pre-commit item in the plan.
 
 ## Implementation completion response
 
-After `agents/pre-commit` passes, request user approval to rebase the worktree
-branch onto `main` (see Worktree setup). Send the completion response only after
-that approval is granted or declined.
+After `agents/pre-commit` passes, request user approval to land the work (see
+Worktree setup). Send the completion response only after that approval is
+granted or declined.
 
 After implementing a plan, the entire final chat response must use exactly one
 of these forms, with no greeting, explanation, test summary, file list, or
