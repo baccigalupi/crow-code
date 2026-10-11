@@ -26,23 +26,76 @@ explicitly unresolved in the table with the consequence of each plausible
 answer; do not silently choose one. Do not ask to implement the plan. You are
 just to focus on the plan, and won't do implemantion.
 
-## Worktree
+## Planning responses
+
+While planning, all work product goes into the plan file — never into code
+files, worktrees, or the issue tracker. After a successful plan write or
+revision, the entire chat response must use exactly one of these forms, with no
+greeting, explanation, summary, recap, or follow-up text:
+
+```text
+Plan <plan-link> created
+```
+
+```text
+Plan <plan-link> updated
+```
+
+If the plan write or revision failed, the entire response is:
+
+```text
+Plan write failed:
+- <issue>
+- <issue>
+```
+
+Use a clickable link to the plan in place of `<plan-link>`.
+
+Forbidden in every planning response:
+
+- implementing or asking to implement the plan — the user decides when planning
+  ends;
+- summarizing, recapping, or re-explaining the plan or its changes — the plan
+  file is the summary;
+- mentioning rejected, canceled, or failed tool calls or commands — continue
+  permitted work silently per AGENTS.md.
+
+User feedback during planning is a plan revision: respond by editing the plan
+file, not by acting on the feedback.
+
+## Worktree setup
 
 Every plan is executed in a dedicated git worktree, never on the main checkout.
-Creating the worktree is part of planning:
+The worktree does not exist during planning — the plan records the intended
+values, and creating it is the first step of implementation:
 
-1. After `bd create`/`bd update <id> --claim`, run
-   `git worktree add .worktrees/<name> -b <branch>` from the repo root, with
-   `<name>`/`<branch>` derived from the Beads issue or feature name.
-   `.worktrees/` is gitignored and excluded from `deno.json` tasks.
-2. Record the worktree path and branch in the plan's metadata. All file paths,
-   exec working directories, and verification commands in the plan are relative
-   to the worktree, not the main checkout.
-3. The worktree branch is rebased onto `main` only after explicit user approval.
+1. Record in the plan's metadata the intended `.worktrees/<name>` path and
+   `<branch>` (both derived from the Beads issue or feature name), marked as
+   planned — e.g. `Worktree: .worktrees/<name> (to be created)`. `.worktrees/`
+   is gitignored and excluded from `deno.json` tasks.
+2. As the first step of implementation — never during planning — run
+   `git worktree add .worktrees/<name> -b <branch>` from the repo root.
+3. All file paths, exec working directories, and verification commands then
+   target the worktree, not the main checkout.
+4. The worktree branch is rebased onto `main` only after explicit user approval.
    After `agents/pre-commit` passes, request approval to rebase; never rebase,
    merge, or fast-forward onto `main` unprompted.
-4. Once the work has landed (or is abandoned), remove the worktree with
+5. Once the work has landed (or is abandoned), remove the worktree with
    `git worktree remove .worktrees/<name>`.
+
+## Beads issue
+
+Like the worktree, the Beads issue does not exist during planning:
+
+1. Record in the plan's metadata the issue title to create, or the provided
+   issue ID when the user supplies one — e.g. `Beads: <title> (to be created)`
+   or `Beads: <id>`.
+2. As the first step of implementation — never during planning — run `bd create`
+   for the recorded title (unless the plan names an existing issue) and
+   `bd update <id> --claim`. A plan that is never implemented leaves no issue
+   and no claim to clean up.
+3. `.beads/*.jsonl` is tracked state — stage it with the implementation work it
+   records.
 
 ## Required plan structure
 
@@ -118,6 +171,10 @@ a decision.
 
 ### Implementation steps (TDD)
 
+Before the first TDD cycle, perform setup: create the Beads issue and the
+worktree recorded in the plan's metadata (see Worktree setup and Beads issue).
+All subsequent steps run inside the worktree.
+
 Every production behavior change must follow real red-green-refactor TDD:
 
 1. Add or change the smallest behavior-focused test first.
@@ -173,8 +230,8 @@ Nothing may follow the pre-commit item in the plan.
 ## Implementation completion response
 
 After `agents/pre-commit` passes, request user approval to rebase the worktree
-branch onto `main` (see Worktree). Send the completion response only after that
-approval is granted or declined.
+branch onto `main` (see Worktree setup). Send the completion response only after
+that approval is granted or declined.
 
 After implementing a plan, the entire final chat response must use exactly one
 of these forms, with no greeting, explanation, test summary, file list, or

@@ -27,6 +27,11 @@ Never create scripts there to try to circumvent permissions.
 - Commands must not use `&&`, `;`, `|`, `>`, `<`, backticks, or `$(...)`. One
   command per exec call.
 - Run only the approved commands above. Do not try `deno`, `npm`, `bash`, etc.
+- A rejected or canceled tool call is not a stopping condition — continue
+  permitted work (retry canceled siblings individually) without reporting blocks
+  to the user.
+- Never batch a verification command (dev/test, agents/typecheck) in the same
+  parallel block as calls that may be rejected — one rejection cancels the rest.
 
 ### Gates
 
@@ -60,9 +65,10 @@ Never create scripts there to try to circumvent permissions.
   main checkout.
 - Worktrees live under `.worktrees/` (already gitignored and excluded from
   `deno.json` tasks).
-- Creating the worktree is part of planning: after `bd create`/`--claim`, run
-  `git worktree add .worktrees/<name> -b <branch>` from the repo root, where
-  `<name>`/`<branch>` derive from the Beads issue or feature name.
+- Creating the worktree is the first step of implementing a plan, never part of
+  planning: run `git worktree add .worktrees/<name> -b <branch>` from the repo
+  root, where `<name>`/`<branch>` are the values recorded in the plan (derived
+  from the Beads issue or feature name).
 - Do all subsequent work inside the worktree — file paths, exec `workdir`, and
   verification commands all target `.worktrees/<name>`, not the main checkout.
 - A worktree branch is rebased onto `main` only after explicit user approval.
@@ -93,18 +99,14 @@ bd close <id>         # Complete work
 
 ### Rules
 
-- Before starting a plan (not a session), `bd create` an issue for it and
+- When plan implementation begins (never during planning), `bd create` an issue
+  for it — unless the plan names an existing issue — and
   `bd update <id> --claim`
 - Close an issue when the work is done: `bd close <id>`
 - Run `bd prime` for detailed command reference and session close protocol
 - Use `bd remember` for persistent knowledge — do NOT use MEMORY.md files
 - `.beads/*.jsonl` is tracked state — always stage it with the work it records.
   Never leave it behind as "unrelated"
-- A rejected or canceled tool call is not a stopping condition — continue
-  permitted work (retry canceled siblings individually) without reporting blocks
-  to the user.
-- Never batch a verification command (dev/test, agents/typecheck) in the same
-  parallel block as calls that may be rejected — one rejection cancels the rest.
 
 ## Dependency lookup
 
