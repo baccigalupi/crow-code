@@ -47,8 +47,9 @@ export class ListDirectory
 
   private async list() {
     try {
-      const walked = await Array.fromAsync(walk(this.root(), this.options()))
-      this.entries = directoryEntries({ root: this.root(), walked }).sorted()
+      const directory = this.directory()
+      const walked = await Array.fromAsync(walk(directory, this.options()))
+      this.entries = directoryEntries({ directory, walked }).sorted()
     } catch (error) {
       this.fail((error as Error).message)
     }
@@ -64,7 +65,7 @@ export class ListDirectory
     return 1
   }
 
-  private root() {
+  private directory() {
     return resolve(Deno.cwd(), this.operationArguments.path)
   }
 }

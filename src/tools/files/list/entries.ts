@@ -3,28 +3,31 @@ import { relative } from '@std/path'
 import type { DirectoryEntry, DirectoryEntryKind } from '../../types.ts'
 
 type DirectoryEntriesArguments = {
-  root: string
+  directory: string
   walked: WalkEntry[]
 }
 
 export class DirectoryEntries {
-  private root: string
+  private directory: string
   private walked: WalkEntry[]
 
-  constructor({ root, walked }: DirectoryEntriesArguments) {
-    this.root = root
+  constructor({ directory, walked }: DirectoryEntriesArguments) {
+    this.directory = directory
     this.walked = walked
   }
 
   sorted() {
     return this.walked
-      .filter((entry) => entry.path !== this.root)
+      .filter((entry) => entry.path !== this.directory)
       .map((entry) => this.toEntry(entry))
       .sort((left, right) => this.byPath(left, right))
   }
 
   private toEntry(entry: WalkEntry) {
-    return { path: relative(this.root, entry.path), kind: this.kind(entry) }
+    return {
+      path: relative(this.directory, entry.path),
+      kind: this.kind(entry),
+    }
   }
 
   private kind(entry: WalkEntry): DirectoryEntryKind {

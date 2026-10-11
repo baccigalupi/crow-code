@@ -6,10 +6,13 @@ import { fixturesDirectory } from '../../../support/fixtures.ts'
 
 describe('file-matches', () => {
   it('when lines match, returns each match with relative path, line number, and text', async () => {
-    const root = join(fixturesDirectory, 'tools', 'search')
+    const directory = join(fixturesDirectory, 'tools', 'search')
 
-    const matches = await fileMatches({ root, path: 'alpha.txt', pattern: /t/ })
-      .all()
+    const matches = await fileMatches({
+      directory,
+      path: 'alpha.txt',
+      pattern: /t/,
+    }).all()
 
     expect(matches).toEqual([
       { path: 'alpha.txt', line: 2, text: 'two' },
@@ -18,10 +21,10 @@ describe('file-matches', () => {
   })
 
   it('when context is given, each match carries before and after lines', async () => {
-    const root = join(fixturesDirectory, 'tools', 'search')
+    const directory = join(fixturesDirectory, 'tools', 'search')
 
     const matches = await fileMatches({
-      root,
+      directory,
       path: 'alpha.txt',
       pattern: /t/,
       context: 1,
@@ -40,10 +43,10 @@ describe('file-matches', () => {
   })
 
   it('when context exceeds file bounds, windows clamp', async () => {
-    const root = join(fixturesDirectory, 'tools', 'search')
+    const directory = join(fixturesDirectory, 'tools', 'search')
 
     const matches = await fileMatches({
-      root,
+      directory,
       path: 'nested/beta.md',
       pattern: /Beta/,
       context: 2,
@@ -61,10 +64,10 @@ describe('file-matches', () => {
   })
 
   it('when nothing matches, returns []', async () => {
-    const root = join(fixturesDirectory, 'tools', 'search')
+    const directory = join(fixturesDirectory, 'tools', 'search')
 
     const matches = await fileMatches({
-      root,
+      directory,
       path: 'alpha.txt',
       pattern: /absent/,
     }).all()
@@ -73,10 +76,10 @@ describe('file-matches', () => {
   })
 
   it('when the file contains a NUL byte, returns []', async () => {
-    const root = join(fixturesDirectory, 'tools', 'search')
+    const directory = join(fixturesDirectory, 'tools', 'search')
 
     const matches = await fileMatches({
-      root,
+      directory,
       path: 'nested/blob.bin',
       pattern: /ary/,
     }).all()
@@ -85,10 +88,10 @@ describe('file-matches', () => {
   })
 
   it('when a global-flag pattern is given, still matches every line', async () => {
-    const root = join(fixturesDirectory, 'tools', 'search')
+    const directory = join(fixturesDirectory, 'tools', 'search')
 
     const matches = await fileMatches({
-      root,
+      directory,
       path: 'alpha.txt',
       pattern: /t/g,
     }).all()

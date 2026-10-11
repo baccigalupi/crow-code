@@ -53,3 +53,8 @@ export type SearchListing = {
   path: string
   matches: SearchMatch[]
 }
+
+export type PathListing = {
+  path: string
+  paths: string[]
+}

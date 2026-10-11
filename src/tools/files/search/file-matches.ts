@@ -2,27 +2,31 @@ import { join } from '@std/path'
 import type { SearchMatch } from '../../types.ts'
 
 type FileMatchesArguments = {
-  root: string
+  directory: string
   path: string
   pattern: RegExp
   context?: number
 }
 
 export class FileMatches {
-  private root: string
+  private directory: string
   private path: string
   private pattern: RegExp
   private context: number
 
-  constructor({ root, path, pattern, context = 0 }: FileMatchesArguments) {
-    this.root = root
+  constructor(
+    { directory, path, pattern, context = 0 }: FileMatchesArguments,
+  ) {
+    this.directory = directory
     this.path = path
     this.pattern = pattern
     this.context = context
   }
 
   async all() {
-    return this.lines(await Deno.readTextFile(join(this.root, this.path)))
+    return this.lines(
+      await Deno.readTextFile(join(this.directory, this.path)),
+    )
   }
 
   private lines(text: string) {

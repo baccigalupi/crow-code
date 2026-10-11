@@ -7,8 +7,8 @@ import {
 } from '../../../../src/tools/files/list/entries.ts'
 
 describe('entries', () => {
-  it('when the root is among the walked entries, drops it', () => {
-    const root = '/root'
+  it('when the walked entries include the directory itself, drops it', () => {
+    const directory = '/root'
     const walked = [
       {
         path: '/root',
@@ -26,13 +26,13 @@ describe('entries', () => {
       },
     ]
 
-    const entries = directoryEntries({ root, walked }).sorted()
+    const entries = directoryEntries({ directory, walked }).sorted()
 
     expect(entries).toEqual([{ path: 'a.txt', kind: 'file' }])
   })
 
   it('when entries are out of order, sorts them by relative path', () => {
-    const root = '/root'
+    const directory = '/root'
     const walked = [
       {
         path: '/root/nested/b.md',
@@ -57,7 +57,7 @@ describe('entries', () => {
       },
     ]
 
-    const entries = directoryEntries({ root, walked }).sorted()
+    const entries = directoryEntries({ directory, walked }).sorted()
 
     expect(entries).toEqual([
       { path: 'a.txt', kind: 'file' },
@@ -67,7 +67,7 @@ describe('entries', () => {
   })
 
   it('when an entry is a symlink, reports the symlink kind', () => {
-    const root = '/root'
+    const directory = '/root'
     const walked = [
       {
         path: '/root/link',
@@ -78,16 +78,16 @@ describe('entries', () => {
       },
     ]
 
-    const entries = directoryEntries({ root, walked }).sorted()
+    const entries = directoryEntries({ directory, walked }).sorted()
 
     expect(entries).toEqual([{ path: 'link', kind: 'symlink' }])
   })
 
   it('when called through directoryEntries, returns a DirectoryEntries', () => {
-    const root = '/root'
+    const directory = '/root'
     const walked: WalkEntry[] = []
 
-    const entries = directoryEntries({ root, walked })
+    const entries = directoryEntries({ directory, walked })
 
     expect(entries).toBeInstanceOf(DirectoryEntries)
   })

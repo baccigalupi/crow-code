@@ -2,7 +2,7 @@ import { walk } from '@std/fs'
 import { basename, globToRegExp, relative } from '@std/path'
 
 type FilePathsArguments = {
-  root: string
+  directory: string
   ignoredDirectories?: string[]
   filePattern?: string
 }
@@ -10,27 +10,29 @@ type FilePathsArguments = {
 const defaultIgnoredDirectories = ['node_modules', '.git']
 
 export class FilePaths {
-  private root: string
+  private directory: string
   private ignoredDirectories: string[]
   private filePattern?: string
   private include?: RegExp
 
   constructor(
     {
-      root,
+      directory,
       ignoredDirectories = defaultIgnoredDirectories,
       filePattern,
     }: FilePathsArguments,
   ) {
-    this.root = root
+    this.directory = directory
     this.ignoredDirectories = ignoredDirectories
     this.filePattern = filePattern
   }
 
   async all() {
-    const walked = await Array.fromAsync(walk(this.root, this.walkOptions()))
+    const walked = await Array.fromAsync(
+      walk(this.directory, this.walkOptions()),
+    )
     return walked
-      .map((entry) => relative(this.root, entry.path))
+      .map((entry) => relative(this.directory, entry.path))
       .filter((path) => this.included(path))
   }
 
