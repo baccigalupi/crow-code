@@ -1,4 +1,4 @@
-import { parseArguments } from '../cli/arguments.ts'
+import { parseArguments } from './arguments.ts'
 import { memoize } from '../decorators.ts'
 import { loadEnvironmentalVariables } from './env-vars.ts'
 

@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { parseArguments } from '../../src/cli/arguments.ts'
+import { parseArguments } from '../../src/application-data/arguments.ts'
 
 describe('parseArguments', () => {
   it('when given no arguments, returns empty commands and options', () => {

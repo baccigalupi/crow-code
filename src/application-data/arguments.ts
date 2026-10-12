@@ -1,7 +1,7 @@
 import { parseArgs } from '@std/cli/parse-args'
-import type { ParsedArgumentsOptions } from './types.ts'
+import type { ParsedArgumentsOptions } from '../cli/types.ts'
 
-class ParsedArguments {
+export class ParsedArguments {
   commands: string[]
   options: ParsedArgumentsOptions
 

@@ -3,7 +3,7 @@ import pino from 'pino'
 import type OpenAI from 'openai'
 import { stub } from '@std/testing/mock'
 import { ApplicationData } from '../../src/application-data.ts'
-import { parseArguments } from '../../src/cli/arguments.ts'
+import { parseArguments } from '../../src/application-data/arguments.ts'
 import type { ParsedArguments } from '../../src/cli/types.ts'
 import { Environment } from '../../src/application-data/env-vars.ts'
 import type {
