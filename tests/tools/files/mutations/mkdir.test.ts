@@ -56,7 +56,7 @@ describe('makeDirectory', () => {
     Deno.mkdirSync(`${fixturesDirectory}/mkdir`, { recursive: true })
     const applicationData = mockApplicationData()
     const permissions = pathPermissions({
-      applicationData,
+      getRealPath: applicationData.getRealPath(),
       allowedDirectories: [`${fixturesDirectory}/tools`],
     })
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
