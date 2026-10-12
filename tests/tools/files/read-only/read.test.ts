@@ -54,7 +54,7 @@ describe('readFile', () => {
     const applicationData = mockApplicationData()
     const path = join(fixturesDirectory, 'tools', 'git', 'git-diff.diff')
     const permissions = pathPermissions({
-      applicationData,
+      getRealPath: applicationData.getRealPath(),
       allowedDirectories: [join(fixturesDirectory, 'tools', 'files')],
     })
     using loggerErrorSpy = spy(applicationData.logger(), 'error')

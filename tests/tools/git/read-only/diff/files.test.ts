@@ -134,7 +134,7 @@ describe('gitDiffFiles', () => {
     const applicationData = mockApplicationData({
       denoCommand: mockDenoCommand({ commandSpy }),
       gitPathPermissions: pathPermissions({
-        applicationData: new ApplicationData(),
+        getRealPath: new ApplicationData().getRealPath(),
         allowedDirectories: [join(fixturesDirectory, 'tools', 'git')],
       }),
     })

@@ -55,7 +55,7 @@ describe('list', () => {
     const applicationData = mockApplicationData()
     const path = join(fixturesDirectory, 'tools', 'files')
     const permissions = pathPermissions({
-      applicationData,
+      getRealPath: applicationData.getRealPath(),
       allowedDirectories: [join(fixturesDirectory, 'tools', 'git')],
     })
     using loggerErrorSpy = spy(applicationData.logger(), 'error')

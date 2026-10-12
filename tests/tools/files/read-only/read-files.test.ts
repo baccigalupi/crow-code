@@ -93,7 +93,7 @@ describe('readFiles', () => {
       'git-diff.diff',
     )
     const permissions = pathPermissions({
-      applicationData,
+      getRealPath: applicationData.getRealPath(),
       allowedDirectories: [join(fixturesDirectory, 'tools', 'files')],
     })
     using loggerErrorSpy = spy(applicationData.logger(), 'error')

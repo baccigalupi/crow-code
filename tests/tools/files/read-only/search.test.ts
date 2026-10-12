@@ -178,7 +178,7 @@ describe('search', () => {
     const applicationData = mockApplicationData()
     const path = join(fixturesDirectory, 'tools', 'search')
     const permissions = pathPermissions({
-      applicationData,
+      getRealPath: applicationData.getRealPath(),
       allowedDirectories: [join(fixturesDirectory, 'tools', 'git')],
     })
     using loggerErrorSpy = spy(applicationData.logger(), 'error')

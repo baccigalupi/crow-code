@@ -1,21 +1,24 @@
 import type { ApplicationData } from '../application-data.ts'
-import { PathPermissions } from './path-permissions.ts'
-import { gitRepositoryRoot } from '../tools/git/repository-root.ts'
+import type { PathPermissions } from './path-permissions.ts'
+import { pathPermissions } from './path-permissions.ts'
+import { gitRepositoryRoot } from './repository-root.ts'
 
 type GitPathPermissionsArguments = {
   applicationData: ApplicationData
 }
 
-export class GitPathPermissions extends PathPermissions {
-  private root: Promise<string> = gitRepositoryRoot({
-    applicationData: this.applicationData,
-  }).run().then((operation) => operation.result())
+const repositoryRoot = (applicationData: ApplicationData) =>
+  gitRepositoryRoot({
+    denoCommand: applicationData.denoCommand(),
+    logger: applicationData.logger(),
+  }).run()
+    .then((operation) => [operation.result()])
 
-  protected override async absoluteDirectories(): Promise<string[]> {
-    return [await this.root]
-  }
-}
-
-export const gitPathPermissions = (args: GitPathPermissionsArguments) => {
-  return new GitPathPermissions(args)
+export const gitPathPermissions = (
+  { applicationData }: GitPathPermissionsArguments,
+): PathPermissions => {
+  return pathPermissions({
+    getRealPath: applicationData.getRealPath(),
+    allowedDirectories: repositoryRoot(applicationData),
+  })
 }

@@ -18,7 +18,9 @@ export class Paths {
 
   @memoize
   pathPermissions() {
-    return pathPermissions({ applicationData: this.applicationData })
+    return pathPermissions({
+      getRealPath: this.applicationData.getRealPath(),
+    })
   }
 
   @memoize

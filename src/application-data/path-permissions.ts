@@ -1,25 +1,22 @@
 import { resolve } from '@std/path'
-import type { ApplicationData } from '../application-data.ts'
 import type { RealPath } from '../types.ts'
 import { requestedPath } from './path-permissions/requested-path.ts'
 
 type PathPermissionsArguments = {
-  applicationData: ApplicationData
+  getRealPath: RealPath
   allowedDirectories?: string[] | Promise<string[]>
 }
 
 export class PathPermissions {
-  protected applicationData: ApplicationData
   private allowedDirectories: string[] | Promise<string[]>
   private getRealPath: RealPath
   private cache: Map<string, boolean>
 
   constructor(
-    { applicationData, allowedDirectories }: PathPermissionsArguments,
+    { getRealPath, allowedDirectories }: PathPermissionsArguments,
   ) {
-    this.applicationData = applicationData
     this.allowedDirectories = allowedDirectories || [Deno.cwd()]
-    this.getRealPath = applicationData.getRealPath()
+    this.getRealPath = getRealPath
     this.cache = new Map()
   }
 

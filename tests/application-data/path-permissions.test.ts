@@ -14,7 +14,7 @@ describe('path-permissions', () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
-      applicationData,
+      getRealPath: applicationData.getRealPath(),
       allowedDirectories: [directory],
     })
 
@@ -27,7 +27,7 @@ describe('path-permissions', () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
-      applicationData,
+      getRealPath: applicationData.getRealPath(),
       allowedDirectories: [directory],
     })
 
@@ -40,7 +40,9 @@ describe('path-permissions', () => {
 
   it('when no allowed directories are given, allows a path under the current working directory', async () => {
     const applicationData = mockApplicationData()
-    const permissions = pathPermissions({ applicationData })
+    const permissions = pathPermissions({
+      getRealPath: applicationData.getRealPath(),
+    })
 
     const allowed = await permissions.allows('deno.json')
 
@@ -49,7 +51,9 @@ describe('path-permissions', () => {
 
   it('when no allowed directories are given, refuses a path above the current working directory', async () => {
     const applicationData = mockApplicationData()
-    const permissions = pathPermissions({ applicationData })
+    const permissions = pathPermissions({
+      getRealPath: applicationData.getRealPath(),
+    })
 
     const allowed = await permissions.allows(join('..', 'outside.txt'))
 
@@ -67,7 +71,7 @@ describe('path-permissions', () => {
       () => mockDenoRealPath,
     )
     const permissions = pathPermissions({
-      applicationData,
+      getRealPath: applicationData.getRealPath(),
       allowedDirectories: ['.'],
     })
 
@@ -80,7 +84,7 @@ describe('path-permissions', () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'missing-directory')
     const permissions = pathPermissions({
-      applicationData,
+      getRealPath: applicationData.getRealPath(),
       allowedDirectories: [directory],
     })
 
@@ -93,7 +97,7 @@ describe('path-permissions', () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
-      applicationData,
+      getRealPath: applicationData.getRealPath(),
       allowedDirectories: [join(fixturesDirectory, 'style-checks'), directory],
     })
 
@@ -118,7 +122,7 @@ describe('path-permissions', () => {
       () => mockDenoRealPath,
     )
     const permissions = pathPermissions({
-      applicationData,
+      getRealPath: applicationData.getRealPath(),
       allowedDirectories: [directory],
     })
 
@@ -132,7 +136,7 @@ describe('path-permissions', () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
-      applicationData,
+      getRealPath: applicationData.getRealPath(),
       allowedDirectories: [directory],
     })
 
@@ -148,7 +152,7 @@ describe('path-permissions', () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
-      applicationData,
+      getRealPath: applicationData.getRealPath(),
       allowedDirectories: [directory],
     })
 
@@ -164,7 +168,7 @@ describe('path-permissions', () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
-      applicationData,
+      getRealPath: applicationData.getRealPath(),
       allowedDirectories: [directory],
     })
 
@@ -184,7 +188,7 @@ describe('path-permissions', () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
-      applicationData,
+      getRealPath: applicationData.getRealPath(),
       allowedDirectories: [directory],
     })
 
@@ -200,7 +204,7 @@ describe('path-permissions', () => {
     const directory = join(fixturesDirectory, 'tools', 'git')
 
     const permissions = pathPermissions({
-      applicationData,
+      getRealPath: applicationData.getRealPath(),
       allowedDirectories: [directory],
     })
 

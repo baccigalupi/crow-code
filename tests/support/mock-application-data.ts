@@ -77,7 +77,7 @@ export const mockApplicationData = (
   stub(data, 'gitPathPermissions', () =>
     overrides.gitPathPermissions ||
     pathPermissions({
-      applicationData: data,
+      getRealPath: data.getRealPath(),
       allowedDirectories: [Deno.cwd()],
     }))
 

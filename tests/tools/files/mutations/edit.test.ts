@@ -102,7 +102,7 @@ describe('editFile', () => {
     Deno.writeTextFileSync(path, 'one\ntwo\nthree\n')
     const applicationData = mockApplicationData()
     const permissions = pathPermissions({
-      applicationData,
+      getRealPath: applicationData.getRealPath(),
       allowedDirectories: [join(fixturesDirectory, 'tools')],
     })
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
