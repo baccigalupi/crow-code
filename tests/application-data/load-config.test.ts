@@ -5,20 +5,22 @@ import { loadConfig } from '../../src/application-data/load-config.ts'
 import { fixturesDirectory } from '../support/fixtures.ts'
 
 describe('loadConfig', () => {
-  it('returns a config with the default repo path', () => {
+  it('returns a config loader with the default config path', () => {
     const path = undefined
 
     const config = loadConfig(path)
 
-    expect(config.crowRepoPath).toBe('.crow')
+    expect(config.configPath).toBe('.crow/config.json')
+    expect(config.repoDirectory).toBe('.crow')
   })
 
-  it('returns a config with the provided repo path', () => {
-    const path = './custom-crow-repo'
+  it('returns a config loader with the provided config path', () => {
+    const path = './custom-crow-repo/config.json'
 
     const config = loadConfig(path)
 
-    expect(config.crowRepoPath).toBe('./custom-crow-repo')
+    expect(config.configPath).toBe('./custom-crow-repo/config.json')
+    expect(config.repoDirectory).toBe('./custom-crow-repo')
   })
 
   it('loads the config at the provided path', async () => {

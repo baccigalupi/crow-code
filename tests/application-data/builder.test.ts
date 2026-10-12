@@ -25,6 +25,7 @@ describe('buildApplicationData', () => {
 
     expect(builder.success()).toBe(true)
     expect(applicationData.config.userDirectory).toBe('/custom/crow')
+    expect(applicationData.io.repoCrowDirectory).toEqual(fixturesDirectory)
   })
 
   it('when no path is provided, uses the command-line path', async () => {
@@ -45,6 +46,7 @@ describe('buildApplicationData', () => {
 
     expect(builder.success()).toBe(true)
     expect(applicationData.config.userDirectory).toBe('/custom/crow')
+    expect(applicationData.io.repoCrowDirectory).toEqual(fixturesDirectory)
   })
 
   it('when no config path resolves, continues with the default config', async () => {
@@ -55,5 +57,6 @@ describe('buildApplicationData', () => {
 
     expect(builder.success()).toBe(false)
     expect(applicationData.config.userDirectory).toBe('~/.crow')
+    expect(applicationData.io.repoCrowDirectory).toEqual('.crow')
   })
 })

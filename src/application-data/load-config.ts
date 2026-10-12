@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { dirname } from '@std/path'
 import type { AsyncOperationWithResult, CrowConfigData } from '../types.ts'
 import { CrowConfig } from './config.ts'
 
@@ -23,16 +24,18 @@ const crowConfigSchema = z.object({
   }),
 })
 
-export const defaultRepoPath = () => '.crow'
+export const defaultConfigPath = () => '.crow/config.json'
 
 export class LoadConfig implements AsyncOperationWithResult<CrowConfig> {
-  readonly crowRepoPath: string
+  readonly configPath: string
+  readonly repoDirectory: string
   reason = ''
   private config = defaultCrowConfig()
   private succeeded = true
 
-  constructor(crowRepoPath: string) {
-    this.crowRepoPath = crowRepoPath
+  constructor(configPath: string) {
+    this.configPath = configPath
+    this.repoDirectory = dirname(configPath)
   }
 
   success() {
@@ -45,12 +48,12 @@ export class LoadConfig implements AsyncOperationWithResult<CrowConfig> {
   }
 
   result() {
-    return new CrowConfig(this.crowRepoPath, this.config)
+    return new CrowConfig(this.repoDirectory, this.config)
   }
 
   private async load() {
     try {
-      this.setConfig(JSON.parse(await Deno.readTextFile(this.crowRepoPath)))
+      this.setConfig(JSON.parse(await Deno.readTextFile(this.configPath)))
     } catch (error) {
       this.handleError(error)
     }
@@ -73,6 +76,6 @@ export class LoadConfig implements AsyncOperationWithResult<CrowConfig> {
   }
 }
 
-export const loadConfig = (path: string = defaultRepoPath()) => {
+export const loadConfig = (path: string = defaultConfigPath()) => {
   return new LoadConfig(path)
 }
