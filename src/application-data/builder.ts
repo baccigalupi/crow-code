@@ -1,16 +1,8 @@
 import type { AsyncOperation, AsyncOperationWithResult } from '../types.ts'
-import type { CrowConfig } from './config.ts'
+import { AppData } from './app-data.ts'
 import { DenoRuntime } from './deno-runtime.ts'
 import { Io } from './io.ts'
 import { loadConfig } from './load-config.ts'
-import type { ParsedArguments } from './arguments.ts'
-
-export class AppData {
-  config!: CrowConfig
-  denoRuntime!: DenoRuntime
-  io!: Io
-  parsedArguments!: ParsedArguments
-}
 
 export class ApplicationDataBuilder
   implements AsyncOperationWithResult<AppData> {
@@ -31,7 +23,7 @@ export class ApplicationDataBuilder
   async run() {
     this.setRuntimeAndArgs()
     await this.runConfigLoader()
-    this.setIo()
+    this.setRemainingCollaborators()
     return this
   }
 
@@ -53,7 +45,7 @@ export class ApplicationDataBuilder
     this.appData.config = loader.result()
   }
 
-  private setIo() {
+  private setRemainingCollaborators() {
     this.appData.io = new Io(this.appData.config!.repoDirectory)
   }
 

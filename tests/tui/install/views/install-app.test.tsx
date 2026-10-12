@@ -15,6 +15,7 @@ import { inputSignal } from '../../../support/input-signal.ts'
 import { mountInstallApp } from '../../../support/install-mount.tsx'
 import { settle } from '../../../support/settle.ts'
 import { mockTerminal } from '../../../support/mock-terminal.ts'
+import { stripAnsi } from '../../../support/strip-ansi.ts'
 import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
 
 describe('InstallApp', () => {
@@ -29,13 +30,13 @@ describe('InstallApp', () => {
 
     await settle()
 
-    expect(lastFrame()).toContain('Installing Crow Code')
-    expect(lastFrame()).toContain('ctrl-c quit')
-    expect(lastFrame()).toContain(
+    expect(stripAnsi(lastFrame())).toContain('Installing Crow Code')
+    expect(stripAnsi(lastFrame())).toContain('ctrl-c quit')
+    expect(stripAnsi(lastFrame())).toContain(
       'What directory for the local repo crow setup: (.crow)',
     )
-    expect(lastFrame()).not.toContain('config.json')
-    expect(lastFrame()).not.toContain('userDirectory')
+    expect(stripAnsi(lastFrame())).not.toContain('config.json')
+    expect(stripAnsi(lastFrame())).not.toContain('userDirectory')
     unmount()
   })
 
@@ -167,16 +168,16 @@ describe('InstallApp', () => {
     stdin.write('\r')
     await settle()
 
-    expect(lastFrame()).toContain('./lib/config.json')
-    expect(lastFrame()).toContain('"userDirectory": "~/.crow"')
-    expect(lastFrame()).toContain('"permissions"')
-    expect(lastFrame()).toContain('"ignore"')
-    expect(lastFrame()).toContain('"node_modules"')
-    expect(lastFrame()).toContain('".git"')
-    expect(lastFrame()).toContain('"additionalRead": []')
-    expect(lastFrame()).toContain('"additionalWrite": []')
-    expect(lastFrame()).toContain('User crow directory: (~/.crow)')
-    expect(lastFrame()).not.toContain('local repo crow setup')
+    expect(stripAnsi(lastFrame())).toContain('./lib/config.json')
+    expect(stripAnsi(lastFrame())).toContain('"userDirectory": "~/.crow"')
+    expect(stripAnsi(lastFrame())).toContain('"permissions"')
+    expect(stripAnsi(lastFrame())).toContain('"ignore"')
+    expect(stripAnsi(lastFrame())).toContain('"node_modules"')
+    expect(stripAnsi(lastFrame())).toContain('".git"')
+    expect(stripAnsi(lastFrame())).toContain('"additionalRead": []')
+    expect(stripAnsi(lastFrame())).toContain('"additionalWrite": []')
+    expect(stripAnsi(lastFrame())).toContain('User crow directory: (~/.crow)')
+    expect(stripAnsi(lastFrame())).not.toContain('local repo crow setup')
     unmount()
   })
 
@@ -193,7 +194,7 @@ describe('InstallApp', () => {
     stdin.write('/opt/crow')
     await settle()
 
-    expect(lastFrame()).toContain('"userDirectory": "/opt/crow"')
+    expect(stripAnsi(lastFrame())).toContain('"userDirectory": "/opt/crow"')
     expect(user.peek().text).toBe('/opt/crow')
     unmount()
   })
@@ -214,9 +215,11 @@ describe('InstallApp', () => {
     stdin.write('\r')
     await settle()
 
-    expect(lastFrame()).toContain('Write config to ./lib/config.json?')
-    expect(lastFrame()).toContain('Yes')
-    expect(lastFrame()).toContain('No')
+    expect(stripAnsi(lastFrame())).toContain(
+      'Write config to ./lib/config.json?',
+    )
+    expect(stripAnsi(lastFrame())).toContain('Yes')
+    expect(stripAnsi(lastFrame())).toContain('No')
     unmount()
   })
 
@@ -312,7 +315,7 @@ describe('InstallApp', () => {
     const config = saved[0] as { filePath: string; json: string }
     expect(config.filePath).toBe('.crow/config.json')
     expect(config.json).toContain('"permissions"')
-    expect(terminal.lastFrame()).toContain(
+    expect(stripAnsi(terminal.lastFrame())).toContain(
       'Wrote config to .crow/config.json',
     )
     terminal.stdin.write('x')
@@ -413,7 +416,7 @@ describe('InstallApp', () => {
 
     await settle()
 
-    expect(terminal.lastFrame()).toContain('Installing Crow Code')
+    expect(stripAnsi(terminal.lastFrame())).toContain('Installing Crow Code')
     instance.unmount()
   })
 
@@ -422,7 +425,7 @@ describe('InstallApp', () => {
 
     await settle()
 
-    expect(terminal.lastFrame().split('\n')).toHaveLength(8)
+    expect(stripAnsi(terminal.lastFrame()).split('\n')).toHaveLength(8)
     instance.unmount()
   })
 
@@ -439,7 +442,7 @@ describe('InstallApp', () => {
 
     await settle()
 
-    expect(terminal.lastFrame()).toContain('Installing Crow Code')
+    expect(stripAnsi(terminal.lastFrame())).toContain('Installing Crow Code')
     instance.unmount()
   })
 
@@ -448,7 +451,7 @@ describe('InstallApp', () => {
 
     await settle()
 
-    const lines = terminal.lastFrame().split('\n')
+    const lines = stripAnsi(terminal.lastFrame()).split('\n')
     expect(lines[7]).toContain('What directory for the local repo crow setup:')
     expect(lines[7]).toContain('(.crow)')
     instance.unmount()
@@ -462,7 +465,7 @@ describe('InstallApp', () => {
 
     await settle()
 
-    expect(lastFrame()).toContain('(.crow)')
+    expect(stripAnsi(lastFrame())).toContain('(.crow)')
     unmount()
   })
 })
