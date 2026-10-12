@@ -1,24 +1,23 @@
 import type { AsyncOperation, AsyncOperationWithResult } from '../types.ts'
 import type { CrowConfig } from './config.ts'
+import { DenoRuntime } from './deno-runtime.ts'
 import { loadConfig } from './load-config.ts'
 
 export class AppData {
-  config: CrowConfig
-
-  constructor(config: CrowConfig) {
-    this.config = config
-  }
+  config!: CrowConfig
+  denoRuntime!: DenoRuntime
 }
 
 export class ApplicationDataBuilder
   implements AsyncOperationWithResult<AppData> {
   readonly crowRepoPath: string | undefined
   reason = ''
-  private config!: CrowConfig
   private succeeded = true
+  appData: Partial<AppData>
 
   constructor(crowRepoPath?: string) {
     this.crowRepoPath = crowRepoPath
+    this.appData = new AppData()
   }
 
   success() {
@@ -26,17 +25,23 @@ export class ApplicationDataBuilder
   }
 
   async run() {
+    this.setDenoRuntime()
     await this.runConfigLoader()
     return this
   }
 
-  result() {
-    return new AppData(this.config)
+  result(): AppData {
+    return this.appData as AppData
+  }
+
+  private setDenoRuntime() {
+    this.appData.denoRuntime = new DenoRuntime(Deno)
   }
 
   private async runConfigLoader() {
-    const operation = await this.runSubOperation(loadConfig(this.crowRepoPath))
-    this.config = operation.result()
+    const loader = loadConfig(this.crowRepoPath)
+    await this.runSubOperation(loader)
+    this.appData.config = loader.result()
   }
 
   private async runSubOperation<T extends AsyncOperation>(operation: T) {
