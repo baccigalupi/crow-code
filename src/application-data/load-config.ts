@@ -66,7 +66,10 @@ export class LoadConfig implements AsyncOperationWithResult<CrowConfig> {
   }
 
   private handleError(error: unknown) {
-    this.fail((error as Error).message)
+    if (error instanceof Deno.errors.NotFound) this.fail('')
+    else if (error instanceof SyntaxError) {
+      this.fail('the file is not valid JSON')
+    } else this.fail((error as Error).message)
   }
 
   private fail(reason: string) {

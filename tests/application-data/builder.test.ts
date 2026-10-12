@@ -1,9 +1,11 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
+import { exists } from '@std/fs'
+import { spy, stub } from '@std/testing/mock'
 import { buildApplicationData } from '../../src/application-data/builder.ts'
 import { mockDeno } from '../support/mock-deno-command.ts'
-import { fixturesDirectory } from '../support/fixtures.ts'
+import { clearDirectory, fixturesDirectory } from '../support/fixtures.ts'
 
 describe('buildApplicationData', () => {
   it('when a path is provided, prefers it over the command-line path', async () => {
@@ -40,6 +42,26 @@ describe('buildApplicationData', () => {
     expect(applicationData.repositoryRoot).toBe('/some/repo')
   })
 
+  it('when the config points at an alternative global directory, the database file is there', async () => {
+    const crowGlobalDirectory = join(fixturesDirectory, '.crow')
+    await clearDirectory(crowGlobalDirectory)
+    const builder = buildApplicationData({
+      path: join(fixturesDirectory, 'crow-global-config.json'),
+      deno: mockDeno({ stdout: '/some/repo\n' }),
+    })
+
+    await builder.run()
+    const applicationData = builder.result()
+    await applicationData.database()
+
+    expect(applicationData.config.crowGlobalDirectory).toBe(
+      'tests/support/fixtures/.crow',
+    )
+    expect(await exists(join(crowGlobalDirectory, 'crow.db'))).toBe(true)
+    await applicationData.close()
+    await clearDirectory(crowGlobalDirectory)
+  })
+
   it('when called with no arguments, uses the real Deno runtime', async () => {
     const builder = buildApplicationData()
 
@@ -61,5 +83,58 @@ describe('buildApplicationData', () => {
     expect(applicationData.config.crowGlobalDirectory).toBe('~/.crow')
     expect(applicationData.io.repoCrowDirectory).toEqual('.crow')
     expect(applicationData.repositoryRoot).toBe('/some/repo')
+  })
+
+  it('when the config file is missing, reports only what was attempted', async () => {
+    const errorSpy = spy()
+    using _error = stub(console, 'error', errorSpy)
+    const builder = buildApplicationData({
+      deno: mockDeno({ stdout: '/some/repo\n' }),
+    })
+
+    await builder.run()
+
+    expect(errorSpy.calls).toHaveLength(1)
+    expect(errorSpy.calls[0].args[0]).toBe(
+      "Could not load the config from '.crow/config.json'",
+    )
+  })
+
+  it('when the config file is malformed, reports that the file is not valid JSON', async () => {
+    const errorSpy = spy()
+    using _error = stub(console, 'error', errorSpy)
+    const builder = buildApplicationData({
+      path: join(fixturesDirectory, 'malformed-config.txt'),
+      deno: mockDeno({ stdout: '/some/repo\n' }),
+    })
+
+    await builder.run()
+
+    expect(errorSpy.calls).toHaveLength(1)
+    expect(errorSpy.calls[0].args[0]).toBe(
+      `Could not load the config from '${
+        join(fixturesDirectory, 'malformed-config.txt')
+      }': the file is not valid JSON`,
+    )
+  })
+
+  it('when git cannot find the repository root, reports the git error', async () => {
+    const errorSpy = spy()
+    using _error = stub(console, 'error', errorSpy)
+    const builder = buildApplicationData({
+      path: join(fixturesDirectory, 'config.json'),
+      deno: mockDeno({
+        stdout: '',
+        success: false,
+        stderr: 'fatal: not a git repository',
+      }),
+    })
+
+    await builder.run()
+
+    expect(errorSpy.calls).toHaveLength(1)
+    expect(errorSpy.calls[0].args[0]).toBe(
+      'Could not find the repository root: fatal: not a git repository',
+    )
   })
 })

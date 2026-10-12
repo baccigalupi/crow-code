@@ -58,10 +58,10 @@ export const mockDenoCommand = (
 }
 
 export const mockDeno = (
-  { args = [], stdout = '' }: { args?: string[]; stdout?: string } = {},
+  { args = [], ...command }: { args?: string[] } & MockDenoCommandOptions = {},
 ) =>
   ({
     args,
-    Command: mockDenoCommand({ stdout }),
+    Command: mockDenoCommand(command),
     realPath: Deno.realPath,
   }) as unknown as typeof Deno

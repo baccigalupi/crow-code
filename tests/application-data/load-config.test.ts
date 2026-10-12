@@ -63,6 +63,17 @@ describe('loadConfig', () => {
     expect(config.writableDirectories).toEqual([])
   })
 
+  it('fails with the error message when the path cannot be read', async () => {
+    const operation = loadConfig(fixturesDirectory)
+
+    await operation.run()
+    const config = operation.result()
+
+    expect(operation.success()).toBe(false)
+    expect(operation.reason.length).toBeGreaterThan(0)
+    expect(config.crowGlobalDirectory).toBe('~/.crow')
+  })
+
   it('fails when the config does not match the schema', async () => {
     const operation = loadConfig(
       join(fixturesDirectory, 'incomplete-config.json'),

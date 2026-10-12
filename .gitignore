@@ -6,6 +6,7 @@ coverage/
 .crow/models.json
 .crow/logs/*.log
 tests/support/fixtures/.crow/
+tests/support/fixtures/logs/
 tests/support/fixtures/env/
 tests/support/fixtures/logger/
 .env

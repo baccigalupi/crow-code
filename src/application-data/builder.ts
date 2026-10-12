@@ -4,6 +4,7 @@ import { DenoRuntime } from './deno-runtime.ts'
 import { Io } from './io.ts'
 import { loadConfig } from './load-config.ts'
 import { gitRepositoryRoot } from './repository-root.ts'
+import { SubOperations } from './sub-operations.ts'
 
 type ApplicationDataBuilderArguments = {
   path?: string
@@ -16,6 +17,7 @@ export class ApplicationDataBuilder
   reason = ''
   private deno: typeof Deno
   private succeeded = true
+  private subOperations = new SubOperations()
   appData: Partial<AppData>
 
   constructor({ path, deno }: ApplicationDataBuilderArguments = {}) {
@@ -32,6 +34,7 @@ export class ApplicationDataBuilder
     this.setRuntimeAndArgs()
     await this.runConfigLoader()
     await this.setRemainingCollaborators()
+    this.subOperations.reportFailures(this.appData.io!.consoleError())
     return this
   }
 
@@ -49,7 +52,8 @@ export class ApplicationDataBuilder
     const configPath = this.configPath ||
       this.appData.parsedArguments!.configPath()
     const loader = loadConfig(configPath)
-    await this.runSubOperation(loader)
+    const action = `load the config from '${loader.configPath}'`
+    await this.runSubOperation(loader, action)
     this.appData.config = loader.result()
   }
 
@@ -63,14 +67,17 @@ export class ApplicationDataBuilder
       denoCommand: this.result().denoCommand(),
       logger: this.result().logger(),
     })
-    await this.runSubOperation(root)
+    await this.runSubOperation(root, 'find the repository root')
     return root.result()
   }
 
-  private async runSubOperation<T extends AsyncOperation>(operation: T) {
-    await operation.run()
-    if (!operation.success()) this.fail(operation.reason)
-    return operation
+  private async runSubOperation<T extends AsyncOperation>(
+    operation: T,
+    action: string,
+  ) {
+    const ran = await this.subOperations.run(operation, action)
+    if (!ran.success()) this.fail(ran.reason)
+    return ran
   }
 
   private fail(reason: string) {

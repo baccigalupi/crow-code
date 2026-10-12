@@ -1,0 +1,8 @@
+{
+  "crowGlobalDirectory": "tests/support/fixtures/.crow",
+  "permissions": {
+    "ignore": ["vendor"],
+    "additionalRead": ["/readable"],
+    "additionalWrite": ["/writable"]
+  }
+}
