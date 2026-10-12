@@ -1,24 +1,17 @@
-import type { ApplicationData } from '../application-data.ts'
+import type { RealPath } from '../types.ts'
 import type { PathPermissions } from './path-permissions.ts'
 import { pathPermissions } from './path-permissions.ts'
-import { gitRepositoryRoot } from './repository-root.ts'
 
 type GitPathPermissionsArguments = {
-  applicationData: ApplicationData
+  getRealPath: RealPath
+  repositoryRoot: string | Promise<string>
 }
 
-const repositoryRoot = (applicationData: ApplicationData) =>
-  gitRepositoryRoot({
-    denoCommand: applicationData.denoCommand(),
-    logger: applicationData.logger(),
-  }).run()
-    .then((operation) => [operation.result()])
-
 export const gitPathPermissions = (
-  { applicationData }: GitPathPermissionsArguments,
+  { getRealPath, repositoryRoot }: GitPathPermissionsArguments,
 ): PathPermissions => {
   return pathPermissions({
-    getRealPath: applicationData.getRealPath(),
-    allowedDirectories: repositoryRoot(applicationData),
+    getRealPath,
+    allowedDirectories: Promise.resolve(repositoryRoot).then((root) => [root]),
   })
 }

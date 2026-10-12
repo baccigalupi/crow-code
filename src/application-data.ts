@@ -15,6 +15,7 @@ import type {
 } from './types.ts'
 import type { ParsedArguments } from './cli/types.ts'
 import type { PathPermissions } from './application-data/path-permissions.ts'
+import { gitRepositoryRoot } from './application-data/repository-root.ts'
 import { Paths } from './application-data/paths.ts'
 
 type ApplicationDataOverrides = { deno?: typeof Deno; crowDirectory?: string }
@@ -69,6 +70,15 @@ export class ApplicationData {
     await (await this.database()).destroy()
   }
 
+  async repositoryRoot() {
+    const operation = gitRepositoryRoot({
+      denoCommand: this.denoCommand(),
+      logger: this.logger(),
+    })
+    const ran = await operation.run()
+    return ran.result()
+  }
+
   chatClient(options: OpenAiClientOptions) {
     return new OpenAI({
       fetch: this.fetch(),
@@ -93,4 +103,5 @@ export interface ApplicationData {
   logger(): Logger
   pathPermissions(): PathPermissions
   parsedArguments(): ParsedArguments
+  repositoryRoot(): Promise<string>
 }

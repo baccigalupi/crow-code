@@ -25,6 +25,9 @@ export class Paths {
 
   @memoize
   gitPathPermissions() {
-    return gitPathPermissions({ applicationData: this.applicationData })
+    return gitPathPermissions({
+      getRealPath: this.applicationData.getRealPath(),
+      repositoryRoot: this.applicationData.repositoryRoot(),
+    })
   }
 }

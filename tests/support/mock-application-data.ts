@@ -31,6 +31,7 @@ export type MockApplicationDataOverrides = {
   denoCommand?: DenoCommand
   envars?: Environment
   gitPathPermissions?: PathPermissions
+  repositoryRoot?: Promise<string>
 }
 
 export const mockApplicationData = (
@@ -80,6 +81,11 @@ export const mockApplicationData = (
       getRealPath: data.getRealPath(),
       allowedDirectories: [Deno.cwd()],
     }))
+  stub(
+    data,
+    'repositoryRoot',
+    () => overrides.repositoryRoot || Promise.resolve(Deno.cwd()),
+  )
 
   if (overrides.chatClient) {
     stub(data, 'chatClient', overrides.chatClient)

@@ -37,12 +37,12 @@ export const mockDenoCommand = (
       if (commandSpy) commandSpy(command, options)
     }
 
-    output() {
+    async output() {
       if (outputError !== undefined) {
-        return Promise.reject(new Error(outputError))
+        throw new Error(outputError)
       }
 
-      return Promise.resolve().then(() => this.response())
+      return await Promise.resolve().then(() => this.response())
     }
 
     private response() {
