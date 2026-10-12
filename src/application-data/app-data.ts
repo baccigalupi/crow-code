@@ -4,7 +4,9 @@ import { DenoRuntime } from './deno-runtime.ts'
 import type { Environment } from './env-vars.ts'
 import { Io } from './io.ts'
 import type { ParsedArguments } from './arguments.ts'
-import { delegate } from '../decorators.ts'
+import { delegate, memoize } from '../decorators.ts'
+import { pathPermissions } from './path-permissions.ts'
+import { gitPathPermissions } from './git-path-permissions.ts'
 import type {
   ConsoleError,
   ConsoleLog,
@@ -39,6 +41,19 @@ export class AppData {
   io!: Io
   parsedArguments!: ParsedArguments
   repositoryRoot!: string
+
+  @memoize
+  pathPermissions() {
+    return pathPermissions({ getRealPath: this.getRealPath() })
+  }
+
+  @memoize
+  gitPathPermissions() {
+    return gitPathPermissions({
+      getRealPath: this.getRealPath(),
+      repositoryRoot: this.repositoryRoot,
+    })
+  }
 }
 
 export interface AppData {

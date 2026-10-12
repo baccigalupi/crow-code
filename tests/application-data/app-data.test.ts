@@ -27,4 +27,26 @@ describe('AppData', () => {
 
     expect(denoCommand).toBe(Deno.Command)
   })
+
+  it('bounds path permissions to the working directory', async () => {
+    const appData = new AppData()
+    appData.denoRuntime = new DenoRuntime(Deno)
+
+    const permissions = appData.pathPermissions()
+
+    expect(await permissions.allows('src/app.ts')).toBe(true)
+    expect(await permissions.allows(join('..', 'outside.txt'))).toBe(false)
+  })
+
+  it('bounds git path permissions to the repository root', async () => {
+    const appData = new AppData()
+    appData.denoRuntime = new DenoRuntime(Deno)
+    appData.repositoryRoot = fixturesDirectory
+
+    const permissions = appData.gitPathPermissions()
+
+    expect(await permissions.allows(join(fixturesDirectory, 'config.json')))
+      .toBe(true)
+    expect(await permissions.allows(join('..', 'outside.txt'))).toBe(false)
+  })
 })
