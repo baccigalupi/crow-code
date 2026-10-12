@@ -1,10 +1,22 @@
 import { parseArgs } from '@std/cli/parse-args'
-import type { ParsedArguments, ParsedArgumentsOptions } from './types.ts'
+import type { ParsedArgumentsOptions } from './types.ts'
 
-export const parseArguments = (argumentsList: string[]): ParsedArguments => {
-  const { _, ...options } = parseArgs(argumentsList, { boolean: true })
-  return {
-    commands: _.map(String),
-    options: options as ParsedArgumentsOptions,
+class ParsedArguments {
+  commands: string[]
+  options: ParsedArgumentsOptions
+
+  constructor(commands: string[], options: ParsedArgumentsOptions) {
+    this.commands = commands
+    this.options = options
   }
+
+  configPath() {
+    if (typeof this.options.config !== 'string') return
+    return this.options.config
+  }
+}
+
+export const parseArguments = (argumentsList: string[]) => {
+  const { _, ...options } = parseArgs(argumentsList, { boolean: true })
+  return new ParsedArguments(_.map(String), options as ParsedArgumentsOptions)
 }

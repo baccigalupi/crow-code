@@ -9,6 +9,7 @@ describe('parseArguments', () => {
     const result = parseArguments(argumentsList)
 
     expect(result).toEqual({ commands: [], options: {} })
+    expect(result.configPath()).toBeUndefined()
   })
 
   it('when given --help, returns a help option', () => {
@@ -36,6 +37,14 @@ describe('parseArguments', () => {
       commands: ['git-commit'],
       options: { goal: 'Refactor hallucinatory tests' },
     })
+  })
+
+  it('when given a config option, returns its path', () => {
+    const argumentsList = ['--config=./crow-config.json']
+
+    const result = parseArguments(argumentsList)
+
+    expect(result.configPath()).toBe('./crow-config.json')
   })
 
   it('when given a bare option, does not consume the next word as a value', () => {

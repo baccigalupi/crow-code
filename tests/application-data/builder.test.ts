@@ -19,9 +19,7 @@ describe('buildApplicationData', () => {
   })
 
   it('fails when application data cannot be built', async () => {
-    const builder = buildApplicationData(
-      join(fixturesDirectory, 'missing-config.json'),
-    )
+    const builder = buildApplicationData()
 
     await builder.run()
 

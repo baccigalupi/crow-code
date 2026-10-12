@@ -39,9 +39,15 @@ export class ApplicationDataBuilder
   }
 
   private async runConfigLoader() {
-    const loader = loadConfig(this.crowRepoPath)
+    const configPath = this.crowRepoPath ||
+      this.denoRuntime().parsedArguments().configPath()
+    const loader = loadConfig(configPath)
     await this.runSubOperation(loader)
     this.appData.config = loader.result()
+  }
+
+  private denoRuntime() {
+    return this.appData.denoRuntime as DenoRuntime
   }
 
   private async runSubOperation<T extends AsyncOperation>(operation: T) {
