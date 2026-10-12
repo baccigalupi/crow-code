@@ -29,7 +29,7 @@ describe('loadConfig', () => {
     await operation.run()
     const config = operation.result()
 
-    expect(config.crowGlobalDirectory).toBe('/custom/crow')
+    expect(config.crowGlobalDirectory).toBe('tests/support/fixtures/.crow')
     expect(config.ignoredDirectories).toEqual(['vendor'])
     expect(config.readableDirectories).toEqual(['/readable'])
     expect(config.writableDirectories).toEqual(['/writable'])

@@ -1,10 +1,11 @@
-import type { AsyncOperation, AsyncOperationWithResult } from '../types.ts'
+import type { AsyncOperationWithResult } from '../types.ts'
 import { AppData } from './app-data.ts'
 import { DenoRuntime } from './deno-runtime.ts'
 import { Io } from './io.ts'
 import { loadConfig } from './load-config.ts'
 import { gitRepositoryRoot } from './repository-root.ts'
 import { SubOperations } from './sub-operations.ts'
+import { verifyDatabase } from './verify-database.ts'
 
 type ApplicationDataBuilderArguments = {
   path?: string
@@ -14,9 +15,8 @@ type ApplicationDataBuilderArguments = {
 export class ApplicationDataBuilder
   implements AsyncOperationWithResult<AppData> {
   readonly configPath: string | undefined
-  reason = ''
   private deno: typeof Deno
-  private succeeded = true
+  private configLoaded = false
   private subOperations = new SubOperations()
   appData: Partial<AppData>
 
@@ -26,8 +26,12 @@ export class ApplicationDataBuilder
     this.appData = new AppData()
   }
 
+  get reason() {
+    return this.subOperations.reason
+  }
+
   success() {
-    return this.succeeded
+    return this.subOperations.success()
   }
 
   async run() {
@@ -53,36 +57,33 @@ export class ApplicationDataBuilder
       this.appData.parsedArguments!.configPath()
     const loader = loadConfig(configPath)
     const action = `load the config from '${loader.configPath}'`
-    await this.runSubOperation(loader, action)
+    await this.subOperations.run(loader, action)
+    this.configLoaded = loader.success()
     this.appData.config = loader.result()
   }
 
   private async setRemainingCollaborators() {
     this.appData.io = new Io(this.appData.config!.crowRepoDirectory)
+    await this.openDatabase()
     this.appData.repositoryRoot = await this.repositoryRoot()
+  }
+
+  private async openDatabase() {
+    if (!this.configLoaded) return
+    const verification = verifyDatabase({
+      database: () => this.appData.database!(),
+      logger: this.appData.io!.logger(),
+    })
+    await this.subOperations.run(verification, 'open the database')
   }
 
   private async repositoryRoot() {
     const root = gitRepositoryRoot({
-      denoCommand: this.result().denoCommand(),
-      logger: this.result().logger(),
+      denoCommand: this.appData.denoRuntime!.denoCommand(),
+      logger: this.appData.io!.logger(),
     })
-    await this.runSubOperation(root, 'find the repository root')
+    await this.subOperations.run(root, 'find the repository root')
     return root.result()
-  }
-
-  private async runSubOperation<T extends AsyncOperation>(
-    operation: T,
-    action: string,
-  ) {
-    const ran = await this.subOperations.run(operation, action)
-    if (!ran.success()) this.fail(ran.reason)
-    return ran
-  }
-
-  private fail(reason: string) {
-    this.succeeded = false
-    this.reason = reason
   }
 }
 

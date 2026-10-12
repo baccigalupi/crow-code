@@ -22,9 +22,13 @@ describe('buildApplicationData', () => {
     const applicationData = builder.result()
 
     expect(builder.success()).toBe(true)
-    expect(applicationData.config.crowGlobalDirectory).toBe('/custom/crow')
+    expect(applicationData.config.crowGlobalDirectory).toBe(
+      'tests/support/fixtures/.crow',
+    )
     expect(applicationData.io.repoCrowDirectory).toEqual(fixturesDirectory)
     expect(applicationData.repositoryRoot).toBe('/some/repo')
+    await applicationData.close()
+    await clearDirectory(join(fixturesDirectory, '.crow'))
   })
 
   it('when no path is provided, uses the command-line path', async () => {
@@ -37,9 +41,13 @@ describe('buildApplicationData', () => {
     const applicationData = builder.result()
 
     expect(builder.success()).toBe(true)
-    expect(applicationData.config.crowGlobalDirectory).toBe('/custom/crow')
+    expect(applicationData.config.crowGlobalDirectory).toBe(
+      'tests/support/fixtures/.crow',
+    )
     expect(applicationData.io.repoCrowDirectory).toEqual(fixturesDirectory)
     expect(applicationData.repositoryRoot).toBe('/some/repo')
+    await applicationData.close()
+    await clearDirectory(join(fixturesDirectory, '.crow'))
   })
 
   it('when the config points at an alternative global directory, the database file is there', async () => {
@@ -60,6 +68,21 @@ describe('buildApplicationData', () => {
     expect(await exists(join(crowGlobalDirectory, 'crow.db'))).toBe(true)
     await applicationData.close()
     await clearDirectory(crowGlobalDirectory)
+  })
+
+  it('when the database cannot be opened, reports the failure', async () => {
+    const errorSpy = spy()
+    using _error = stub(console, 'error', errorSpy)
+    const builder = buildApplicationData({
+      path: join(fixturesDirectory, 'unwritable-global-config.json'),
+      deno: mockDeno({ stdout: '/some/repo\n' }),
+    })
+
+    await builder.run()
+
+    expect(builder.success()).toBe(false)
+    expect(builder.reason.length).toBeGreaterThan(0)
+    expect(errorSpy.calls[0].args[0]).toContain('Could not open the database')
   })
 
   it('when called with no arguments, uses the real Deno runtime', async () => {
@@ -136,5 +159,7 @@ describe('buildApplicationData', () => {
     expect(errorSpy.calls[0].args[0]).toBe(
       'Could not find the repository root: fatal: not a git repository',
     )
+    await builder.result().close()
+    await clearDirectory(join(fixturesDirectory, '.crow'))
   })
 })

@@ -1,5 +1,5 @@
 {
-  "crowGlobalDirectory": "/custom/crow",
+  "crowGlobalDirectory": "tests/support/fixtures/.crow",
   "permissions": {
     "ignore": ["vendor"],
     "additionalRead": ["/readable"],
