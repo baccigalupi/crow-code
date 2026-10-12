@@ -6,9 +6,9 @@ import { render as inkRender } from 'ink'
 import { signal } from '@preact/signals-core'
 import { InstallApp } from '../../../../src/tui/install/views/install-app.tsx'
 import {
+  crowGlobalDirectoryInput,
+  crowRepoDirectoryInput,
   installStep,
-  repoDirectoryInput,
-  userDirectoryInput,
 } from '../../../../src/tui/install/interactions/state/config-buffer.ts'
 import { emptyBuffer } from '../../../../src/tui/input-buffer.ts'
 import { inputSignal } from '../../../support/input-signal.ts'
@@ -36,7 +36,7 @@ describe('InstallApp', () => {
       'What directory for the local repo crow setup: (.crow)',
     )
     expect(stripAnsi(lastFrame())).not.toContain('config.json')
-    expect(stripAnsi(lastFrame())).not.toContain('userDirectory')
+    expect(stripAnsi(lastFrame())).not.toContain('crowGlobalDirectory')
     unmount()
   })
 
@@ -169,7 +169,7 @@ describe('InstallApp', () => {
     await settle()
 
     expect(stripAnsi(lastFrame())).toContain('./lib/config.json')
-    expect(stripAnsi(lastFrame())).toContain('"userDirectory": "~/.crow"')
+    expect(stripAnsi(lastFrame())).toContain('"crowGlobalDirectory": "~/.crow"')
     expect(stripAnsi(lastFrame())).toContain('"permissions"')
     expect(stripAnsi(lastFrame())).toContain('"ignore"')
     expect(stripAnsi(lastFrame())).toContain('"node_modules"')
@@ -194,7 +194,9 @@ describe('InstallApp', () => {
     stdin.write('/opt/crow')
     await settle()
 
-    expect(stripAnsi(lastFrame())).toContain('"userDirectory": "/opt/crow"')
+    expect(stripAnsi(lastFrame())).toContain(
+      '"crowGlobalDirectory": "/opt/crow"',
+    )
     expect(user.peek().text).toBe('/opt/crow')
     unmount()
   })
@@ -323,10 +325,10 @@ describe('InstallApp', () => {
   })
 
   it('when the save prop is omitted, yes writes the config file', async () => {
-    const repoDirectory = join(fixturesDirectory, 'install-app', 'crow')
-    await clearDirectory(repoDirectory)
+    const crowRepoDirectory = join(fixturesDirectory, 'install-app', 'crow')
+    await clearDirectory(crowRepoDirectory)
     const { terminal, instance } = mountInstallApp(8, {
-      repo: inputSignal(repoDirectory),
+      repo: inputSignal(crowRepoDirectory),
     })
 
     await settle()
@@ -338,15 +340,15 @@ describe('InstallApp', () => {
     await settle()
 
     const written = JSON.parse(
-      Deno.readTextFileSync(join(repoDirectory, 'config.json')),
+      Deno.readTextFileSync(join(crowRepoDirectory, 'config.json')),
     )
-    expect(written.userDirectory).toBe('~/.crow')
+    expect(written.crowGlobalDirectory).toBe('~/.crow')
     expect(written.permissions.ignore).toEqual(['node_modules', '.git'])
     expect(written.permissions.additionalRead).toEqual([])
     expect(written.permissions.additionalWrite).toEqual([])
     terminal.stdin.write('x')
     await instance.waitUntilExit()
-    await clearDirectory(repoDirectory)
+    await clearDirectory(crowRepoDirectory)
   })
 
   it('when no is confirmed, the app exits without saving', async () => {
@@ -458,8 +460,8 @@ describe('InstallApp', () => {
   })
 
   it('when no props are given, uses the shared signals', async () => {
-    repoDirectoryInput.value = emptyBuffer()
-    userDirectoryInput.value = emptyBuffer()
+    crowRepoDirectoryInput.value = emptyBuffer()
+    crowGlobalDirectoryInput.value = emptyBuffer()
     installStep.value = 'repo'
     const { lastFrame, unmount } = render(<InstallApp />)
 

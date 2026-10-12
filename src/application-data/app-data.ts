@@ -38,6 +38,7 @@ export class AppData {
   denoRuntime!: DenoRuntime
   io!: Io
   parsedArguments!: ParsedArguments
+  repositoryRoot!: string
 }
 
 export interface AppData {

@@ -1,16 +1,16 @@
 import type { CrowConfigData } from '../types.ts'
 
 export class CrowConfig {
-  repoDirectory: string
+  crowRepoDirectory: string
   private data: CrowConfigData
 
-  constructor(repoDirectory: string, data: CrowConfigData) {
+  constructor(crowRepoDirectory: string, data: CrowConfigData) {
     this.data = data
-    this.repoDirectory = repoDirectory
+    this.crowRepoDirectory = crowRepoDirectory
   }
 
-  get userDirectory() {
-    return this.data.userDirectory
+  get crowGlobalDirectory() {
+    return this.data.crowGlobalDirectory
   }
 
   get ignoredDirectories() {

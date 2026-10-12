@@ -4,7 +4,7 @@ import type { ExitApp, InputBuffer, KeyFlags } from '../types.ts'
 export type InstallStep = 'repo' | 'user' | 'confirm' | 'done'
 
 export type CrowConfig = {
-  readonly userDirectory: string
+  readonly crowGlobalDirectory: string
   readonly permissions: {
     readonly ignore: string[]
     readonly additionalRead: string[]
@@ -13,8 +13,8 @@ export type CrowConfig = {
 }
 
 export type InstallConfig = {
-  readonly repoDirectory: string
-  readonly userDirectory: string
+  readonly crowRepoDirectory: string
+  readonly crowGlobalDirectory: string
   readonly filePath: string
   readonly config: CrowConfig
   readonly json: string

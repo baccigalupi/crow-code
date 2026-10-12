@@ -11,7 +11,7 @@ describe('loadConfig', () => {
     const config = loadConfig(path)
 
     expect(config.configPath).toBe('.crow/config.json')
-    expect(config.repoDirectory).toBe('.crow')
+    expect(config.crowRepoDirectory).toBe('.crow')
   })
 
   it('returns a config loader with the provided config path', () => {
@@ -20,7 +20,7 @@ describe('loadConfig', () => {
     const config = loadConfig(path)
 
     expect(config.configPath).toBe('./custom-crow-repo/config.json')
-    expect(config.repoDirectory).toBe('./custom-crow-repo')
+    expect(config.crowRepoDirectory).toBe('./custom-crow-repo')
   })
 
   it('loads the config at the provided path', async () => {
@@ -29,7 +29,7 @@ describe('loadConfig', () => {
     await operation.run()
     const config = operation.result()
 
-    expect(config.userDirectory).toBe('/custom/crow')
+    expect(config.crowGlobalDirectory).toBe('/custom/crow')
     expect(config.ignoredDirectories).toEqual(['vendor'])
     expect(config.readableDirectories).toEqual(['/readable'])
     expect(config.writableDirectories).toEqual(['/writable'])
@@ -42,7 +42,7 @@ describe('loadConfig', () => {
     const config = operation.result()
 
     expect(operation.success()).toBe(false)
-    expect(config.userDirectory).toBe('~/.crow')
+    expect(config.crowGlobalDirectory).toBe('~/.crow')
     expect(config.ignoredDirectories).toEqual(['node_modules', '.git'])
     expect(config.readableDirectories).toEqual([])
     expect(config.writableDirectories).toEqual([])
@@ -57,7 +57,7 @@ describe('loadConfig', () => {
     const config = operation.result()
 
     expect(operation.success()).toBe(false)
-    expect(config.userDirectory).toBe('~/.crow')
+    expect(config.crowGlobalDirectory).toBe('~/.crow')
     expect(config.ignoredDirectories).toEqual(['node_modules', '.git'])
     expect(config.readableDirectories).toEqual([])
     expect(config.writableDirectories).toEqual([])
@@ -72,7 +72,7 @@ describe('loadConfig', () => {
     const config = operation.result()
 
     expect(operation.success()).toBe(false)
-    expect(config.userDirectory).toBe('~/.crow')
+    expect(config.crowGlobalDirectory).toBe('~/.crow')
     expect(config.ignoredDirectories).toEqual(['node_modules', '.git'])
     expect(config.readableDirectories).toEqual([])
     expect(config.writableDirectories).toEqual([])

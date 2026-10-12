@@ -3,16 +3,24 @@ import { AppData } from './app-data.ts'
 import { DenoRuntime } from './deno-runtime.ts'
 import { Io } from './io.ts'
 import { loadConfig } from './load-config.ts'
+import { gitRepositoryRoot } from './repository-root.ts'
+
+type ApplicationDataBuilderArguments = {
+  path?: string
+  deno?: typeof Deno
+}
 
 export class ApplicationDataBuilder
   implements AsyncOperationWithResult<AppData> {
   readonly configPath: string | undefined
   reason = ''
+  private deno: typeof Deno
   private succeeded = true
   appData: Partial<AppData>
 
-  constructor(configPath?: string) {
-    this.configPath = configPath
+  constructor({ path, deno }: ApplicationDataBuilderArguments = {}) {
+    this.configPath = path
+    this.deno = deno || Deno
     this.appData = new AppData()
   }
 
@@ -23,7 +31,7 @@ export class ApplicationDataBuilder
   async run() {
     this.setRuntimeAndArgs()
     await this.runConfigLoader()
-    this.setRemainingCollaborators()
+    await this.setRemainingCollaborators()
     return this
   }
 
@@ -32,7 +40,7 @@ export class ApplicationDataBuilder
   }
 
   private setRuntimeAndArgs() {
-    const deno = new DenoRuntime(Deno)
+    const deno = new DenoRuntime(this.deno)
     this.appData.denoRuntime = deno
     this.appData.parsedArguments = deno.parsedArguments()
   }
@@ -45,8 +53,18 @@ export class ApplicationDataBuilder
     this.appData.config = loader.result()
   }
 
-  private setRemainingCollaborators() {
-    this.appData.io = new Io(this.appData.config!.repoDirectory)
+  private async setRemainingCollaborators() {
+    this.appData.io = new Io(this.appData.config!.crowRepoDirectory)
+    this.appData.repositoryRoot = await this.repositoryRoot()
+  }
+
+  private async repositoryRoot() {
+    const root = gitRepositoryRoot({
+      denoCommand: this.result().denoCommand(),
+      logger: this.result().logger(),
+    })
+    await this.runSubOperation(root)
+    return root.result()
   }
 
   private async runSubOperation<T extends AsyncOperation>(operation: T) {
@@ -61,6 +79,8 @@ export class ApplicationDataBuilder
   }
 }
 
-export const buildApplicationData = (path?: string) => {
-  return new ApplicationDataBuilder(path)
+export const buildApplicationData = (
+  args: ApplicationDataBuilderArguments = {},
+) => {
+  return new ApplicationDataBuilder(args)
 }

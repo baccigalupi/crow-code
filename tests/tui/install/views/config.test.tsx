@@ -27,6 +27,6 @@ describe('config panel', () => {
     expect(lastFrame()).toContain(
       'Installing repo config in: .crow/config.json',
     )
-    expect(lastFrame()).toContain('"userDirectory": "~/.crow"')
+    expect(lastFrame()).toContain('"crowGlobalDirectory": "~/.crow"')
   })
 })

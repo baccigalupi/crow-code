@@ -10,7 +10,7 @@ export type CrowPermissionsConfig = {
 }
 
 export type CrowConfigData = {
-  userDirectory: string
+  crowGlobalDirectory: string
   permissions: CrowPermissionsConfig
 }
 

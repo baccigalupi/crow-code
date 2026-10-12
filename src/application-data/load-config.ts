@@ -4,7 +4,7 @@ import type { AsyncOperationWithResult, CrowConfigData } from '../types.ts'
 import { CrowConfig } from './config.ts'
 
 export const defaultCrowConfig = (): CrowConfigData => ({
-  userDirectory: '~/.crow',
+  crowGlobalDirectory: '~/.crow',
   permissions: {
     ignore: [
       'node_modules',
@@ -16,7 +16,7 @@ export const defaultCrowConfig = (): CrowConfigData => ({
 })
 
 const crowConfigSchema = z.object({
-  userDirectory: z.string(),
+  crowGlobalDirectory: z.string(),
   permissions: z.object({
     ignore: z.array(z.string()),
     additionalRead: z.array(z.string()),
@@ -28,14 +28,14 @@ export const defaultConfigPath = () => '.crow/config.json'
 
 export class LoadConfig implements AsyncOperationWithResult<CrowConfig> {
   readonly configPath: string
-  readonly repoDirectory: string
+  readonly crowRepoDirectory: string
   reason = ''
   private config = defaultCrowConfig()
   private succeeded = true
 
   constructor(configPath: string) {
     this.configPath = configPath
-    this.repoDirectory = dirname(configPath)
+    this.crowRepoDirectory = dirname(configPath)
   }
 
   success() {
@@ -48,7 +48,7 @@ export class LoadConfig implements AsyncOperationWithResult<CrowConfig> {
   }
 
   result() {
-    return new CrowConfig(this.repoDirectory, this.config)
+    return new CrowConfig(this.crowRepoDirectory, this.config)
   }
 
   private async load() {

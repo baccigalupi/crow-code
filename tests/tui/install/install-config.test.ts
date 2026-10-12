@@ -10,36 +10,42 @@ import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 
 describe('install-config', () => {
   it('when no directories are given, resolves the defaults', () => {
-    const repoDirectory = emptyBuffer()
-    const userDirectory = emptyBuffer()
+    const crowRepoDirectory = emptyBuffer()
+    const crowGlobalDirectory = emptyBuffer()
 
-    const config = installConfig({ repo: repoDirectory, user: userDirectory })
+    const config = installConfig({
+      repo: crowRepoDirectory,
+      user: crowGlobalDirectory,
+    })
       .all()
 
-    expect(config.repoDirectory).toBe('.crow')
-    expect(config.userDirectory).toBe('~/.crow')
+    expect(config.crowRepoDirectory).toBe('.crow')
+    expect(config.crowGlobalDirectory).toBe('~/.crow')
     expect(config.filePath).toBe('.crow/config.json')
   })
 
   it('when directories are given, resolves the given directories', () => {
-    const repoDirectory = insertText(emptyBuffer(), './lib')
-    const userDirectory = insertText(emptyBuffer(), '/opt/crow')
+    const crowRepoDirectory = insertText(emptyBuffer(), './lib')
+    const crowGlobalDirectory = insertText(emptyBuffer(), '/opt/crow')
 
-    const config = installConfig({ repo: repoDirectory, user: userDirectory })
+    const config = installConfig({
+      repo: crowRepoDirectory,
+      user: crowGlobalDirectory,
+    })
       .all()
 
-    expect(config.repoDirectory).toBe('./lib')
-    expect(config.userDirectory).toBe('/opt/crow')
+    expect(config.crowRepoDirectory).toBe('./lib')
+    expect(config.crowGlobalDirectory).toBe('/opt/crow')
     expect(config.filePath).toBe('./lib/config.json')
   })
 
   it('includes the default permissions block', () => {
-    const repoDirectory = emptyBuffer()
-    const userDirectory = emptyBuffer()
+    const crowRepoDirectory = emptyBuffer()
+    const crowGlobalDirectory = emptyBuffer()
 
     const { config } = installConfig({
-      repo: repoDirectory,
-      user: userDirectory,
+      repo: crowRepoDirectory,
+      user: crowGlobalDirectory,
     }).all()
 
     expect(config.permissions.ignore).toEqual(['node_modules', '.git'])
@@ -48,12 +54,12 @@ describe('install-config', () => {
   })
 
   it('serializes the config to pretty json', () => {
-    const repoDirectory = emptyBuffer()
-    const userDirectory = emptyBuffer()
+    const crowRepoDirectory = emptyBuffer()
+    const crowGlobalDirectory = emptyBuffer()
 
     const { json, config } = installConfig({
-      repo: repoDirectory,
-      user: userDirectory,
+      repo: crowRepoDirectory,
+      user: crowGlobalDirectory,
     }).all()
 
     expect(JSON.parse(json)).toEqual(config)
@@ -72,7 +78,7 @@ describe('install-config', () => {
     )
 
     const written = Deno.readTextFileSync(join(directory, 'config.json'))
-    expect(JSON.parse(written).userDirectory).toBe('~/.crow')
+    expect(JSON.parse(written).crowGlobalDirectory).toBe('~/.crow')
     await clearDirectory(directory)
   })
 })

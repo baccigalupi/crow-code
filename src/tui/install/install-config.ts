@@ -1,6 +1,6 @@
 import {
-  defaultRepoDirectory,
-  defaultUserDirectory,
+  defaultCrowGlobalDirectory,
+  defaultCrowRepoDirectory,
 } from './interactions/state/config-buffer.ts'
 import type { InputBuffer } from '../types.ts'
 import type {
@@ -23,8 +23,8 @@ export class InstallConfig {
 
   all(): InstallConfigData {
     return {
-      repoDirectory: this.repoDirectory(),
-      userDirectory: this.userDirectory(),
+      crowRepoDirectory: this.crowRepoDirectory(),
+      crowGlobalDirectory: this.crowGlobalDirectory(),
       filePath: this.filePath(),
       config: this.crowConfig(),
       json: this.json(),
@@ -32,19 +32,19 @@ export class InstallConfig {
   }
 
   private filePath() {
-    return `${this.repoDirectory()}/config.json`
+    return `${this.crowRepoDirectory()}/config.json`
   }
 
   private json() {
     return JSON.stringify(this.crowConfig(), null, 2)
   }
 
-  private userDirectory() {
-    return this.directory(this.user, defaultUserDirectory)
+  private crowGlobalDirectory() {
+    return this.directory(this.user, defaultCrowGlobalDirectory)
   }
 
-  private repoDirectory() {
-    return this.directory(this.repo, defaultRepoDirectory)
+  private crowRepoDirectory() {
+    return this.directory(this.repo, defaultCrowRepoDirectory)
   }
 
   private directory(input: InputBuffer, fallback: string) {
@@ -54,7 +54,7 @@ export class InstallConfig {
 
   private crowConfig(): CrowConfig {
     return {
-      userDirectory: this.userDirectory(),
+      crowGlobalDirectory: this.crowGlobalDirectory(),
       permissions: this.permissions(),
     }
   }
@@ -75,8 +75,8 @@ export const installConfig = (
 }
 
 export const writeInstallConfig: InstallConfigSaver = (
-  { repoDirectory, filePath, json },
+  { crowRepoDirectory, filePath, json },
 ) => {
-  Deno.mkdirSync(repoDirectory, { recursive: true })
+  Deno.mkdirSync(crowRepoDirectory, { recursive: true })
   Deno.writeTextFileSync(filePath, `${json}\n`)
 }

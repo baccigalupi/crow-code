@@ -1,9 +1,9 @@
 import { Box, useStdout } from 'ink'
 import { useSignalValue } from '../../use-signal-value.ts'
 import {
+  crowGlobalDirectoryInput,
+  crowRepoDirectoryInput,
   installStep,
-  repoDirectoryInput,
-  userDirectoryInput,
   writeConfirmation,
 } from '../interactions/state/config-buffer.ts'
 import { writeInstallConfig } from '../install-config.ts'
@@ -17,16 +17,16 @@ import type { InstallAppProps } from '../types.ts'
 
 export const InstallApp = (
   {
-    repo = repoDirectoryInput,
-    user = userDirectoryInput,
+    repo = crowRepoDirectoryInput,
+    user = crowGlobalDirectoryInput,
     step = installStep,
     confirmation = writeConfirmation,
     save = writeInstallConfig,
   }: InstallAppProps,
 ) => {
   const { stdout } = useStdout()
-  const repoDirectory = useSignalValue(repo)
-  const userDirectory = useSignalValue(user)
+  const crowRepoDirectory = useSignalValue(repo)
+  const crowGlobalDirectory = useSignalValue(user)
   const currentStep = useSignalValue(step)
   const confirmed = useSignalValue(confirmation)
   const { rowHeight, columnWidth } = installViewModel({ stdout })
@@ -37,22 +37,22 @@ export const InstallApp = (
       <Header />
       <ConfigPanel
         step={currentStep}
-        user={userDirectory}
-        repo={repoDirectory}
+        user={crowGlobalDirectory}
+        repo={crowRepoDirectory}
       />
       <Box flexDirection='column' flexGrow={1} justifyContent='flex-end'>
-        <RepoPrompt step={currentStep} input={repoDirectory} />
-        <UserPrompt step={currentStep} input={userDirectory} />
+        <RepoPrompt step={currentStep} input={crowRepoDirectory} />
+        <UserPrompt step={currentStep} input={crowGlobalDirectory} />
         <ConfirmPrompt
           step={currentStep}
-          repo={repoDirectory}
-          user={userDirectory}
+          repo={crowRepoDirectory}
+          user={crowGlobalDirectory}
           confirmation={confirmed}
         />
         <DoneMessage
           step={currentStep}
-          repo={repoDirectory}
-          user={userDirectory}
+          repo={crowRepoDirectory}
+          user={crowGlobalDirectory}
         />
       </Box>
     </Box>

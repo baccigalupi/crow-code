@@ -1,5 +1,5 @@
 {
-  "userDirectory": "/custom/crow",
+  "crowGlobalDirectory": "/custom/crow",
   "permissions": {
     "ignore": ["vendor"],
     "additionalRead": ["/readable"],

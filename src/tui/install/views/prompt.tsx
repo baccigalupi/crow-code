@@ -1,8 +1,8 @@
 import { Box, Text } from 'ink'
 import { bufferViewModel } from '../../buffer-view-model.ts'
 import {
-  defaultRepoDirectory,
-  defaultUserDirectory,
+  defaultCrowGlobalDirectory,
+  defaultCrowRepoDirectory,
 } from '../interactions/state/config-buffer.ts'
 import type { InputBuffer } from '../../types.ts'
 import type { InstallStep } from '../types.ts'
@@ -44,7 +44,7 @@ export const RepoPrompt = ({ step, input }: {
     <Prompt
       label='What directory for the local repo crow setup'
       input={input}
-      fallback={defaultRepoDirectory}
+      fallback={defaultCrowRepoDirectory}
     />
   )
 }
@@ -59,7 +59,7 @@ export const UserPrompt = ({ step, input }: {
     <Prompt
       label='User crow directory'
       input={input}
-      fallback={defaultUserDirectory}
+      fallback={defaultCrowGlobalDirectory}
     />
   )
 }
