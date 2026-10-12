@@ -1,5 +1,4 @@
 import pino from 'pino'
-import type { Knex } from 'knex'
 import type OpenAI from 'openai'
 import { stub } from '@std/testing/mock'
 import { ApplicationData } from '../../src/application-data/application-data.ts'
@@ -39,13 +38,7 @@ export const mockApplicationData = (
   data.repositoryRoot = Deno.cwd()
 
   const logger = overrides.logger || pino({ enabled: false })
-  let databasePromise: Promise<Knex> | undefined
-  const lazyDatabase = () => {
-    if (!databasePromise) {
-      databasePromise = createTestDatabase(logger)
-    }
-    return databasePromise
-  }
+  const database = createTestDatabase(logger)
   const consoleLog = overrides.consoleLog || (() => {})
   const consoleError = overrides.consoleError || (() => {})
   const fetchClient = overrides.fetch || mockFetchSuccess({})
@@ -54,7 +47,7 @@ export const mockApplicationData = (
 
   stub(data, 'args', () => args)
   stub(data, 'logger', () => logger)
-  stub(data, 'database', lazyDatabase)
+  stub(data, 'database', () => database)
   data.close = () => Promise.resolve()
   stub(data, 'consoleLog', () => consoleLog)
   stub(data, 'consoleError', () => consoleError)
