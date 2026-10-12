@@ -34,6 +34,11 @@ export type EditResult = {
   replacements: number
 }
 
+export type MakeDirectoryResult = {
+  path: string
+  created: boolean
+}
+
 export type DirectoryEntryKind = 'file' | 'directory' | 'symlink'
 
 export type DirectoryEntry = {
