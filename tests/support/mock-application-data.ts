@@ -49,21 +49,21 @@ export const mockApplicationData = (
     return Promise.resolve(database)
   }
 
-  const args = overrides.args ?? []
-  const crowDirectory = overrides.crowDirectory ?? ''
-  const logger = overrides.logger ?? pino({ enabled: false })
-  const close = overrides.close ?? (() => Promise.resolve())
-  const consoleLog = overrides.consoleLog ?? (() => {})
-  const consoleError = overrides.consoleError ?? (() => {})
-  const fetchClient = overrides.fetch ?? mockFetchSuccess({})
-  const denoCommand = overrides.denoCommand ?? Deno.Command
-  const envars = overrides.envars ?? new Environment({})
+  const args = overrides.args || []
+  const crowDirectory = overrides.crowDirectory || ''
+  const logger = overrides.logger || pino({ enabled: false })
+  const close = overrides.close || (() => Promise.resolve())
+  const consoleLog = overrides.consoleLog || (() => {})
+  const consoleError = overrides.consoleError || (() => {})
+  const fetchClient = overrides.fetch || mockFetchSuccess({})
+  const denoCommand = overrides.denoCommand || Deno.Command
+  const envars = overrides.envars || new Environment({})
 
   stub(data, 'args', () => args)
   stub(
     data,
     'parsedArguments',
-    overrides.parsedArguments ?? (() => parseArguments(args)),
+    overrides.parsedArguments || (() => parseArguments(args)),
   )
   stub(data, 'crowDirectory', () => crowDirectory)
   stub(data, 'logger', () => logger)
@@ -75,11 +75,11 @@ export const mockApplicationData = (
   stub(data, 'denoCommand', () => denoCommand)
   stub(data, 'envars', () => envars)
   stub(data, 'gitPathPermissions', () =>
-    overrides.gitPathPermissions ??
-      pathPermissions({
-        applicationData: data,
-        allowedDirectories: [Deno.cwd()],
-      }))
+    overrides.gitPathPermissions ||
+    pathPermissions({
+      applicationData: data,
+      allowedDirectories: [Deno.cwd()],
+    }))
 
   if (overrides.chatClient) {
     stub(data, 'chatClient', overrides.chatClient)

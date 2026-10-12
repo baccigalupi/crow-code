@@ -35,6 +35,14 @@ describe('style-check cli', () => {
     expect(kind).toBe('other')
   })
 
+  it('when a test support file is named, classifies it as support', () => {
+    const file = 'tests/support/mock-terminal.ts'
+
+    const kind = classify(file)
+
+    expect(kind).toBe('support')
+  })
+
   it('when no args are given, parses to the all scope', () => {
     const args: string[] = []
 

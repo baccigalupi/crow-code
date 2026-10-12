@@ -7,4 +7,4 @@ const ansiPattern = new RegExp(
 // output stream is a TTY, which splits contiguous text in lastFrame(). Strip
 // the escapes before asserting on rendered content.
 export const stripAnsi = (frame: string | undefined) =>
-  (frame ?? '').replace(ansiPattern, '')
+  (frame || '').replace(ansiPattern, '')

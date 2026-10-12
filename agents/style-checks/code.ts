@@ -5,6 +5,9 @@ const isProductionFile = (fileName: string): boolean => {
 const isTestFile = (fileName: string): boolean =>
   /(^|\/)tests\/.*\.test\.tsx?$/.test(fileName)
 
+const isTestSupportFile = (fileName: string): boolean =>
+  /(^|\/)tests\/.*\.tsx?$/.test(fileName) && !isTestFile(fileName)
+
 const isAnySourceFile = (fileName: string): boolean => {
   return /(^|\/)src\/.*\.tsx?$/.test(fileName) &&
     !fileName.endsWith('.test.ts') && !fileName.endsWith('.test.tsx')
@@ -297,7 +300,11 @@ const plugin: Deno.lint.Plugin = {
     },
     'no-nullish-coalescing': {
       create(context) {
-        if (!isProductionFile(context.filename)) return {}
+        if (
+          !isProductionFile(context.filename) &&
+          !isTestFile(context.filename) &&
+          !isTestSupportFile(context.filename)
+        ) return {}
         return {
           LogicalExpression(node) {
             if (node.operator === '??') {

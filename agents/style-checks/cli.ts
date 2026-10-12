@@ -22,9 +22,15 @@ const testGlobs = [
   'tests/**/*.test.ts',
   'tests/**/*.test.tsx',
 ]
+const supportGlobs = [
+  'tests/*.ts',
+  'tests/*.tsx',
+  'tests/**/*.ts',
+  'tests/**/*.tsx',
+]
 const checksDir = 'agents/style-checks'
 
-export type Kind = 'code' | 'test' | 'other'
+export type Kind = 'code' | 'test' | 'support' | 'other'
 
 export type Parsed =
   | { ok: true; scope: 'all' | 'changed' | 'files'; files: string[] }
@@ -33,6 +39,10 @@ export type Parsed =
 export const classify = (file: string): Kind => {
   if (file.startsWith('src/') && /\.tsx?$/.test(file)) return 'code'
   if (file.startsWith('tests/') && /\.test\.tsx?$/.test(file)) return 'test'
+  if (
+    file.startsWith('tests/') && !file.includes('/fixtures/') &&
+    /\.tsx?$/.test(file)
+  ) return 'support'
   return 'other'
 }
 
@@ -76,13 +86,21 @@ const gitFiles = async (args: string[]): Promise<string[]> => {
 }
 
 const trackedFiles = async (): Promise<string[]> => [
-  ...await gitFiles(['ls-files', ...codeGlobs, ...testGlobs]),
-  ...await gitFiles([
-    'ls-files',
-    '--others',
-    '--exclude-standard',
-    ...codeGlobs,
-    ...testGlobs,
+  ...new Set([
+    ...await gitFiles([
+      'ls-files',
+      ...codeGlobs,
+      ...testGlobs,
+      ...supportGlobs,
+    ]),
+    ...await gitFiles([
+      'ls-files',
+      '--others',
+      '--exclude-standard',
+      ...codeGlobs,
+      ...testGlobs,
+      ...supportGlobs,
+    ]),
   ]),
 ]
 
@@ -186,13 +204,24 @@ const advise = async (file: string): Promise<void> => {
   await runDeno(['lint', file])
 }
 
+const checkSupport = async (files: string[]): Promise<boolean> => {
+  let ok = (await lintConfig('code.deno.json', files)) === 0
+  const tsxFiles = files.filter((file) => file.endsWith('.tsx'))
+  if (tsxFiles.length > 0) {
+    ok = (await lintConfig('tsx.deno.json', tsxFiles)) === 0 && ok
+  }
+  return ok
+}
+
 const checkFiles = async (files: string[]): Promise<boolean> => {
   const code = files.filter((file) => classify(file) === 'code')
   const tests = files.filter((file) => classify(file) === 'test')
+  const support = files.filter((file) => classify(file) === 'support')
   const others = files.filter((file) => classify(file) === 'other')
   let ok = true
   if (code.length > 0) ok = await checkCode(code) && ok
   for (const test of tests) ok = await checkTest(test) && ok
+  if (support.length > 0) ok = await checkSupport(support) && ok
   for (const other of others) await advise(other)
   return ok
 }

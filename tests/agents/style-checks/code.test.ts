@@ -185,6 +185,32 @@ describe('style-check code plugin', () => {
     expect(diagnostics[0].message).toContain('no ??')
   })
 
+  it('when nullish coalescing is used in a test, reports it', () => {
+    const source = 'const x = a ?? b'
+
+    const diagnostics = Deno.lint.runPlugin(
+      plugin,
+      'tests/example.test.ts',
+      source,
+    )
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('no ??')
+  })
+
+  it('when nullish coalescing is used in a test support file, reports it', () => {
+    const source = 'const x = a ?? b'
+
+    const diagnostics = Deno.lint.runPlugin(
+      plugin,
+      'tests/support/example.ts',
+      source,
+    )
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('no ??')
+  })
+
   it('when optional chaining is used, reports it', () => {
     const source = 'const x = a?.b'
 
