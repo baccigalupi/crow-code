@@ -25,31 +25,25 @@ describe('loadConfig', () => {
     const operation = loadConfig(join(fixturesDirectory, 'config.json'))
 
     await operation.run()
+    const config = operation.result()
 
-    expect(operation.result()).toEqual({
-      userDirectory: '/custom/crow',
-      permissions: {
-        ignore: ['vendor'],
-        additionalRead: ['/readable'],
-        additionalWrite: ['/writable'],
-      },
-    })
+    expect(config.userDirectory).toBe('/custom/crow')
+    expect(config.ignoredDirectories).toEqual(['vendor'])
+    expect(config.readableDirectories).toEqual(['/readable'])
+    expect(config.writableDirectories).toEqual(['/writable'])
   })
 
   it('returns the default config when the path is not found', async () => {
     const operation = loadConfig(join(fixturesDirectory, 'missing-config.json'))
 
     await operation.run()
+    const config = operation.result()
 
     expect(operation.success()).toBe(false)
-    expect(operation.result()).toEqual({
-      userDirectory: '~/.crow',
-      permissions: {
-        ignore: ['node_modules', '.git'],
-        additionalRead: [],
-        additionalWrite: [],
-      },
-    })
+    expect(config.userDirectory).toBe('~/.crow')
+    expect(config.ignoredDirectories).toEqual(['node_modules', '.git'])
+    expect(config.readableDirectories).toEqual([])
+    expect(config.writableDirectories).toEqual([])
   })
 
   it('fails when the config contains malformed JSON', async () => {
@@ -58,16 +52,13 @@ describe('loadConfig', () => {
     )
 
     await operation.run()
+    const config = operation.result()
 
     expect(operation.success()).toBe(false)
-    expect(operation.result()).toEqual({
-      userDirectory: '~/.crow',
-      permissions: {
-        ignore: ['node_modules', '.git'],
-        additionalRead: [],
-        additionalWrite: [],
-      },
-    })
+    expect(config.userDirectory).toBe('~/.crow')
+    expect(config.ignoredDirectories).toEqual(['node_modules', '.git'])
+    expect(config.readableDirectories).toEqual([])
+    expect(config.writableDirectories).toEqual([])
   })
 
   it('fails when the config does not match the schema', async () => {
@@ -76,15 +67,12 @@ describe('loadConfig', () => {
     )
 
     await operation.run()
+    const config = operation.result()
 
     expect(operation.success()).toBe(false)
-    expect(operation.result()).toEqual({
-      userDirectory: '~/.crow',
-      permissions: {
-        ignore: ['node_modules', '.git'],
-        additionalRead: [],
-        additionalWrite: [],
-      },
-    })
+    expect(config.userDirectory).toBe('~/.crow')
+    expect(config.ignoredDirectories).toEqual(['node_modules', '.git'])
+    expect(config.readableDirectories).toEqual([])
+    expect(config.writableDirectories).toEqual([])
   })
 })

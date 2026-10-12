@@ -3,6 +3,17 @@ import type { ApplicationData } from './application-data.ts'
 
 export type Logger = pino.Logger
 
+export type CrowPermissionsConfig = {
+  ignore: string[]
+  additionalRead: string[]
+  additionalWrite: string[]
+}
+
+export type CrowConfigData = {
+  userDirectory: string
+  permissions: CrowPermissionsConfig
+}
+
 export type ApplicationOperationArguments<T> = {
   applicationData: ApplicationData
   operationArguments: T

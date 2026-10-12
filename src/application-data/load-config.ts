@@ -1,18 +1,8 @@
 import { z } from 'zod'
-import type { AsyncOperationWithResult } from '../types.ts'
+import type { AsyncOperationWithResult, CrowConfigData } from '../types.ts'
+import { CrowConfig } from './config.ts'
 
-type CrowPermissionsConfig = {
-  ignore: string[]
-  additionalRead: string[]
-  additionalWrite: string[]
-}
-
-type CrowConfig = {
-  userDirectory: string
-  permissions: CrowPermissionsConfig
-}
-
-export const defaultCrowConfig = (): CrowConfig => ({
+export const defaultCrowConfig = (): CrowConfigData => ({
   userDirectory: '~/.crow',
   permissions: {
     ignore: [
@@ -55,7 +45,7 @@ export class LoadConfig implements AsyncOperationWithResult<CrowConfig> {
   }
 
   result() {
-    return this.config
+    return new CrowConfig(this.crowRepoPath, this.config)
   }
 
   private async load() {
