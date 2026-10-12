@@ -6,8 +6,6 @@ import { CreateModelCatalog } from '../../../src/cli/commands/create-model-catal
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import { mockFetchSuccess } from '../../support/mock-fetch.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
-import { createTestDatabase } from '../../support/test-database.ts'
-import pino from 'pino'
 
 describe('CreateModelCatalog', () => {
   beforeEach(() =>
@@ -36,21 +34,19 @@ describe('CreateModelCatalog', () => {
   })
 
   it('when run, populates models from database providers', async () => {
-    const database = await createTestDatabase(pino({ enabled: false }))
-    await database('providers').insert({
-      name: 'ollama',
-      base_url: 'http://pile-driver.local:11434',
-      models_path: '/api/tags',
-      api_key_env_var: null,
-    })
     const fetchMock = mockFetchSuccess({
       models: [{ name: 'author/model', details: { context_length: 128000 } }],
     })
     const applicationData = mockApplicationData({
       args: ['create-model-catalog'],
-      crowDirectory: join(fixturesDirectory, 'create-model-catalog', '.crow'),
-      database,
       fetch: fetchMock,
+    })
+    const database = await applicationData.database()
+    await database('providers').insert({
+      name: 'ollama',
+      base_url: 'http://pile-driver.local:11434',
+      models_path: '/api/tags',
+      api_key_env_var: null,
     })
 
     await command(CreateModelCatalog, applicationData).run()

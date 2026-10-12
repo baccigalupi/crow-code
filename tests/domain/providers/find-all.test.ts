@@ -4,7 +4,6 @@ import pino from 'pino'
 import { Environment } from '../../../src/application-data/env-vars.ts'
 import { ProviderEntity } from '../../../src/domain/providers/entity.ts'
 import { providerFindAll } from '../../../src/domain/providers/find-all.ts'
-import { createTestDatabase } from '../../support/test-database.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('providerFindAll', () => {
@@ -12,7 +11,11 @@ describe('providerFindAll', () => {
     it('returns every provider as a ProviderEntity', async () => {
       const environment = new Environment({ PROVIDER_API_KEY: 'secret' })
       const logger = pino({ enabled: false })
-      const database = await createTestDatabase(logger)
+      const applicationData = mockApplicationData({
+        envars: environment,
+        logger,
+      })
+      const database = await applicationData.database()
       await database('providers').insert([
         {
           name: 'provider-one',
@@ -27,11 +30,6 @@ describe('providerFindAll', () => {
           api_key_env_var: 'PROVIDER_API_KEY',
         },
       ])
-      const applicationData = mockApplicationData({
-        envars: environment,
-        database,
-        logger,
-      })
 
       const providers = await providerFindAll(applicationData).all()
 
@@ -48,10 +46,8 @@ describe('providerFindAll', () => {
     it('returns an empty array when there are no providers', async () => {
       const environment = new Environment({})
       const logger = pino({ enabled: false })
-      const database = await createTestDatabase(logger)
       const applicationData = mockApplicationData({
         envars: environment,
-        database,
         logger,
       })
 
@@ -63,17 +59,16 @@ describe('providerFindAll', () => {
     it('returns an empty api key when the env var is unset', async () => {
       const environment = new Environment({})
       const logger = pino({ enabled: false })
-      const database = await createTestDatabase(logger)
+      const applicationData = mockApplicationData({
+        envars: environment,
+        logger,
+      })
+      const database = await applicationData.database()
       await database('providers').insert({
         name: 'provider-name',
         base_url: 'https://www.example.com',
         models_path: '/models',
         api_key_env_var: 'MISSING_KEY',
-      })
-      const applicationData = mockApplicationData({
-        envars: environment,
-        database,
-        logger,
       })
 
       const providers = await providerFindAll(applicationData).all()

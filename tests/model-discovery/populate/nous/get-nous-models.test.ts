@@ -8,7 +8,6 @@ import {
 } from '../../../support/mock-fetch.ts'
 import { loadNousFixture } from '../../../support/fixtures.ts'
 import { getNousModels } from '../../../../src/model-discovery/populate/nous/get-nous-models.ts'
-import { createTestDatabase } from '../../../support/test-database.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { ProviderEntity } from '../../../../src/domain/providers/entity.ts'
 import { Environment } from '../../../../src/application-data/env-vars.ts'
@@ -27,12 +26,12 @@ describe('getNousModels', () => {
     )
     const fixture = await loadNousFixture()
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
     const mockFetch = mockFetchSuccess(fixture)
+    const applicationData = mockApplicationData({ logger, fetch: mockFetch })
 
     const result = await getNousModels(
       provider,
-      mockApplicationData({ database, logger, fetch: mockFetch }),
+      applicationData,
     )
 
     expect(result).toHaveLength(400)
@@ -52,7 +51,6 @@ describe('getNousModels', () => {
       new Environment({}),
     )
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
     const record = {
       id: 'author/model',
       name: 'Model',
@@ -62,10 +60,12 @@ describe('getNousModels', () => {
       supported_parameters: ['temperature'],
     }
     const mockFetch = mockFetchSuccess({ data: [record] })
+    const applicationData = mockApplicationData({ logger, fetch: mockFetch })
+    const database = await applicationData.database()
 
     await getNousModels(
       provider,
-      mockApplicationData({ database, logger, fetch: mockFetch }),
+      applicationData,
     )
 
     const rows = await database('models')
@@ -88,12 +88,12 @@ describe('getNousModels', () => {
       new Environment({}),
     )
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
     const mockFetch = mockFetchSuccess({ data: [] })
+    const applicationData = mockApplicationData({ logger, fetch: mockFetch })
 
     await getNousModels(
       provider,
-      mockApplicationData({ database, logger, fetch: mockFetch }),
+      applicationData,
     )
 
     expect(mockFetch.calls).toHaveLength(1)
@@ -112,12 +112,13 @@ describe('getNousModels', () => {
       new Environment({}),
     )
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
     const mockFetch = mockFetchError(500)
+    const applicationData = mockApplicationData({ logger, fetch: mockFetch })
+    const database = await applicationData.database()
 
     const result = await getNousModels(
       provider,
-      mockApplicationData({ database, logger, fetch: mockFetch }),
+      applicationData,
     )
 
     expect(result).toEqual([])
@@ -136,12 +137,13 @@ describe('getNousModels', () => {
       new Environment({}),
     )
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
     const mockFetch = mockFetchRejected('network down')
+    const applicationData = mockApplicationData({ logger, fetch: mockFetch })
+    const database = await applicationData.database()
 
     const result = await getNousModels(
       provider,
-      mockApplicationData({ database, logger, fetch: mockFetch }),
+      applicationData,
     )
 
     expect(result).toEqual([])

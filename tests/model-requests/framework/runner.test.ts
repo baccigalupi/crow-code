@@ -4,14 +4,18 @@ import { assertSpyCall, spy } from '@std/testing/mock'
 import pino from 'pino'
 import { Runner } from '../../../src/model-requests/framework/runner.ts'
 import { GetGoals } from '../../../src/model-requests/goals.ts'
-import { createTestDatabase } from '../../support/test-database.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { mockFetchSequence } from '../../support/mock-fetch.ts'
 
 describe('Runner', () => {
   it('tries models until a request succeeds', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const fetch = mockFetchSequence([
+      Response.json({ choices: [{ message: { content: 'invalid' } }] }),
+      Response.json({ choices: [{ message: { content: '["done"]' } }] }),
+    ])
+    const applicationData = mockApplicationData({ logger, fetch })
+    const database = await applicationData.database()
     await database('providers').insert({
       id: 1,
       name: 'Provider',
@@ -61,11 +65,6 @@ describe('Runner', () => {
         reasoning_options: '{}',
       },
     ])
-    const fetch = mockFetchSequence([
-      Response.json({ choices: [{ message: { content: 'invalid' } }] }),
-      Response.json({ choices: [{ message: { content: '["done"]' } }] }),
-    ])
-    const applicationData = mockApplicationData({ database, logger, fetch })
     const runner = new Runner({
       applicationData,
       operationArguments: {
@@ -84,9 +83,8 @@ describe('Runner', () => {
 
   it('when no models are available, returns undefined', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
     const fetch = mockFetchSequence([])
-    const applicationData = mockApplicationData({ database, logger, fetch })
+    const applicationData = mockApplicationData({ logger, fetch })
     const runner = new Runner({
       applicationData,
       operationArguments: {
@@ -104,9 +102,14 @@ describe('Runner', () => {
   })
 
   it("logs each failed model's failure reason", async () => {
-    const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
-    const database = await createTestDatabase(logger)
+    const fetch = mockFetchSequence([
+      new Response('{"message":"bad request"}', { status: 400 }),
+      Response.json({ choices: [{ message: { content: 'invalid' } }] }),
+      Response.json({ choices: [{ message: { content: '["done"]' } }] }),
+    ])
+    const applicationData = mockApplicationData({ fetch })
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const database = await applicationData.database()
     await database('providers').insert({
       id: 1,
       name: 'Provider',
@@ -130,12 +133,6 @@ describe('Runner', () => {
       { ...row, identifier: 'second' },
       { ...row, identifier: 'third' },
     ])
-    const fetch = mockFetchSequence([
-      new Response('{"message":"bad request"}', { status: 400 }),
-      Response.json({ choices: [{ message: { content: 'invalid' } }] }),
-      Response.json({ choices: [{ message: { content: '["done"]' } }] }),
-    ])
-    const applicationData = mockApplicationData({ database, logger, fetch })
     const runner = new Runner({
       applicationData,
       operationArguments: {

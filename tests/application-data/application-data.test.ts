@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { stub } from '@std/testing/mock'
 import { OpenAI } from 'openai'
-import { AppData } from '../../src/application-data/app-data.ts'
+import { ApplicationData } from '../../src/application-data/application-data.ts'
 import { CrowConfig } from '../../src/application-data/config.ts'
 import { DenoRuntime } from '../../src/application-data/deno-runtime.ts'
 import { Io } from '../../src/application-data/io.ts'
@@ -12,7 +12,7 @@ import { createTestDatabase } from '../support/test-database.ts'
 import { mockFetchSuccess } from '../support/mock-fetch.ts'
 import { pino } from 'pino'
 
-describe('AppData', () => {
+describe('ApplicationData', () => {
   beforeEach(async () => {
     await clearDirectory(join(fixturesDirectory, 'logger'))
     await clearDirectory(join(fixturesDirectory, 'database'))
@@ -25,14 +25,14 @@ describe('AppData', () => {
   it('delegates io to the attribute', () => {
     const crowRepoDirectory = join(fixturesDirectory, 'logger')
 
-    const appData = new AppData()
+    const appData = new ApplicationData()
     appData.io = new Io(crowRepoDirectory)
 
     expect(appData.consoleLog()).toEqual(console.log)
   })
 
   it('delegates denoRuntime to the attribute', () => {
-    const appData = new AppData()
+    const appData = new ApplicationData()
     appData.denoRuntime = new DenoRuntime(Deno)
 
     const denoCommand = appData.denoCommand()
@@ -41,7 +41,7 @@ describe('AppData', () => {
   })
 
   it('bounds path permissions to the working directory', async () => {
-    const appData = new AppData()
+    const appData = new ApplicationData()
     appData.denoRuntime = new DenoRuntime(Deno)
 
     const permissions = appData.pathPermissions()
@@ -51,7 +51,7 @@ describe('AppData', () => {
   })
 
   it('bounds git path permissions to the repository root', async () => {
-    const appData = new AppData()
+    const appData = new ApplicationData()
     appData.denoRuntime = new DenoRuntime(Deno)
     appData.repositoryRoot = fixturesDirectory
 
@@ -64,7 +64,7 @@ describe('AppData', () => {
 
   it('opens the database in the crow global directory', async () => {
     const crowGlobalDirectory = join(fixturesDirectory, 'database')
-    const appData = new AppData()
+    const appData = new ApplicationData()
     appData.denoRuntime = new DenoRuntime(Deno)
     appData.io = new Io(join(fixturesDirectory, 'logger'))
     appData.config = new CrowConfig('.', {
@@ -81,7 +81,7 @@ describe('AppData', () => {
   })
 
   it('clones the data object with an injected database', async () => {
-    const appData = new AppData()
+    const appData = new ApplicationData()
     const newDatabase = await createTestDatabase(pino({ enabled: false }))
 
     const clonedData = appData.withDatabase(newDatabase)
@@ -91,7 +91,7 @@ describe('AppData', () => {
   })
 
   it('when closed, destroys the database connection', async () => {
-    const appData = new AppData()
+    const appData = new ApplicationData()
     appData.io = new Io(join(fixturesDirectory, 'logger'))
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory: join(fixturesDirectory, 'database'),
@@ -108,7 +108,7 @@ describe('AppData', () => {
     const fetchMock = mockFetchSuccess({
       choices: [{ message: { content: '' } }],
     })
-    const appData = new AppData()
+    const appData = new ApplicationData()
     appData.io = new Io(join(fixturesDirectory, 'logger'))
     using _fetch = stub(globalThis, 'fetch', fetchMock)
 

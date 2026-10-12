@@ -24,7 +24,6 @@ import type {
     denoCommand: 'denoCommand',
     envars: 'envars',
     getRealPath: 'getRealPath',
-    parsedArguments: 'parsedArguments',
   },
   'denoRuntime',
 )
@@ -37,7 +36,7 @@ import type {
   },
   'io',
 )
-export class AppData {
+export class ApplicationData {
   config!: CrowConfig
   denoRuntime!: DenoRuntime
   io!: Io
@@ -60,7 +59,7 @@ export class AppData {
   withDatabase(database: Knex) {
     return Object.create(this, {
       database: { value: () => Promise.resolve(database) },
-    }) as AppData
+    }) as ApplicationData
   }
 
   @memoize
@@ -85,7 +84,7 @@ export class AppData {
   }
 }
 
-export interface AppData {
+export interface ApplicationData {
   args(): string[]
   consoleError(): ConsoleError
   consoleLog(): ConsoleLog

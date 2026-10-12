@@ -2,9 +2,7 @@ import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { assertSpyCall, spy } from '@std/testing/mock'
-import { ApplicationData } from '../../../../src/application-data.ts'
 import { gitShow } from '../../../../src/tools/git/read-only/show.ts'
-import { pathPermissions } from '../../../../src/application-data/path-permissions.ts'
 import { fixturesDirectory } from '../../../support/fixtures.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { mockDenoCommand } from '../../../support/mock-deno-command.ts'
@@ -124,11 +122,8 @@ describe('gitShow', () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
       denoCommand: mockDenoCommand({ commandSpy }),
-      gitPathPermissions: pathPermissions({
-        getRealPath: new ApplicationData().getRealPath(),
-        allowedDirectories: [join(fixturesDirectory, 'tools', 'git')],
-      }),
     })
+    applicationData.repositoryRoot = join(fixturesDirectory, 'tools', 'git')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const show = gitShow({

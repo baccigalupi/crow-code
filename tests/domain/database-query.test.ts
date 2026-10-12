@@ -1,13 +1,11 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { assertSpyCall, spy } from '@std/testing/mock'
-import pino from 'pino'
 import {
   DatabaseQuery,
   databaseQuery,
 } from '../../src/domain/database-query.ts'
 import { mockApplicationData } from '../support/mock-application-data.ts'
-import { createTestDatabase } from '../support/test-database.ts'
 
 describe('databaseQuery', () => {
   it('when the query succeeds, returns its result', async () => {
@@ -23,11 +21,11 @@ describe('databaseQuery', () => {
   })
 
   it('when the query fails, logs the error and returns an empty array', async () => {
-    const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
+    const applicationData = mockApplicationData()
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const query = await databaseQuery<string>({
-      applicationData: mockApplicationData({ logger }),
+      applicationData,
       operationArguments: { query: Promise.reject(new Error('query failed')) },
     }).run()
 
@@ -39,13 +37,13 @@ describe('databaseQuery', () => {
   })
 
   it('when a knex query fails, logs the rendered sql', async () => {
-    const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData()
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const database = await applicationData.database()
     const query = database('missing_table').where({ name: 'x' }).select('*')
 
     const result = await databaseQuery({
-      applicationData: mockApplicationData({ database, logger }),
+      applicationData,
       operationArguments: { query },
     }).run()
 

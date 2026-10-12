@@ -1,17 +1,14 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import pino from 'pino'
 import { createProviderAvailability } from '../../../src/domain/availabilties/create-provider.ts'
-import { createTestDatabase } from '../../support/test-database.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('create provider availability', () => {
   it('saves a provider availability record', async () => {
-    const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData()
 
     const creator = await createProviderAvailability(
-      mockApplicationData({ database, logger }),
+      applicationData,
       {
         providerId: 1,
         reason: 'no-api-key',

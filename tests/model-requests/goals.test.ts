@@ -4,7 +4,6 @@ import pino from 'pino'
 import { GetGoals, getGoals } from '../../src/model-requests/goals.ts'
 import type { ChatCompletionJson } from '../../src/model-requests/types.ts'
 import { loadFixture } from '../support/fixtures.ts'
-import { createTestDatabase } from '../support/test-database.ts'
 import { mockApplicationData } from '../support/mock-application-data.ts'
 import { mockFetchError, mockFetchSuccess } from '../support/mock-fetch.ts'
 
@@ -82,7 +81,9 @@ describe('goals', () => {
 
   it('when the api call fails, the runner reports failure', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const fetch = mockFetchError(500)
+    const applicationData = mockApplicationData({ logger, fetch })
+    const database = await applicationData.database()
     await database('providers').insert({
       id: 1,
       name: 'Provider',
@@ -102,8 +103,6 @@ describe('goals', () => {
       can_disable_reasoning: false,
       reasoning_options: '{}',
     })
-    const fetch = mockFetchError(500)
-    const applicationData = mockApplicationData({ database, logger, fetch })
 
     const runner = await getGoals(applicationData, 'build a cli')
 
@@ -113,7 +112,12 @@ describe('goals', () => {
 
   it('when the api call succeeds, the runner returns the goals', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const fixture = await loadFixture(
+      'model-requests/ollama-goals-response.json',
+    ) as ChatCompletionJson
+    const fetch = mockFetchSuccess(fixture)
+    const applicationData = mockApplicationData({ logger, fetch })
+    const database = await applicationData.database()
     await database('providers').insert({
       id: 1,
       name: 'Provider',
@@ -133,11 +137,6 @@ describe('goals', () => {
       can_disable_reasoning: false,
       reasoning_options: '{}',
     })
-    const fixture = await loadFixture(
-      'model-requests/ollama-goals-response.json',
-    ) as ChatCompletionJson
-    const fetch = mockFetchSuccess(fixture)
-    const applicationData = mockApplicationData({ database, logger, fetch })
 
     const runner = await getGoals(applicationData, 'build a cli')
 

@@ -5,7 +5,6 @@ import {
   GetCommitMessage,
   getCommitMessage,
 } from '../../src/model-requests/commit-message.ts'
-import { createTestDatabase } from '../support/test-database.ts'
 import { mockApplicationData } from '../support/mock-application-data.ts'
 import { mockFetchError, mockFetchSuccess } from '../support/mock-fetch.ts'
 
@@ -226,7 +225,9 @@ describe('commit-message', () => {
 
   it('when the api call fails, the runner reports failure', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const fetch = mockFetchError(500)
+    const applicationData = mockApplicationData({ logger, fetch })
+    const database = await applicationData.database()
     await database('providers').insert({
       id: 1,
       name: 'Provider',
@@ -246,8 +247,6 @@ describe('commit-message', () => {
       can_disable_reasoning: false,
       reasoning_options: '{}',
     })
-    const fetch = mockFetchError(500)
-    const applicationData = mockApplicationData({ database, logger, fetch })
 
     const runner = await getCommitMessage(applicationData, {
       goal: 'add login',
@@ -261,7 +260,18 @@ describe('commit-message', () => {
 
   it('when the api call succeeds, the runner returns the commit message', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const fetch = mockFetchSuccess({
+      choices: [
+        {
+          message: {
+            content: '{"subject":"Add login","body":"Adds the login form."}',
+          },
+        },
+      ],
+      usage: { completion_tokens: 1 },
+    })
+    const applicationData = mockApplicationData({ logger, fetch })
+    const database = await applicationData.database()
     await database('providers').insert({
       id: 1,
       name: 'Provider',
@@ -281,17 +291,6 @@ describe('commit-message', () => {
       can_disable_reasoning: false,
       reasoning_options: '{}',
     })
-    const fetch = mockFetchSuccess({
-      choices: [
-        {
-          message: {
-            content: '{"subject":"Add login","body":"Adds the login form."}',
-          },
-        },
-      ],
-      usage: { completion_tokens: 1 },
-    })
-    const applicationData = mockApplicationData({ database, logger, fetch })
 
     const runner = await getCommitMessage(applicationData, {
       goal: 'add login',

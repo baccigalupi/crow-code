@@ -1,4 +1,4 @@
-import type { ApplicationData } from '../../application-data.ts'
+import type { ApplicationData } from '../../application-data/application-data.ts'
 import type { RecordParams } from '../types.ts'
 import { CreateRecord } from '../create.ts'
 import type { ModelRow } from '../types.ts'

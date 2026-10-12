@@ -1,17 +1,39 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { assertSpyCall, spy } from '@std/testing/mock'
-import pino from 'pino'
 import { commit } from '../../src/tasks/commit.ts'
-import { createTestDatabase } from '../support/test-database.ts'
 import { mockApplicationData } from '../support/mock-application-data.ts'
 import { mockDenoCommand } from '../support/mock-deno-command.ts'
 import { mockFetchError, mockFetchSuccess } from '../support/mock-fetch.ts'
 
 describe('commit', () => {
   it('when files changed, collects diffs, requests a message, stages and commits', async () => {
-    const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const commandSpy = spy()
+    const fetch = mockFetchSuccess({
+      choices: [
+        {
+          message: {
+            content: '{"subject":"Add login","body":"Adds the login form."}',
+          },
+        },
+      ],
+      usage: { completion_tokens: 1 },
+    })
+    const applicationData = mockApplicationData({
+      fetch,
+      denoCommand: mockDenoCommand({
+        commandSpy,
+        stdout: [
+          'diff --git a/src/a.ts b/src/a.ts\n--- a/src/a.ts\n+++ b/src/a.ts\n@@ -1 +1 @@\n-old\n+new\n',
+          ' M src/a.ts\n?? src/b.ts\n',
+          'diff --git a/src/b.ts b/src/b.ts\nnew file mode 100644\n--- /dev/null\n+++ b/src/b.ts\n@@ -0,0 +1 @@\n+beta\n',
+          'Fix tests\n',
+          '',
+          'committed',
+        ],
+      }),
+    })
+    const database = await applicationData.database()
     await database('providers').insert({
       id: 1,
       name: 'Provider',
@@ -30,33 +52,6 @@ describe('commit', () => {
       supports_reasoning: false,
       can_disable_reasoning: false,
       reasoning_options: '{}',
-    })
-    const commandSpy = spy()
-    const fetch = mockFetchSuccess({
-      choices: [
-        {
-          message: {
-            content: '{"subject":"Add login","body":"Adds the login form."}',
-          },
-        },
-      ],
-      usage: { completion_tokens: 1 },
-    })
-    const applicationData = mockApplicationData({
-      database,
-      logger,
-      fetch,
-      denoCommand: mockDenoCommand({
-        commandSpy,
-        stdout: [
-          'diff --git a/src/a.ts b/src/a.ts\n--- a/src/a.ts\n+++ b/src/a.ts\n@@ -1 +1 @@\n-old\n+new\n',
-          ' M src/a.ts\n?? src/b.ts\n',
-          'diff --git a/src/b.ts b/src/b.ts\nnew file mode 100644\n--- /dev/null\n+++ b/src/b.ts\n@@ -0,0 +1 @@\n+beta\n',
-          'Fix tests\n',
-          '',
-          'committed',
-        ],
-      }),
     })
     const task = commit({
       applicationData,
@@ -152,8 +147,32 @@ describe('commit', () => {
   })
 
   it('when no files are given, collects all changes, stages everything and commits', async () => {
-    const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const commandSpy = spy()
+    const fetch = mockFetchSuccess({
+      choices: [
+        {
+          message: {
+            content: '{"subject":"Add login","body":"Adds the login form."}',
+          },
+        },
+      ],
+      usage: { completion_tokens: 1 },
+    })
+    const applicationData = mockApplicationData({
+      fetch,
+      denoCommand: mockDenoCommand({
+        commandSpy,
+        stdout: [
+          'diff --git a/src/a.ts b/src/a.ts\n--- a/src/a.ts\n+++ b/src/a.ts\n@@ -1 +1 @@\n-old\n+new\n',
+          ' M src/a.ts\n?? src/b.ts\n',
+          'diff --git a/src/b.ts b/src/b.ts\nnew file mode 100644\n--- /dev/null\n+++ b/src/b.ts\n@@ -0,0 +1 @@\n+beta\n',
+          'Fix tests\n',
+          '',
+          'committed',
+        ],
+      }),
+    })
+    const database = await applicationData.database()
     await database('providers').insert({
       id: 1,
       name: 'Provider',
@@ -172,33 +191,6 @@ describe('commit', () => {
       supports_reasoning: false,
       can_disable_reasoning: false,
       reasoning_options: '{}',
-    })
-    const commandSpy = spy()
-    const fetch = mockFetchSuccess({
-      choices: [
-        {
-          message: {
-            content: '{"subject":"Add login","body":"Adds the login form."}',
-          },
-        },
-      ],
-      usage: { completion_tokens: 1 },
-    })
-    const applicationData = mockApplicationData({
-      database,
-      logger,
-      fetch,
-      denoCommand: mockDenoCommand({
-        commandSpy,
-        stdout: [
-          'diff --git a/src/a.ts b/src/a.ts\n--- a/src/a.ts\n+++ b/src/a.ts\n@@ -1 +1 @@\n-old\n+new\n',
-          ' M src/a.ts\n?? src/b.ts\n',
-          'diff --git a/src/b.ts b/src/b.ts\nnew file mode 100644\n--- /dev/null\n+++ b/src/b.ts\n@@ -0,0 +1 @@\n+beta\n',
-          'Fix tests\n',
-          '',
-          'committed',
-        ],
-      }),
     })
     const task = commit({
       applicationData,
@@ -227,8 +219,19 @@ describe('commit', () => {
   })
 
   it('when the model request fails, does not stage or commit', async () => {
-    const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const commandSpy = spy()
+    const applicationData = mockApplicationData({
+      fetch: mockFetchError(500),
+      denoCommand: mockDenoCommand({
+        commandSpy,
+        stdout: [
+          'diff --git a/src/a.ts b/src/a.ts\n--- a/src/a.ts\n+++ b/src/a.ts\n@@ -1 +1 @@\n-old\n+new\n',
+          '',
+          'Fix tests\n',
+        ],
+      }),
+    })
+    const database = await applicationData.database()
     await database('providers').insert({
       id: 1,
       name: 'Provider',
@@ -247,20 +250,6 @@ describe('commit', () => {
       supports_reasoning: false,
       can_disable_reasoning: false,
       reasoning_options: '{}',
-    })
-    const commandSpy = spy()
-    const applicationData = mockApplicationData({
-      database,
-      logger,
-      fetch: mockFetchError(500),
-      denoCommand: mockDenoCommand({
-        commandSpy,
-        stdout: [
-          'diff --git a/src/a.ts b/src/a.ts\n--- a/src/a.ts\n+++ b/src/a.ts\n@@ -1 +1 @@\n-old\n+new\n',
-          '',
-          'Fix tests\n',
-        ],
-      }),
     })
     const task = commit({
       applicationData,
@@ -274,31 +263,8 @@ describe('commit', () => {
   })
 
   it('when staging fails, reports failure', async () => {
-    const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
-    await database('providers').insert({
-      id: 1,
-      name: 'Provider',
-      base_url: 'https://example.com/v1',
-    })
-    await database('models').insert({
-      provider_id: 1,
-      identifier: 'first',
-      name: 'First',
-      context_length: 1000,
-      cost_input: 1,
-      cost_output: 1,
-      dynamic_delegation: false,
-      modality: 'text->text',
-      supported_parameters: '[]',
-      supports_reasoning: false,
-      can_disable_reasoning: false,
-      reasoning_options: '{}',
-    })
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      database,
-      logger,
       fetch: mockFetchSuccess({
         choices: [
           {
@@ -319,20 +285,7 @@ describe('commit', () => {
         ],
       }),
     })
-    const task = commit({
-      applicationData,
-      operationArguments: { goal: 'add login', files: ['src/a.ts'] },
-    })
-
-    await task.run()
-
-    expect(commandSpy.calls.length).toBe(4)
-    expect(task.success()).toBe(false)
-  })
-
-  it('when the commit fails, reports failure', async () => {
-    const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const database = await applicationData.database()
     await database('providers').insert({
       id: 1,
       name: 'Provider',
@@ -352,10 +305,20 @@ describe('commit', () => {
       can_disable_reasoning: false,
       reasoning_options: '{}',
     })
+    const task = commit({
+      applicationData,
+      operationArguments: { goal: 'add login', files: ['src/a.ts'] },
+    })
+
+    await task.run()
+
+    expect(commandSpy.calls.length).toBe(4)
+    expect(task.success()).toBe(false)
+  })
+
+  it('when the commit fails, reports failure', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      database,
-      logger,
       fetch: mockFetchSuccess({
         choices: [
           {
@@ -377,20 +340,7 @@ describe('commit', () => {
         ],
       }),
     })
-    const task = commit({
-      applicationData,
-      operationArguments: { goal: 'add login', files: ['src/a.ts'] },
-    })
-
-    await task.run()
-
-    expect(commandSpy.calls.length).toBe(5)
-    expect(task.success()).toBe(false)
-  })
-
-  it('when git log fails, still stages and commits', async () => {
-    const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const database = await applicationData.database()
     await database('providers').insert({
       id: 1,
       name: 'Provider',
@@ -410,10 +360,20 @@ describe('commit', () => {
       can_disable_reasoning: false,
       reasoning_options: '{}',
     })
+    const task = commit({
+      applicationData,
+      operationArguments: { goal: 'add login', files: ['src/a.ts'] },
+    })
+
+    await task.run()
+
+    expect(commandSpy.calls.length).toBe(5)
+    expect(task.success()).toBe(false)
+  })
+
+  it('when git log fails, still stages and commits', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      database,
-      logger,
       fetch: mockFetchSuccess({
         choices: [
           {
@@ -435,6 +395,26 @@ describe('commit', () => {
           'committed',
         ],
       }),
+    })
+    const database = await applicationData.database()
+    await database('providers').insert({
+      id: 1,
+      name: 'Provider',
+      base_url: 'https://example.com/v1',
+    })
+    await database('models').insert({
+      provider_id: 1,
+      identifier: 'first',
+      name: 'First',
+      context_length: 1000,
+      cost_input: 1,
+      cost_output: 1,
+      dynamic_delegation: false,
+      modality: 'text->text',
+      supported_parameters: '[]',
+      supports_reasoning: false,
+      can_disable_reasoning: false,
+      reasoning_options: '{}',
     })
     const task = commit({
       applicationData,

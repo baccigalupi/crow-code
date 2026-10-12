@@ -1,4 +1,4 @@
-import type { ApplicationData } from '../../application-data.ts'
+import type { ApplicationData } from '../../application-data/application-data.ts'
 import { providerFindAll } from '../../domain/providers/find-all.ts'
 import type { ProviderEntity } from '../../domain/providers/entity.ts'
 import { getNousModels } from './nous/get-nous-models.ts'

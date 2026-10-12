@@ -5,13 +5,13 @@ import type { Knex } from 'knex'
 import pino from 'pino'
 import { saveCatalogModels } from '../../../src/model-discovery/populate/save-catalog-models.ts'
 import type { CatalogModel } from '../../../src/model-discovery/types.ts'
-import { createTestDatabase } from '../../support/test-database.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('saveCatalogModels', () => {
   it('when given models, inserts one row per model with the provider id', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({ logger })
+    const database = await applicationData.database()
     const model = {
       id: 'author/model',
       name: 'Model',
@@ -28,7 +28,7 @@ describe('saveCatalogModels', () => {
     }
     const other = { ...model, id: 'author/other' }
 
-    await saveCatalogModels(mockApplicationData({ database, logger }), 7, [
+    await saveCatalogModels(applicationData, 7, [
       model,
       other,
     ]).run()
@@ -43,7 +43,8 @@ describe('saveCatalogModels', () => {
 
   it('when given a model, maps catalog fields onto the model columns', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({ logger })
+    const database = await applicationData.database()
     const model = {
       id: 'author/model',
       name: 'Model',
@@ -59,7 +60,7 @@ describe('saveCatalogModels', () => {
       reasoningOptions: { mandatory: false },
     }
 
-    await saveCatalogModels(mockApplicationData({ database, logger }), 1, [
+    await saveCatalogModels(applicationData, 1, [
       model,
     ]).run()
 
@@ -80,7 +81,8 @@ describe('saveCatalogModels', () => {
 
   it('when the provider already has models, replaces them with the new set', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({ logger })
+    const database = await applicationData.database()
     const storedModel = {
       provider_id: 1,
       identifier: 'author/old',
@@ -116,7 +118,7 @@ describe('saveCatalogModels', () => {
       identifier: 'author/kept',
     })
 
-    await saveCatalogModels(mockApplicationData({ database, logger }), 1, [
+    await saveCatalogModels(applicationData, 1, [
       model,
     ]).run()
 
@@ -130,8 +132,9 @@ describe('saveCatalogModels', () => {
 
   it('when the payload lists the same model twice, logs the error and saves the rest', async () => {
     const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({ logger })
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const database = await applicationData.database()
     const model = {
       id: 'author/model',
       name: 'Model',
@@ -147,7 +150,7 @@ describe('saveCatalogModels', () => {
       reasoningOptions: { mandatory: false },
     }
 
-    await saveCatalogModels(mockApplicationData({ database, logger }), 1, [
+    await saveCatalogModels(applicationData, 1, [
       model,
       { ...model },
       { ...model, id: 'author/other' },
@@ -166,8 +169,9 @@ describe('saveCatalogModels', () => {
 
   it('when given no models, leaves existing rows unchanged', async () => {
     const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({ logger })
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const database = await applicationData.database()
     const storedModel = {
       provider_id: 1,
       identifier: 'author/old',
@@ -184,7 +188,7 @@ describe('saveCatalogModels', () => {
     }
     await database('models').insert(storedModel)
 
-    await saveCatalogModels(mockApplicationData({ database, logger }), 1, [])
+    await saveCatalogModels(applicationData, 1, [])
       .run()
 
     const rows = await database('models')
@@ -195,8 +199,9 @@ describe('saveCatalogModels', () => {
 
   it('when no model can be saved, rolls back the refresh and logs an error', async () => {
     const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({ logger })
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const database = await applicationData.database()
     await database('models').insert({
       provider_id: 1,
       identifier: 'author/kept',
@@ -226,7 +231,7 @@ describe('saveCatalogModels', () => {
       reasoningOptions: { mandatory: false },
     }
 
-    await saveCatalogModels(mockApplicationData({ database, logger }), 1, [
+    await saveCatalogModels(applicationData, 1, [
       model as unknown as CatalogModel,
     ]).run()
 
@@ -237,11 +242,11 @@ describe('saveCatalogModels', () => {
   })
 
   it('when the transaction fails, logs the rollback error', async () => {
-    const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
-    const database = {
+    const fakeDatabase = {
       transaction: () => Promise.reject(new Error('disk gone')),
     } as unknown as Knex
+    const applicationData = mockApplicationData().withDatabase(fakeDatabase)
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
     const model = {
       id: 'author/model',
       name: 'Model',
@@ -257,7 +262,7 @@ describe('saveCatalogModels', () => {
       reasoningOptions: { mandatory: false },
     }
 
-    await saveCatalogModels(mockApplicationData({ database, logger }), 9, [
+    await saveCatalogModels(applicationData, 9, [
       model,
     ]).run()
 

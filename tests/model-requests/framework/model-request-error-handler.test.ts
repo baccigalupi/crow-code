@@ -1,10 +1,8 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { spy } from '@std/testing/mock'
-import pino from 'pino'
 import { OpenAiRequest } from '../../../src/model-requests/framework/openai-request.ts'
 import { ModelRequestErrorHandler } from '../../../src/model-requests/framework/model-request-error-handler.ts'
-import { createTestDatabase } from '../../support/test-database.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import {
   mockFetchError,
@@ -15,9 +13,6 @@ import {
 
 describe('ModelRequestErrorHandler', () => {
   it('when the api call fails, logs the request context and response detail', async () => {
-    const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
-    const database = await createTestDatabase(logger)
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
@@ -25,12 +20,11 @@ describe('ModelRequestErrorHandler', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      database,
-      logger,
       fetch: mockFetchResponse(
         () => new Response('{"message":"Not Found"}', { status: 404 }),
       ),
     })
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
     const apiRequest = new OpenAiRequest({
       applicationData,
       operationArguments: {
@@ -56,9 +50,6 @@ describe('ModelRequestErrorHandler', () => {
   })
 
   it('when the network request fails, logs the error name and message', async () => {
-    const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
-    const database = await createTestDatabase(logger)
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
@@ -66,10 +57,9 @@ describe('ModelRequestErrorHandler', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      database,
-      logger,
       fetch: mockFetchRejected('socket hangup'),
     })
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
     const apiRequest = new OpenAiRequest({
       applicationData,
       operationArguments: {
@@ -90,8 +80,6 @@ describe('ModelRequestErrorHandler', () => {
   })
 
   it('when the request failed without an api token, creates a provider availability record', async () => {
-    const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',
       apiKey: '',
@@ -99,9 +87,9 @@ describe('ModelRequestErrorHandler', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      database,
       fetch: mockFetchError(401),
     })
+    const database = await applicationData.database()
     const apiRequest = new OpenAiRequest({
       applicationData,
       operationArguments: { modelEndpoint, messages: [] },
@@ -123,8 +111,6 @@ describe('ModelRequestErrorHandler', () => {
   })
 
   it('when the request failed with an api token, does not create a provider availability record', async () => {
-    const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
@@ -132,9 +118,9 @@ describe('ModelRequestErrorHandler', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      database,
       fetch: mockFetchError(500),
     })
+    const database = await applicationData.database()
     const apiRequest = new OpenAiRequest({
       applicationData,
       operationArguments: { modelEndpoint, messages: [] },
@@ -154,8 +140,6 @@ describe('ModelRequestErrorHandler', () => {
   })
 
   it('when the request succeeded, does not create a provider availability record', async () => {
-    const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',
       apiKey: '',
@@ -163,11 +147,11 @@ describe('ModelRequestErrorHandler', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      database,
       fetch: mockFetchSuccess({
         choices: [{ message: { content: '[]' } }],
       }),
     })
+    const database = await applicationData.database()
 
     const apiRequest = new OpenAiRequest({
       applicationData,

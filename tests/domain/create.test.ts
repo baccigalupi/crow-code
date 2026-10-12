@@ -3,7 +3,6 @@ import { expect } from '@std/expect'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import pino from 'pino'
 import { CreateRecord } from '../../src/domain/create.ts'
-import { createTestDatabase } from '../support/test-database.ts'
 import { mockApplicationData } from '../support/mock-application-data.ts'
 
 describe('CreateRecord', () => {
@@ -18,10 +17,9 @@ describe('CreateRecord', () => {
       protected readonly tableName = 'providers'
       protected override logPrefix = 'Create provider: '
     }
-    const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData()
     const creator = new CreateProvider({
-      applicationData: mockApplicationData({ database, logger }),
+      applicationData,
       operationArguments: {
         name: 'provider-name',
         base_url: 'https://www.example.com',
@@ -61,10 +59,9 @@ describe('CreateRecord', () => {
         }
       }
     }
-    const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData()
     const creator = new CreateProvider({
-      applicationData: mockApplicationData({ database, logger }),
+      applicationData,
       operationArguments: {
         providerName: 'provider-name',
         baseUrl: 'https://www.example.com',
@@ -91,15 +88,16 @@ describe('CreateRecord', () => {
       protected override logPrefix = 'Create provider: '
     }
     const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({ logger })
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const database = await applicationData.database()
     const params = {
       name: 'provider-name',
       base_url: 'https://www.example.com',
     }
     await database('providers').insert(params)
     const creator = new CreateProvider({
-      applicationData: mockApplicationData({ database, logger }),
+      applicationData,
       operationArguments: params,
     })
 

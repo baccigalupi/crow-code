@@ -3,15 +3,13 @@ import { expect } from '@std/expect'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import pino from 'pino'
 import { CreateModel, createModel } from '../../../src/domain/models/create.ts'
-import { createTestDatabase } from '../../support/test-database.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('create', () => {
   it('when params use mixed cases and include extra values, normalizes and filters them', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
 
-    const applicationData = mockApplicationData({ database, logger })
+    const applicationData = mockApplicationData({ logger })
     const creator = await createModel(applicationData, {
       providerId: 1,
       identifier: 'author/model',
@@ -35,7 +33,8 @@ describe('create', () => {
 
   it('when created, stores json columns as text and returns the parsed record', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({ logger })
+    const database = await applicationData.database()
     const params = {
       provider_id: 1,
       identifier: 'author/model',
@@ -51,7 +50,6 @@ describe('create', () => {
       reasoning_options: { mandatory: false },
     }
 
-    const applicationData = mockApplicationData({ database, logger })
     const creator = await createModel(applicationData, params).run()
     const row = await database('models').first()
 
@@ -64,9 +62,8 @@ describe('create', () => {
     expect(row.supports_reasoning).toBe(1)
   })
 
-  it('when create has not been called, reports failure and an empty model', async () => {
+  it('when create has not been called, reports failure and an empty model', () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
     const params = {
       provider_id: 1,
       identifier: 'author/model',
@@ -82,7 +79,7 @@ describe('create', () => {
       reasoning_options: { mandatory: false },
     }
 
-    const applicationData = mockApplicationData({ database, logger })
+    const applicationData = mockApplicationData({ logger })
     const creator = new CreateModel({
       applicationData,
       operationArguments: params,
@@ -94,8 +91,9 @@ describe('create', () => {
 
   it('when the provider and identifier pair already exists, reports failure', async () => {
     const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({ logger })
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const database = await applicationData.database()
     const params = {
       provider_id: 1,
       identifier: 'author/model',
@@ -115,7 +113,6 @@ describe('create', () => {
       supported_parameters: '[]',
     })
 
-    const applicationData = mockApplicationData({ database, logger })
     const creator = await createModel(applicationData, params).run()
 
     expect(await creator.success()).toBe(false)

@@ -95,23 +95,20 @@ describe('Command', () => {
 
   it('when constructed, exposes the application data to subclasses', async () => {
     const consoleLog = mock.fn()
-    class EchoDirectory extends Command {
+    class Echo extends Command {
       isMatch() {
         return true
       }
 
       run() {
-        this.applicationData.consoleLog()(this.applicationData.crowDirectory())
+        this.applicationData.consoleLog()('echo')
         return Promise.resolve(this)
       }
     }
-    const applicationData = mockApplicationData({
-      crowDirectory: '/tmp/crow',
-      consoleLog,
-    })
+    const applicationData = mockApplicationData({ consoleLog })
 
-    await command(EchoDirectory, applicationData).run()
+    await command(Echo, applicationData).run()
 
-    expect(consoleLog.mock.calls[0].arguments[0]).toBe('/tmp/crow')
+    expect(consoleLog.mock.calls[0].arguments[0]).toBe('echo')
   })
 })

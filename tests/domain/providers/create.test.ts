@@ -7,13 +7,11 @@ import {
   createProvider,
 } from '../../../src/domain/providers/create.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
-import { createTestDatabase } from '../../support/test-database.ts'
 
 describe('create', () => {
   it('when options include extra values, normalizes and filters them', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
-    const applicationData = mockApplicationData({ database, logger })
+    const applicationData = mockApplicationData({ logger })
     const options = {
       name: 'provider-name',
       'base-url': 'https://www.example.com',
@@ -34,10 +32,9 @@ describe('create', () => {
     })
   })
 
-  it('when create has not been called, success is false and the record is empty', async () => {
+  it('when create has not been called, success is false and the record is empty', () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
-    const applicationData = mockApplicationData({ database, logger })
+    const applicationData = mockApplicationData({ logger })
 
     const creator = new CreateProvider({
       applicationData,
@@ -50,13 +47,13 @@ describe('create', () => {
 
   it('when the provider already exists, reports failure', async () => {
     const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({ logger })
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const database = await applicationData.database()
     await database('providers').insert({
       name: 'provider-name',
       base_url: 'https://www.example.com',
     })
-    const applicationData = mockApplicationData({ database, logger })
     const options = {
       name: 'provider-name',
       'base-url': 'https://www.example.com',

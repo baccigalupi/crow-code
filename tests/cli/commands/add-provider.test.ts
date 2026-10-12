@@ -3,10 +3,8 @@ import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { AddProvider } from '../../../src/cli/commands/add-provider.ts'
 import { command } from '../../../src/cli/commands/command.ts'
-import { openAndMigrateDatabase } from '../../../src/database/open-and-migrate-database.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
-import pino from 'pino'
 
 describe('AddProvider', () => {
   beforeEach(() => clearDirectory(join(fixturesDirectory, 'add-provider')))
@@ -29,11 +27,6 @@ describe('AddProvider', () => {
   })
 
   it('when run with provider params, creates the provider in the injected crow directory', async () => {
-    const crowDirectory = join(join(fixturesDirectory, 'add-provider'), '.crow')
-    const database = await openAndMigrateDatabase(
-      crowDirectory,
-      pino({ enabled: false }),
-    )
     const applicationData = mockApplicationData({
       args: [
         'add-provider',
@@ -41,9 +34,8 @@ describe('AddProvider', () => {
         '--base-url=http://x',
         '--api-key-env-var=OLLAMA_KEY',
       ],
-      crowDirectory,
-      database,
     })
+    const database = await applicationData.database()
 
     await command(AddProvider, applicationData).run()
 
@@ -58,11 +50,6 @@ describe('AddProvider', () => {
   })
 
   it('when run succeeds, writes the .env key reminder', async () => {
-    const crowDirectory = join(join(fixturesDirectory, 'add-provider'), '.crow')
-    const database = await openAndMigrateDatabase(
-      crowDirectory,
-      pino({ enabled: false }),
-    )
     const consoleLog = mock.fn()
     const applicationData = mockApplicationData({
       args: [
@@ -71,8 +58,6 @@ describe('AddProvider', () => {
         '--base-url=http://x',
         '--api-key-env-var=OLLAMA_KEY',
       ],
-      crowDirectory,
-      database,
       consoleLog,
     })
 
@@ -84,16 +69,9 @@ describe('AddProvider', () => {
   })
 
   it('when the provider has no api key env var, writes the reminder with a placeholder key', async () => {
-    const crowDirectory = join(join(fixturesDirectory, 'add-provider'), '.crow')
-    const database = await openAndMigrateDatabase(
-      crowDirectory,
-      pino({ enabled: false }),
-    )
     const consoleLog = mock.fn()
     const applicationData = mockApplicationData({
       args: ['add-provider', '--name=ollama', '--base-url=http://x'],
-      crowDirectory,
-      database,
       consoleLog,
     })
 
@@ -105,23 +83,17 @@ describe('AddProvider', () => {
   })
 
   it('when creation fails, writes the failure message', async () => {
-    const crowDirectory = join(join(fixturesDirectory, 'add-provider'), '.crow')
-    const database = await openAndMigrateDatabase(
-      crowDirectory,
-      pino({ enabled: false }),
-    )
-    await database('providers').insert({
-      name: 'ollama',
-      base_url: 'http://x',
-    })
     const consoleLog = mock.fn()
     const consoleError = mock.fn()
     const applicationData = mockApplicationData({
       args: ['add-provider', '--name=other', '--base-url=http://x'],
-      crowDirectory,
-      database,
       consoleLog,
       consoleError,
+    })
+    const database = await applicationData.database()
+    await database('providers').insert({
+      name: 'ollama',
+      base_url: 'http://x',
     })
 
     const addProvider = command(AddProvider, applicationData)

@@ -1,17 +1,31 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { assertSpyCall, spy } from '@std/testing/mock'
-import pino from 'pino'
 import { commitMessage } from '../../../src/tasks/commit/message.ts'
-import { createTestDatabase } from '../../support/test-database.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { mockDenoCommand } from '../../support/mock-deno-command.ts'
 import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
 
 describe('commitMessage', () => {
   it('when the model answers, returns the commit message', async () => {
-    const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const commandSpy = spy()
+    const applicationData = mockApplicationData({
+      fetch: mockFetchSuccess({
+        choices: [
+          {
+            message: {
+              content: '{"subject":"Add login","body":"Adds the login form."}',
+            },
+          },
+        ],
+        usage: { completion_tokens: 1 },
+      }),
+      denoCommand: mockDenoCommand({
+        commandSpy,
+        stdout: 'Fix tests\n',
+      }),
+    })
+    const database = await applicationData.database()
     await database('providers').insert({
       id: 1,
       name: 'Provider',
@@ -30,25 +44,6 @@ describe('commitMessage', () => {
       supports_reasoning: false,
       can_disable_reasoning: false,
       reasoning_options: '{}',
-    })
-    const commandSpy = spy()
-    const applicationData = mockApplicationData({
-      database,
-      logger,
-      fetch: mockFetchSuccess({
-        choices: [
-          {
-            message: {
-              content: '{"subject":"Add login","body":"Adds the login form."}',
-            },
-          },
-        ],
-        usage: { completion_tokens: 1 },
-      }),
-      denoCommand: mockDenoCommand({
-        commandSpy,
-        stdout: 'Fix tests\n',
-      }),
     })
 
     const operation = await commitMessage({
@@ -72,8 +67,22 @@ describe('commitMessage', () => {
   })
 
   it('when git log fails, still returns the message', async () => {
-    const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({
+      fetch: mockFetchSuccess({
+        choices: [
+          {
+            message: {
+              content: '{"subject":"Add login","body":"Adds the login form."}',
+            },
+          },
+        ],
+        usage: { completion_tokens: 1 },
+      }),
+      denoCommand: mockDenoCommand({
+        stdout: [new Error('no commits')],
+      }),
+    })
+    const database = await applicationData.database()
     await database('providers').insert({
       id: 1,
       name: 'Provider',
@@ -92,23 +101,6 @@ describe('commitMessage', () => {
       supports_reasoning: false,
       can_disable_reasoning: false,
       reasoning_options: '{}',
-    })
-    const applicationData = mockApplicationData({
-      database,
-      logger,
-      fetch: mockFetchSuccess({
-        choices: [
-          {
-            message: {
-              content: '{"subject":"Add login","body":"Adds the login form."}',
-            },
-          },
-        ],
-        usage: { completion_tokens: 1 },
-      }),
-      denoCommand: mockDenoCommand({
-        stdout: [new Error('no commits')],
-      }),
     })
 
     const operation = await commitMessage({
@@ -129,8 +121,11 @@ describe('commitMessage', () => {
   })
 
   it('when every model fails, returns undefined', async () => {
-    const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({
+      fetch: mockFetchError(500),
+      denoCommand: mockDenoCommand({ stdout: 'Fix tests\n' }),
+    })
+    const database = await applicationData.database()
     await database('providers').insert({
       id: 1,
       name: 'Provider',
@@ -150,12 +145,6 @@ describe('commitMessage', () => {
       can_disable_reasoning: false,
       reasoning_options: '{}',
     })
-    const applicationData = mockApplicationData({
-      database,
-      logger,
-      fetch: mockFetchError(500),
-      denoCommand: mockDenoCommand({ stdout: 'Fix tests\n' }),
-    })
 
     const operation = await commitMessage({
       applicationData,
@@ -172,12 +161,8 @@ describe('commitMessage', () => {
   })
 
   it('when no models are registered, returns undefined without calling fetch', async () => {
-    const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
     const fetch = mockFetchSuccess({})
     const applicationData = mockApplicationData({
-      database,
-      logger,
       fetch,
       denoCommand: mockDenoCommand({ stdout: 'Fix tests\n' }),
     })

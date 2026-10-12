@@ -1,4 +1,5 @@
-import { ApplicationData } from './application-data.ts'
+import type { ApplicationData } from './application-data/application-data.ts'
+import { buildApplicationData } from './application-data/builder.ts'
 import { memoize } from './decorators.ts'
 import { type Command, command } from './cli/commands/command.ts'
 import { AddProvider } from './cli/commands/add-provider.ts'
@@ -80,7 +81,10 @@ class Cli {
   }
 }
 
-export const run = (
-  applicationData: ApplicationData = new ApplicationData(),
+export const run = async (
+  applicationData?: ApplicationData,
   quit?: (exitCode: number) => void,
-): Promise<number> => new Cli(applicationData, quit).run()
+): Promise<number> => {
+  const data = applicationData || (await buildApplicationData().run()).result()
+  return new Cli(data, quit).run()
+}

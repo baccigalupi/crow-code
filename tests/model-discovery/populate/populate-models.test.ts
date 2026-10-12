@@ -2,17 +2,14 @@ import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import pino from 'pino'
 import { populateModels } from '../../../src/model-discovery/populate/populate-models.ts'
-import { createTestDatabase } from '../../support/test-database.ts'
 import { mockFetchRoutes, mockFetchSuccess } from '../../support/mock-fetch.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('populateModels', () => {
   it('with no providers, returns an empty list and makes no requests', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
     const mockFetch = mockFetchSuccess({ data: [] })
     const applicationData = mockApplicationData({
-      database,
       logger,
       fetch: mockFetch,
     })
@@ -25,13 +22,6 @@ describe('populateModels', () => {
 
   it('dispatches a known provider to its getter and saves models', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
-    await database('providers').insert({
-      name: 'nous',
-      base_url: 'https://example.com',
-      models_path: null,
-      api_key_env_var: null,
-    })
     const record = {
       id: 'author/model',
       name: 'Model',
@@ -42,9 +32,15 @@ describe('populateModels', () => {
     }
     const mockFetch = mockFetchSuccess({ data: [record] })
     const applicationData = mockApplicationData({
-      database,
       logger,
       fetch: mockFetch,
+    })
+    const database = await applicationData.database()
+    await database('providers').insert({
+      name: 'nous',
+      base_url: 'https://example.com',
+      models_path: null,
+      api_key_env_var: null,
     })
 
     const result = await populateModels(applicationData)
@@ -62,20 +58,19 @@ describe('populateModels', () => {
 
   it('dispatches ollama providers to the ollama getter', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const mockFetch = mockFetchSuccess({
+      models: [{ name: 'author/model', details: { context_length: 128000 } }],
+    })
+    const applicationData = mockApplicationData({
+      logger,
+      fetch: mockFetch,
+    })
+    const database = await applicationData.database()
     await database('providers').insert({
       name: 'ollama',
       base_url: 'http://ollama.local:11434',
       models_path: '/api/tags',
       api_key_env_var: null,
-    })
-    const mockFetch = mockFetchSuccess({
-      models: [{ name: 'author/model', details: { context_length: 128000 } }],
-    })
-    const applicationData = mockApplicationData({
-      database,
-      logger,
-      fetch: mockFetch,
     })
 
     await populateModels(applicationData)
@@ -90,13 +85,6 @@ describe('populateModels', () => {
 
   it('dispatches openrouter providers to the openrouter getter', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
-    await database('providers').insert({
-      name: 'openrouter',
-      base_url: 'https://openrouter.example',
-      models_path: null,
-      api_key_env_var: null,
-    })
     const record = {
       id: 'author/model',
       name: 'Model',
@@ -107,9 +95,15 @@ describe('populateModels', () => {
     }
     const mockFetch = mockFetchSuccess({ data: [record] })
     const applicationData = mockApplicationData({
-      database,
       logger,
       fetch: mockFetch,
+    })
+    const database = await applicationData.database()
+    await database('providers').insert({
+      name: 'openrouter',
+      base_url: 'https://openrouter.example',
+      models_path: null,
+      api_key_env_var: null,
     })
 
     await populateModels(applicationData)
@@ -123,18 +117,17 @@ describe('populateModels', () => {
 
   it('skips providers with an unknown name', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const mockFetch = mockFetchSuccess({ data: [] })
+    const applicationData = mockApplicationData({
+      logger,
+      fetch: mockFetch,
+    })
+    const database = await applicationData.database()
     await database('providers').insert({
       name: 'mystery',
       base_url: 'https://unknown.example',
       models_path: null,
       api_key_env_var: null,
-    })
-    const mockFetch = mockFetchSuccess({ data: [] })
-    const applicationData = mockApplicationData({
-      database,
-      logger,
-      fetch: mockFetch,
     })
 
     const result = await populateModels(applicationData)
@@ -146,23 +139,6 @@ describe('populateModels', () => {
 
   it('populates multiple providers concurrently', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
-    const [nousId, ollamaId] = await database('providers')
-      .insert([
-        {
-          name: 'nous',
-          base_url: 'https://nous.example',
-          models_path: null,
-          api_key_env_var: null,
-        },
-        {
-          name: 'ollama',
-          base_url: 'http://ollama.local:11434',
-          models_path: '/api/tags',
-          api_key_env_var: null,
-        },
-      ])
-      .returning('id')
     const mockFetch = mockFetchRoutes([
       [
         'nous.example',
@@ -192,10 +168,26 @@ describe('populateModels', () => {
       ],
     ])
     const applicationData = mockApplicationData({
-      database,
       logger,
       fetch: mockFetch,
     })
+    const database = await applicationData.database()
+    const [nousId, ollamaId] = await database('providers')
+      .insert([
+        {
+          name: 'nous',
+          base_url: 'https://nous.example',
+          models_path: null,
+          api_key_env_var: null,
+        },
+        {
+          name: 'ollama',
+          base_url: 'http://ollama.local:11434',
+          models_path: '/api/tags',
+          api_key_env_var: null,
+        },
+      ])
+      .returning('id')
 
     const result = await populateModels(applicationData)
 

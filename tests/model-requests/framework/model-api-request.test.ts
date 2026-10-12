@@ -4,8 +4,6 @@ import { assertSpyCall, spy } from '@std/testing/mock'
 import { OpenAiRequest } from '../../../src/model-requests/framework/openai-request.ts'
 import { ModelApiRequest } from '../../../src/model-requests/framework/model-api-request.ts'
 import type { ModelMessages } from '../../../src/model-requests/types.ts'
-import pino from 'pino'
-import { createTestDatabase } from '../../support/test-database.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
 
@@ -161,8 +159,6 @@ describe('ModelApiRequest', () => {
   })
 
   it('when the answer is not valid json, logs the raw answer', async () => {
-    const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
@@ -170,12 +166,12 @@ describe('ModelApiRequest', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      logger,
       fetch: mockFetchSuccess({
         choices: [{ message: { content: 'not json' } }],
         usage: { completion_tokens: 1 },
       }),
     })
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
       protected override logPrefix = 'Test request: '
@@ -273,8 +269,6 @@ describe('ModelApiRequest', () => {
   })
 
   it('when an api call fails without an api token, creates a provider availability record', async () => {
-    const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',
       apiKey: '',
@@ -282,9 +276,9 @@ describe('ModelApiRequest', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      database,
       fetch: mockFetchError(401),
     })
+    const database = await applicationData.database()
     const modelApiRequest = new class extends ModelApiRequest<string, string> {
       protected override logPrefix = 'Test request: '
 
@@ -309,8 +303,6 @@ describe('ModelApiRequest', () => {
   })
 
   it('when an api call fails with an api token, does not create a provider availability record', async () => {
-    const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
     const modelEndpoint = {
       baseURL: 'https://example.com/api/v1',
       apiKey: 'test-key',
@@ -318,9 +310,9 @@ describe('ModelApiRequest', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      database,
       fetch: mockFetchError(500),
     })
+    const database = await applicationData.database()
     const modelApiRequest = new class extends ModelApiRequest<string, string> {
       protected override logPrefix = 'Test request: '
 

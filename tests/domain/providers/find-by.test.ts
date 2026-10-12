@@ -4,7 +4,6 @@ import pino from 'pino'
 import { Environment } from '../../../src/application-data/env-vars.ts'
 import { ProviderEntity } from '../../../src/domain/providers/entity.ts'
 import { providerFindBy } from '../../../src/domain/providers/find-by.ts'
-import { createTestDatabase } from '../../support/test-database.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('providerFindBy', () => {
@@ -12,17 +11,16 @@ describe('providerFindBy', () => {
     it('returns the provider when it exists', async () => {
       const environment = new Environment({ PROVIDER_API_KEY: 'secret' })
       const logger = pino({ enabled: false })
-      const database = await createTestDatabase(logger)
+      const applicationData = mockApplicationData({
+        envars: environment,
+        logger,
+      })
+      const database = await applicationData.database()
       await database('providers').insert({
         name: 'provider-name',
         base_url: 'https://www.example.com',
         models_path: '/models',
         api_key_env_var: 'PROVIDER_API_KEY',
-      })
-      const applicationData = mockApplicationData({
-        envars: environment,
-        database,
-        logger,
       })
 
       const provider = await providerFindBy(applicationData)
@@ -39,10 +37,8 @@ describe('providerFindBy', () => {
     it('returns undefined when the provider does not exist', async () => {
       const environment = new Environment({})
       const logger = pino({ enabled: false })
-      const database = await createTestDatabase(logger)
       const applicationData = mockApplicationData({
         envars: environment,
-        database,
         logger,
       })
 
@@ -55,7 +51,11 @@ describe('providerFindBy', () => {
     it('returns the matching provider among several', async () => {
       const environment = new Environment({})
       const logger = pino({ enabled: false })
-      const database = await createTestDatabase(logger)
+      const applicationData = mockApplicationData({
+        envars: environment,
+        logger,
+      })
+      const database = await applicationData.database()
       await database('providers').insert([
         {
           name: 'provider-one',
@@ -70,11 +70,6 @@ describe('providerFindBy', () => {
           api_key_env_var: null,
         },
       ])
-      const applicationData = mockApplicationData({
-        envars: environment,
-        database,
-        logger,
-      })
 
       const provider = await providerFindBy(applicationData)
         .getByName('provider-two')
@@ -89,18 +84,17 @@ describe('providerFindBy', () => {
     it('returns the provider when it exists', async () => {
       const environment = new Environment({ PROVIDER_API_KEY: 'secret' })
       const logger = pino({ enabled: false })
-      const database = await createTestDatabase(logger)
+      const applicationData = mockApplicationData({
+        envars: environment,
+        logger,
+      })
+      const database = await applicationData.database()
       const [{ id }] = await database('providers').insert({
         name: 'provider-name',
         base_url: 'https://www.example.com',
         models_path: '/models',
         api_key_env_var: 'PROVIDER_API_KEY',
       }).returning('id')
-      const applicationData = mockApplicationData({
-        envars: environment,
-        database,
-        logger,
-      })
 
       const provider = await providerFindBy(applicationData)
         .getById(id)
@@ -113,10 +107,8 @@ describe('providerFindBy', () => {
     it('returns undefined when the provider does not exist', async () => {
       const environment = new Environment({})
       const logger = pino({ enabled: false })
-      const database = await createTestDatabase(logger)
       const applicationData = mockApplicationData({
         envars: environment,
-        database,
         logger,
       })
 
@@ -129,7 +121,11 @@ describe('providerFindBy', () => {
     it('returns the matching provider among several', async () => {
       const environment = new Environment({})
       const logger = pino({ enabled: false })
-      const database = await createTestDatabase(logger)
+      const applicationData = mockApplicationData({
+        envars: environment,
+        logger,
+      })
+      const database = await applicationData.database()
       await database('providers').insert({
         name: 'provider-one',
         base_url: 'https://www.example.com/one',
@@ -142,11 +138,6 @@ describe('providerFindBy', () => {
         models_path: '/models',
         api_key_env_var: null,
       }).returning('id')
-      const applicationData = mockApplicationData({
-        envars: environment,
-        database,
-        logger,
-      })
 
       const provider = await providerFindBy(applicationData)
         .getById(id)

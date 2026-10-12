@@ -1,4 +1,4 @@
-import type { ApplicationData } from '../../application-data.ts'
+import type { ApplicationData } from '../../application-data/application-data.ts'
 import { humanName, Operation } from '../../operation.ts'
 import type { ApplicationOperationArguments } from '../../types.ts'
 import type { ParsedArguments } from '../types.ts'
@@ -42,5 +42,5 @@ export const command = <T extends Command>(
 ): T =>
   new CommandClass({
     applicationData,
-    operationArguments: applicationData.parsedArguments(),
+    operationArguments: applicationData.parsedArguments,
   })

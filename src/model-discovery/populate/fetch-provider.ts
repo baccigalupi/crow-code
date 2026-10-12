@@ -1,4 +1,4 @@
-import type { ApplicationData } from '../../application-data.ts'
+import type { ApplicationData } from '../../application-data/application-data.ts'
 import type { FetchProviderArguments } from '../types.ts'
 import { OperationWithResult } from '../../operation.ts'
 

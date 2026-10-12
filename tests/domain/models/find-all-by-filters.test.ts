@@ -5,16 +5,15 @@ import pino from 'pino'
 import { ModelEntity } from '../../../src/domain/models/model.ts'
 import { Environment } from '../../../src/application-data/env-vars.ts'
 import { modelFindAllByFilters } from '../../../src/domain/models/find-all-by-filters.ts'
-import {
-  createTestDatabase,
-  dropAllTables,
-} from '../../support/test-database.ts'
+import { dropAllTables } from '../../support/test-database.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('modelFindAllByFilters', () => {
   it('when models match, returns ModelEntity instances ordered by id', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const envars = new Environment({ PROVIDER_API_KEY: 'secret' })
+    const applicationData = mockApplicationData({ logger, envars })
+    const database = await applicationData.database()
     await database('providers').insert({
       id: 1,
       name: 'Provider',
@@ -51,8 +50,6 @@ describe('modelFindAllByFilters', () => {
         reasoning_options: '{}',
       },
     ])
-    const envars = new Environment({ PROVIDER_API_KEY: 'secret' })
-    const applicationData = mockApplicationData({ database, logger, envars })
 
     const models = await modelFindAllByFilters(applicationData, {
       type: 'chat',
@@ -73,7 +70,8 @@ describe('modelFindAllByFilters', () => {
 
   it('when limit is given, returns at most that many models', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({ logger })
+    const database = await applicationData.database()
     await database('models').insert([
       {
         provider_id: 1,
@@ -118,7 +116,6 @@ describe('modelFindAllByFilters', () => {
         reasoning_options: '{}',
       },
     ])
-    const applicationData = mockApplicationData({ database, logger })
 
     const models = await modelFindAllByFilters(applicationData, {
       type: 'chat',
@@ -131,10 +128,10 @@ describe('modelFindAllByFilters', () => {
 
   it('when the query fails, logs the error and returns an empty array', async () => {
     const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({ logger })
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const database = await applicationData.database()
     await dropAllTables(database)
-    const applicationData = mockApplicationData({ database, logger })
 
     const models = await modelFindAllByFilters(applicationData, {
       type: 'chat',
@@ -146,7 +143,8 @@ describe('modelFindAllByFilters', () => {
 
   it('when type is given, filters with reasoningFilter', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({ logger })
+    const database = await applicationData.database()
     await database('models').insert([
       {
         provider_id: 1,
@@ -177,7 +175,6 @@ describe('modelFindAllByFilters', () => {
         reasoning_options: '{}',
       },
     ])
-    const applicationData = mockApplicationData({ database, logger })
 
     const models = await modelFindAllByFilters(applicationData, {
       type: 'dynamic',
@@ -189,7 +186,8 @@ describe('modelFindAllByFilters', () => {
 
   it('when costTier is given, filters with costFilter', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({ logger })
+    const database = await applicationData.database()
     await database('models').insert([
       {
         provider_id: 1,
@@ -234,7 +232,6 @@ describe('modelFindAllByFilters', () => {
         reasoning_options: '{}',
       },
     ])
-    const applicationData = mockApplicationData({ database, logger })
 
     const models = await modelFindAllByFilters(applicationData, {
       costTier: 'budget',
@@ -246,7 +243,8 @@ describe('modelFindAllByFilters', () => {
 
   it('when a model outputs embeddings, excludes it', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({ logger })
+    const database = await applicationData.database()
     await database('models').insert([
       {
         provider_id: 1,
@@ -277,7 +275,6 @@ describe('modelFindAllByFilters', () => {
         reasoning_options: '{}',
       },
     ])
-    const applicationData = mockApplicationData({ database, logger })
 
     const models = await modelFindAllByFilters(applicationData, {
       costTier: 'free',
@@ -289,7 +286,8 @@ describe('modelFindAllByFilters', () => {
 
   it('when costTier and type are given, applies both filters', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({ logger })
+    const database = await applicationData.database()
     await database('models').insert([
       {
         provider_id: 1,
@@ -334,7 +332,6 @@ describe('modelFindAllByFilters', () => {
         reasoning_options: '{}',
       },
     ])
-    const applicationData = mockApplicationData({ database, logger })
 
     const models = await modelFindAllByFilters(applicationData, {
       costTier: 'cheap',
@@ -347,7 +344,8 @@ describe('modelFindAllByFilters', () => {
 
   it('when costTier and type are given, groups each filter so the standard-tier OR cannot bypass the type filter', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({ logger })
+    const database = await applicationData.database()
     await database('models').insert([
       {
         provider_id: 1,
@@ -378,7 +376,6 @@ describe('modelFindAllByFilters', () => {
         reasoning_options: '{}',
       },
     ])
-    const applicationData = mockApplicationData({ database, logger })
 
     const models = await modelFindAllByFilters(applicationData, {
       costTier: 'standard',
@@ -391,7 +388,8 @@ describe('modelFindAllByFilters', () => {
 
   it('when limit is omitted, returns at most five models', async () => {
     const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData({ logger })
+    const database = await applicationData.database()
     await database('models').insert([
       {
         provider_id: 1,
@@ -478,7 +476,6 @@ describe('modelFindAllByFilters', () => {
         reasoning_options: '{}',
       },
     ])
-    const applicationData = mockApplicationData({ database, logger })
 
     const models = await modelFindAllByFilters(applicationData, {
       type: 'chat',

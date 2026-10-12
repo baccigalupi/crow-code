@@ -1,4 +1,4 @@
-import type { ApplicationData } from '../../../application-data.ts'
+import type { ApplicationData } from '../../../application-data/application-data.ts'
 import { fetchProvider } from '../fetch-provider.ts'
 import { saveCatalogModels } from '../save-catalog-models.ts'
 import { parseOllamaBody } from './parser.ts'

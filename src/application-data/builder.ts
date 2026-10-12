@@ -1,5 +1,5 @@
 import type { AsyncOperationWithResult } from '../types.ts'
-import { AppData } from './app-data.ts'
+import { ApplicationData } from './application-data.ts'
 import { DenoRuntime } from './deno-runtime.ts'
 import { Io } from './io.ts'
 import { loadConfig } from './load-config.ts'
@@ -13,17 +13,17 @@ type ApplicationDataBuilderArguments = {
 }
 
 export class ApplicationDataBuilder
-  implements AsyncOperationWithResult<AppData> {
+  implements AsyncOperationWithResult<ApplicationData> {
   readonly configPath: string | undefined
   private deno: typeof Deno
   private configLoaded = false
   private subOperations = new SubOperations()
-  appData: Partial<AppData>
+  appData: Partial<ApplicationData>
 
   constructor({ path, deno }: ApplicationDataBuilderArguments = {}) {
     this.configPath = path
     this.deno = deno || Deno
-    this.appData = new AppData()
+    this.appData = new ApplicationData()
   }
 
   get reason() {
@@ -42,8 +42,8 @@ export class ApplicationDataBuilder
     return this
   }
 
-  result(): AppData {
-    return this.appData as AppData
+  result(): ApplicationData {
+    return this.appData as ApplicationData
   }
 
   private setRuntimeAndArgs() {

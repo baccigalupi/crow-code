@@ -1,5 +1,5 @@
 import type { Knex } from 'knex'
-import type { ApplicationData } from '../../application-data.ts'
+import type { ApplicationData } from '../../application-data/application-data.ts'
 import type { CatalogModel, SaveCatalogModelsArguments } from '../types.ts'
 import { createModel } from '../../domain/models/create.ts'
 import { Operation } from '../../operation.ts'

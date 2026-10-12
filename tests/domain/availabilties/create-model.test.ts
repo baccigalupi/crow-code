@@ -1,17 +1,14 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import pino from 'pino'
 import { createModelAvailability } from '../../../src/domain/availabilties/create-model.ts'
-import { createTestDatabase } from '../../support/test-database.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('create model availability', () => {
   it('saves a model availability record', async () => {
-    const logger = pino({ enabled: false })
-    const database = await createTestDatabase(logger)
+    const applicationData = mockApplicationData()
 
     const creator = await createModelAvailability(
-      mockApplicationData({ database, logger }),
+      applicationData,
       {
         modelId: 1,
         reason: 'no-api-key',

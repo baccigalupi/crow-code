@@ -4,33 +4,35 @@ import { join } from '@std/path'
 import { spy, stub } from '@std/testing/mock'
 import pino from 'pino'
 import { run } from '../src/cli.ts'
-import { openAndMigrateDatabase } from '../src/database/open-and-migrate-database.ts'
+import { Repl } from '../src/cli/commands/repl.ts'
+import { createRunner } from '../src/tui/runner.ts'
 import { clearDirectory, fixturesDirectory } from './support/fixtures.ts'
 import { mockApplicationData } from './support/mock-application-data.ts'
 import { mockFetchRoutes } from './support/mock-fetch.ts'
 import { mockDenoCommand } from './support/mock-deno-command.ts'
 
 describe('run', () => {
-  beforeEach(() => clearDirectory(join(fixturesDirectory, 'cli', '.crow')))
-  afterEach(() => clearDirectory(join(fixturesDirectory, 'cli', '.crow')))
+  beforeEach(async () => {
+    await clearDirectory(join(fixturesDirectory, 'cli', '.crow'))
+    await clearDirectory(join(fixturesDirectory, 'cli', 'crow-global'))
+  })
+  afterEach(async () => {
+    await clearDirectory(join(fixturesDirectory, 'cli', '.crow'))
+    await clearDirectory(join(fixturesDirectory, 'cli', 'crow-global'))
+  })
 
   it('when create-model-catalog is requested, populates the model catalog', async () => {
-    const database = await openAndMigrateDatabase(
-      join(fixturesDirectory, 'cli', '.crow'),
-      pino({ enabled: false }),
-    )
+    const fetchMock = mockFetchRoutes([['pile-driver', { models: [] }]])
+    const applicationData = mockApplicationData({
+      args: ['create-model-catalog'],
+      fetch: fetchMock,
+    })
+    const database = await applicationData.database()
     await database('providers').insert({
       name: 'ollama',
       base_url: 'http://pile-driver.local:11434',
       models_path: '/api/tags',
       api_key_env_var: null,
-    })
-    const fetchMock = mockFetchRoutes([['pile-driver', { models: [] }]])
-    const applicationData = mockApplicationData({
-      args: ['create-model-catalog'],
-      crowDirectory: join(fixturesDirectory, 'cli', '.crow'),
-      database,
-      fetch: fetchMock,
     })
 
     await run(applicationData, () => {})
@@ -39,10 +41,6 @@ describe('run', () => {
   })
 
   it('when add-provider is requested, creates the provider', async () => {
-    const database = await openAndMigrateDatabase(
-      join(fixturesDirectory, 'cli', '.crow'),
-      pino({ enabled: false }),
-    )
     const applicationData = mockApplicationData({
       args: [
         'add-provider',
@@ -50,10 +48,9 @@ describe('run', () => {
         '--base-url=http://x',
         '--api-key-env-var=OLLAMA_KEY',
       ],
-      crowDirectory: join(fixturesDirectory, 'cli', '.crow'),
-      database,
       consoleLog: () => {},
     })
+    const database = await applicationData.database()
 
     await run(applicationData, () => {})
 
@@ -73,7 +70,6 @@ describe('run', () => {
     const quit = mock.fn()
     const applicationData = mockApplicationData({
       args: ['git-commit', 'src/a.ts'],
-      crowDirectory: join(fixturesDirectory, 'cli', '.crow'),
       consoleLog,
       consoleError,
     })
@@ -93,7 +89,6 @@ describe('run', () => {
     using _exit = stub(Deno, 'exit', exit as unknown as typeof Deno.exit)
     const applicationData = mockApplicationData({
       args: ['-V'],
-      crowDirectory: join(fixturesDirectory, 'cli', '.crow'),
       consoleLog: () => {},
     })
 
@@ -107,7 +102,6 @@ describe('run', () => {
     const quit = mock.fn()
     const applicationData = mockApplicationData({
       args: ['-V'],
-      crowDirectory: join(fixturesDirectory, 'cli', '.crow'),
       consoleLog: () => {},
     })
 
@@ -123,9 +117,8 @@ describe('run', () => {
     const quit = mock.fn()
     const applicationData = mockApplicationData({
       args: ['-V'],
-      crowDirectory: join(fixturesDirectory, 'cli', '.crow'),
       logger,
-      parsedArguments: () => {
+      consoleLog: () => {
         throw new Error('boom')
       },
     })
@@ -142,7 +135,6 @@ describe('run', () => {
     const consoleError = mock.fn()
     const applicationData = mockApplicationData({
       args: ['git-commit', '--goal=add login'],
-      crowDirectory: join(fixturesDirectory, 'cli', '.crow'),
       consoleLog,
       consoleError,
       denoCommand: mockDenoCommand({ success: false }),
@@ -160,7 +152,6 @@ describe('run', () => {
     const consoleLog = mock.fn()
     const applicationData = mockApplicationData({
       args: ['unknown'],
-      crowDirectory: join(fixturesDirectory, 'cli', '.crow'),
       consoleLog,
     })
 
@@ -175,7 +166,6 @@ describe('run', () => {
     const outputs: string[] = []
     const applicationData = mockApplicationData({
       args: ['-h'],
-      crowDirectory: join(fixturesDirectory, 'cli', '.crow'),
       consoleLog: (summary: string) => outputs.push(summary),
       fetch: () => {
         throw new Error('fetch should not be called')
@@ -194,7 +184,6 @@ describe('run', () => {
     const outputs: string[] = []
     const applicationData = mockApplicationData({
       args: ['--help'],
-      crowDirectory: join(fixturesDirectory, 'cli', '.crow'),
       consoleLog: (summary: string) => outputs.push(summary),
       fetch: () => {
         throw new Error('fetch should not be called')
@@ -213,7 +202,6 @@ describe('run', () => {
     const outputs: string[] = []
     const applicationData = mockApplicationData({
       args: ['-V'],
-      crowDirectory: join(fixturesDirectory, 'cli', '.crow'),
       consoleLog: (summary: string) => outputs.push(summary),
       fetch: () => {
         throw new Error('fetch should not be called')
@@ -229,7 +217,6 @@ describe('run', () => {
     const outputs: string[] = []
     const applicationData = mockApplicationData({
       args: ['--version'],
-      crowDirectory: join(fixturesDirectory, 'cli', '.crow'),
       consoleLog: (summary: string) => outputs.push(summary),
       fetch: () => {
         throw new Error('fetch should not be called')
@@ -242,24 +229,49 @@ describe('run', () => {
   })
 
   it('when a command finishes, closes the application data', async () => {
-    const close = mock.fn(() => Promise.resolve())
     const applicationData = mockApplicationData({
       args: ['-V'],
-      crowDirectory: join(fixturesDirectory, 'cli', '.crow'),
-      close,
       consoleLog: () => {},
     })
+    using close = stub(applicationData, 'close', () => Promise.resolve())
 
     await run(applicationData, () => {})
 
-    expect(close.mock.calls).toHaveLength(1)
+    expect(close.calls).toHaveLength(1)
+  })
+
+  it('when no application data is given, builds it from the runtime', async () => {
+    const crowGlobalDirectory = join(fixturesDirectory, 'cli', 'crow-global')
+    const runner = createRunner()
+    using _run = stub(runner, 'run', async () => {})
+    using _runner = stub(Repl.prototype, 'runner', () => runner)
+    using _log = stub(console, 'log', () => {})
+    using _error = stub(console, 'error', () => {})
+    using _readTextFile = stub(
+      Deno,
+      'readTextFile',
+      () =>
+        Promise.resolve(JSON.stringify({
+          crowGlobalDirectory,
+          permissions: {
+            ignore: [],
+            additionalRead: [],
+            additionalWrite: [],
+          },
+        })),
+    )
+    const quit = mock.fn()
+
+    const exitCode = await run(undefined, quit)
+
+    expect(exitCode).toBe(0)
+    expect(quit.mock.calls[0].arguments[0]).toBe(0)
   })
 
   it('when an unsupported option is passed, writes usage without invoking command dependencies', async () => {
     const consoleLog = mock.fn()
     const applicationData = mockApplicationData({
       args: ['--unknown'],
-      crowDirectory: join(fixturesDirectory, 'cli', '.crow'),
       consoleLog,
       fetch: () => {
         throw new Error('fetch should not be called')

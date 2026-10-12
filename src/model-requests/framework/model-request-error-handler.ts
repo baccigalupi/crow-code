@@ -1,7 +1,7 @@
 import { APIError } from 'openai'
 import { createProviderAvailability } from '../../domain/availabilties/create-provider.ts'
 import { requestLogger } from './request-logger.ts'
-import type { ApplicationData } from '../../application-data.ts'
+import type { ApplicationData } from '../../application-data/application-data.ts'
 import type { ModelEndpoint, RequestDetails } from '../types.ts'
 
 export class ModelRequestErrorHandler {

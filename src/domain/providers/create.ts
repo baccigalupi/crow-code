@@ -1,4 +1,4 @@
-import type { ApplicationData } from '../../application-data.ts'
+import type { ApplicationData } from '../../application-data/application-data.ts'
 import type { ParsedArgumentsOptions } from '../../cli/types.ts'
 import { CreateRecord } from '../create.ts'
 import { parseParamKeys } from '../parsers/parse-param-keys.ts'
