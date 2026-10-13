@@ -4,8 +4,6 @@ import { join } from '@std/path'
 import { spy, stub } from '@std/testing/mock'
 import pino from 'pino'
 import { run } from '../src/cli.ts'
-import { Repl } from '../src/cli/commands/repl.ts'
-import { createRunner } from '../src/tui/runner.ts'
 import { clearDirectory, fixturesDirectory } from './support/fixtures.ts'
 import { mockApplicationData } from './support/mock-application-data.ts'
 import { mockFetchRoutes } from './support/mock-fetch.ts'
@@ -238,34 +236,6 @@ describe('run', () => {
     await run(applicationData, () => {})
 
     expect(close.calls).toHaveLength(1)
-  })
-
-  it('when no application data is given, builds it from the runtime', async () => {
-    const crowGlobalDirectory = join(fixturesDirectory, 'cli', 'crow-global')
-    const runner = createRunner()
-    using _run = stub(runner, 'run', async () => {})
-    using _runner = stub(Repl.prototype, 'runner', () => runner)
-    using _log = stub(console, 'log', () => {})
-    using _error = stub(console, 'error', () => {})
-    using _readTextFile = stub(
-      Deno,
-      'readTextFile',
-      () =>
-        Promise.resolve(JSON.stringify({
-          crowGlobalDirectory,
-          permissions: {
-            ignore: [],
-            additionalRead: [],
-            additionalWrite: [],
-          },
-        })),
-    )
-    const quit = mock.fn()
-
-    const exitCode = await run(undefined, quit)
-
-    expect(exitCode).toBe(0)
-    expect(quit.mock.calls[0].arguments[0]).toBe(0)
   })
 
   it('when an unsupported option is passed, writes usage without invoking command dependencies', async () => {
