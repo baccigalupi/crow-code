@@ -1,0 +1,86 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dev/*)",
+      "Bash(agents/*)",
+      "Bash(bin/crow)",
+      "Bash(bd:*)",
+      "Bash(git:*)",
+      "Bash(deno doc:*)",
+      "Bash(rg:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(ps:*)",
+      "Bash(wc:*)",
+      "Bash(pwd)",
+      "Bash(grep:*)",
+      "Bash(egrep:*)",
+      "Bash(fgrep:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(sed:*)",
+      "Bash(awk:*)",
+      "Bash(stat:*)",
+      "Bash(file:*)",
+      "Bash(tree:*)",
+      "Bash(diff:*)",
+      "Bash(sort:*)",
+      "Bash(uniq:*)",
+      "Bash(echo:*)",
+      "Bash(printf:*)",
+      "Bash(jq:*)",
+      "Bash(basename:*)",
+      "Bash(dirname:*)",
+      "Bash(realpath:*)",
+      "Bash(curl:*)",
+      "Edit",
+      "Read",
+      "Write",
+      "EnterWorktree",
+      "ExitWorktree",
+      "WebSearch"
+    ],
+    "deny": [
+      "Bash(deno:*)",
+      "Bash(bash:*)",
+      "Bash(sh:*)",
+      "Bash(cd:*)",
+      "Bash(git push:*)",
+      "Bash(git push)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/claude-command-gate.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "EnterWorktree",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/worktree-path-gate.ts"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/style-check-stop.ts"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -2,4 +2,4 @@
 # Run the typecheck gate.
 set -euo pipefail
 
-exec deno check src bin tests agents
+exec deno check src bin tests agents .claude

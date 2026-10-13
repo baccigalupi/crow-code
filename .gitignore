@@ -28,3 +28,5 @@ docs/plans/
 .deps/
 
 .worktrees/
+.claude/worktrees/
+.claude/hooks/bash-gate.log
