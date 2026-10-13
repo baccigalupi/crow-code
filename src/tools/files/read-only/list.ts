@@ -1,58 +1,30 @@
 import { walk } from '@std/fs'
 import { resolve } from '@std/path'
 import type { ApplicationOperationArguments } from '../../../types.ts'
-import type { PathPermissions } from '../../../application-data/path-permissions.ts'
 import type { DirectoryEntry, DirectoryListing } from '../../types.ts'
 import { directoryEntries } from './list/entries.ts'
-import { OperationWithResult } from '../../../operation.ts'
+import { FileOperation } from '../file-operation.ts'
 
 type TaskArguments = {
   path: string
   recursive?: boolean
-  pathPermissions?: PathPermissions
 }
 
 type ListDirectoryArguments = ApplicationOperationArguments<TaskArguments>
 
 export class ListDirectory
-  extends OperationWithResult<TaskArguments, DirectoryListing> {
+  extends FileOperation<TaskArguments, DirectoryListing> {
   protected override logPrefix = 'List directory: '
   private entries: DirectoryEntry[] = []
 
-  async run() {
-    if (await this.pathNotAllowed()) return this
-
-    await this.list()
-    return this
-  }
-
-  result(): DirectoryListing {
+  result() {
     return { path: this.operationArguments.path, entries: this.entries }
   }
 
-  private get permissions() {
-    if (this.operationArguments.pathPermissions) {
-      return this.operationArguments.pathPermissions
-    }
-    return this.applicationData.pathPermissions()
-  }
-
-  private async pathNotAllowed() {
-    const allowed = await this.permissions.allows(this.operationArguments.path)
-    if (!allowed) {
-      this.fail(`path not allowed: ${this.operationArguments.path}`)
-    }
-    return !allowed
-  }
-
-  private async list() {
-    try {
-      const directory = this.directory()
-      const walked = await Array.fromAsync(walk(directory, this.options()))
-      this.entries = directoryEntries({ directory, walked }).sorted()
-    } catch (error) {
-      this.fail((error as Error).message)
-    }
+  protected override async perform() {
+    const directory = this.directory()
+    const walked = await Array.fromAsync(walk(directory, this.options()))
+    this.entries = directoryEntries({ directory, walked }).sorted()
   }
 
   private options() {

@@ -1,12 +1,10 @@
 import type { ApplicationOperationArguments } from '../../../types.ts'
-import type { PathPermissions } from '../../../application-data/path-permissions.ts'
 import type { FileContent } from '../../types.ts'
 import { OperationWithResult } from '../../../operation.ts'
 import { ReadFile, readFile } from './read.ts'
 
 type TaskArguments = {
   paths: string[]
-  pathPermissions?: PathPermissions
 }
 
 type ReadFilesArguments = ApplicationOperationArguments<TaskArguments>
@@ -41,10 +39,7 @@ export class ReadFiles
   private reader(path: string) {
     return readFile({
       applicationData: this.applicationData,
-      operationArguments: {
-        path,
-        pathPermissions: this.operationArguments.pathPermissions,
-      },
+      operationArguments: { path },
     })
   }
 

@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import { spy } from '@std/testing/mock'
+import { spy, stub } from '@std/testing/mock'
 import { readFiles } from '../../../../src/tools/files/read-only/read-files.ts'
 import { pathPermissions } from '../../../../src/application-data/path-permissions.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
@@ -92,18 +92,20 @@ describe('readFiles', () => {
       'git',
       'git-diff.diff',
     )
-    const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-      allowedDirectories: [join(fixturesDirectory, 'tools', 'files')],
-    })
+    using _permissionsStub = stub(
+      applicationData,
+      'pathPermissions',
+      () =>
+        pathPermissions({
+          getRealPath: applicationData.getRealPath(),
+          allowedDirectories: [join(fixturesDirectory, 'tools', 'files')],
+        }),
+    )
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const files = readFiles({
       applicationData,
-      operationArguments: {
-        paths: [alphaPath, gitFixturePath],
-        pathPermissions: permissions,
-      },
+      operationArguments: { paths: [alphaPath, gitFixturePath] },
     })
     await files.run()
 

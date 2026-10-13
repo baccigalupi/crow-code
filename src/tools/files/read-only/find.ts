@@ -2,7 +2,7 @@ import { resolve } from '@std/path'
 import type { ApplicationOperationArguments } from '../../../types.ts'
 import type { PathListing } from '../../types.ts'
 import { filePaths } from './search/file-paths.ts'
-import { OperationWithResult } from '../../../operation.ts'
+import { FileOperation } from '../file-operation.ts'
 
 type TaskArguments = {
   path: string
@@ -12,38 +12,17 @@ type TaskArguments = {
 
 type FindFilesArguments = ApplicationOperationArguments<TaskArguments>
 
-export class FindFiles extends OperationWithResult<TaskArguments, PathListing> {
+export class FindFiles extends FileOperation<TaskArguments, PathListing> {
   protected override logPrefix = 'Find files: '
   private paths: string[] = []
 
-  async run() {
-    if (await this.pathNotAllowed()) return this
-
-    await this.find()
-    return this
-  }
-
-  result(): PathListing {
+  result() {
     return { path: this.operationArguments.path, paths: this.paths }
   }
 
-  private async pathNotAllowed() {
-    const allowed = await this.applicationData.pathPermissions().allows(
-      this.operationArguments.path,
-    )
-    if (!allowed) {
-      this.fail(`path not allowed: ${this.operationArguments.path}`)
-    }
-    return !allowed
-  }
-
-  private async find() {
-    try {
-      const paths = await this.matchingPaths()
-      this.paths = paths.sort((left, right) => left.localeCompare(right))
-    } catch (error) {
-      this.fail((error as Error).message)
-    }
+  protected override async perform() {
+    const paths = await this.matchingPaths()
+    this.paths = paths.sort((left, right) => left.localeCompare(right))
   }
 
   private matchingPaths() {

@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import { spy } from '@std/testing/mock'
+import { spy, stub } from '@std/testing/mock'
 import {
   ListDirectory,
   listDirectory,
@@ -54,15 +54,20 @@ describe('list', () => {
   it('when the path is outside the allowed directories, returns no entries and logs', async () => {
     const applicationData = mockApplicationData()
     const path = join(fixturesDirectory, 'tools', 'files')
-    const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-      allowedDirectories: [join(fixturesDirectory, 'tools', 'git')],
-    })
+    using _permissionsStub = stub(
+      applicationData,
+      'pathPermissions',
+      () =>
+        pathPermissions({
+          getRealPath: applicationData.getRealPath(),
+          allowedDirectories: [join(fixturesDirectory, 'tools', 'git')],
+        }),
+    )
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const listing = listDirectory({
       applicationData,
-      operationArguments: { path, pathPermissions: permissions },
+      operationArguments: { path },
     })
     await listing.run()
 

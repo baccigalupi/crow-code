@@ -1,54 +1,26 @@
 import type { ApplicationOperationArguments } from '../../../types.ts'
-import type { PathPermissions } from '../../../application-data/path-permissions.ts'
 import type { FileContent } from '../../types.ts'
-import { OperationWithResult } from '../../../operation.ts'
+import { FileOperation } from '../file-operation.ts'
 
 type TaskArguments = {
   path: string
   offset?: number
   limit?: number
-  pathPermissions?: PathPermissions
 }
 
 type ReadFileArguments = ApplicationOperationArguments<TaskArguments>
 
-export class ReadFile extends OperationWithResult<TaskArguments, FileContent> {
+export class ReadFile extends FileOperation<TaskArguments, FileContent> {
   protected override logPrefix = 'Read file: '
   private text = ''
 
-  async run() {
-    if (await this.pathNotAllowed()) return this
-
-    await this.read()
-    return this
-  }
-
-  result(): FileContent {
+  result() {
     return { path: this.operationArguments.path, text: this.text }
   }
 
-  private get permissions() {
-    if (this.operationArguments.pathPermissions) {
-      return this.operationArguments.pathPermissions
-    }
-    return this.applicationData.pathPermissions()
-  }
-
-  private async pathNotAllowed() {
-    const allowed = await this.permissions.allows(this.operationArguments.path)
-    if (!allowed) {
-      this.fail(`path not allowed: ${this.operationArguments.path}`)
-    }
-    return !allowed
-  }
-
-  private async read() {
-    try {
-      const contents = await Deno.readTextFile(this.operationArguments.path)
-      this.text = this.select(contents)
-    } catch (error) {
-      this.fail((error as Error).message)
-    }
+  protected override async perform() {
+    const contents = await Deno.readTextFile(this.operationArguments.path)
+    this.text = this.select(contents)
   }
 
   private select(contents: string) {

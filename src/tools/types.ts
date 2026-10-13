@@ -39,6 +39,11 @@ export type MakeDirectoryResult = {
   created: boolean
 }
 
+export type WriteResult = {
+  path: string
+  created: boolean
+}
+
 export type DirectoryEntryKind = 'file' | 'directory' | 'symlink'
 
 export type DirectoryEntry = {

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import { spy } from '@std/testing/mock'
+import { spy, stub } from '@std/testing/mock'
 import {
   SearchFiles,
   searchFiles,
@@ -177,19 +177,20 @@ describe('search', () => {
   it('when the path is outside the allowed directories, returns no matches and logs', async () => {
     const applicationData = mockApplicationData()
     const path = join(fixturesDirectory, 'tools', 'search')
-    const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-      allowedDirectories: [join(fixturesDirectory, 'tools', 'git')],
-    })
+    using _permissionsStub = stub(
+      applicationData,
+      'pathPermissions',
+      () =>
+        pathPermissions({
+          getRealPath: applicationData.getRealPath(),
+          allowedDirectories: [join(fixturesDirectory, 'tools', 'git')],
+        }),
+    )
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const search = searchFiles({
       applicationData,
-      operationArguments: {
-        path,
-        pattern: 'two',
-        pathPermissions: permissions,
-      },
+      operationArguments: { path, pattern: 'two' },
     })
     await search.run()
 

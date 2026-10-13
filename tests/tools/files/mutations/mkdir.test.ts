@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { spy } from '@std/testing/mock'
+import { spy, stub } from '@std/testing/mock'
 import { makeDirectory } from '../../../../src/tools/files/mutations/mkdir.ts'
 import { pathPermissions } from '../../../../src/application-data/path-permissions.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
@@ -55,18 +55,20 @@ describe('makeDirectory', () => {
   it('when the path is outside the allowed directories, fails without creating', async () => {
     Deno.mkdirSync(`${fixturesDirectory}/mkdir`, { recursive: true })
     const applicationData = mockApplicationData()
-    const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-      allowedDirectories: [`${fixturesDirectory}/tools`],
-    })
+    using _permissionsStub = stub(
+      applicationData,
+      'pathPermissions',
+      () =>
+        pathPermissions({
+          getRealPath: applicationData.getRealPath(),
+          allowedDirectories: [`${fixturesDirectory}/tools`],
+        }),
+    )
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const mkdir = makeDirectory({
       applicationData,
-      operationArguments: {
-        path: `${fixturesDirectory}/mkdir/denied`,
-        pathPermissions: permissions,
-      },
+      operationArguments: { path: `${fixturesDirectory}/mkdir/denied` },
     })
     await mkdir.run()
 

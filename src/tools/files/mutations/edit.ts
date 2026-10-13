@@ -1,29 +1,19 @@
 import type { ApplicationOperationArguments } from '../../../types.ts'
-import type { PathPermissions } from '../../../application-data/path-permissions.ts'
 import type { EditResult } from '../../types.ts'
-import { OperationWithResult } from '../../../operation.ts'
+import { FileOperation } from '../file-operation.ts'
 
 type TaskArguments = {
   path: string
   oldString: string
   newString: string
   replaceAll?: boolean
-  pathPermissions?: PathPermissions
 }
 
 type EditFileArguments = ApplicationOperationArguments<TaskArguments>
 
-export class EditFile extends OperationWithResult<TaskArguments, EditResult> {
+export class EditFile extends FileOperation<TaskArguments, EditResult> {
   protected override logPrefix = 'Edit file: '
   private replacements = 0
-
-  async run() {
-    if (await this.pathNotAllowed()) return this
-
-    this.validateArguments()
-    await this.edit()
-    return this
-  }
 
   result() {
     return {
@@ -32,19 +22,9 @@ export class EditFile extends OperationWithResult<TaskArguments, EditResult> {
     }
   }
 
-  private get permissions() {
-    if (this.operationArguments.pathPermissions) {
-      return this.operationArguments.pathPermissions
-    }
-    return this.applicationData.pathPermissions()
-  }
-
-  private async pathNotAllowed() {
-    const allowed = await this.permissions.allows(this.operationArguments.path)
-    if (!allowed) {
-      this.fail(`path not allowed: ${this.operationArguments.path}`)
-    }
-    return !allowed
+  protected override async perform() {
+    this.validateArguments()
+    await this.edit()
   }
 
   private validateArguments() {
@@ -58,14 +38,7 @@ export class EditFile extends OperationWithResult<TaskArguments, EditResult> {
 
   private async edit() {
     if (!this.succeeded) return
-    try {
-      await this.tryEdit()
-    } catch (error) {
-      this.fail((error as Error).message)
-    }
-  }
 
-  private async tryEdit() {
     const contents = await Deno.readTextFile(this.operationArguments.path)
     this.failUnmatched(contents)
     if (this.succeeded) await this.write(contents)

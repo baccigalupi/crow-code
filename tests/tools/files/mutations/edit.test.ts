@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import { spy } from '@std/testing/mock'
+import { spy, stub } from '@std/testing/mock'
 import { editFile } from '../../../../src/tools/files/mutations/edit.ts'
 import { pathPermissions } from '../../../../src/application-data/path-permissions.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
@@ -101,20 +101,20 @@ describe('editFile', () => {
     const path = join(directory, 'alpha.txt')
     Deno.writeTextFileSync(path, 'one\ntwo\nthree\n')
     const applicationData = mockApplicationData()
-    const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-      allowedDirectories: [join(fixturesDirectory, 'tools')],
-    })
+    using _permissionsStub = stub(
+      applicationData,
+      'pathPermissions',
+      () =>
+        pathPermissions({
+          getRealPath: applicationData.getRealPath(),
+          allowedDirectories: [join(fixturesDirectory, 'tools')],
+        }),
+    )
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const file = editFile({
       applicationData,
-      operationArguments: {
-        path,
-        oldString: 'two',
-        newString: 'TWO',
-        pathPermissions: permissions,
-      },
+      operationArguments: { path, oldString: 'two', newString: 'TWO' },
     })
     await file.run()
 
