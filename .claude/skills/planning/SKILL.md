@@ -67,16 +67,7 @@ only when implementation starts:
    `cd`, no `--config` flags (see the `correct-command` skill).
 3. All subsequent file paths, `dev/*`/`agents/*` calls, and verification
    commands then target the worktree automatically.
-4. Landing is the fixed sequence from `CLAUDE.md`/`AGENTS.md`: commit in the
-   worktree (`git commit -F - <<'EOF' ... EOF`) → `git rebase main` →
-   `ExitWorktree({ action: "keep" })` → `git merge --ff-only <branch>` in the
-   main checkout (never a merge commit; if `main` moved, repeat the rebase and
-   `agents/pre-commit`, then retry) → `bd close <id>` →
-   `ExitWorktree({ action: "remove" })`. Request approval once before this
-   sequence; a granted approval authorizes the whole thing, including the
-   commit. Never rebase, merge, or fast-forward onto `main` unprompted. If the
-   work is abandoned instead, `ExitWorktree({ action: "remove" })` and leave the
-   issue open.
+4. Landing is the `land-tree` skill, run when the user asks.
 
 ## Beads issue
 
@@ -85,9 +76,9 @@ Like the worktree, the Beads issue does not exist during planning:
 1. Record in the plan the issue title to create, or the provided issue ID when
    the user supplies one — e.g. `Beads: <title> (to be created)` or
    `Beads: crow-code-4vz.2`.
-2. As the first step of implementation — never during planning — run `bd create`
-   for the recorded title (unless the plan names an existing issue) and
-   `bd update <id> --claim`.
+2. After `EnterWorktree` — never during planning, never from the main checkout —
+   run `bd create` for the recorded title (unless the plan names an existing
+   issue) and `bd update <id> --claim`, inside the worktree.
 3. `.beads/*.jsonl` is tracked state — stage it with the implementation work it
    records.
 
@@ -158,8 +149,13 @@ Never present an unresolved assumption as a decision.
 
 ### Implementation steps (TDD)
 
-Setup first: create the Beads issue and worktree recorded above (see Worktree
-setup / Beads issue). Every subsequent step runs inside the worktree.
+Step 0, in this order (see Worktree setup / Beads issue):
+
+1. `EnterWorktree({ name: "<id>" })`.
+2. `bd create` (unless the plan names an existing issue), then
+   `bd update <id> --claim`.
+
+Every subsequent step runs inside the worktree.
 
 Every production behavior change follows real red-green-refactor TDD (same rule
 as `CLAUDE.md` § TDD):
@@ -228,11 +224,9 @@ is the completion report.
 Once every TDD step is green and `agents/pre-commit` passes, report plainly that
 the plan is complete — don't recap which checks were run, don't mention any
 failure encountered and fixed along the way (that's in the plan file, not the
-chat), and don't ask whether to proceed with landing: move straight into
-requesting approval to land the work (see Worktree setup). Send the final
-completion response only after that landing approval is granted or declined —
-keep it to the result, not a recap: what landed, what didn't, and why, in under
-two sentences per `compliant-answer`.
+chat). Landing is the `land-tree` skill, run when the user asks. Keep the
+completion response to the result, not a recap, in under two sentences per
+`compliant-answer`.
 
 ## Revision discipline
 
