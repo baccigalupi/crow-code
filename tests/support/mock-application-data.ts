@@ -1,5 +1,5 @@
 import pino from 'pino'
-import OpenAI from 'openai'
+import type OpenAI from 'openai'
 import { stub } from '@std/testing/mock'
 import { ApplicationData } from '../../src/application-data/application-data.ts'
 import { DenoRuntime } from '../../src/application-data/deno-runtime.ts'
@@ -14,6 +14,7 @@ import type {
 } from '../../src/types.ts'
 import type { OpenAiClientOptions } from '../../src/model-requests/types.ts'
 import { mockFetchSuccess } from './mock-fetch.ts'
+import { mockOpenAiClient } from './mock-openai-client.ts'
 import { createTestDatabase } from './test-database.ts'
 
 export type MockApplicationDataOverrides = {
@@ -44,13 +45,7 @@ export const mockApplicationData = (
   const fetchClient = overrides.fetch || mockFetchSuccess({})
   const denoCommand = overrides.denoCommand || Deno.Command
   const envars = overrides.envars || new Environment({})
-  const chatClient = overrides.chatClient || ((options: OpenAiClientOptions) =>
-    new OpenAI({
-      ...options,
-      fetch: fetchClient,
-      timeout: 20000,
-      maxRetries: 2,
-    }))
+  const chatClient = overrides.chatClient || mockOpenAiClient('')
 
   stub(data, 'args', () => args)
   stub(data, 'logger', () => logger)
