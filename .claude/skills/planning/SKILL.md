@@ -36,13 +36,10 @@ guard enforces, it's the only file plan mode allows editing.
 
 After writing or revising the plan, never paste or restate plan content in the
 chat response — not the Goal quote, not a section, not a summary of what
-changed. Send the plan file itself with
-`SendUserFile({files: ["<plan
-path>"], status: "normal"})` so the user gets a
-link to the current version; do this every time the plan file is written or
-edited, not just the first time. The chat response contains nothing else — no
-greeting, no recap, no follow-up text. `ExitPlanMode` is denied in
-`.claude/settings.json`; never call it. End the turn with the plan file sent, or
+changed. The chat response is the plan file's path and nothing else — no
+greeting, no recap, no follow-up text. Give the path every time the plan file is
+written or edited, not just the first time. `ExitPlanMode` is denied in
+`.claude/settings.json`; never call it. End the turn with the plan file path, or
 with `AskUserQuestion` — a genuine decision only the user can make (never "is
 this plan okay?").
 
