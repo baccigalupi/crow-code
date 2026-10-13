@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, it, mock } from 'node:test'
 import { expect } from '@std/expect'
+import { exists } from '@std/fs'
 import { join } from '@std/path'
 import { spy, stub } from '@std/testing/mock'
 import pino from 'pino'
@@ -253,5 +254,54 @@ describe('run', () => {
     expect(consoleLog.mock.calls[0].arguments[0]).toContain(
       'Usage: crow <command>',
     )
+  })
+
+  it('when no arguments are given, launches the repl and exits on interrupt', async () => {
+    const cwd = join(fixturesDirectory, 'cli')
+    await Deno.mkdir(join(cwd, '.crow'), { recursive: true })
+    await Deno.writeTextFile(
+      join(cwd, '.crow', 'config.json'),
+      JSON.stringify({
+        crowGlobalDirectory: 'crow-global',
+        permissions: {
+          ignore: [],
+          additionalRead: [],
+          additionalWrite: [],
+        },
+      }),
+    )
+
+    const child = new Deno.Command(Deno.execPath(), {
+      args: [
+        'run',
+        '--allow-read',
+        '--allow-write',
+        '--allow-env',
+        '--allow-net',
+        '--allow-ffi',
+        '--allow-run=git',
+        '--allow-sys=hostname',
+        join(Deno.cwd(), 'bin', 'crow'),
+      ],
+      cwd,
+      env: {
+        DENO_COVERAGE_DIR: Deno.env.get('DENO_COVERAGE_DIR') ??
+          join(Deno.cwd(), 'coverage'),
+      },
+      stdin: 'null',
+      stdout: 'null',
+      stderr: 'null',
+      signal: AbortSignal.timeout(60_000),
+    }).spawn()
+    // The sqlite file proves the real builder opened and migrated the database;
+    // the buffer covers the remaining gap to Runner.listen() registering SIGINT.
+    while (!await exists(join(cwd, 'crow-global', 'crow.db'))) {
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1_000))
+
+    child.kill('SIGINT')
+    const status = await child.status
+    expect(status.code).toBe(1)
   })
 })
