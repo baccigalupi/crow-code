@@ -10,20 +10,20 @@ description: >-
 Claude Code port of Devin's `react-style` skill
 (`.devin/skills/react-style/SKILL.md`) — unchanged content.
 
-Conventions for TSX views under `src/tui/`, derived from
-`src/tui/app/views/`. Follow these when writing or reviewing any `.tsx` file.
+Conventions for TSX views under `src/tui/`, derived from `src/tui/app/views/`.
+Follow these when writing or reviewing any `.tsx` file.
 
 The mechanically checkable rules are enforced by `agents/style-check`
 (`agents/style-checks/tsx.ts`): arrow-function components, no
 `useState`/`useReducer`, no inline `useInput` outside `hooks/`, no `&&`
-conditionals in JSX, no `split('\n')` line-mapping (multi-line text renders in
-a single `<Text wrap='wrap'>`). The rules below are the ones a reviewer must
-still apply by hand.
+conditionals in JSX, no `split('\n')` line-mapping (multi-line text renders in a
+single `<Text wrap='wrap'>`). The rules below are the ones a reviewer must still
+apply by hand.
 
 Keep this skill to enforceable conventions only. Terminal sizing, flexGrow
 pinning, explicit wrap, inverse cursor, theme colors, and similar layout/text
-styling details are context to look up in the actual view code when needed —
-not rules to assert here.
+styling details are context to look up in the actual view code when needed — not
+rules to assert here.
 
 ## Components
 
@@ -42,8 +42,8 @@ not rules to assert here.
   `InputViewModelArguments`) — not inline object types.
 - Tiny helper components may declare inline props:
   `{ readonly entry: HistoryEntry }`. Always `readonly`.
-- Injectable state is a default parameter (`session = chatSession`) so tests
-  can substitute signals without touching module state.
+- Injectable state is a default parameter (`session = chatSession`) so tests can
+  substitute signals without touching module state.
 - Wrapper components use `PropsWithChildren` from `react`.
 
 ## Views are thin — view models do the thinking
@@ -51,9 +51,9 @@ not rules to assert here.
 - A view computes nothing. Every derived value (sizes, splits, lists,
   visibility) comes from a `*ViewModel` function: `appViewModel`,
   `chatViewModel`, `inputViewModel`, `bufferViewModel`.
-- The component body is: read signals → call view model(s) → return JSX.
-  Inline conditionals for derived data are a smell; push them into the view
-  model where they are unit-testable.
+- The component body is: read signals → call view model(s) → return JSX. Inline
+  conditionals for derived data are a smell; push them into the view model where
+  they are unit-testable.
 - View models take a single args object and return plain data.
 
 ## State
@@ -62,13 +62,13 @@ not rules to assert here.
   state hooks are banned (scripted).
 - Input handling lives in dedicated hooks (`useReplKeys`, `useResize`), not
   inline `useInput` in a view (scripted).
-- Signal updates go through the shared buffer/session functions
-  (`insertText`, `deleteBackward`, `moveCursor`, …) — never mutate
-  `InputBuffer` fields in place.
+- Signal updates go through the shared buffer/session functions (`insertText`,
+  `deleteBackward`, `moveCursor`, …) — never mutate `InputBuffer` fields in
+  place.
 
 ## Conditional rendering
 
 - Guard with early `return null` in a helper component (`Placeholder`), not
   `cond && <Text>` inside JSX (scripted).
-- Lists render via `.map` with an entity `key={entry.id}` — never array
-  indexes or derived string content as keys.
+- Lists render via `.map` with an entity `key={entry.id}` — never array indexes
+  or derived string content as keys.

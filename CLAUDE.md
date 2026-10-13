@@ -212,11 +212,9 @@ wording (`workdir` parameter → `EnterWorktree`) and adds a Claude-only check
 (deny backgrounding `dev/test`/`dev/coverage`/`agents/pre-commit`, which would
 stomp the shared `coverage/` directory). `worktree-path-gate.ts` (decision logic
 in `worktree-path-decision.ts`) separately validates `EnterWorktree`'s `path`
-argument. `style-check-stop.ts` runs `agents/style-check --changed` before the
-session is allowed to end. Tests: `tests/claude-hooks/*.test.ts`. A deny always
-names the exact command to run instead; don't retry a variant of a denied
-command. Full command table and wrong→right rewrites:
-`.claude/skills/correct-command/SKILL.md`.
+argument. Tests: `tests/claude-hooks/*.test.ts`. A deny always names the exact
+command to run instead; don't retry a variant of a denied command. Full command
+table and wrong→right rewrites: `.claude/skills/correct-command/SKILL.md`.
 
 ## Dependency lookup (codebase-memory-mcp)
 

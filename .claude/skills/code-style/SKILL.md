@@ -9,66 +9,62 @@ description: >-
 
 Claude Code port of Devin's `code-style` rule (`.devin/rules/code-style.md`).
 Devin applies this automatically by glob (`src/**/*.ts`); Claude Code has no
-glob-triggered rule mechanism, so treat this skill as applying any time
-you're creating or changing production TypeScript here — most of it is
-self-enforced (see rule 14), only a subset is linted by
-`agents/style-checks/*` (see the `style-check` skill).
+glob-triggered rule mechanism, so treat this skill as applying any time you're
+creating or changing production TypeScript here — most of it is self-enforced
+(see rule 14), only a subset is linted by `agents/style-checks/*` (see the
+`style-check` skill).
 
 ## Hard rules
 
-1. Only files named `types.ts` may export type definitions (`type`,
-   `interface`, `enum`). Types used in more than one location go in
-   `src/types.ts`.
+1. Only files named `types.ts` may export type definitions (`type`, `interface`,
+   `enum`). Types used in more than one location go in `src/types.ts`.
 2. Module-level: `const foo = () => {}` — not `function foo() {}`
 3. When the same data is passed between multiple functions in a module, use a
-   class; class methods use normal `method() {}` syntax (not arrow
-   properties)
-4. No constructor parameter properties (`constructor(private x: T) {}`);
-   create an explicit constructor with typed attributes
+   class; class methods use normal `method() {}` syntax (not arrow properties)
+4. No constructor parameter properties (`constructor(private x: T) {}`); create
+   an explicit constructor with typed attributes
 5. Conditionals stay flat (no nesting)
 6. Ban `?:`, `??`, and `?.` — write explicit `if` / early return
 7. No abbreviations in method or variable names
-8. Either a full if/else if/else flow or a guard clause for exception cases
-   and then a return at the end of the function. Mutually exclusive branches
-   must be chained, not written as consecutive `if` statements.
+8. Either a full if/else if/else flow or a guard clause for exception cases and
+   then a return at the end of the function. Mutually exclusive branches must be
+   chained, not written as consecutive `if` statements.
 9. No guard clauses except on the very first line. Setup before the guard is
    incorrect and can usually be converted to a private method called in the
    condition for the guard. A guard's return may be a call only when the call
    returns a value; `return f()` where `f` returns `void`/`Promise<void>`
-   smuggles a side effect — do the work in the condition or in a
-   value-returning helper instead (`agents/style-checks/void-guard-calls`
-   catches this one mechanically).
+   smuggles a side effect — do the work in the condition or in a value-returning
+   helper instead (`agents/style-checks/void-guard-calls` catches this one
+   mechanically).
 10. Prefer null object pattern over null checks
 11. Do not nest `function` declarations inside functions. Arrow functions and
     inline callbacks are allowed.
 12. Functions/methods ≤ 7 lines of code
 13. Do not throw unless the user asks or approves
-14. Keep ABC complexity low: few assignments, branches, and calls per
-    function; split work rather than stacking logic (no ABC linter —
-    self-enforce)
-15. Prefer array iterators (`map` / `filter` / `forEach` / `find` / etc.)
-    over `while` / `for` for collection traversal
+14. Keep ABC complexity low: few assignments, branches, and calls per function;
+    split work rather than stacking logic (no ABC linter — self-enforce)
+15. Prefer array iterators (`map` / `filter` / `forEach` / `find` / etc.) over
+    `while` / `for` for collection traversal
 16. Use `while` for infinite loops (not `for (;;)`)
 17. Split files by responsibility — one concern per module
 18. No more than 100 LOC per file (see the `file-too-large` skill when this
     fires)
-19. Everything must be importable/buildable without also running side
-    effects on import
-20. CLI (and similar apps): many setup/component modules; only one `run`
-    module pulls them in and actually executes
-21. Avoid module singletons / long-lived module-level mutable state — get
-    user approval before introducing one
+19. Everything must be importable/buildable without also running side effects on
+    import
+20. CLI (and similar apps): many setup/component modules; only one `run` module
+    pulls them in and actually executes
+21. Avoid module singletons / long-lived module-level mutable state — get user
+    approval before introducing one
 22. We only write code for production real usage. Not imaginary stuff.
-23. No SCREAMING_CASE names for consts (or anything else we own) — use
-    camelCase (`goalSystemPrompt`, not `GOAL_SYSTEM_PROMPT`)
-24. Omit explicit return types when TypeScript can infer them; add a return
-    type only when inference fails or would be too wide (e.g. empty body,
-    recursion, satisfying an interface, or narrowing a union)
-25. Constructors do no work — only single-line `this.field = value`
-    statements (nested targets like `this.signal.value` allowed) and
-    single-line `const` locals that feed them. No branching, no multi-line
-    derivation, and no `this.*()` calls — lazy-build derived state inside the
-    methods that use it
+23. No SCREAMING_CASE names for consts (or anything else we own) — use camelCase
+    (`goalSystemPrompt`, not `GOAL_SYSTEM_PROMPT`)
+24. Omit explicit return types when TypeScript can infer them; add a return type
+    only when inference fails or would be too wide (e.g. empty body, recursion,
+    satisfying an interface, or narrowing a union)
+25. Constructors do no work — only single-line `this.field = value` statements
+    (nested targets like `this.signal.value` allowed) and single-line `const`
+    locals that feed them. No branching, no multi-line derivation, and no
+    `this.*()` calls — lazy-build derived state inside the methods that use it
 26. Bare `return`, never `return undefined`
 
 ## Examples

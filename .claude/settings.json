@@ -42,6 +42,7 @@
       "WebSearch"
     ],
     "deny": [
+      "ExitPlanMode",
       "Bash(deno:*)",
       "Bash(bash:*)",
       "Bash(sh:*)",
@@ -67,17 +68,6 @@
           {
             "type": "command",
             "command": ".claude/hooks/worktree-path-gate.ts"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/style-check-stop.ts"
           }
         ]
       }
