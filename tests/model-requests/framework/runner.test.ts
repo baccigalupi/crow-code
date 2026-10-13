@@ -6,6 +6,7 @@ import { Runner } from '../../../src/model-requests/framework/runner.ts'
 import { GetGoals } from '../../../src/model-requests/goals.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { mockFetchSequence } from '../../support/mock-fetch.ts'
+import { mockOpenAiClientWithFetch } from '../../support/mock-openai-client.ts'
 
 describe('Runner', () => {
   it('tries models until a request succeeds', async () => {
@@ -14,7 +15,10 @@ describe('Runner', () => {
       Response.json({ choices: [{ message: { content: 'invalid' } }] }),
       Response.json({ choices: [{ message: { content: '["done"]' } }] }),
     ])
-    const applicationData = mockApplicationData({ logger, fetch })
+    const applicationData = mockApplicationData({
+      logger,
+      chatClient: mockOpenAiClientWithFetch(fetch),
+    })
     const database = await applicationData.database()
     await database('providers').insert({
       id: 1,
@@ -84,7 +88,10 @@ describe('Runner', () => {
   it('when no models are available, returns undefined', async () => {
     const logger = pino({ enabled: false })
     const fetch = mockFetchSequence([])
-    const applicationData = mockApplicationData({ logger, fetch })
+    const applicationData = mockApplicationData({
+      logger,
+      chatClient: mockOpenAiClientWithFetch(fetch),
+    })
     const runner = new Runner({
       applicationData,
       operationArguments: {
@@ -107,7 +114,9 @@ describe('Runner', () => {
       Response.json({ choices: [{ message: { content: 'invalid' } }] }),
       Response.json({ choices: [{ message: { content: '["done"]' } }] }),
     ])
-    const applicationData = mockApplicationData({ fetch })
+    const applicationData = mockApplicationData({
+      chatClient: mockOpenAiClientWithFetch(fetch),
+    })
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
     const database = await applicationData.database()
     await database('providers').insert({

@@ -26,3 +26,9 @@ export const mockOpenAiClientNetworkError = (message: string) => {
     return new OpenAI({ ...options, fetch: mockFetchRejected(message) })
   }
 }
+
+export const mockOpenAiClientWithFetch = (fetch: typeof globalThis.fetch) => {
+  return (options: OpenAiClientOptions) => {
+    return new OpenAI({ ...options, fetch })
+  }
+}

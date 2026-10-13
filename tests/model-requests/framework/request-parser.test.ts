@@ -4,7 +4,10 @@ import { OpenAiRequest } from '../../../src/model-requests/framework/openai-requ
 import { RequestParser } from '../../../src/model-requests/framework/request-parser.ts'
 import { ModelAnswer } from '../../../src/model-requests/framework/model-answer.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
-import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
+import {
+  mockOpenAiClient,
+  mockOpenAiClientError,
+} from '../../support/mock-openai-client.ts'
 
 describe('RequestParser', () => {
   it('when the api request failed, records api-error', async () => {
@@ -14,7 +17,9 @@ describe('RequestParser', () => {
       model: 'test-model',
       providerId: 1,
     }
-    const applicationData = mockApplicationData({ fetch: mockFetchError(500) })
+    const applicationData = mockApplicationData({
+      chatClient: mockOpenAiClientError(500),
+    })
     const apiRequest = new OpenAiRequest({
       applicationData,
       operationArguments: { modelEndpoint, messages: [] },
@@ -37,10 +42,7 @@ describe('RequestParser', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [{ message: { content: 'not json' } }],
-        usage: { completion_tokens: 1 },
-      }),
+      chatClient: mockOpenAiClient('not json'),
     })
     const apiRequest = new OpenAiRequest({
       applicationData,
@@ -64,10 +66,7 @@ describe('RequestParser', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [{ message: { content: '{"unexpected": 1}' } }],
-        usage: { completion_tokens: 1 },
-      }),
+      chatClient: mockOpenAiClient('{"unexpected": 1}'),
     })
     const apiRequest = new OpenAiRequest({
       applicationData,
@@ -91,10 +90,7 @@ describe('RequestParser', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [{ message: { content: '["first goal"]' } }],
-        usage: { completion_tokens: 3 },
-      }),
+      chatClient: mockOpenAiClient('["first goal"]'),
     })
     const apiRequest = new OpenAiRequest({
       applicationData,

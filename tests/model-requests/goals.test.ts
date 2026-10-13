@@ -5,7 +5,12 @@ import { GetGoals, getGoals } from '../../src/model-requests/goals.ts'
 import type { ChatCompletionJson } from '../../src/model-requests/types.ts'
 import { loadFixture } from '../support/fixtures.ts'
 import { mockApplicationData } from '../support/mock-application-data.ts'
-import { mockFetchError, mockFetchSuccess } from '../support/mock-fetch.ts'
+import { mockFetchSuccess } from '../support/mock-fetch.ts'
+import {
+  mockOpenAiClient,
+  mockOpenAiClientError,
+  mockOpenAiClientWithFetch,
+} from '../support/mock-openai-client.ts'
 
 describe('goals', () => {
   it('when run is called, writes the goal request messages onto the class', async () => {
@@ -16,9 +21,7 @@ describe('goals', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [{ message: { content: '[]' } }],
-      }),
+      chatClient: mockOpenAiClient('[]'),
     })
     const getGoals = new GetGoals({
       applicationData,
@@ -41,7 +44,7 @@ describe('goals', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchError(500),
+      chatClient: mockOpenAiClientError(500),
     })
     const getGoals = new GetGoals({
       applicationData,
@@ -62,10 +65,7 @@ describe('goals', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [{ message: { content: '{"goals": []}' } }],
-        usage: { completion_tokens: 1 },
-      }),
+      chatClient: mockOpenAiClient('{"goals": []}'),
     })
     const getGoals = new GetGoals({
       applicationData,
@@ -81,8 +81,10 @@ describe('goals', () => {
 
   it('when the api call fails, the runner reports failure', async () => {
     const logger = pino({ enabled: false })
-    const fetch = mockFetchError(500)
-    const applicationData = mockApplicationData({ logger, fetch })
+    const applicationData = mockApplicationData({
+      logger,
+      chatClient: mockOpenAiClientError(500),
+    })
     const database = await applicationData.database()
     await database('providers').insert({
       id: 1,
@@ -116,7 +118,10 @@ describe('goals', () => {
       'model-requests/ollama-goals-response.json',
     ) as ChatCompletionJson
     const fetch = mockFetchSuccess(fixture)
-    const applicationData = mockApplicationData({ logger, fetch })
+    const applicationData = mockApplicationData({
+      logger,
+      chatClient: mockOpenAiClientWithFetch(fetch),
+    })
     const database = await applicationData.database()
     await database('providers').insert({
       id: 1,

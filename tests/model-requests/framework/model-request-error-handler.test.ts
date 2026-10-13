@@ -4,12 +4,13 @@ import { spy } from '@std/testing/mock'
 import { OpenAiRequest } from '../../../src/model-requests/framework/openai-request.ts'
 import { ModelRequestErrorHandler } from '../../../src/model-requests/framework/model-request-error-handler.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
+import { mockFetchResponse } from '../../support/mock-fetch.ts'
 import {
-  mockFetchError,
-  mockFetchRejected,
-  mockFetchResponse,
-  mockFetchSuccess,
-} from '../../support/mock-fetch.ts'
+  mockOpenAiClient,
+  mockOpenAiClientError,
+  mockOpenAiClientNetworkError,
+  mockOpenAiClientWithFetch,
+} from '../../support/mock-openai-client.ts'
 
 describe('ModelRequestErrorHandler', () => {
   it('when the api call fails, logs the request context and response detail', async () => {
@@ -20,8 +21,10 @@ describe('ModelRequestErrorHandler', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchResponse(
-        () => new Response('{"message":"Not Found"}', { status: 404 }),
+      chatClient: mockOpenAiClientWithFetch(
+        mockFetchResponse(
+          () => new Response('{"message":"Not Found"}', { status: 404 }),
+        ),
       ),
     })
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
@@ -57,7 +60,7 @@ describe('ModelRequestErrorHandler', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchRejected('socket hangup'),
+      chatClient: mockOpenAiClientNetworkError('socket hangup'),
     })
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
     const apiRequest = new OpenAiRequest({
@@ -87,7 +90,7 @@ describe('ModelRequestErrorHandler', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchError(401),
+      chatClient: mockOpenAiClientError(401),
     })
     const database = await applicationData.database()
     const apiRequest = new OpenAiRequest({
@@ -118,7 +121,7 @@ describe('ModelRequestErrorHandler', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchError(500),
+      chatClient: mockOpenAiClientError(500),
     })
     const database = await applicationData.database()
     const apiRequest = new OpenAiRequest({
@@ -147,9 +150,7 @@ describe('ModelRequestErrorHandler', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [{ message: { content: '[]' } }],
-      }),
+      chatClient: mockOpenAiClient('[]'),
     })
     const database = await applicationData.database()
 

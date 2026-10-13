@@ -6,7 +6,10 @@ import {
   getCommitMessage,
 } from '../../src/model-requests/commit-message.ts'
 import { mockApplicationData } from '../support/mock-application-data.ts'
-import { mockFetchError, mockFetchSuccess } from '../support/mock-fetch.ts'
+import {
+  mockOpenAiClient,
+  mockOpenAiClientError,
+} from '../support/mock-openai-client.ts'
 
 describe('commit-message', () => {
   it('when run is called, writes the commit message request messages onto the class', async () => {
@@ -17,16 +20,9 @@ describe('commit-message', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [
-          {
-            message: {
-              content: '{"subject":"Add login","body":"Adds the login form."}',
-            },
-          },
-        ],
-        usage: { completion_tokens: 1 },
-      }),
+      chatClient: mockOpenAiClient(
+        '{"subject":"Add login","body":"Adds the login form."}',
+      ),
     })
     const request = new GetCommitMessage({
       applicationData,
@@ -61,16 +57,7 @@ describe('commit-message', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [
-          {
-            message: {
-              content: '{"subject": 42}',
-            },
-          },
-        ],
-        usage: { completion_tokens: 1 },
-      }),
+      chatClient: mockOpenAiClient('{"subject": 42}'),
     })
     const request = new GetCommitMessage({
       applicationData,
@@ -95,16 +82,7 @@ describe('commit-message', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [
-          {
-            message: {
-              content: '{"subject":"Add login","body":""}',
-            },
-          },
-        ],
-        usage: { completion_tokens: 1 },
-      }),
+      chatClient: mockOpenAiClient('{"subject":"Add login","body":""}'),
     })
     const request = new GetCommitMessage({
       applicationData,
@@ -129,16 +107,9 @@ describe('commit-message', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [
-          {
-            message: {
-              content: '{"subject":"  ","body":"Adds the login form."}',
-            },
-          },
-        ],
-        usage: { completion_tokens: 1 },
-      }),
+      chatClient: mockOpenAiClient(
+        '{"subject":"  ","body":"Adds the login form."}',
+      ),
     })
     const request = new GetCommitMessage({
       applicationData,
@@ -163,16 +134,9 @@ describe('commit-message', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [
-          {
-            message: {
-              content: '{"subject":42,"body":"Adds the login form."}',
-            },
-          },
-        ],
-        usage: { completion_tokens: 1 },
-      }),
+      chatClient: mockOpenAiClient(
+        '{"subject":42,"body":"Adds the login form."}',
+      ),
     })
     const request = new GetCommitMessage({
       applicationData,
@@ -197,16 +161,7 @@ describe('commit-message', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [
-          {
-            message: {
-              content: '42',
-            },
-          },
-        ],
-        usage: { completion_tokens: 1 },
-      }),
+      chatClient: mockOpenAiClient('42'),
     })
     const request = new GetCommitMessage({
       applicationData,
@@ -225,8 +180,10 @@ describe('commit-message', () => {
 
   it('when the api call fails, the runner reports failure', async () => {
     const logger = pino({ enabled: false })
-    const fetch = mockFetchError(500)
-    const applicationData = mockApplicationData({ logger, fetch })
+    const applicationData = mockApplicationData({
+      logger,
+      chatClient: mockOpenAiClientError(500),
+    })
     const database = await applicationData.database()
     await database('providers').insert({
       id: 1,
@@ -260,17 +217,12 @@ describe('commit-message', () => {
 
   it('when the api call succeeds, the runner returns the commit message', async () => {
     const logger = pino({ enabled: false })
-    const fetch = mockFetchSuccess({
-      choices: [
-        {
-          message: {
-            content: '{"subject":"Add login","body":"Adds the login form."}',
-          },
-        },
-      ],
-      usage: { completion_tokens: 1 },
+    const applicationData = mockApplicationData({
+      logger,
+      chatClient: mockOpenAiClient(
+        '{"subject":"Add login","body":"Adds the login form."}',
+      ),
     })
-    const applicationData = mockApplicationData({ logger, fetch })
     const database = await applicationData.database()
     await database('providers').insert({
       id: 1,

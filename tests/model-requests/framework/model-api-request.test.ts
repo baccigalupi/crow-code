@@ -5,7 +5,12 @@ import { OpenAiRequest } from '../../../src/model-requests/framework/openai-requ
 import { ModelApiRequest } from '../../../src/model-requests/framework/model-api-request.ts'
 import type { ModelMessages } from '../../../src/model-requests/types.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
-import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
+import { mockFetchSuccess } from '../../support/mock-fetch.ts'
+import {
+  mockOpenAiClient,
+  mockOpenAiClientError,
+  mockOpenAiClientWithFetch,
+} from '../../support/mock-openai-client.ts'
 
 describe('ModelApiRequest', () => {
   it('when run is called, writes the request messages onto the class', async () => {
@@ -16,9 +21,7 @@ describe('ModelApiRequest', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [{ message: { content: '[]' } }],
-      }),
+      chatClient: mockOpenAiClient('[]'),
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
@@ -51,9 +54,7 @@ describe('ModelApiRequest', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [{ message: { content: '[]' } }],
-      }),
+      chatClient: mockOpenAiClient('[]'),
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
@@ -86,13 +87,15 @@ describe('ModelApiRequest', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [{ message: { content: '["first goal"]' } }],
-        usage: {
-          completion_tokens: 3,
-          cost: 0.25,
-        },
-      }),
+      chatClient: mockOpenAiClientWithFetch(
+        mockFetchSuccess({
+          choices: [{ message: { content: '["first goal"]' } }],
+          usage: {
+            completion_tokens: 3,
+            cost: 0.25,
+          },
+        }),
+      ),
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
@@ -130,10 +133,7 @@ describe('ModelApiRequest', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [{ message: { content: 'not json' } }],
-        usage: { completion_tokens: 1 },
-      }),
+      chatClient: mockOpenAiClient('not json'),
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
@@ -166,10 +166,7 @@ describe('ModelApiRequest', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [{ message: { content: 'not json' } }],
-        usage: { completion_tokens: 1 },
-      }),
+      chatClient: mockOpenAiClient('not json'),
     })
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
     const modelApiRequest = new class
@@ -203,10 +200,7 @@ describe('ModelApiRequest', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [{ message: { content: '["unexpected"]' } }],
-        usage: { completion_tokens: 1 },
-      }),
+      chatClient: mockOpenAiClient('["unexpected"]'),
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
@@ -243,7 +237,7 @@ describe('ModelApiRequest', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchError(500),
+      chatClient: mockOpenAiClientError(500),
     })
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
@@ -276,7 +270,7 @@ describe('ModelApiRequest', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchError(401),
+      chatClient: mockOpenAiClientError(401),
     })
     const database = await applicationData.database()
     const modelApiRequest = new class extends ModelApiRequest<string, string> {
@@ -310,7 +304,7 @@ describe('ModelApiRequest', () => {
       providerId: 1,
     }
     const applicationData = mockApplicationData({
-      fetch: mockFetchError(500),
+      chatClient: mockOpenAiClientError(500),
     })
     const database = await applicationData.database()
     const modelApiRequest = new class extends ModelApiRequest<string, string> {

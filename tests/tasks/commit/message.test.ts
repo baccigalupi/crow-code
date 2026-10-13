@@ -4,22 +4,20 @@ import { assertSpyCall, spy } from '@std/testing/mock'
 import { commitMessage } from '../../../src/tasks/commit/message.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { mockDenoCommand } from '../../support/mock-deno-command.ts'
-import { mockFetchError, mockFetchSuccess } from '../../support/mock-fetch.ts'
+import { mockFetchSuccess } from '../../support/mock-fetch.ts'
+import {
+  mockOpenAiClient,
+  mockOpenAiClientError,
+  mockOpenAiClientWithFetch,
+} from '../../support/mock-openai-client.ts'
 
 describe('commitMessage', () => {
   it('when the model answers, returns the commit message', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [
-          {
-            message: {
-              content: '{"subject":"Add login","body":"Adds the login form."}',
-            },
-          },
-        ],
-        usage: { completion_tokens: 1 },
-      }),
+      chatClient: mockOpenAiClient(
+        '{"subject":"Add login","body":"Adds the login form."}',
+      ),
       denoCommand: mockDenoCommand({
         commandSpy,
         stdout: 'Fix tests\n',
@@ -68,16 +66,9 @@ describe('commitMessage', () => {
 
   it('when git log fails, still returns the message', async () => {
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [
-          {
-            message: {
-              content: '{"subject":"Add login","body":"Adds the login form."}',
-            },
-          },
-        ],
-        usage: { completion_tokens: 1 },
-      }),
+      chatClient: mockOpenAiClient(
+        '{"subject":"Add login","body":"Adds the login form."}',
+      ),
       denoCommand: mockDenoCommand({
         stdout: [new Error('no commits')],
       }),
@@ -122,7 +113,7 @@ describe('commitMessage', () => {
 
   it('when every model fails, returns undefined', async () => {
     const applicationData = mockApplicationData({
-      fetch: mockFetchError(500),
+      chatClient: mockOpenAiClientError(500),
       denoCommand: mockDenoCommand({ stdout: 'Fix tests\n' }),
     })
     const database = await applicationData.database()
@@ -163,7 +154,7 @@ describe('commitMessage', () => {
   it('when no models are registered, returns undefined without calling fetch', async () => {
     const fetch = mockFetchSuccess({})
     const applicationData = mockApplicationData({
-      fetch,
+      chatClient: mockOpenAiClientWithFetch(fetch),
       denoCommand: mockDenoCommand({ stdout: 'Fix tests\n' }),
     })
 

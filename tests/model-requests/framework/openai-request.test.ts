@@ -8,6 +8,7 @@ import {
   mockOpenAiClient,
   mockOpenAiClientError,
   mockOpenAiClientNetworkError,
+  mockOpenAiClientWithFetch,
 } from '../../support/mock-openai-client.ts'
 import { mockFetchSequence } from '../../support/mock-fetch.ts'
 
@@ -203,7 +204,9 @@ describe('OpenAiRequest', () => {
       new Response(null, { status: 500 }),
       Response.json({ choices: [{ message: { content: '["a goal"]' } }] }),
     ])
-    const applicationData = mockApplicationData({ fetch: fetchMock })
+    const applicationData = mockApplicationData({
+      chatClient: mockOpenAiClientWithFetch(fetchMock),
+    })
     const request = new OpenAiRequest({
       applicationData,
       operationArguments: {

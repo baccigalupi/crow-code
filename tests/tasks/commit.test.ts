@@ -4,7 +4,12 @@ import { assertSpyCall, spy } from '@std/testing/mock'
 import { commit } from '../../src/tasks/commit.ts'
 import { mockApplicationData } from '../support/mock-application-data.ts'
 import { mockDenoCommand } from '../support/mock-deno-command.ts'
-import { mockFetchError, mockFetchSuccess } from '../support/mock-fetch.ts'
+import { mockFetchSuccess } from '../support/mock-fetch.ts'
+import {
+  mockOpenAiClient,
+  mockOpenAiClientError,
+  mockOpenAiClientWithFetch,
+} from '../support/mock-openai-client.ts'
 
 describe('commit', () => {
   it('when files changed, collects diffs, requests a message, stages and commits', async () => {
@@ -20,7 +25,7 @@ describe('commit', () => {
       usage: { completion_tokens: 1 },
     })
     const applicationData = mockApplicationData({
-      fetch,
+      chatClient: mockOpenAiClientWithFetch(fetch),
       denoCommand: mockDenoCommand({
         commandSpy,
         stdout: [
@@ -108,7 +113,7 @@ describe('commit', () => {
     const commandSpy = spy()
     const fetch = mockFetchSuccess({})
     const applicationData = mockApplicationData({
-      fetch,
+      chatClient: mockOpenAiClientWithFetch(fetch),
       denoCommand: mockDenoCommand({ commandSpy, success: false }),
     })
     const task = commit({
@@ -128,7 +133,7 @@ describe('commit', () => {
     const commandSpy = spy()
     const fetch = mockFetchSuccess({})
     const applicationData = mockApplicationData({
-      fetch,
+      chatClient: mockOpenAiClientWithFetch(fetch),
       denoCommand: mockDenoCommand({ commandSpy, stdout: ['', ''] }),
     })
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
@@ -159,7 +164,7 @@ describe('commit', () => {
       usage: { completion_tokens: 1 },
     })
     const applicationData = mockApplicationData({
-      fetch,
+      chatClient: mockOpenAiClientWithFetch(fetch),
       denoCommand: mockDenoCommand({
         commandSpy,
         stdout: [
@@ -221,7 +226,7 @@ describe('commit', () => {
   it('when the model request fails, does not stage or commit', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      fetch: mockFetchError(500),
+      chatClient: mockOpenAiClientError(500),
       denoCommand: mockDenoCommand({
         commandSpy,
         stdout: [
@@ -265,16 +270,9 @@ describe('commit', () => {
   it('when staging fails, reports failure', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [
-          {
-            message: {
-              content: '{"subject":"Add login","body":"Adds the login form."}',
-            },
-          },
-        ],
-        usage: { completion_tokens: 1 },
-      }),
+      chatClient: mockOpenAiClient(
+        '{"subject":"Add login","body":"Adds the login form."}',
+      ),
       denoCommand: mockDenoCommand({
         commandSpy,
         stdout: [
@@ -319,16 +317,9 @@ describe('commit', () => {
   it('when the commit fails, reports failure', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [
-          {
-            message: {
-              content: '{"subject":"Add login","body":"Adds the login form."}',
-            },
-          },
-        ],
-        usage: { completion_tokens: 1 },
-      }),
+      chatClient: mockOpenAiClient(
+        '{"subject":"Add login","body":"Adds the login form."}',
+      ),
       denoCommand: mockDenoCommand({
         commandSpy,
         stdout: [
@@ -374,16 +365,9 @@ describe('commit', () => {
   it('when git log fails, still stages and commits', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      fetch: mockFetchSuccess({
-        choices: [
-          {
-            message: {
-              content: '{"subject":"Add login","body":"Adds the login form."}',
-            },
-          },
-        ],
-        usage: { completion_tokens: 1 },
-      }),
+      chatClient: mockOpenAiClient(
+        '{"subject":"Add login","body":"Adds the login form."}',
+      ),
       denoCommand: mockDenoCommand({
         commandSpy,
         stdout: [
