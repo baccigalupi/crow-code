@@ -1,0 +1,78 @@
+---
+name: unit-tests
+description: >-
+  Unit test conventions for this repo. Use when creating or changing any file
+  under tests/**/*.test.ts(x).
+---
+
+# Unit tests
+
+Claude Code port of Devin's `unit-tests` rule (`.devin/rules/unit-tests.md`).
+Devin applies this automatically by glob (`tests/**/*.test.ts`); Claude Code
+has no glob-triggered rule mechanism, so treat this skill as applying any
+time you're creating or changing test files here.
+
+## Hard rules
+
+1. When finished touching TypeScript files, run `agents/pre-commit` and
+   report the actual output. Do not claim TS is clean without running the
+   gate.
+2. Source-to-test placement is one-to-one: `src/<path>.ts` ↔
+   `tests/<path>.test.ts` (same relative path under `src/` and `tests/`). One
+   source file, one test file — no combining modules or splitting one module
+   across multiple test files.
+3. Only one top level describe per test file
+4. When there is only one export for the module tested, use that for the top
+   level describe name
+5. When there are multiple exports, name the top level describe after the
+   file name, not any one import
+6. Use AAA formatting without comments. There should be a space between each
+   of the A's to produce groupings
+7. Only when there are three or more tests for the same heading should you
+   create a nested describe.
+8. Most test descriptions should be "when X, Y happens"
+9. Don't extract Arrange into helpers without first getting user permission.
+   That bans helpers in a test/support or helpers in the test file itself.
+10. Avoid putting arrange in beforeEach. Clearing fixture directories is the
+    one exception.
+11. Only mock dependents when it makes the tests clearer
+12. Only test what logic is in the module, not what's in the dependencies.
+13. No mapping or other logic anywhere in a test — not inside `expect(...)`,
+    and not smuggled into Act as a derived variable either. Act is only the
+    call under test. Assert directly on the result:
+    `expect(models).toHaveLength(2)`, `expect(models[0].identifier()).toBe('free')`.
+    No loops around `expect` — assert each element explicitly.
+14. Tests must not create temporary directories (e.g.,
+    `Deno.makeTempDirSync`, `Deno.makeTempDir`). Use fixed fixture paths
+    under `tests/support/fixtures` instead.
+
+## Examples
+
+```ts
+// File placement
+// Good
+src/cli.ts          → tests/cli.test.ts
+src/foo/bar.ts      → tests/foo/bar.test.ts
+
+// Top-level describe name
+describe('extractGoals', () => { ... }) // single export
+describe('cli', () => { ... })          // multiple exports (cli.test.ts → "cli")
+
+// AAA (blank lines, no labels)
+it('when input is empty, returns []', () => {
+  const input = ''
+
+  const result = extractGoals(input)
+
+  expect(result).toEqual([])
+})
+
+// Nested describe only at ≥3
+describe('cli', () => {
+  describe('when --json', () => {
+    it('prints an array', () => { ... })
+    it('omits prose', () => { ... })
+    it('exits 0', () => { ... })
+  })
+})
+```
