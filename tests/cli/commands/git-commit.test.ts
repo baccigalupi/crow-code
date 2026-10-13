@@ -6,6 +6,7 @@ import { GitCommit } from '../../../src/cli/commands/git-commit.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { mockDenoCommand } from '../../support/mock-deno-command.ts'
 import { mockFetchSuccess } from '../../support/mock-fetch.ts'
+import { mockOpenAiClient } from '../../support/mock-openai-client.ts'
 
 describe('GitCommit', () => {
   it('when the command is git-commit, matches', () => {
@@ -79,16 +80,9 @@ describe('GitCommit', () => {
       args: ['git-commit', '--goal=add login', 'src/a.ts'],
       consoleLog,
       consoleError,
-      fetch: mockFetchSuccess({
-        choices: [
-          {
-            message: {
-              content: '{"subject":"Add login","body":"Adds the login form."}',
-            },
-          },
-        ],
-        usage: { completion_tokens: 1 },
-      }),
+      chatClient: mockOpenAiClient(
+        '{"subject":"Add login","body":"Adds the login form."}',
+      ),
       denoCommand: mockDenoCommand({
         commandSpy,
         stdout: [
