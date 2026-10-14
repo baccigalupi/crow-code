@@ -1,5 +1,6 @@
 {
   "crowGlobalDirectory": "tests/support/fixtures/.crow",
+  "envFile": "tests/support/fixtures/.crow/.env",
   "permissions": {
     "ignore": ["vendor"],
     "additionalRead": ["/readable"],

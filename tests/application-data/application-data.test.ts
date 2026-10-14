@@ -8,7 +8,7 @@ import { DenoRuntime } from '../../src/application-data/deno-runtime.ts'
 import { Io } from '../../src/application-data/io.ts'
 import { join } from '@std/path/join'
 import { resolve } from '@std/path/resolve'
-import { Environment } from '../../src/application-data/env-vars.ts'
+import { mockEnvironment } from '../support/mock-environment.ts'
 import { mockApplicationData } from '../support/mock-application-data.ts'
 import { clearDirectory, fixturesDirectory } from '../support/fixtures.ts'
 import { createTestDatabase } from '../support/test-database.ts'
@@ -56,10 +56,11 @@ describe('ApplicationData', () => {
   it('bounds read path permissions to the working directory and configured read directories', async () => {
     const home = resolve(Deno.cwd(), '..', 'outside-home')
     const appData = mockApplicationData({
-      envars: new Environment({ HOME: home }),
+      envars: mockEnvironment({ HOME: home }),
     })
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory: '~/.crow',
+      envFile: '~/.crow/.env',
       permissions: {
         ignore: [],
         additionalRead: ['~/docs'],
@@ -93,6 +94,7 @@ describe('ApplicationData', () => {
     appData.io = new Io(join(fixturesDirectory, 'logger'))
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory,
+      envFile: join(crowGlobalDirectory, '.env'),
       permissions: { ignore: [], additionalRead: [], additionalWrite: [] },
     })
 
@@ -100,6 +102,30 @@ describe('ApplicationData', () => {
 
     expect(database.client.config.connection.filename).toBe(
       join(crowGlobalDirectory, 'crow.db'),
+    )
+    await database.destroy()
+  })
+
+  it('when the global directory starts with ~, opens the database under HOME', async () => {
+    const home = join(fixturesDirectory, 'database')
+    const appData = new ApplicationData()
+    appData.denoRuntime = new DenoRuntime(Deno)
+    appData.io = new Io(join(fixturesDirectory, 'logger'))
+    appData.config = new CrowConfig('.', {
+      crowGlobalDirectory: '~/.crow',
+      envFile: '~/.crow/.env',
+      permissions: { ignore: [], additionalRead: [], additionalWrite: [] },
+    })
+    using _envars = stub(
+      appData,
+      'envars',
+      () => mockEnvironment({ HOME: home }),
+    )
+
+    const database = await appData.database()
+
+    expect(database.client.config.connection.filename).toBe(
+      join(home, '.crow', 'crow.db'),
     )
     await database.destroy()
   })
@@ -116,9 +142,11 @@ describe('ApplicationData', () => {
 
   it('when closed, destroys the database connection', async () => {
     const appData = new ApplicationData()
+    appData.denoRuntime = new DenoRuntime(Deno)
     appData.io = new Io(join(fixturesDirectory, 'logger'))
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory: join(fixturesDirectory, 'database'),
+      envFile: join(fixturesDirectory, 'database', '.env'),
       permissions: { ignore: [], additionalRead: [], additionalWrite: [] },
     })
     const database = await appData.database()

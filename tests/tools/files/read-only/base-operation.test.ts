@@ -20,6 +20,7 @@ describe('ReadOnlyFileOperation', () => {
     const applicationData = mockApplicationData({
       config: new CrowConfig('.', {
         crowGlobalDirectory: '~/.crow',
+        envFile: '~/.crow/.env',
         permissions: {
           ignore: [],
           additionalRead: ['../outside-read'],

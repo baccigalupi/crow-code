@@ -1,0 +1,9 @@
+{
+  "crowGlobalDirectory": "tests/support/fixtures/.crow",
+  "envFile": "tests/support/fixtures/builder-values.env",
+  "permissions": {
+    "ignore": [],
+    "additionalRead": [],
+    "additionalWrite": []
+  }
+}

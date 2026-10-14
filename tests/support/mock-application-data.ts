@@ -8,7 +8,8 @@ import { CrowConfig } from '../../src/application-data/config.ts'
 import { defaultCrowConfig } from '../../src/application-data/load-config.ts'
 import { Io } from '../../src/application-data/io.ts'
 import { parseArguments } from '../../src/application-data/arguments.ts'
-import { Environment } from '../../src/application-data/env-vars.ts'
+import type { Environment } from '../../src/application-data/env-vars.ts'
+import { mockEnvironment } from './mock-environment.ts'
 import type {
   ConsoleError,
   ConsoleLog,
@@ -59,7 +60,7 @@ export const mockApplicationData = (
   const consoleError = overrides.consoleError || (() => {})
   const fetchClient = overrides.fetch || mockFetchSuccess({})
   const denoCommand = overrides.denoCommand || Deno.Command
-  const envars = overrides.envars || new Environment({})
+  const envars = overrides.envars || mockEnvironment({})
   const chatClient = overrides.chatClient || mockOpenAiClient('')
 
   stub(data, 'args', () => args)

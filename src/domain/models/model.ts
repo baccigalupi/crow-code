@@ -15,7 +15,7 @@ export class ModelEntity {
   private row: ModelEntityRow
   private environment: Environment
 
-  constructor(row: ModelEntityRow, environment = new Environment({})) {
+  constructor(row: ModelEntityRow, environment = new Environment()) {
     this.row = row
     this.environment = environment
   }

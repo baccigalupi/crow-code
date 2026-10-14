@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import pino from 'pino'
-import { Environment } from '../../../src/application-data/env-vars.ts'
+import { mockEnvironment } from '../../support/mock-environment.ts'
 import { ProviderEntity } from '../../../src/domain/providers/entity.ts'
 import { providerFindBy } from '../../../src/domain/providers/find-by.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
@@ -9,7 +9,7 @@ import { mockApplicationData } from '../../support/mock-application-data.ts'
 describe('providerFindBy', () => {
   describe('getByName', () => {
     it('returns the provider when it exists', async () => {
-      const environment = new Environment({ PROVIDER_API_KEY: 'secret' })
+      const environment = mockEnvironment({ PROVIDER_API_KEY: 'secret' })
       const logger = pino({ enabled: false })
       const applicationData = mockApplicationData({
         envars: environment,
@@ -35,7 +35,7 @@ describe('providerFindBy', () => {
     })
 
     it('returns undefined when the provider does not exist', async () => {
-      const environment = new Environment({})
+      const environment = mockEnvironment({})
       const logger = pino({ enabled: false })
       const applicationData = mockApplicationData({
         envars: environment,
@@ -49,7 +49,7 @@ describe('providerFindBy', () => {
     })
 
     it('returns the matching provider among several', async () => {
-      const environment = new Environment({})
+      const environment = mockEnvironment({})
       const logger = pino({ enabled: false })
       const applicationData = mockApplicationData({
         envars: environment,
@@ -82,7 +82,7 @@ describe('providerFindBy', () => {
 
   describe('getById', () => {
     it('returns the provider when it exists', async () => {
-      const environment = new Environment({ PROVIDER_API_KEY: 'secret' })
+      const environment = mockEnvironment({ PROVIDER_API_KEY: 'secret' })
       const logger = pino({ enabled: false })
       const applicationData = mockApplicationData({
         envars: environment,
@@ -105,7 +105,7 @@ describe('providerFindBy', () => {
     })
 
     it('returns undefined when the provider does not exist', async () => {
-      const environment = new Environment({})
+      const environment = mockEnvironment({})
       const logger = pino({ enabled: false })
       const applicationData = mockApplicationData({
         envars: environment,
@@ -119,7 +119,7 @@ describe('providerFindBy', () => {
     })
 
     it('returns the matching provider among several', async () => {
-      const environment = new Environment({})
+      const environment = mockEnvironment({})
       const logger = pino({ enabled: false })
       const applicationData = mockApplicationData({
         envars: environment,

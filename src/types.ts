@@ -11,6 +11,7 @@ export type CrowPermissionsConfig = {
 
 export type CrowConfigData = {
   crowGlobalDirectory: string
+  envFile: string
   permissions: CrowPermissionsConfig
 }
 

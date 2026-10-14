@@ -263,6 +263,7 @@ describe('run', () => {
       join(cwd, '.crow', 'config.json'),
       JSON.stringify({
         crowGlobalDirectory: 'crow-global',
+        envFile: 'crow-global/.env',
         permissions: {
           ignore: [],
           additionalRead: [],

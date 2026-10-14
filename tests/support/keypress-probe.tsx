@@ -3,19 +3,20 @@ import { signal } from '@preact/signals-core'
 import { useKeypress } from '../../src/tui/install/interactions/hooks/use-keypress.ts'
 import { emptyBuffer } from '../../src/tui/input-buffer.ts'
 import type {
-  InstallConfigSaver,
+  CrowConfigWriter,
   InstallStep,
   KeypressSignals,
 } from '../../src/tui/install/types.ts'
 
-const noop: InstallConfigSaver = () => {}
+const noop: CrowConfigWriter = () => {}
 
 export const keypressSignals = (
   step: InstallStep,
-  save: InstallConfigSaver = noop,
+  save: CrowConfigWriter = noop,
 ): KeypressSignals => ({
-  repo: signal(emptyBuffer()),
-  user: signal(emptyBuffer()),
+  repoDirectory: signal(emptyBuffer()),
+  globalDirectory: signal(emptyBuffer()),
+  envFile: signal(emptyBuffer()),
   step: signal(step),
   confirmation: signal(true),
   save,

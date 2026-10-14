@@ -5,6 +5,7 @@ import { render } from 'ink-testing-library'
 import { render as inkRender } from 'ink'
 import { signal } from '@preact/signals-core'
 import { InstallApp } from '../../../../src/tui/install/views/install-app.tsx'
+import type { InstallStep } from '../../../../src/tui/install/types.ts'
 import {
   crowGlobalDirectoryInput,
   crowRepoDirectoryInput,
@@ -22,8 +23,8 @@ describe('InstallApp', () => {
   it('when mounted, renders the header and the repo directory question', async () => {
     const { lastFrame, unmount } = render(
       <InstallApp
-        repo={inputSignal('')}
-        user={inputSignal('')}
+        repoDirectory={inputSignal('')}
+        globalDirectory={inputSignal('')}
         step={signal<'repo' | 'user'>('repo')}
       />,
     )
@@ -41,11 +42,11 @@ describe('InstallApp', () => {
   })
 
   it('when text is typed, it becomes the repo directory', async () => {
-    const repo = inputSignal('')
+    const repoDirectory = inputSignal('')
     const { stdin, unmount } = render(
       <InstallApp
-        repo={repo}
-        user={inputSignal('')}
+        repoDirectory={repoDirectory}
+        globalDirectory={inputSignal('')}
         step={signal<'repo' | 'user'>('repo')}
       />,
     )
@@ -54,16 +55,16 @@ describe('InstallApp', () => {
     stdin.write('./crow2')
     await settle()
 
-    expect(repo.peek().text).toBe('./crow2')
+    expect(repoDirectory.peek().text).toBe('./crow2')
     unmount()
   })
 
   it('when backspace arrives, the previous char is deleted', async () => {
-    const repo = inputSignal('~/x')
+    const repoDirectory = inputSignal('~/x')
     const { stdin, unmount } = render(
       <InstallApp
-        repo={repo}
-        user={inputSignal('')}
+        repoDirectory={repoDirectory}
+        globalDirectory={inputSignal('')}
         step={signal<'repo' | 'user'>('repo')}
       />,
     )
@@ -72,16 +73,16 @@ describe('InstallApp', () => {
     stdin.write('\x7f')
     await settle()
 
-    expect(repo.peek().text).toBe('~/')
+    expect(repoDirectory.peek().text).toBe('~/')
     unmount()
   })
 
   it('when delete arrives, the char under the cursor is removed', async () => {
-    const repo = inputSignal('~/x')
+    const repoDirectory = inputSignal('~/x')
     const { stdin, unmount } = render(
       <InstallApp
-        repo={repo}
-        user={inputSignal('')}
+        repoDirectory={repoDirectory}
+        globalDirectory={inputSignal('')}
         step={signal<'repo' | 'user'>('repo')}
       />,
     )
@@ -90,16 +91,16 @@ describe('InstallApp', () => {
     stdin.write('\x1b[H\x1b[3~')
     await settle()
 
-    expect(repo.peek().text).toBe('/x')
+    expect(repoDirectory.peek().text).toBe('/x')
     unmount()
   })
 
   it('when home and end arrive, the cursor moves to the line edges', async () => {
-    const repo = inputSignal('~/x')
+    const repoDirectory = inputSignal('~/x')
     const { stdin, unmount } = render(
       <InstallApp
-        repo={repo}
-        user={inputSignal('')}
+        repoDirectory={repoDirectory}
+        globalDirectory={inputSignal('')}
         step={signal<'repo' | 'user'>('repo')}
       />,
     )
@@ -112,16 +113,16 @@ describe('InstallApp', () => {
     stdin.write('\x1b[C')
     await settle()
 
-    expect(repo.peek().cursor).toBe('~/x'.length)
+    expect(repoDirectory.peek().cursor).toBe('~/x'.length)
     unmount()
   })
 
   it('when a ctrl-modified key has no binding, nothing changes', async () => {
-    const repo = inputSignal('~/x')
+    const repoDirectory = inputSignal('~/x')
     const { stdin, unmount } = render(
       <InstallApp
-        repo={repo}
-        user={inputSignal('')}
+        repoDirectory={repoDirectory}
+        globalDirectory={inputSignal('')}
         step={signal<'repo' | 'user'>('repo')}
       />,
     )
@@ -130,16 +131,16 @@ describe('InstallApp', () => {
     stdin.write('\x18')
     await settle()
 
-    expect(repo.peek().text).toBe('~/x')
+    expect(repoDirectory.peek().text).toBe('~/x')
     unmount()
   })
 
   it('when arrows arrive, the cursor moves', async () => {
-    const repo = inputSignal('~/x')
+    const repoDirectory = inputSignal('~/x')
     const { stdin, unmount } = render(
       <InstallApp
-        repo={repo}
-        user={inputSignal('')}
+        repoDirectory={repoDirectory}
+        globalDirectory={inputSignal('')}
         step={signal<'repo' | 'user'>('repo')}
       />,
     )
@@ -150,7 +151,7 @@ describe('InstallApp', () => {
     stdin.write('X')
     await settle()
 
-    expect(repo.peek().text).toBe('~X/x')
+    expect(repoDirectory.peek().text).toBe('~X/x')
     unmount()
   })
 
@@ -158,8 +159,8 @@ describe('InstallApp', () => {
     const step = signal<'repo' | 'user'>('repo')
     const { stdin, lastFrame, unmount } = render(
       <InstallApp
-        repo={inputSignal('./lib')}
-        user={inputSignal('')}
+        repoDirectory={inputSignal('./lib')}
+        globalDirectory={inputSignal('')}
         step={step}
       />,
     )
@@ -183,9 +184,13 @@ describe('InstallApp', () => {
 
   it('when the user directory is typed, the config updates', async () => {
     const step = signal<'repo' | 'user'>('repo')
-    const user = inputSignal('')
+    const globalDirectory = inputSignal('')
     const { stdin, lastFrame, unmount } = render(
-      <InstallApp repo={inputSignal('')} user={user} step={step} />,
+      <InstallApp
+        repoDirectory={inputSignal('')}
+        globalDirectory={globalDirectory}
+        step={step}
+      />,
     )
 
     await settle()
@@ -197,7 +202,7 @@ describe('InstallApp', () => {
     expect(stripAnsi(lastFrame())).toContain(
       '"crowGlobalDirectory": "/opt/crow"',
     )
-    expect(user.peek().text).toBe('/opt/crow')
+    expect(globalDirectory.peek().text).toBe('/opt/crow')
     unmount()
   })
 
@@ -205,12 +210,14 @@ describe('InstallApp', () => {
     const step = signal<'repo' | 'user'>('repo')
     const { stdin, lastFrame, unmount } = render(
       <InstallApp
-        repo={inputSignal('./lib')}
-        user={inputSignal('')}
+        repoDirectory={inputSignal('./lib')}
+        globalDirectory={inputSignal('')}
         step={step}
       />,
     )
 
+    await settle()
+    stdin.write('\r')
     await settle()
     stdin.write('\r')
     await settle()
@@ -225,18 +232,105 @@ describe('InstallApp', () => {
     unmount()
   })
 
+  it('when the user question is answered, the env file question shows', async () => {
+    const step = signal<InstallStep>('user')
+    const { stdin, lastFrame, unmount } = render(
+      <InstallApp
+        repoDirectory={inputSignal('')}
+        globalDirectory={inputSignal('')}
+        envFile={inputSignal('')}
+        step={step}
+      />,
+    )
+
+    await settle()
+    stdin.write('\r')
+    await settle()
+
+    expect(stripAnsi(lastFrame())).toContain(
+      'Credentials .env file: (~/.crow/.env)',
+    )
+    expect(stripAnsi(lastFrame())).not.toContain('User crow directory')
+    unmount()
+  })
+
+  it('when the user directory is custom, the env file question defaults inside it', async () => {
+    const step = signal<InstallStep>('user')
+    const { stdin, lastFrame, unmount } = render(
+      <InstallApp
+        repoDirectory={inputSignal('')}
+        globalDirectory={inputSignal('/opt/crow')}
+        envFile={inputSignal('')}
+        step={step}
+      />,
+    )
+
+    await settle()
+    stdin.write('\r')
+    await settle()
+
+    expect(stripAnsi(lastFrame())).toContain(
+      'Credentials .env file: (/opt/crow/.env)',
+    )
+    unmount()
+  })
+
+  it('when the env file is typed, the config updates', async () => {
+    const envFile = inputSignal('')
+    const { stdin, lastFrame, unmount } = render(
+      <InstallApp
+        repoDirectory={inputSignal('')}
+        globalDirectory={inputSignal('')}
+        envFile={envFile}
+        step={signal<InstallStep>('env')}
+      />,
+    )
+
+    await settle()
+    stdin.write('/secrets/crow.env')
+    await settle()
+
+    expect(stripAnsi(lastFrame())).toContain(
+      '"envFile": "/secrets/crow.env"',
+    )
+    expect(envFile.peek().text).toBe('/secrets/crow.env')
+    unmount()
+  })
+
+  it('when the env file question is answered, the write confirmation shows', async () => {
+    const { stdin, lastFrame, unmount } = render(
+      <InstallApp
+        repoDirectory={inputSignal('')}
+        globalDirectory={inputSignal('')}
+        envFile={inputSignal('')}
+        step={signal<InstallStep>('env')}
+      />,
+    )
+
+    await settle()
+    stdin.write('\r')
+    await settle()
+
+    expect(stripAnsi(lastFrame())).toContain(
+      'Write config to .crow/config.json?',
+    )
+    unmount()
+  })
+
   it('when right arrow arrives on the confirm step, the choice becomes no', async () => {
     const step = signal<'repo' | 'user'>('repo')
     const confirmation = signal(true)
     const { stdin, unmount } = render(
       <InstallApp
-        repo={inputSignal('')}
-        user={inputSignal('')}
+        repoDirectory={inputSignal('')}
+        globalDirectory={inputSignal('')}
         step={step}
         confirmation={confirmation}
       />,
     )
 
+    await settle()
+    stdin.write('\r')
     await settle()
     stdin.write('\r')
     await settle()
@@ -254,13 +348,15 @@ describe('InstallApp', () => {
     const confirmation = signal(false)
     const { stdin, unmount } = render(
       <InstallApp
-        repo={inputSignal('')}
-        user={inputSignal('')}
+        repoDirectory={inputSignal('')}
+        globalDirectory={inputSignal('')}
         step={step}
         confirmation={confirmation}
       />,
     )
 
+    await settle()
+    stdin.write('\r')
     await settle()
     stdin.write('\r')
     await settle()
@@ -280,13 +376,15 @@ describe('InstallApp', () => {
     const confirmation = signal(true)
     const { stdin, unmount } = render(
       <InstallApp
-        repo={inputSignal('')}
-        user={inputSignal('')}
+        repoDirectory={inputSignal('')}
+        globalDirectory={inputSignal('')}
         step={step}
         confirmation={confirmation}
       />,
     )
 
+    await settle()
+    stdin.write('\r')
     await settle()
     stdin.write('\r')
     await settle()
@@ -312,11 +410,16 @@ describe('InstallApp', () => {
     await settle()
     terminal.stdin.write('\r')
     await settle()
+    terminal.stdin.write('\r')
+    await settle()
 
     expect(saved).toHaveLength(1)
-    const config = saved[0] as { filePath: string; json: string }
-    expect(config.filePath).toBe('.crow/config.json')
-    expect(config.json).toContain('"permissions"')
+    const config = saved[0] as {
+      crowConfigPath: string
+      crowConfigJson: string
+    }
+    expect(config.crowConfigPath).toBe('.crow/config.json')
+    expect(config.crowConfigJson).toContain('"permissions"')
     expect(stripAnsi(terminal.lastFrame())).toContain(
       'Wrote config to .crow/config.json',
     )
@@ -328,9 +431,11 @@ describe('InstallApp', () => {
     const crowRepoDirectory = join(fixturesDirectory, 'install-app', 'crow')
     await clearDirectory(crowRepoDirectory)
     const { terminal, instance } = mountInstallApp(8, {
-      repo: inputSignal(crowRepoDirectory),
+      repoDirectory: inputSignal(crowRepoDirectory),
     })
 
+    await settle()
+    terminal.stdin.write('\r')
     await settle()
     terminal.stdin.write('\r')
     await settle()
@@ -343,6 +448,7 @@ describe('InstallApp', () => {
       Deno.readTextFileSync(join(crowRepoDirectory, 'config.json')),
     )
     expect(written.crowGlobalDirectory).toBe('~/.crow')
+    expect(written.envFile).toBe('~/.crow/.env')
     expect(written.permissions.ignore).toEqual(['node_modules', '.git'])
     expect(written.permissions.additionalRead).toEqual([])
     expect(written.permissions.additionalWrite).toEqual([])
@@ -362,6 +468,8 @@ describe('InstallApp', () => {
     await settle()
     terminal.stdin.write('\r')
     await settle()
+    terminal.stdin.write('\r')
+    await settle()
     terminal.stdin.write('\x1b[C')
     await settle()
     terminal.stdin.write('\r')
@@ -376,6 +484,8 @@ describe('InstallApp', () => {
       save: (config: unknown) => saved.push(config),
     })
 
+    await settle()
+    terminal.stdin.write('\r')
     await settle()
     terminal.stdin.write('\r')
     await settle()
@@ -409,8 +519,8 @@ describe('InstallApp', () => {
     const terminal = mockTerminal({ tty: false })
     const instance = inkRender(
       <InstallApp
-        repo={inputSignal('')}
-        user={inputSignal('')}
+        repoDirectory={inputSignal('')}
+        globalDirectory={inputSignal('')}
         step={signal<'repo' | 'user'>('repo')}
       />,
       { ...terminal.io, debug: true, exitOnCtrlC: false },
@@ -435,8 +545,8 @@ describe('InstallApp', () => {
     const terminal = mockTerminal({ columns: 0 })
     const instance = inkRender(
       <InstallApp
-        repo={inputSignal('')}
-        user={inputSignal('')}
+        repoDirectory={inputSignal('')}
+        globalDirectory={inputSignal('')}
         step={signal<'repo' | 'user'>('repo')}
       />,
       { ...terminal.io, debug: true, exitOnCtrlC: false },

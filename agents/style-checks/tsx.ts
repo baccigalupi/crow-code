@@ -21,6 +21,13 @@ const isAllowedViewCall = (callee: Deno.lint.Node): boolean => {
     callee.property.name === 'map'
 }
 
+const hasInlineTypeLiteral = (
+  parameter: Deno.lint.Parameter | undefined,
+): boolean => {
+  if (parameter?.type !== 'ObjectPattern') return false
+  return parameter.typeAnnotation?.typeAnnotation.type === 'TSTypeLiteral'
+}
+
 const plugin: Deno.lint.Plugin = {
   name: 'crow-style-tsx',
   rules: {
@@ -98,6 +105,26 @@ const plugin: Deno.lint.Plugin = {
               message:
                 'views may only call hooks (use*), view models (*ViewModel), and .map in JSX; derivation belongs in a view model',
             })
+          },
+        }
+      },
+    },
+    'no-inline-props-type': {
+      create(context) {
+        if (!isTsxFile(context.filename)) return {}
+        return {
+          ExportNamedDeclaration(node) {
+            const declaration = node.declaration
+            if (declaration?.type !== 'VariableDeclaration') return
+            for (const declarator of declaration.declarations) {
+              if (declarator.init?.type !== 'ArrowFunctionExpression') continue
+              if (!hasInlineTypeLiteral(declarator.init.params[0])) continue
+              context.report({
+                node: declarator.init,
+                message:
+                  'exported components take a named props type declared above the function, not an inline object type',
+              })
+            }
           },
         }
       },

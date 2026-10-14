@@ -1,5 +1,5 @@
 {
   "lint": {
-    "plugins": ["./unit-tests.ts"]
+    "plugins": ["./unit-tests.ts", "./install-names.ts"]
   }
 }

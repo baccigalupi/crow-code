@@ -70,6 +70,22 @@ describe('buildApplicationData', () => {
     await clearDirectory(crowGlobalDirectory)
   })
 
+  it('when the config sets an environment file, its values are available', async () => {
+    const builder = buildApplicationData({
+      path: join(fixturesDirectory, 'env-file-builder-config.json'),
+      deno: mockDeno({ stdout: '/some/repo\n' }),
+    })
+
+    await builder.run()
+    const applicationData = builder.result()
+
+    expect(applicationData.envars().value('BUILDER_ONLY_KEY')).toBe(
+      'builder-value',
+    )
+    await applicationData.close()
+    await clearDirectory(join(fixturesDirectory, '.crow'))
+  })
+
   it('when the database cannot be opened, reports the failure', async () => {
     const errorSpy = spy()
     using _error = stub(console, 'error', errorSpy)

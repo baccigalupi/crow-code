@@ -3,6 +3,7 @@ import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { AddProvider } from '../../../src/cli/commands/add-provider.ts'
 import { command } from '../../../src/cli/commands/command.ts'
+import { CrowConfig } from '../../../src/application-data/config.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
@@ -49,7 +50,7 @@ describe('AddProvider', () => {
     }])
   })
 
-  it('when run succeeds, writes the .env key reminder', async () => {
+  it('when run succeeds, writes the .env key reminder with the default path', async () => {
     const consoleLog = mock.fn()
     const applicationData = mockApplicationData({
       args: [
@@ -64,7 +65,26 @@ describe('AddProvider', () => {
     await command(AddProvider, applicationData).run()
 
     expect(consoleLog.mock.calls[0].arguments[0]).toBe(
-      'Provider added. Add your api key <api_key> to the .env file',
+      'Provider added. Add your api key <api_key> to ~/.crow/.env',
+    )
+  })
+
+  it('when the config sets an env file, the reminder names that path', async () => {
+    const consoleLog = mock.fn()
+    const applicationData = mockApplicationData({
+      args: ['add-provider', '--name=ollama', '--base-url=http://x'],
+      consoleLog,
+      config: new CrowConfig('.', {
+        crowGlobalDirectory: '~/.crow',
+        envFile: '/secrets/crow.env',
+        permissions: { ignore: [], additionalRead: [], additionalWrite: [] },
+      }),
+    })
+
+    await command(AddProvider, applicationData).run()
+
+    expect(consoleLog.mock.calls[0].arguments[0]).toBe(
+      'Provider added. Add your api key <api_key> to /secrets/crow.env',
     )
   })
 
@@ -78,7 +98,7 @@ describe('AddProvider', () => {
     await command(AddProvider, applicationData).run()
 
     expect(consoleLog.mock.calls[0].arguments[0]).toBe(
-      'Provider added. Add your api key <api_key> to the .env file',
+      'Provider added. Add your api key <api_key> to ~/.crow/.env',
     )
   })
 

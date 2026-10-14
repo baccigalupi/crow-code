@@ -228,6 +228,45 @@ describe('style-check tsx plugin', () => {
     expect(diagnostics).toHaveLength(0)
   })
 
+  it('when an exported component inlines its props type, reports it', () => {
+    const source =
+      'export const App = ({ on }: { readonly on: boolean }) => <div>{on}</div>'
+
+    const diagnostics = Deno.lint.runPlugin(
+      plugin,
+      'src/tui/install/example.tsx',
+      source,
+    )
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('named props type')
+  })
+
+  it('when an exported component uses a named props type, ignores it', () => {
+    const source = 'export const App = ({ on }: AppProps) => <div>{on}</div>'
+
+    const diagnostics = Deno.lint.runPlugin(
+      plugin,
+      'src/tui/install/example.tsx',
+      source,
+    )
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
+  it('when an unexported helper inlines its props type, ignores it', () => {
+    const source =
+      'const Choice = ({ on }: { readonly on: boolean }) => <div>{on}</div>'
+
+    const diagnostics = Deno.lint.runPlugin(
+      plugin,
+      'src/tui/install/example.tsx',
+      source,
+    )
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
   it('when a non-jsx && expression exists, ignores it', () => {
     const source = 'const ok = (a: boolean, b: boolean) => a && b'
 

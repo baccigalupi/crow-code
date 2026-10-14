@@ -35,6 +35,26 @@ describe('loadConfig', () => {
     expect(config.writableDirectories).toEqual(['/writable'])
   })
 
+  it('when the config sets envFile, exposes it', async () => {
+    const operation = loadConfig(
+      join(fixturesDirectory, 'env-file-config.json'),
+    )
+
+    await operation.run()
+    const config = operation.result()
+
+    expect(operation.success()).toBe(true)
+    expect(config.envFile).toBe('/secrets/crow.env')
+  })
+
+  it('when using the default config, envFile is .env in ~/.crow', () => {
+    const operation = loadConfig(join(fixturesDirectory, 'missing-config.json'))
+
+    const config = operation.result()
+
+    expect(config.envFile).toBe('~/.crow/.env')
+  })
+
   it('returns the default config when the path is not found', async () => {
     const operation = loadConfig(join(fixturesDirectory, 'missing-config.json'))
 

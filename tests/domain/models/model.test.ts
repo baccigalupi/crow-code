@@ -9,7 +9,7 @@ import type {
   ModelRow,
   ModelWithProviderRow,
 } from '../../../src/domain/types.ts'
-import { Environment } from '../../../src/application-data/env-vars.ts'
+import { mockEnvironment } from '../../support/mock-environment.ts'
 
 describe('model', () => {
   it('exposes pass-through attributes', () => {
@@ -81,7 +81,7 @@ describe('model', () => {
       provider_base_url: 'https://example.com/v1',
       provider_api_key_env_var: 'PROVIDER_KEY',
     }
-    const environment = new Environment({ PROVIDER_KEY: 'secret' })
+    const environment = mockEnvironment({ PROVIDER_KEY: 'secret' })
 
     const model = new ModelEntity(row, environment)
 
@@ -111,7 +111,7 @@ describe('model', () => {
       provider_base_url: 'https://example.com/v1',
       provider_api_key_env_var: null,
     }
-    const environment = new Environment({ PROVIDER_KEY: 'secret' })
+    const environment = mockEnvironment({ PROVIDER_KEY: 'secret' })
 
     const model = new ModelEntity(row, environment)
 

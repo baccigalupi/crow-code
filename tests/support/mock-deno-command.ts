@@ -63,5 +63,7 @@ export const mockDeno = (
   ({
     args,
     Command: mockDenoCommand(command),
+    env: Deno.env,
+    readTextFile: Deno.readTextFile,
     realPath: Deno.realPath,
   }) as unknown as typeof Deno

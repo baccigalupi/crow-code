@@ -13,6 +13,10 @@ export class CrowConfig {
     return this.data.crowGlobalDirectory
   }
 
+  get envFile() {
+    return this.data.envFile
+  }
+
   get ignoredDirectories() {
     return this.data.permissions.ignore
   }

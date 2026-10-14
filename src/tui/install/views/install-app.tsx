@@ -3,56 +3,77 @@ import { useSignalValue } from '../../use-signal-value.ts'
 import {
   crowGlobalDirectoryInput,
   crowRepoDirectoryInput,
+  envFileInput,
   installStep,
   writeConfirmation,
 } from '../interactions/state/config-buffer.ts'
-import { writeInstallConfig } from '../install-config.ts'
-import { installViewModel } from './install-view-model.ts'
+import { writeCrowConfig } from '../crow-config/write.ts'
+import { installAppViewModel } from './install-app-view-model.ts'
 import { useKeypress } from '../interactions/hooks/use-keypress.ts'
-import { ConfigPanel } from './config.tsx'
-import { RepoPrompt, UserPrompt } from './prompt.tsx'
-import { ConfirmPrompt, DoneMessage } from './confirm.tsx'
+import { ConfigPanel } from './steps/config-panel.tsx'
+import { EnvPrompt } from './steps/env-prompt.tsx'
+import { RepoPathPrompt } from './steps/repo-path-prompt.tsx'
+import { GlobalPathPrompt } from './steps/global-path-prompt.tsx'
+import { ConfirmPrompt } from './steps/confirm-prompt.tsx'
+import { DoneMessage } from './steps/done-message.tsx'
 import { Header } from './header.tsx'
 import type { InstallAppProps } from '../types.ts'
 
 export const InstallApp = (
   {
-    repo = crowRepoDirectoryInput,
-    user = crowGlobalDirectoryInput,
+    repoDirectory = crowRepoDirectoryInput,
+    globalDirectory = crowGlobalDirectoryInput,
+    envFile = envFileInput,
     step = installStep,
     confirmation = writeConfirmation,
-    save = writeInstallConfig,
+    save = writeCrowConfig,
   }: InstallAppProps,
 ) => {
   const { stdout } = useStdout()
-  const crowRepoDirectory = useSignalValue(repo)
-  const crowGlobalDirectory = useSignalValue(user)
+  const crowRepoDirectory = useSignalValue(repoDirectory)
+  const crowGlobalDirectory = useSignalValue(globalDirectory)
+  const envFileText = useSignalValue(envFile)
   const currentStep = useSignalValue(step)
   const confirmed = useSignalValue(confirmation)
-  const { rowHeight, columnWidth } = installViewModel({ stdout })
-  useKeypress({ repo, user, step, confirmation, save })
+  const { rowHeight, columnWidth } = installAppViewModel({ stdout })
+  useKeypress({
+    repoDirectory,
+    globalDirectory,
+    envFile,
+    step,
+    confirmation,
+    save,
+  })
 
   return (
     <Box flexDirection='column' height={rowHeight} width={columnWidth}>
       <Header />
       <ConfigPanel
         step={currentStep}
-        user={crowGlobalDirectory}
-        repo={crowRepoDirectory}
+        globalDirectory={crowGlobalDirectory}
+        repoDirectory={crowRepoDirectory}
+        envFile={envFileText}
       />
       <Box flexDirection='column' flexGrow={1} justifyContent='flex-end'>
-        <RepoPrompt step={currentStep} input={crowRepoDirectory} />
-        <UserPrompt step={currentStep} input={crowGlobalDirectory} />
+        <RepoPathPrompt step={currentStep} input={crowRepoDirectory} />
+        <GlobalPathPrompt step={currentStep} input={crowGlobalDirectory} />
+        <EnvPrompt
+          step={currentStep}
+          globalDirectory={crowGlobalDirectory}
+          envFile={envFileText}
+        />
         <ConfirmPrompt
           step={currentStep}
-          repo={crowRepoDirectory}
-          user={crowGlobalDirectory}
+          repoDirectory={crowRepoDirectory}
+          globalDirectory={crowGlobalDirectory}
+          envFile={envFileText}
           confirmation={confirmed}
         />
         <DoneMessage
           step={currentStep}
-          repo={crowRepoDirectory}
-          user={crowGlobalDirectory}
+          repoDirectory={crowRepoDirectory}
+          globalDirectory={crowGlobalDirectory}
+          envFile={envFileText}
         />
       </Box>
     </Box>

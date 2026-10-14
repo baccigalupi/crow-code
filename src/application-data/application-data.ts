@@ -8,6 +8,7 @@ import { Io } from './io.ts'
 import type { ParsedArguments } from './arguments.ts'
 import { delegate, memoize } from '../decorators.ts'
 import { pathPermissions } from './path-permissions.ts'
+import { expandHome } from './path-permissions/expand-home.ts'
 import { openAndMigrateDatabase } from '../database/open-and-migrate-database.ts'
 import type {
   ConsoleError,
@@ -62,11 +63,16 @@ export class ApplicationData {
   }
 
   @memoize
+  crowGlobalDirectory() {
+    return expandHome({
+      directories: [this.config.crowGlobalDirectory],
+      envars: this.envars(),
+    }).directories()[0]
+  }
+
+  @memoize
   database() {
-    return openAndMigrateDatabase(
-      this.config.crowGlobalDirectory,
-      this.logger(),
-    )
+    return openAndMigrateDatabase(this.crowGlobalDirectory(), this.logger())
   }
 
   @memoize

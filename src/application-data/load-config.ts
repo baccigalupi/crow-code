@@ -5,6 +5,7 @@ import { CrowConfig } from './config.ts'
 
 export const defaultCrowConfig = (): CrowConfigData => ({
   crowGlobalDirectory: '~/.crow',
+  envFile: '~/.crow/.env',
   permissions: {
     ignore: [
       'node_modules',
@@ -17,6 +18,7 @@ export const defaultCrowConfig = (): CrowConfigData => ({
 
 const crowConfigSchema = z.object({
   crowGlobalDirectory: z.string(),
+  envFile: z.string(),
   permissions: z.object({
     ignore: z.array(z.string()),
     additionalRead: z.array(z.string()),

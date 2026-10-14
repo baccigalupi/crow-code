@@ -1,0 +1,9 @@
+{
+  "crowGlobalDirectory": "tests/support/fixtures/.crow",
+  "envFile": "/secrets/crow.env",
+  "permissions": {
+    "ignore": [],
+    "additionalRead": [],
+    "additionalWrite": []
+  }
+}

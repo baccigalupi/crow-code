@@ -1,10 +1,11 @@
 import type { Signal } from '@preact/signals-core'
 import type { ExitApp, InputBuffer, KeyFlags } from '../types.ts'
 
-export type InstallStep = 'repo' | 'user' | 'confirm' | 'done'
+export type InstallStep = 'repo' | 'user' | 'env' | 'confirm' | 'done'
 
 export type CrowConfig = {
   readonly crowGlobalDirectory: string
+  readonly envFile: string
   readonly permissions: {
     readonly ignore: string[]
     readonly additionalRead: string[]
@@ -12,35 +13,38 @@ export type CrowConfig = {
   }
 }
 
-export type InstallConfig = {
+export type BuiltCrowConfig = {
   readonly crowRepoDirectory: string
   readonly crowGlobalDirectory: string
-  readonly filePath: string
+  readonly crowConfigPath: string
   readonly config: CrowConfig
-  readonly json: string
+  readonly crowConfigJson: string
 }
 
-export type InstallConfigSaver = (config: InstallConfig) => void
+export type CrowConfigWriter = (config: BuiltCrowConfig) => void
 
-export type InstallConfigArguments = {
-  readonly user: InputBuffer
-  readonly repo: InputBuffer
+export type BuildCrowConfigArguments = {
+  readonly globalDirectory: InputBuffer
+  readonly repoDirectory: InputBuffer
+  readonly envFile: InputBuffer
 }
 
 export type InstallAppProps = {
-  readonly repo?: Signal<InputBuffer>
-  readonly user?: Signal<InputBuffer>
+  readonly repoDirectory?: Signal<InputBuffer>
+  readonly globalDirectory?: Signal<InputBuffer>
+  readonly envFile?: Signal<InputBuffer>
   readonly step?: Signal<InstallStep>
   readonly confirmation?: Signal<boolean>
-  readonly save?: InstallConfigSaver
+  readonly save?: CrowConfigWriter
 }
 
 export type KeypressSignals = {
-  readonly repo: Signal<InputBuffer>
-  readonly user: Signal<InputBuffer>
+  readonly repoDirectory: Signal<InputBuffer>
+  readonly globalDirectory: Signal<InputBuffer>
+  readonly envFile: Signal<InputBuffer>
   readonly step: Signal<InstallStep>
   readonly confirmation: Signal<boolean>
-  readonly save: InstallConfigSaver
+  readonly save: CrowConfigWriter
 }
 
 export type KeypressArguments = {

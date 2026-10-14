@@ -1,7 +1,7 @@
 import type { Signal } from '@preact/signals-core'
 import type { ExitApp, InputBuffer, KeyFlags } from '../../types.ts'
 import type { KeypressArguments, KeypressSignals } from '../types.ts'
-import { installConfig } from '../install-config.ts'
+import { buildCrowConfig } from '../crow-config/build.ts'
 import { textInput } from './text-input.ts'
 
 export class Keypress {
@@ -26,7 +26,9 @@ export class Keypress {
   }
 
   private advance() {
-    if (this.signals.step.peek() === 'repo') this.signals.step.value = 'user'
+    const step = this.signals.step.peek()
+    if (step === 'repo') this.signals.step.value = 'user'
+    else if (step === 'user') this.signals.step.value = 'env'
     else this.signals.step.value = 'confirm'
   }
 
@@ -49,9 +51,11 @@ export class Keypress {
   }
 
   private config() {
-    const repo = this.signals.repo.peek()
-    const user = this.signals.user.peek()
-    return installConfig({ repo, user }).all()
+    return buildCrowConfig({
+      repoDirectory: this.signals.repoDirectory.peek(),
+      globalDirectory: this.signals.globalDirectory.peek(),
+      envFile: this.signals.envFile.peek(),
+    }).all()
   }
 
   private activeEdit() {
@@ -60,8 +64,10 @@ export class Keypress {
   }
 
   private activeText(): Signal<InputBuffer> {
-    if (this.signals.step.peek() === 'repo') return this.signals.repo
-    return this.signals.user
+    const step = this.signals.step.peek()
+    if (step === 'repo') return this.signals.repoDirectory
+    else if (step === 'user') return this.signals.globalDirectory
+    else return this.signals.envFile
   }
 
   private isQuit() {

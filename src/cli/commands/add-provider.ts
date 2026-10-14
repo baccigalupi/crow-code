@@ -31,8 +31,9 @@ export class AddProvider extends Command {
 
   private log() {
     if (this.dbRecordCreator.success()) {
+      const envFile = this.applicationData.config.envFile
       this.applicationData.consoleLog()(
-        'Provider added. Add your api key <api_key> to the .env file',
+        `Provider added. Add your api key <api_key> to ${envFile}`,
       )
     }
   }

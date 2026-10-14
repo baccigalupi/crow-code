@@ -6,7 +6,7 @@ import {
   PathPermissions,
   pathPermissions,
 } from '../../src/application-data/path-permissions.ts'
-import { Environment } from '../../src/application-data/env-vars.ts'
+import { mockEnvironment } from '../support/mock-environment.ts'
 import { mockApplicationData } from '../support/mock-application-data.ts'
 import { fixturesDirectory } from '../support/fixtures.ts'
 
@@ -82,7 +82,7 @@ describe('path-permissions', () => {
     const permissions = pathPermissions({
       getRealPath: applicationData.getRealPath(),
       allowedDirectories: ['~/git'],
-      envars: new Environment({ HOME: home }),
+      envars: mockEnvironment({ HOME: home }),
     })
 
     const allowed = await permissions.allows(join(home, 'git', 'git-diff.diff'))

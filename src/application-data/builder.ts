@@ -63,6 +63,10 @@ export class ApplicationDataBuilder
   }
 
   private async setRemainingCollaborators() {
+    const { denoRuntime, config } = this.appData
+    this.appData.denoRuntime = await denoRuntime!.withEnvironmentFile(
+      config!.envFile,
+    )
     this.appData.io = new Io(this.appData.config!.crowRepoDirectory)
     await this.openDatabase()
     this.appData.repositoryRoot = await this.repositoryRoot()

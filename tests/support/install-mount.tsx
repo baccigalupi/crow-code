@@ -15,8 +15,9 @@ export const mountInstallApp = (
   const terminal = mockTerminal({ rows })
   const instance = render(
     <InstallApp
-      repo={inputSignal('')}
-      user={inputSignal('')}
+      repoDirectory={inputSignal('')}
+      globalDirectory={inputSignal('')}
+      envFile={inputSignal('')}
       step={signal<InstallStep>('repo')}
       {...props}
     />,

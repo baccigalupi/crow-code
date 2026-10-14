@@ -10,7 +10,7 @@ import { loadOllamaFixture } from '../../../support/fixtures.ts'
 import { getOllamaModels } from '../../../../src/model-discovery/populate/ollama/get-ollama-models.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { ProviderEntity } from '../../../../src/domain/providers/entity.ts'
-import { Environment } from '../../../../src/application-data/env-vars.ts'
+import { mockEnvironment } from '../../../support/mock-environment.ts'
 
 describe('getOllamaModels', () => {
   it('when fetched, returns parsed records', async () => {
@@ -22,7 +22,7 @@ describe('getOllamaModels', () => {
         modelsPath: '/api/tags',
         apiKeyEnvVar: null,
       },
-      new Environment({}),
+      mockEnvironment({}),
     )
     const fixture = await loadOllamaFixture()
     const logger = pino({ enabled: false })
@@ -48,7 +48,7 @@ describe('getOllamaModels', () => {
         modelsPath: '/api/tags',
         apiKeyEnvVar: null,
       },
-      new Environment({}),
+      mockEnvironment({}),
     )
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess({
@@ -79,7 +79,7 @@ describe('getOllamaModels', () => {
         modelsPath: '/api/tags',
         apiKeyEnvVar: null,
       },
-      new Environment({}),
+      mockEnvironment({}),
     )
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess({ models: [] })
@@ -103,7 +103,7 @@ describe('getOllamaModels', () => {
         modelsPath: '/api/tags',
         apiKeyEnvVar: null,
       },
-      new Environment({}),
+      mockEnvironment({}),
     )
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchError(500)
@@ -128,7 +128,7 @@ describe('getOllamaModels', () => {
         modelsPath: '/api/tags',
         apiKeyEnvVar: null,
       },
-      new Environment({}),
+      mockEnvironment({}),
     )
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchRejected('network down')

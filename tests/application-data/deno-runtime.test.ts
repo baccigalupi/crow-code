@@ -2,7 +2,10 @@ import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { DenoRuntime } from '../../src/application-data/deno-runtime.ts'
 import { ParsedArguments } from '../../src/application-data/arguments.ts'
-import { Environment } from '../../src/application-data/env-vars.ts'
+import {
+  Environment,
+  loadEnvironmentalVariables,
+} from '../../src/application-data/env-vars.ts'
 
 describe('DenoRuntime', () => {
   it('returns the runtime arguments', () => {
@@ -48,5 +51,17 @@ describe('DenoRuntime', () => {
     expect(environment).toBeInstanceOf(Environment)
     expect(environment.value('PATH')).toBe(Deno.env.get('PATH'))
     expect(runtime.envars()).toBe(environment)
+  })
+
+  it('when an environment is given, returns it', async () => {
+    const loaded = await loadEnvironmentalVariables(
+      'tests/support/fixtures/builder-values.env',
+    )
+    const runtime = new DenoRuntime(Deno, loaded)
+
+    const environment = runtime.envars()
+
+    expect(environment).toBe(loaded)
+    expect(environment.value('BUILDER_ONLY_KEY')).toBe('builder-value')
   })
 })
