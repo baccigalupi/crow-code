@@ -74,11 +74,12 @@ parameter, which doesn't exist in this harness). The actual fix for "I need to
 run tests against files in a worktree" is the **`EnterWorktree`** tool, not
 `cd`:
 
-1. `EnterWorktree({ name: "<issue-or-feature-id>" })` — creates
-   `.claude/worktrees/<name>` on a new branch and switches the session's
-   effective working directory into it. (`.claude/hooks/worktree-path-gate.ts`
-   rejects absolute, `~`-relative, `..`-containing, or out-of-tree `path`
-   arguments if you instead re-enter an existing worktree by path.)
+1. `EnterWorktree({ name: "<full-issue-id-or-feature-description>" })` (never a
+   bare ID postfix) — creates `.claude/worktrees/<name>` on a new branch and
+   switches the session's effective working directory into it.
+   (`.claude/hooks/worktree-path-gate.ts` rejects absolute, `~`-relative,
+   `..`-containing, or out-of-tree `path` arguments if you instead re-enter an
+   existing worktree by path.)
 2. `bd update <id> --claim`.
 3. All subsequent `dev/*`/`agents/*`/file-tool calls now naturally target the
    worktree — no absolute paths, no `--config` flags, no `cd`. `dev/test` picks
@@ -129,6 +130,7 @@ the session's cwd has to actually be inside the worktree, which is exactly what
 | ❌ Escalation bait                                     | ✅ Correct                                                        |
 | ------------------------------------------------------ | ----------------------------------------------------------------- |
 | `cd .worktrees/foo && dev/test tests/x.test.ts`        | `EnterWorktree({ name: "foo" })`, then `dev/test tests/x.test.ts` |
+| `EnterWorktree({ name: "akj" })` (bare ID postfix)     | `EnterWorktree({ name: "crow-code-akj" })` or `"write-tool"`      |
 | `dev/test && agents/typecheck`                         | Two Bash calls: `dev/test` then `agents/typecheck`                |
 | `deno test tests/x.test.ts`                            | `dev/test tests/x.test.ts`                                        |
 | `deno fmt` / `deno lint --fix`                         | `dev/lint`                                                        |
@@ -153,7 +155,7 @@ Run from the repo root, or inside a worktree entered via `EnterWorktree`.
 | Enforce 95% per-file coverage                | `agents/check-coverage`                               |
 | Full pre-commit gate                         | `agents/pre-commit`                                   |
 | Beads ready work / claim / close             | `bd ready`, `bd update <id> --claim`, `bd close <id>` |
-| Enter a worktree                             | `EnterWorktree({ name: "<id>" })`                     |
+| Enter a worktree                             | `EnterWorktree({ name: "<full-id-or-feature>" })`     |
 | Leave a worktree (keep it)                   | `ExitWorktree({ action: "keep" })`                    |
 
 ## When stuck (do not escalate inventively)

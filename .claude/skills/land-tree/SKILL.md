@@ -11,15 +11,18 @@ description: >-
 Run from inside the worktree entered via `EnterWorktree`. One command per Bash
 call (see `correct-command`).
 
+In every report to the user, name the issue by title or full ID, and the
+worktree by its full name. Never a bare ID postfix.
+
 ## Sequence
 
 1. **Settle the tree.** `git status --short`. If there is uncommitted work, run
    `agents/pre-commit`, fix anything red and rerun until it passes, then commit
    it with `git commit -F - <<'EOF' … EOF`. If the tree is clean, check it with
    `agents/pre-commit` anyway.
-2. **Close the issue in the worktree.** `bd close <id>`. Closing before the
-   merge keeps `.beads/*.jsonl` changes on the branch with the work instead of
-   dirtying the main checkout afterwards.
+2. **Close the issue in the worktree.** `bd close <full-issue-id>`. Closing
+   before the merge keeps `.beads/*.jsonl` changes on the branch with the work
+   instead of dirtying the main checkout afterwards.
 3. **Commit `.beads/` with the work.** Amend it into the last commit
    (`git add .beads`, then `git commit --amend --no-edit`), or make a small
    separate commit. Nothing may remain in `git status`.

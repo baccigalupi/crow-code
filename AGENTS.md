@@ -70,6 +70,9 @@ Never create scripts there to try to circumvent permissions.
   planning: run `git worktree add .worktrees/<name> -b <branch>` from the repo
   root, where `<name>`/`<branch>` are the values recorded in the plan (derived
   from the Beads issue or feature name).
+- `<name>`/`<branch>` and every reference to an issue in plans and reports is
+  the full issue ID (e.g. `crow-code-4vz.2`), the issue title, or a description
+  of the feature. Never a bare ID postfix (`4vz`) — it is unreadable.
 - Do all subsequent work inside the worktree — file paths, exec `workdir`, and
   verification commands all target `.worktrees/<name>`, not the main checkout.
 

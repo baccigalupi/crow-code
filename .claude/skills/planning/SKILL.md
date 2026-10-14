@@ -55,13 +55,15 @@ Every plan is executed in a dedicated worktree, never the main checkout. The
 worktree does not exist during planning — record the intended values, create it
 only when implementation starts:
 
-1. In the plan, record the intended worktree name (derived from the Beads issue
-   or feature name) as planned — e.g. `Worktree: write-tool (to be
-   created)`.
+1. In the plan, record the intended worktree name as planned — e.g.
+   `Worktree: write-tool (to be created)`. The name is the full Beads issue ID
+   (`crow-code-4vz.2`) or a kebab-case description of the feature. Never a bare
+   ID postfix (`4vz`, `akj`) — it is gibberish to a reader.
 2. As the first step of implementation — never during planning — call
-   `EnterWorktree({ name: "<id>" })`. This creates `.claude/worktrees/<name>` on
-   a new branch and moves the session's cwd into it; no `git worktree add`, no
-   `cd`, no `--config` flags (see the `correct-command` skill).
+   `EnterWorktree({ name: "<full-issue-id-or-feature-description>" })`. This
+   creates `.claude/worktrees/<name>` on a new branch and moves the session's
+   cwd into it; no `git worktree add`, no `cd`, no `--config` flags (see the
+   `correct-command` skill).
 3. All subsequent file paths, `dev/*`/`agents/*` calls, and verification
    commands then target the worktree automatically.
 4. Landing is the `land-tree` skill, run when the user asks.
@@ -78,6 +80,8 @@ Like the worktree, the Beads issue does not exist during planning:
    issue) and `bd update <id> --claim`, inside the worktree.
 3. `.beads/*.jsonl` is tracked state — stage it with the implementation work it
    records.
+4. Name issues in plan prose by title, or by full ID plus title. Never refer to
+   an issue by a bare ID postfix.
 
 ## Required plan structure
 
@@ -148,7 +152,7 @@ Never present an unresolved assumption as a decision.
 
 Step 0, in this order (see Worktree setup / Beads issue):
 
-1. `EnterWorktree({ name: "<id>" })`.
+1. `EnterWorktree({ name: "<full-issue-id-or-feature-description>" })`.
 2. `bd create` (unless the plan names an existing issue), then
    `bd update <id> --claim`.
 
