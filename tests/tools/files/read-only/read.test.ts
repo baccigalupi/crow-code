@@ -55,10 +55,11 @@ describe('readFile', () => {
     const path = join(fixturesDirectory, 'tools', 'git', 'git-diff.diff')
     using _permissionsStub = stub(
       applicationData,
-      'pathPermissions',
+      'readPathPermissions',
       () =>
         pathPermissions({
           getRealPath: applicationData.getRealPath(),
+          envars: applicationData.envars(),
           allowedDirectories: [join(fixturesDirectory, 'tools', 'files')],
         }),
     )

@@ -1,7 +1,7 @@
 import type { ApplicationOperationArguments } from '../../../types.ts'
 import type { SearchListing } from '../../types.ts'
 import { sortedMatches } from './search/sorted-matches.ts'
-import { FileOperation } from '../file-operation.ts'
+import { ReadOnlyFileOperation } from './base-operation.ts'
 
 type TaskArguments = {
   path: string
@@ -14,7 +14,8 @@ type TaskArguments = {
 
 type SearchFilesArguments = ApplicationOperationArguments<TaskArguments>
 
-export class SearchFiles extends FileOperation<TaskArguments, SearchListing> {
+export class SearchFiles
+  extends ReadOnlyFileOperation<TaskArguments, SearchListing> {
   protected override logPrefix = 'Search files: '
   private matches: SearchListing['matches'] = []
 

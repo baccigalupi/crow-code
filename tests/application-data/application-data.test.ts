@@ -7,6 +7,9 @@ import { CrowConfig } from '../../src/application-data/config.ts'
 import { DenoRuntime } from '../../src/application-data/deno-runtime.ts'
 import { Io } from '../../src/application-data/io.ts'
 import { join } from '@std/path/join'
+import { resolve } from '@std/path/resolve'
+import { Environment } from '../../src/application-data/env-vars.ts'
+import { mockApplicationData } from '../support/mock-application-data.ts'
 import { clearDirectory, fixturesDirectory } from '../support/fixtures.ts'
 import { createTestDatabase } from '../support/test-database.ts'
 import { mockFetchSuccess } from '../support/mock-fetch.ts'
@@ -44,8 +47,29 @@ describe('ApplicationData', () => {
     const appData = new ApplicationData()
     appData.denoRuntime = new DenoRuntime(Deno)
 
-    const permissions = appData.pathPermissions()
+    const permissions = appData.writePathPermissions()
 
+    expect(await permissions.allows('src/app.ts')).toBe(true)
+    expect(await permissions.allows(join('..', 'outside.txt'))).toBe(false)
+  })
+
+  it('bounds read path permissions to the working directory and configured read directories', async () => {
+    const home = resolve(Deno.cwd(), '..', 'outside-home')
+    const appData = mockApplicationData({
+      envars: new Environment({ HOME: home }),
+    })
+    appData.config = new CrowConfig('.', {
+      crowGlobalDirectory: '~/.crow',
+      permissions: {
+        ignore: [],
+        additionalRead: ['~/docs'],
+        additionalWrite: [],
+      },
+    })
+
+    const permissions = appData.readPathPermissions()
+
+    expect(await permissions.allows(join(home, 'docs', 'a.txt'))).toBe(true)
     expect(await permissions.allows('src/app.ts')).toBe(true)
     expect(await permissions.allows(join('..', 'outside.txt'))).toBe(false)
   })

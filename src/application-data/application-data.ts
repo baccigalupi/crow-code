@@ -8,7 +8,6 @@ import { Io } from './io.ts'
 import type { ParsedArguments } from './arguments.ts'
 import { delegate, memoize } from '../decorators.ts'
 import { pathPermissions } from './path-permissions.ts'
-import { gitPathPermissions } from './git-path-permissions.ts'
 import { openAndMigrateDatabase } from '../database/open-and-migrate-database.ts'
 import type {
   ConsoleError,
@@ -71,15 +70,29 @@ export class ApplicationData {
   }
 
   @memoize
-  pathPermissions() {
-    return pathPermissions({ getRealPath: this.getRealPath() })
+  writePathPermissions() {
+    return pathPermissions({
+      getRealPath: this.getRealPath(),
+      envars: this.envars(),
+      allowedDirectories: [Deno.cwd()],
+    })
+  }
+
+  @memoize
+  readPathPermissions() {
+    return pathPermissions({
+      getRealPath: this.getRealPath(),
+      envars: this.envars(),
+      allowedDirectories: [Deno.cwd(), ...this.config.readableDirectories],
+    })
   }
 
   @memoize
   gitPathPermissions() {
-    return gitPathPermissions({
+    return pathPermissions({
       getRealPath: this.getRealPath(),
-      repositoryRoot: this.repositoryRoot,
+      envars: this.envars(),
+      allowedDirectories: [this.repositoryRoot],
     })
   }
 }

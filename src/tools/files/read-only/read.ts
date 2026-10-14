@@ -1,6 +1,6 @@
 import type { ApplicationOperationArguments } from '../../../types.ts'
 import type { FileContent } from '../../types.ts'
-import { FileOperation } from '../file-operation.ts'
+import { ReadOnlyFileOperation } from './base-operation.ts'
 
 type TaskArguments = {
   path: string
@@ -10,7 +10,8 @@ type TaskArguments = {
 
 type ReadFileArguments = ApplicationOperationArguments<TaskArguments>
 
-export class ReadFile extends FileOperation<TaskArguments, FileContent> {
+export class ReadFile
+  extends ReadOnlyFileOperation<TaskArguments, FileContent> {
   protected override logPrefix = 'Read file: '
   private text = ''
 

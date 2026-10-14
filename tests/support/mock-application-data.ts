@@ -4,6 +4,8 @@ import type OpenAI from 'openai'
 import { stub } from '@std/testing/mock'
 import { ApplicationData } from '../../src/application-data/application-data.ts'
 import { DenoRuntime } from '../../src/application-data/deno-runtime.ts'
+import { CrowConfig } from '../../src/application-data/config.ts'
+import { defaultCrowConfig } from '../../src/application-data/load-config.ts'
 import { Io } from '../../src/application-data/io.ts'
 import { parseArguments } from '../../src/application-data/arguments.ts'
 import { Environment } from '../../src/application-data/env-vars.ts'
@@ -27,6 +29,7 @@ export type MockApplicationDataOverrides = {
   chatClient?: (options: OpenAiClientOptions) => OpenAI
   denoCommand?: DenoCommand
   envars?: Environment
+  config?: CrowConfig
 }
 
 export const mockApplicationData = (
@@ -38,6 +41,7 @@ export const mockApplicationData = (
   data.io = new Io('')
   data.parsedArguments = parseArguments(args)
   data.repositoryRoot = Deno.cwd()
+  data.config = overrides.config || new CrowConfig('.', defaultCrowConfig())
 
   const logger = overrides.logger || pino({ enabled: false })
   // Lazy on purpose: createTestDatabase starts native better-sqlite3 work

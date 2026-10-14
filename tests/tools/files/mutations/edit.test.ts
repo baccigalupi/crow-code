@@ -103,10 +103,11 @@ describe('editFile', () => {
     const applicationData = mockApplicationData()
     using _permissionsStub = stub(
       applicationData,
-      'pathPermissions',
+      'writePathPermissions',
       () =>
         pathPermissions({
           getRealPath: applicationData.getRealPath(),
+          envars: applicationData.envars(),
           allowedDirectories: [join(fixturesDirectory, 'tools')],
         }),
     )

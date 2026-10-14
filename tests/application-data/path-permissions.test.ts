@@ -6,6 +6,7 @@ import {
   PathPermissions,
   pathPermissions,
 } from '../../src/application-data/path-permissions.ts'
+import { Environment } from '../../src/application-data/env-vars.ts'
 import { mockApplicationData } from '../support/mock-application-data.ts'
 import { fixturesDirectory } from '../support/fixtures.ts'
 
@@ -15,6 +16,7 @@ describe('path-permissions', () => {
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
       getRealPath: applicationData.getRealPath(),
+      envars: applicationData.envars(),
       allowedDirectories: [directory],
     })
 
@@ -28,34 +30,13 @@ describe('path-permissions', () => {
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
       getRealPath: applicationData.getRealPath(),
+      envars: applicationData.envars(),
       allowedDirectories: [directory],
     })
 
     const allowed = await permissions.allows(
       join(fixturesDirectory, 'devin-config.json'),
     )
-
-    expect(allowed).toBe(false)
-  })
-
-  it('when no allowed directories are given, allows a path under the current working directory', async () => {
-    const applicationData = mockApplicationData()
-    const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-    })
-
-    const allowed = await permissions.allows('deno.json')
-
-    expect(allowed).toBe(true)
-  })
-
-  it('when no allowed directories are given, refuses a path above the current working directory', async () => {
-    const applicationData = mockApplicationData()
-    const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-    })
-
-    const allowed = await permissions.allows(join('..', 'outside.txt'))
 
     expect(allowed).toBe(false)
   })
@@ -72,6 +53,7 @@ describe('path-permissions', () => {
     )
     const permissions = pathPermissions({
       getRealPath: applicationData.getRealPath(),
+      envars: applicationData.envars(),
       allowedDirectories: ['.'],
     })
 
@@ -85,10 +67,25 @@ describe('path-permissions', () => {
     const directory = join(fixturesDirectory, 'missing-directory')
     const permissions = pathPermissions({
       getRealPath: applicationData.getRealPath(),
+      envars: applicationData.envars(),
       allowedDirectories: [directory],
     })
 
     const allowed = await permissions.allows(join(directory, 'file.txt'))
+
+    expect(allowed).toBe(true)
+  })
+
+  it('when an allowed directory starts with tilde, expands it from home', async () => {
+    const applicationData = mockApplicationData()
+    const home = join(fixturesDirectory, 'tools')
+    const permissions = pathPermissions({
+      getRealPath: applicationData.getRealPath(),
+      allowedDirectories: ['~/git'],
+      envars: new Environment({ HOME: home }),
+    })
+
+    const allowed = await permissions.allows(join(home, 'git', 'git-diff.diff'))
 
     expect(allowed).toBe(true)
   })
@@ -98,6 +95,7 @@ describe('path-permissions', () => {
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
       getRealPath: applicationData.getRealPath(),
+      envars: applicationData.envars(),
       allowedDirectories: [join(fixturesDirectory, 'style-checks'), directory],
     })
 
@@ -123,6 +121,7 @@ describe('path-permissions', () => {
     )
     const permissions = pathPermissions({
       getRealPath: applicationData.getRealPath(),
+      envars: applicationData.envars(),
       allowedDirectories: [directory],
     })
 
@@ -137,6 +136,7 @@ describe('path-permissions', () => {
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
       getRealPath: applicationData.getRealPath(),
+      envars: applicationData.envars(),
       allowedDirectories: [directory],
     })
 
@@ -153,6 +153,7 @@ describe('path-permissions', () => {
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
       getRealPath: applicationData.getRealPath(),
+      envars: applicationData.envars(),
       allowedDirectories: [directory],
     })
 
@@ -169,6 +170,7 @@ describe('path-permissions', () => {
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
       getRealPath: applicationData.getRealPath(),
+      envars: applicationData.envars(),
       allowedDirectories: [directory],
     })
 
@@ -189,6 +191,7 @@ describe('path-permissions', () => {
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
       getRealPath: applicationData.getRealPath(),
+      envars: applicationData.envars(),
       allowedDirectories: [directory],
     })
 
@@ -205,6 +208,7 @@ describe('path-permissions', () => {
 
     const permissions = pathPermissions({
       getRealPath: applicationData.getRealPath(),
+      envars: applicationData.envars(),
       allowedDirectories: [directory],
     })
 

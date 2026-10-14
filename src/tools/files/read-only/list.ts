@@ -3,7 +3,7 @@ import { resolve } from '@std/path'
 import type { ApplicationOperationArguments } from '../../../types.ts'
 import type { DirectoryEntry, DirectoryListing } from '../../types.ts'
 import { directoryEntries } from './list/entries.ts'
-import { FileOperation } from '../file-operation.ts'
+import { ReadOnlyFileOperation } from './base-operation.ts'
 
 type TaskArguments = {
   path: string
@@ -13,7 +13,7 @@ type TaskArguments = {
 type ListDirectoryArguments = ApplicationOperationArguments<TaskArguments>
 
 export class ListDirectory
-  extends FileOperation<TaskArguments, DirectoryListing> {
+  extends ReadOnlyFileOperation<TaskArguments, DirectoryListing> {
   protected override logPrefix = 'List directory: '
   private entries: DirectoryEntry[] = []
 

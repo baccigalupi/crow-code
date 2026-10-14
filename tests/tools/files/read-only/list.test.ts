@@ -56,10 +56,11 @@ describe('list', () => {
     const path = join(fixturesDirectory, 'tools', 'files')
     using _permissionsStub = stub(
       applicationData,
-      'pathPermissions',
+      'readPathPermissions',
       () =>
         pathPermissions({
           getRealPath: applicationData.getRealPath(),
+          envars: applicationData.envars(),
           allowedDirectories: [join(fixturesDirectory, 'tools', 'git')],
         }),
     )

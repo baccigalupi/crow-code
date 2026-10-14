@@ -2,7 +2,7 @@ import { resolve } from '@std/path'
 import type { ApplicationOperationArguments } from '../../../types.ts'
 import type { PathListing } from '../../types.ts'
 import { filePaths } from './search/file-paths.ts'
-import { FileOperation } from '../file-operation.ts'
+import { ReadOnlyFileOperation } from './base-operation.ts'
 
 type TaskArguments = {
   path: string
@@ -12,7 +12,8 @@ type TaskArguments = {
 
 type FindFilesArguments = ApplicationOperationArguments<TaskArguments>
 
-export class FindFiles extends FileOperation<TaskArguments, PathListing> {
+export class FindFiles
+  extends ReadOnlyFileOperation<TaskArguments, PathListing> {
   protected override logPrefix = 'Find files: '
   private paths: string[] = []
 

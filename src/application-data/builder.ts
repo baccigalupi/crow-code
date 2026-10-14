@@ -3,7 +3,7 @@ import { ApplicationData } from './application-data.ts'
 import { DenoRuntime } from './deno-runtime.ts'
 import { Io } from './io.ts'
 import { loadConfig } from './load-config.ts'
-import { gitRepositoryRoot } from './repository-root.ts'
+import { gitRepositoryRoot } from './path-permissions/repository-root.ts'
 import { SubOperations } from './sub-operations.ts'
 import { verifyDatabase } from './verify-database.ts'
 

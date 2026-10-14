@@ -94,10 +94,11 @@ describe('readFiles', () => {
     )
     using _permissionsStub = stub(
       applicationData,
-      'pathPermissions',
+      'readPathPermissions',
       () =>
         pathPermissions({
           getRealPath: applicationData.getRealPath(),
+          envars: applicationData.envars(),
           allowedDirectories: [join(fixturesDirectory, 'tools', 'files')],
         }),
     )

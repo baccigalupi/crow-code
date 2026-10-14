@@ -1,9 +1,9 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { assertSpyCall, spy } from '@std/testing/mock'
-import { gitRepositoryRoot } from '../../src/application-data/repository-root.ts'
-import { mockApplicationData } from '../support/mock-application-data.ts'
-import { mockDenoCommand } from '../support/mock-deno-command.ts'
+import { gitRepositoryRoot } from '../../../src/application-data/path-permissions/repository-root.ts'
+import { mockApplicationData } from '../../support/mock-application-data.ts'
+import { mockDenoCommand } from '../../support/mock-deno-command.ts'
 
 describe('gitRepositoryRoot', () => {
   it('returns the worktree root from git', async () => {

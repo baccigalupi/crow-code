@@ -1,4 +1,8 @@
-import type { AsyncOperationWithResult, DenoCommand, Logger } from '../types.ts'
+import type {
+  AsyncOperationWithResult,
+  DenoCommand,
+  Logger,
+} from '../../types.ts'
 
 type GitRepositoryRootArguments = {
   denoCommand: DenoCommand

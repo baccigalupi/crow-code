@@ -15,8 +15,12 @@ export abstract class FileOperation<
 
   protected abstract perform(): Promise<void>
 
+  protected permissions() {
+    return this.applicationData.writePathPermissions()
+  }
+
   private async pathNotAllowed() {
-    const allowed = await this.applicationData.pathPermissions().allows(
+    const allowed = await this.permissions().allows(
       this.operationArguments.path,
     )
     if (!allowed) {
