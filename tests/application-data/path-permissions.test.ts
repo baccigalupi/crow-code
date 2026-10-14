@@ -202,6 +202,40 @@ describe('path-permissions', () => {
     expect(filtered).toEqual([])
   })
 
+  it('when some paths are refused, forbiddenPaths returns only the refused paths', async () => {
+    const applicationData = mockApplicationData()
+    const directory = join(fixturesDirectory, 'tools', 'git')
+    const permissions = pathPermissions({
+      getRealPath: applicationData.getRealPath(),
+      envars: applicationData.envars(),
+      allowedDirectories: [directory],
+    })
+
+    const forbidden = await permissions.forbiddenPaths([
+      join(directory, 'git-diff.diff'),
+      join(fixturesDirectory, 'devin-config.json'),
+      join(directory, 'git-diff-files.txt'),
+    ])
+
+    expect(forbidden).toEqual([join(fixturesDirectory, 'devin-config.json')])
+  })
+
+  it('when every path is allowed, forbiddenPaths returns an empty array', async () => {
+    const applicationData = mockApplicationData()
+    const directory = join(fixturesDirectory, 'tools', 'git')
+    const permissions = pathPermissions({
+      getRealPath: applicationData.getRealPath(),
+      envars: applicationData.envars(),
+      allowedDirectories: [directory],
+    })
+
+    const forbidden = await permissions.forbiddenPaths([
+      join(directory, 'git-diff.diff'),
+    ])
+
+    expect(forbidden).toEqual([])
+  })
+
   it('when called through pathPermissions, returns a PathPermissions', () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'tools', 'git')

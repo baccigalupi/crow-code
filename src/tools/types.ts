@@ -34,6 +34,17 @@ export type EditResult = {
   replacements: number
 }
 
+export type EditInstruction = {
+  path: string
+  oldString: string
+  newString: string
+  replaceAll?: boolean
+}
+
+export type MultiEditResult = EditResult[]
+
+export type SnapshotEntry = [path: string, text: string]
+
 export type MakeDirectoryResult = {
   path: string
   created: boolean

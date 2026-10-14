@@ -49,9 +49,16 @@ export abstract class Operation<OperationArguments> implements AsyncOperation {
   ) {
     if (!this.succeeded) return operation
 
+    await this.runIndependentSubOperation(operation)
+    if (!operation.success()) this.fail(failedOperationReason(operation))
+    return operation
+  }
+
+  protected async runIndependentSubOperation<T extends AsyncOperation>(
+    operation: T,
+  ) {
     await operation.run()
     this.subOperations.push(operation)
-    if (!operation.success()) this.fail(failedOperationReason(operation))
     return operation
   }
 

@@ -43,6 +43,11 @@ export class PathPermissions {
     return paths.filter((_, index) => verdicts[index])
   }
 
+  async forbiddenPaths(paths: string[]): Promise<string[]> {
+    const verdicts = await Promise.all(paths.map((path) => this.allows(path)))
+    return paths.filter((_, index) => !verdicts[index])
+  }
+
   protected absoluteDirectories(): string[] {
     return expandHome({
       directories: this.allowedDirectories,
