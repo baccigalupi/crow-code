@@ -192,11 +192,13 @@ mechanism called out:
   why `cd`/`--config` don't work here.
 - Landing is a fixed, approval-gated sequence: commit in the worktree →
   `git rebase main` → `ExitWorktree({ action: "keep" })` back to the main
-  checkout → `git merge --ff-only <branch>` → `bd close <id>` →
-  `ExitWorktree({ action: "remove" })` (or re-enter and remove) once merged.
+  checkout → `git merge --ff-only <branch>` → remove the worktree and branch →
+  `bd close <id>` on main → commit `.beads/` on main.
 - Issues are tracked with **bd (beads)**: `bd ready`, `bd show <id>`,
   `bd update <id> --claim`, `bd close <id>`; run `bd prime` for full context.
-  `.beads/*.jsonl` is tracked state — always stage it with the work it records.
+  `.beads/*.jsonl` is tracked state, but `bd` has one database in the main
+  checkout and exports there even when run from a worktree — so it never appears
+  in a worktree's `git status`. Commit it on main when landing.
 
 ## Command gate (Claude Code)
 

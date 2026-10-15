@@ -82,16 +82,17 @@ Landing is a fixed sequence. Request approval once — "approval to land the wor
 — and a granted approval authorizes the entire sequence, including the commit
 (it counts as the explicit ask Git rules require):
 
-1. In the worktree, stage everything `git status` shows — including
-   `.beads/*.jsonl` state from `bd create`/`--claim` (mirror it into the
-   worktree if `bd` wrote it to the main checkout) — and commit with
-   `git commit -F - <<'EOF'`.
+1. In the worktree, stage everything `git status` shows and commit with
+   `git commit -F - <<'EOF'`. `.beads/*.jsonl` will not appear there: `bd` has
+   one database in the main checkout and always writes its exports to the main
+   checkout's `.beads/`, never the worktree's.
 2. `git rebase main` in the worktree.
 3. `git merge --ff-only <branch>` in the main checkout. If it fails because
    `main` moved, repeat step 2, rerun `agents/pre-commit`, and retry — never
    create a merge commit.
-4. `bd close <id>`.
-5. `git worktree remove .worktrees/<name>`.
+4. `git worktree remove .worktrees/<name>`.
+5. `bd close <id>` in the main checkout, then stage `.beads/` and commit it
+   there (`Close <issue title>`). `git status` on `main` must end empty.
 
 The work is not landed until `main` points at the branch tip. Never rebase,
 merge, or fast-forward onto `main` unprompted.
@@ -122,12 +123,13 @@ bd close <id>         # Complete work
 - When plan implementation begins (never during planning), `bd create` an issue
   for it — unless the plan names an existing issue — and
   `bd update <id> --claim`
-- Close the issue as part of landing: `bd close <id>` after the merge (see
-  Worktrees › Landing)
+- Close the issue as part of landing: `bd close <id>` in the main checkout after
+  the merge, then commit `.beads/` there (see Worktrees › Landing)
 - Run `bd prime` for detailed command reference and session close protocol
 - Use `bd remember` for persistent knowledge — do NOT use MEMORY.md files
-- `.beads/*.jsonl` is tracked state — always stage it with the work it records.
-  Never leave it behind as "unrelated"
+- `.beads/*.jsonl` is tracked state, but `bd` always exports it into the main
+  checkout, even when run from a worktree. Commit it on `main` as part of
+  landing; never leave it behind as "unrelated"
 
 ## Dependency lookup
 
