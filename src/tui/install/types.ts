@@ -1,8 +1,9 @@
 import type { Signal } from '@preact/signals-core'
+import type { Runtime } from '../../application-data/runtime.ts'
 import type { ExitApp, InputBuffer, KeyFlags } from '../types.ts'
 import type { CrowPermissionsConfig } from '../../types.ts'
 
-export type InstallStep = 'repo' | 'user' | 'env' | 'confirm' | 'done'
+export type InstallStep = 'repo' | 'user' | 'env' | 'confirm' | 'write' | 'done'
 
 export type CrowConfig = {
   readonly crowGlobalDirectory: string
@@ -18,8 +19,6 @@ export type BuiltCrowConfig = {
   readonly crowConfigJson: string
 }
 
-export type CrowConfigWriter = (config: BuiltCrowConfig) => void
-
 export type BuildCrowConfigArguments = {
   readonly globalDirectory: InputBuffer
   readonly repoDirectory: InputBuffer
@@ -32,20 +31,23 @@ export type InstallAppProps = {
   readonly envFile?: Signal<InputBuffer>
   readonly step?: Signal<InstallStep>
   readonly confirmation?: Signal<boolean>
-  readonly save?: CrowConfigWriter
 }
 
-export type KeypressSignals = {
+export type InstallSignals = {
   readonly repoDirectory: Signal<InputBuffer>
   readonly globalDirectory: Signal<InputBuffer>
   readonly envFile: Signal<InputBuffer>
   readonly step: Signal<InstallStep>
   readonly confirmation: Signal<boolean>
-  readonly save: CrowConfigWriter
+}
+
+export type WriteCrowConfigArguments = {
+  readonly signals: InstallSignals
+  readonly runtime: Runtime
 }
 
 export type KeypressArguments = {
-  readonly signals: KeypressSignals
+  readonly signals: InstallSignals
   readonly exit: ExitApp
   readonly input: string
   readonly key: KeyFlags

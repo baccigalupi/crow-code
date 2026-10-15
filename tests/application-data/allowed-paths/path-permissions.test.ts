@@ -1,17 +1,20 @@
-import { describe, it } from 'node:test'
+import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join, resolve } from '@std/path'
-import { returnsNext, spy, stub } from '@std/testing/mock'
 import {
   PathPermissions,
   pathPermissions,
 } from '../../../src/application-data/allowed-paths/path-permissions.ts'
+import { Runtime } from '../../../src/application-data/runtime.ts'
 import { mockEnvironment } from '../../support/mock-environment.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { configWithIgnore } from '../../support/mock-crow-config.ts'
-import { fixturesDirectory } from '../../support/fixtures.ts'
+import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 
 describe('path-permissions', () => {
+  beforeEach(() => clearDirectory(`${fixturesDirectory}/path-permissions`))
+  afterEach(() => clearDirectory(`${fixturesDirectory}/path-permissions`))
+
   it('when the path is inside an allowed directory, allows it', async () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'tools', 'git')
@@ -40,22 +43,21 @@ describe('path-permissions', () => {
     expect(allowed).toBe(false)
   })
 
-  it('when an allowed directory is relative, resolves it against the current working directory', async () => {
+  it('when an allowed directory is relative, resolves it against the runtime working directory', async () => {
     const applicationData = mockApplicationData()
-    const mockDenoRealPath = spy(
-      returnsNext([Promise.resolve(join(Deno.cwd(), 'deno.json'))]),
-    )
-    using _realPath = stub(
-      applicationData,
-      'getRealPath',
-      () => mockDenoRealPath,
+    applicationData.runtime = new Runtime(
+      Deno,
+      mockEnvironment({}),
+      join(fixturesDirectory, 'tools', 'git'),
     )
     const permissions = pathPermissions({
       applicationData,
-      allowedDirectories: ['.'],
+      allowedDirectories: ['../search'],
     })
 
-    const allowed = await permissions.allows('deno.json')
+    const allowed = await permissions.allows(
+      join(fixturesDirectory, 'tools', 'search', 'alpha.txt'),
+    )
 
     expect(allowed).toBe(true)
   })
@@ -103,28 +105,35 @@ describe('path-permissions', () => {
     expect(allowed).toBe(true)
   })
 
-  it('when allows is called twice for the same path, resolves symlinks once', async () => {
-    const applicationData = mockApplicationData()
-    const directory = join(fixturesDirectory, 'tools', 'git')
-    const mockDenoRealPath = spy(
-      returnsNext([
-        Promise.resolve(join(directory, 'git-diff.diff')),
-      ]),
+  it('when allows is called twice for the same path, keeps the first verdict', async () => {
+    Deno.mkdirSync(`${fixturesDirectory}/path-permissions/inside`, {
+      recursive: true,
+    })
+    Deno.mkdirSync(`${fixturesDirectory}/path-permissions/outside`)
+    Deno.symlinkSync(
+      `${fixturesDirectory}/path-permissions/outside`,
+      `${fixturesDirectory}/path-permissions/inside/escape`,
     )
-    using _realPath = stub(
-      applicationData,
-      'getRealPath',
-      () => mockDenoRealPath,
+    const applicationData = mockApplicationData()
+    applicationData.runtime = new Runtime(
+      Deno,
+      mockEnvironment({}),
+      `${fixturesDirectory}/path-permissions/inside`,
     )
     const permissions = pathPermissions({
       applicationData,
-      allowedDirectories: [directory],
+      allowedDirectories: [],
     })
+    await permissions.allows(
+      `${fixturesDirectory}/path-permissions/inside/escape`,
+    )
+    Deno.removeSync(`${fixturesDirectory}/path-permissions/inside/escape`)
 
-    await permissions.allows(join(directory, 'git-diff.diff'))
-    await permissions.allows(join(directory, 'git-diff.diff'))
+    const allowed = await permissions.allows(
+      `${fixturesDirectory}/path-permissions/inside/escape`,
+    )
 
-    expect(mockDenoRealPath.calls).toHaveLength(1)
+    expect(allowed).toBe(false)
   })
 
   it('when every path is allowed, allowsEvery returns true', async () => {
@@ -314,19 +323,26 @@ describe('path-permissions', () => {
   })
 
   it('when a symlink resolves into an ignored path, refuses it', async () => {
-    const directory = join(fixturesDirectory, 'tools')
-    const ignored = join(directory, 'git')
-    const applicationData = mockApplicationData({
-      config: configWithIgnore([ignored]),
+    Deno.mkdirSync(`${fixturesDirectory}/path-permissions/ignored`, {
+      recursive: true,
     })
-    const realPath = spy(returnsNext([Promise.resolve(join(ignored, 'a'))]))
-    using _realPath = stub(applicationData, 'getRealPath', () => realPath)
+    Deno.symlinkSync(
+      `${fixturesDirectory}/path-permissions/ignored`,
+      `${fixturesDirectory}/path-permissions/link`,
+    )
+    const applicationData = mockApplicationData({
+      config: configWithIgnore([
+        `${fixturesDirectory}/path-permissions/ignored`,
+      ]),
+    })
     const permissions = pathPermissions({
       applicationData,
-      allowedDirectories: [directory],
+      allowedDirectories: [`${fixturesDirectory}/path-permissions`],
     })
 
-    const allowed = await permissions.allows(join(directory, 'link'))
+    const allowed = await permissions.allows(
+      `${fixturesDirectory}/path-permissions/link`,
+    )
 
     expect(allowed).toBe(false)
   })

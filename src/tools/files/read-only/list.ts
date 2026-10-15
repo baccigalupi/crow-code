@@ -38,7 +38,10 @@ export class ListDirectory
   }
 
   private directory() {
-    return resolve(this.applicationData.cwd(), this.operationArguments.path)
+    return resolve(
+      this.applicationData.runtime.cwd(),
+      this.operationArguments.path,
+    )
   }
 }
 

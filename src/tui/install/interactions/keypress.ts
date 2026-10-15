@@ -1,11 +1,10 @@
 import type { Signal } from '@preact/signals-core'
 import type { ExitApp, InputBuffer, KeyFlags } from '../../types.ts'
-import type { KeypressArguments, KeypressSignals } from '../types.ts'
-import { buildCrowConfig } from '../crow-config/build.ts'
+import type { InstallSignals, KeypressArguments } from '../types.ts'
 import { textInput } from './text-input.ts'
 
 export class Keypress {
-  private signals: KeypressSignals
+  private signals: InstallSignals
   private exit: ExitApp
   private input: string
   private key: KeyFlags
@@ -46,16 +45,7 @@ export class Keypress {
   }
 
   private write() {
-    this.signals.save(this.config())
-    this.signals.step.value = 'done'
-  }
-
-  private config() {
-    return buildCrowConfig({
-      repoDirectory: this.signals.repoDirectory.peek(),
-      globalDirectory: this.signals.globalDirectory.peek(),
-      envFile: this.signals.envFile.peek(),
-    }).all()
+    this.signals.step.value = 'write'
   }
 
   private activeEdit() {

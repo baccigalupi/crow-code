@@ -1,30 +1,26 @@
 import { relative, resolve } from '@std/path'
-import type { RealPath } from '../../types.ts'
+import type { Runtime } from '../runtime.ts'
 
 type RequestedPathArguments = {
   path: string
   allowedDirectories: string[]
-  getRealPath: RealPath
   ignoredPaths: string[]
-  cwd: string
+  runtime: Runtime
 }
 
 export class RequestedPath {
   private path: string
   private allowedDirectories: string[]
-  private getRealPath: RealPath
   private ignoredPaths: string[]
-  private cwd: string
+  private runtime: Runtime
 
   constructor(
-    { path, allowedDirectories, getRealPath, ignoredPaths, cwd }:
-      RequestedPathArguments,
+    { path, allowedDirectories, ignoredPaths, runtime }: RequestedPathArguments,
   ) {
     this.path = path
     this.allowedDirectories = allowedDirectories
-    this.getRealPath = getRealPath
     this.ignoredPaths = ignoredPaths
-    this.cwd = cwd
+    this.runtime = runtime
   }
 
   async isAllowed() {
@@ -48,13 +44,13 @@ export class RequestedPath {
   }
 
   private absolutePath() {
-    return resolve(this.cwd, this.path)
+    return resolve(this.runtime.cwd(), this.path)
   }
 
   private async followingSymlinks() {
     const path = this.absolutePath()
     try {
-      return await this.getRealPath(path)
+      return await this.runtime.realPath(path)
     } catch {
       return path
     }

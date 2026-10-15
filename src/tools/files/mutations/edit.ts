@@ -39,7 +39,9 @@ export class EditFile extends FileOperation<TaskArguments, EditResult> {
   private async edit() {
     if (!this.succeeded) return
 
-    const contents = await Deno.readTextFile(this.operationArguments.path)
+    const contents = await this.applicationData.runtime.readTextFile(
+      this.operationArguments.path,
+    )
     this.failUnmatched(contents)
     if (this.succeeded) await this.write(contents)
   }
@@ -59,7 +61,7 @@ export class EditFile extends FileOperation<TaskArguments, EditResult> {
 
   private async write(contents: string) {
     const { oldString, newString } = this.operationArguments
-    await Deno.writeTextFile(
+    await this.applicationData.runtime.writeTextFile(
       this.operationArguments.path,
       contents.replaceAll(oldString, newString),
     )

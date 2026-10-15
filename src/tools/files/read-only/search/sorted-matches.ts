@@ -1,4 +1,5 @@
 import { resolve } from '@std/path'
+import type { Runtime } from '../../../../application-data/runtime.ts'
 import type { SearchMatch } from '../../../types.ts'
 import { fileMatches } from './file-matches.ts'
 import { filePaths } from './file-paths.ts'
@@ -10,7 +11,7 @@ type SortedMatchesArguments = {
   context?: number
   ignoredDirectories?: string[]
   filePattern?: string
-  cwd: string
+  runtime: Runtime
 }
 
 export class SortedMatches {
@@ -19,6 +20,7 @@ export class SortedMatches {
   private context: number
   private ignoredDirectories?: string[]
   private filePattern?: string
+  private runtime: Runtime
 
   constructor(
     {
@@ -28,14 +30,15 @@ export class SortedMatches {
       context = 0,
       ignoredDirectories,
       filePattern,
-      cwd,
+      runtime,
     }: SortedMatchesArguments,
   ) {
-    this.directory = resolve(cwd, path)
+    this.directory = resolve(runtime.cwd(), path)
     this.pattern = new RegExp(pattern, flags)
     this.context = context
     this.ignoredDirectories = ignoredDirectories
     this.filePattern = filePattern
+    this.runtime = runtime
   }
 
   async all() {
@@ -54,10 +57,11 @@ export class SortedMatches {
 
   private async append(previous: Promise<SearchMatch[]>, path: string) {
     const matches = await previous
-    const { directory, pattern, context } = this
+    const { directory, pattern, context, runtime } = this
     return [
       ...matches,
-      ...await fileMatches({ directory, path, pattern, context }).all(),
+      ...await fileMatches({ directory, path, pattern, context, runtime })
+        .all(),
     ]
   }
 

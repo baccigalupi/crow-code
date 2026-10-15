@@ -19,7 +19,7 @@ export class DeleteFile extends FileOperation<TaskArguments, DeleteResult> {
   }
 
   protected override async perform() {
-    await Deno.remove(this.operationArguments.path)
+    await this.applicationData.runtime.remove(this.operationArguments.path)
   }
 }
 

@@ -5,6 +5,7 @@ import {
   defaultDatabasePath,
   openAndMigrateDatabase,
 } from '../../src/database/open-and-migrate-database.ts'
+import { defaultRuntime } from '../../src/application-data/runtime.ts'
 import { clearDirectory, fixturesDirectory } from '../support/fixtures.ts'
 import { createTestDatabase, dropAllTables } from '../support/test-database.ts'
 import pino from 'pino'
@@ -21,7 +22,11 @@ describe('openAndMigrateDatabase', () => {
     const crowDirectory = join(fixturesDirectory, 'open-database', '.crow')
     const logger = pino({ enabled: false })
 
-    await openAndMigrateDatabase(crowDirectory, logger)
+    await openAndMigrateDatabase(
+      crowDirectory,
+      logger,
+      defaultRuntime(),
+    )
 
     expect(Deno.statSync(defaultDatabasePath(crowDirectory)).isFile).toBe(true)
   })
@@ -29,7 +34,11 @@ describe('openAndMigrateDatabase', () => {
   it('when opened, returns a writable database', async () => {
     const crowDirectory = join(fixturesDirectory, 'open-database', '.crow')
     const logger = pino({ enabled: false })
-    const database = await openAndMigrateDatabase(crowDirectory, logger)
+    const database = await openAndMigrateDatabase(
+      crowDirectory,
+      logger,
+      defaultRuntime(),
+    )
 
     await database.schema.createTable('notes', (table) => {
       table.text('content')
@@ -43,13 +52,21 @@ describe('openAndMigrateDatabase', () => {
   it('when opened twice, keeps existing data', async () => {
     const crowDirectory = join(fixturesDirectory, 'open-database', '.crow')
     const logger = pino({ enabled: false })
-    const first = await openAndMigrateDatabase(crowDirectory, logger)
+    const first = await openAndMigrateDatabase(
+      crowDirectory,
+      logger,
+      defaultRuntime(),
+    )
     await first.schema.createTable('notes', (table) => {
       table.text('content')
     })
     await first('notes').insert({ content: 'persisted' })
 
-    const second = await openAndMigrateDatabase(crowDirectory, logger)
+    const second = await openAndMigrateDatabase(
+      crowDirectory,
+      logger,
+      defaultRuntime(),
+    )
     const rows = await second('notes').select('content')
 
     expect(rows).toEqual([{ content: 'persisted' }])
@@ -58,7 +75,11 @@ describe('openAndMigrateDatabase', () => {
   it('when cleaned, drops all tables', async () => {
     const crowDirectory = join(fixturesDirectory, 'open-database', '.crow')
     const logger = pino({ enabled: false })
-    const database = await openAndMigrateDatabase(crowDirectory, logger)
+    const database = await openAndMigrateDatabase(
+      crowDirectory,
+      logger,
+      defaultRuntime(),
+    )
     await database.schema.createTable('notes', (table) => {
       table.text('content')
     })

@@ -75,7 +75,7 @@ export class MoveFile extends OperationWithResult<TaskArguments, MoveResult> {
 
     try {
       const { from, to } = this.operationArguments
-      await Deno.rename(from, to)
+      await this.applicationData.runtime.rename(from, to)
     } catch (error) {
       this.fail((error as Error).message)
     }

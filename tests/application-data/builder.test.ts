@@ -4,6 +4,7 @@ import { join } from '@std/path'
 import { exists } from '@std/fs'
 import { spy, stub } from '@std/testing/mock'
 import { buildApplicationData } from '../../src/application-data/builder.ts'
+import { Runtime } from '../../src/application-data/runtime.ts'
 import { mockDeno } from '../support/mock-deno-command.ts'
 import { clearDirectory, fixturesDirectory } from '../support/fixtures.ts'
 
@@ -12,10 +13,10 @@ describe('buildApplicationData', () => {
     const path = join(fixturesDirectory, 'config.json')
     const builder = buildApplicationData({
       path,
-      deno: mockDeno({
+      runtime: new Runtime(mockDeno({
         args: ['--config=./missing-config.json'],
         stdout: '/some/repo\n',
-      }),
+      })),
     })
 
     await builder.run()
@@ -34,7 +35,9 @@ describe('buildApplicationData', () => {
   it('when no path is provided, uses the command-line path', async () => {
     const path = join(fixturesDirectory, 'config.json')
     const builder = buildApplicationData({
-      deno: mockDeno({ args: [`--config=${path}`], stdout: '/some/repo\n' }),
+      runtime: new Runtime(
+        mockDeno({ args: [`--config=${path}`], stdout: '/some/repo\n' }),
+      ),
     })
 
     await builder.run()
@@ -55,7 +58,7 @@ describe('buildApplicationData', () => {
     await clearDirectory(crowGlobalDirectory)
     const builder = buildApplicationData({
       path: join(fixturesDirectory, 'crow-global-config.json'),
-      deno: mockDeno({ stdout: '/some/repo\n' }),
+      runtime: new Runtime(mockDeno({ stdout: '/some/repo\n' })),
     })
 
     await builder.run()
@@ -73,7 +76,7 @@ describe('buildApplicationData', () => {
   it('when the config sets an environment file, its values are available', async () => {
     const builder = buildApplicationData({
       path: join(fixturesDirectory, 'env-file-builder-config.json'),
-      deno: mockDeno({ stdout: '/some/repo\n' }),
+      runtime: new Runtime(mockDeno({ stdout: '/some/repo\n' })),
     })
 
     await builder.run()
@@ -91,7 +94,7 @@ describe('buildApplicationData', () => {
     using _error = stub(console, 'error', errorSpy)
     const builder = buildApplicationData({
       path: join(fixturesDirectory, 'unwritable-global-config.json'),
-      deno: mockDeno({ stdout: '/some/repo\n' }),
+      runtime: new Runtime(mockDeno({ stdout: '/some/repo\n' })),
     })
 
     await builder.run()
@@ -112,7 +115,7 @@ describe('buildApplicationData', () => {
 
   it('when no config path resolves, continues with the default config', async () => {
     const builder = buildApplicationData({
-      deno: mockDeno({ stdout: '/some/repo\n' }),
+      runtime: new Runtime(mockDeno({ stdout: '/some/repo\n' })),
     })
 
     await builder.run()
@@ -128,7 +131,7 @@ describe('buildApplicationData', () => {
     const errorSpy = spy()
     using _error = stub(console, 'error', errorSpy)
     const builder = buildApplicationData({
-      deno: mockDeno({ stdout: '/some/repo\n' }),
+      runtime: new Runtime(mockDeno({ stdout: '/some/repo\n' })),
     })
 
     await builder.run()
@@ -144,7 +147,7 @@ describe('buildApplicationData', () => {
     using _error = stub(console, 'error', errorSpy)
     const builder = buildApplicationData({
       path: join(fixturesDirectory, 'malformed-config.txt'),
-      deno: mockDeno({ stdout: '/some/repo\n' }),
+      runtime: new Runtime(mockDeno({ stdout: '/some/repo\n' })),
     })
 
     await builder.run()
@@ -162,11 +165,11 @@ describe('buildApplicationData', () => {
     using _error = stub(console, 'error', errorSpy)
     const builder = buildApplicationData({
       path: join(fixturesDirectory, 'config.json'),
-      deno: mockDeno({
+      runtime: new Runtime(mockDeno({
         stdout: '',
         success: false,
         stderr: 'fatal: not a git repository',
-      }),
+      })),
     })
 
     await builder.run()

@@ -1,6 +1,6 @@
 import { signal } from '@preact/signals-core'
 import { emptyBuffer } from '../../../input-buffer.ts'
-import type { InstallStep } from '../../types.ts'
+import type { InstallSignals, InstallStep } from '../../types.ts'
 
 export const defaultCrowRepoDirectory = '.crow'
 export const defaultCrowGlobalDirectory = '~/.crow'
@@ -11,3 +11,11 @@ export const envFileInput = signal(emptyBuffer())
 
 export const installStep = signal<InstallStep>('repo')
 export const writeConfirmation = signal(true)
+
+export const installSignals: InstallSignals = {
+  repoDirectory: crowRepoDirectoryInput,
+  globalDirectory: crowGlobalDirectoryInput,
+  envFile: envFileInput,
+  step: installStep,
+  confirmation: writeConfirmation,
+}

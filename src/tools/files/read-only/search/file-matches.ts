@@ -1,4 +1,5 @@
 import { join } from '@std/path'
+import type { Runtime } from '../../../../application-data/runtime.ts'
 import type { SearchMatch } from '../../../types.ts'
 
 type FileMatchesArguments = {
@@ -6,6 +7,7 @@ type FileMatchesArguments = {
   path: string
   pattern: RegExp
   context?: number
+  runtime: Runtime
 }
 
 export class FileMatches {
@@ -13,19 +15,21 @@ export class FileMatches {
   private path: string
   private pattern: RegExp
   private context: number
+  private runtime: Runtime
 
   constructor(
-    { directory, path, pattern, context = 0 }: FileMatchesArguments,
+    { directory, path, pattern, context = 0, runtime }: FileMatchesArguments,
   ) {
     this.directory = directory
     this.path = path
     this.pattern = pattern
     this.context = context
+    this.runtime = runtime
   }
 
   async all() {
     return this.lines(
-      await Deno.readTextFile(join(this.directory, this.path)),
+      await this.runtime.readTextFile(join(this.directory, this.path)),
     )
   }
 

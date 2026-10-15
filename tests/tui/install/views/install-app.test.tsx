@@ -1,5 +1,4 @@
 import { describe, it } from 'node:test'
-import { join } from '@std/path'
 import { expect } from '@std/expect'
 import { render } from 'ink-testing-library'
 import { render as inkRender } from 'ink'
@@ -17,7 +16,6 @@ import { mountInstallApp } from '../../../support/install-mount.tsx'
 import { settle } from '../../../support/settle.ts'
 import { mockTerminal } from '../../../support/mock-terminal.ts'
 import { stripAnsi } from '../../../support/strip-ansi.ts'
-import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
 
 describe('InstallApp', () => {
   it('when mounted, renders the header and the repo directory question', async () => {
@@ -395,29 +393,31 @@ describe('InstallApp', () => {
     unmount()
   })
 
-  it('when yes is confirmed, the config is saved and a written message shows', async () => {
-    const saved: unknown[] = []
+  it('when yes is confirmed, moves to the write step', async () => {
+    const step = signal<InstallStep>('repo')
+    const { terminal, instance } = mountInstallApp(24, { step })
+
+    await settle()
+    terminal.stdin.write('\r')
+    await settle()
+    terminal.stdin.write('\r')
+    await settle()
+    terminal.stdin.write('\r')
+    await settle()
+    terminal.stdin.write('\r')
+    await settle()
+
+    expect(step.peek()).toBe('write')
+    instance.unmount()
+  })
+
+  it('when the step is done, a written message shows', async () => {
     const { terminal, instance } = mountInstallApp(24, {
-      save: (config: unknown) => saved.push(config),
+      step: signal<InstallStep>('done'),
     })
 
     await settle()
-    terminal.stdin.write('\r')
-    await settle()
-    terminal.stdin.write('\r')
-    await settle()
-    terminal.stdin.write('\r')
-    await settle()
-    terminal.stdin.write('\r')
-    await settle()
 
-    expect(saved).toHaveLength(1)
-    const config = saved[0] as {
-      crowConfigPath: string
-      crowConfigJson: string
-    }
-    expect(config.crowConfigPath).toBe('.crow/config.json')
-    expect(config.crowConfigJson).toContain('"permissions"')
     expect(stripAnsi(terminal.lastFrame())).toContain(
       'Wrote config to .crow/config.json',
     )
@@ -425,41 +425,9 @@ describe('InstallApp', () => {
     await instance.waitUntilExit()
   })
 
-  it('when the save prop is omitted, yes writes the config file', async () => {
-    const crowRepoDirectory = join(fixturesDirectory, 'install-app', 'crow')
-    await clearDirectory(crowRepoDirectory)
-    const { terminal, instance } = mountInstallApp(8, {
-      repoDirectory: inputSignal(crowRepoDirectory),
-    })
-
-    await settle()
-    terminal.stdin.write('\r')
-    await settle()
-    terminal.stdin.write('\r')
-    await settle()
-    terminal.stdin.write('\r')
-    await settle()
-    terminal.stdin.write('\r')
-    await settle()
-
-    const written = JSON.parse(
-      Deno.readTextFileSync(join(crowRepoDirectory, 'config.json')),
-    )
-    expect(written.crowGlobalDirectory).toBe('~/.crow')
-    expect(written.envFile).toBe('~/.crow/.env')
-    expect(written.permissions.ignore).toEqual([])
-    expect(written.permissions.additionalRead).toEqual([])
-    expect(written.permissions.additionalWrite).toEqual([])
-    terminal.stdin.write('x')
-    await instance.waitUntilExit()
-    await clearDirectory(crowRepoDirectory)
-  })
-
-  it('when no is confirmed, the app exits without saving', async () => {
-    const saved: unknown[] = []
-    const { terminal, instance } = mountInstallApp(8, {
-      save: (config: unknown) => saved.push(config),
-    })
+  it('when no is confirmed, the app exits without writing', async () => {
+    const step = signal<InstallStep>('repo')
+    const { terminal, instance } = mountInstallApp(8, { step })
 
     await settle()
     terminal.stdin.write('\r')
@@ -473,14 +441,12 @@ describe('InstallApp', () => {
     terminal.stdin.write('\r')
     await instance.waitUntilExit()
 
-    expect(saved).toHaveLength(0)
+    expect(step.peek()).toBe('confirm')
   })
 
-  it('when escape is pressed on the confirm step, nothing is saved', async () => {
-    const saved: unknown[] = []
-    const { terminal, instance } = mountInstallApp(8, {
-      save: (config: unknown) => saved.push(config),
-    })
+  it('when escape is pressed on the confirm step, nothing is written', async () => {
+    const step = signal<InstallStep>('repo')
+    const { terminal, instance } = mountInstallApp(8, { step })
 
     await settle()
     terminal.stdin.write('\r')
@@ -492,7 +458,7 @@ describe('InstallApp', () => {
     terminal.stdin.write('\x1b')
     await instance.waitUntilExit()
 
-    expect(saved).toHaveLength(0)
+    expect(step.peek()).toBe('confirm')
   })
 
   it('when escape is pressed, the app exits', async () => {

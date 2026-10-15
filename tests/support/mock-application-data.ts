@@ -3,7 +3,7 @@ import type { Knex } from 'knex'
 import type OpenAI from 'openai'
 import { stub } from '@std/testing/mock'
 import { ApplicationData } from '../../src/application-data/application-data.ts'
-import { DenoRuntime } from '../../src/application-data/deno-runtime.ts'
+import { defaultRuntime } from '../../src/application-data/runtime.ts'
 import { CrowConfig } from '../../src/application-data/config.ts'
 import { defaultCrowConfig } from '../../src/application-data/load-config.ts'
 import { Io } from '../../src/application-data/io.ts'
@@ -38,10 +38,10 @@ export const mockApplicationData = (
 ): ApplicationData => {
   const data = new ApplicationData()
   const args = overrides.args || []
-  data.denoRuntime = new DenoRuntime(Deno)
+  data.runtime = defaultRuntime()
   data.io = new Io('')
   data.parsedArguments = parseArguments(args)
-  data.repositoryRoot = Deno.cwd()
+  data.repositoryRoot = data.runtime.cwd()
   data.config = overrides.config || new CrowConfig('.', defaultCrowConfig())
 
   const logger = overrides.logger || pino({ enabled: false })

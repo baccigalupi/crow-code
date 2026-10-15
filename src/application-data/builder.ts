@@ -1,6 +1,6 @@
 import type { AsyncOperationWithResult } from '../types.ts'
 import { ApplicationData } from './application-data.ts'
-import { DenoRuntime } from './deno-runtime.ts'
+import { defaultRuntime, type Runtime } from './runtime.ts'
 import { Io } from './io.ts'
 import { loadConfig } from './load-config.ts'
 import { gitRepositoryRoot } from './allowed-paths/repository-root.ts'
@@ -9,20 +9,22 @@ import { verifyDatabase } from './verify-database.ts'
 
 type ApplicationDataBuilderArguments = {
   path?: string
-  deno?: typeof Deno
+  runtime?: Runtime
 }
 
 export class ApplicationDataBuilder
   implements AsyncOperationWithResult<ApplicationData> {
   readonly configPath: string | undefined
-  private deno: typeof Deno
+  private runtime: Runtime
   private configLoaded = false
   private subOperations = new SubOperations()
   appData: Partial<ApplicationData>
 
-  constructor({ path, deno }: ApplicationDataBuilderArguments = {}) {
+  constructor(
+    { path, runtime = defaultRuntime() }: ApplicationDataBuilderArguments = {},
+  ) {
     this.configPath = path
-    this.deno = deno || Deno
+    this.runtime = runtime
     this.appData = new ApplicationData()
   }
 
@@ -47,26 +49,25 @@ export class ApplicationDataBuilder
   }
 
   private setRuntimeAndArgs() {
-    const deno = new DenoRuntime(this.deno)
-    this.appData.denoRuntime = deno
-    this.appData.parsedArguments = deno.parsedArguments()
+    this.appData.runtime = this.runtime
+    this.appData.parsedArguments = this.runtime.parsedArguments()
   }
 
   private async runConfigLoader() {
-    const configPath = this.configPath ||
-      this.appData.parsedArguments!.configPath()
-    const loader = loadConfig(configPath)
+    const loader = loadConfig({ path: this.loadPath(), runtime: this.runtime })
     const action = `load the config from '${loader.configPath}'`
     await this.subOperations.run(loader, action)
     this.configLoaded = loader.success()
     this.appData.config = loader.result()
   }
 
+  private loadPath() {
+    return this.configPath || this.appData.parsedArguments!.configPath()
+  }
+
   private async setRemainingCollaborators() {
-    const { denoRuntime, config } = this.appData
-    this.appData.denoRuntime = await denoRuntime!.withEnvironmentFile(
-      config!.envFile,
-    )
+    const { runtime, config } = this.appData
+    this.appData.runtime = await runtime!.withEnvironmentFile(config!.envFile)
     this.appData.io = new Io(this.appData.config!.crowRepoDirectory)
     await this.openDatabase()
     this.appData.repositoryRoot = await this.repositoryRoot()
@@ -83,9 +84,9 @@ export class ApplicationDataBuilder
 
   private async repositoryRoot() {
     const root = gitRepositoryRoot({
-      denoCommand: this.appData.denoRuntime!.denoCommand(),
+      denoCommand: this.appData.runtime!.denoCommand(),
       logger: this.appData.io!.logger(),
-      cwd: this.appData.denoRuntime!.cwd(),
+      cwd: this.appData.runtime!.cwd(),
     })
     await this.subOperations.run(root, 'find the repository root')
     return root.result()

@@ -7,7 +7,6 @@ import {
   installStep,
   writeConfirmation,
 } from '../interactions/state/config-buffer.ts'
-import { writeCrowConfig } from '../crow-config/write.ts'
 import { installAppViewModel } from './install-app-view-model.ts'
 import { useKeypress } from '../interactions/hooks/use-keypress.ts'
 import { ConfigPanel } from './steps/config-panel.tsx'
@@ -26,7 +25,6 @@ export const InstallApp = (
     envFile = envFileInput,
     step = installStep,
     confirmation = writeConfirmation,
-    save = writeCrowConfig,
   }: InstallAppProps,
 ) => {
   const { stdout } = useStdout()
@@ -42,7 +40,6 @@ export const InstallApp = (
     envFile,
     step,
     confirmation,
-    save,
   })
 
   return (

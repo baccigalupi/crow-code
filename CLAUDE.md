@@ -87,16 +87,17 @@ run/fail/report-reasons flow outside the `Operation` class hierarchy.
 
 `ApplicationDataBuilder` (`src/application-data/builder.ts`) assembles the
 `AppData` object (`src/application-data/app-data.ts`) that nearly everything
-else depends on: parses Deno args/env (`DenoRuntime`), loads config,
-opens+migrates the SQLite database (`verifyDatabase` /
-`openAndMigrateDatabase`), resolves the git repository root, and wires up `Io`
-(console, fetch, logger). Each step runs through `subOperations.run(...)` so a
-failure anywhere is recorded with a human-readable action string and reported
-via `consoleError()` without aborting the remaining setup steps. `AppData` uses
-two class decorators from `src/decorators.ts`:
+else depends on: parses args/env and owns filesystem access (`Runtime`,
+`src/application-data/runtime.ts`), loads config, opens+migrates the SQLite
+database (`verifyDatabase` / `openAndMigrateDatabase`), resolves the git
+repository root, and wires up `Io` (console, fetch, logger). Each step runs
+through `subOperations.run(...)` so a failure anywhere is recorded with a
+human-readable action string and reported via `consoleError()` without aborting
+the remaining setup steps. `AppData` uses two class decorators from
+`src/decorators.ts`:
 
 - `@delegate(members, attribute)` — forwards named methods to an underlying
-  collaborator (e.g. `AppData#args()` forwards to `denoRuntime.args()`;
+  collaborator (e.g. `AppData#args()` forwards to `runtime.args()`;
   `AppData#logger()` forwards to `io.logger()`).
 - `@memoize` — caches a zero-arg method's result per-instance (used for
   `database()`, `pathPermissions()`, `gitPathPermissions()`).

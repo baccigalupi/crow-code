@@ -2,6 +2,12 @@ import { z } from 'zod'
 import { dirname } from '@std/path'
 import type { AsyncOperationWithResult, CrowConfigData } from '../types.ts'
 import { CrowConfig } from './config.ts'
+import type { Runtime } from './runtime.ts'
+
+type LoadConfigArguments = {
+  path?: string
+  runtime: Runtime
+}
 
 export const defaultCrowConfig = (): CrowConfigData => ({
   crowGlobalDirectory: '~/.crow',
@@ -31,10 +37,12 @@ export class LoadConfig implements AsyncOperationWithResult<CrowConfig> {
   reason = ''
   private config = defaultCrowConfig()
   private succeeded = true
+  private runtime: Runtime
 
-  constructor(configPath: string) {
+  constructor(configPath: string, runtime: Runtime) {
     this.configPath = configPath
     this.crowRepoDirectory = dirname(configPath)
+    this.runtime = runtime
   }
 
   success() {
@@ -52,7 +60,9 @@ export class LoadConfig implements AsyncOperationWithResult<CrowConfig> {
 
   private async load() {
     try {
-      this.setConfig(JSON.parse(await Deno.readTextFile(this.configPath)))
+      this.setConfig(
+        JSON.parse(await this.runtime.readTextFile(this.configPath)),
+      )
     } catch (error) {
       this.handleError(error)
     }
@@ -65,7 +75,7 @@ export class LoadConfig implements AsyncOperationWithResult<CrowConfig> {
   }
 
   private handleError(error: unknown) {
-    if (error instanceof Deno.errors.NotFound) this.fail('')
+    if (this.runtime.isNotFound(error)) this.fail('')
     else if (error instanceof SyntaxError) {
       this.fail('the file is not valid JSON')
     } else this.fail((error as Error).message)
@@ -78,6 +88,8 @@ export class LoadConfig implements AsyncOperationWithResult<CrowConfig> {
   }
 }
 
-export const loadConfig = (path: string = defaultConfigPath()) => {
-  return new LoadConfig(path)
+export const loadConfig = (
+  { path = defaultConfigPath(), runtime }: LoadConfigArguments,
+) => {
+  return new LoadConfig(path, runtime)
 }

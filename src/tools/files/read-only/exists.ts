@@ -19,7 +19,7 @@ export class PathExists
 
   protected override async perform() {
     try {
-      await Deno.lstat(this.operationArguments.path)
+      await this.applicationData.runtime.lstat(this.operationArguments.path)
       this.found = true
     } catch {
       this.found = false

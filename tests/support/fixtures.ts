@@ -1,7 +1,8 @@
 import { join } from '@std/path'
+import { defaultRuntime } from '../../src/application-data/runtime.ts'
 
 export const fixturesDirectory = join(
-  Deno.cwd(),
+  defaultRuntime().cwd(),
   'tests',
   'support',
   'fixtures',
@@ -14,7 +15,7 @@ export const loadFixture = async (subpath: string) => {
 
 export const loadTextFixture = async (subpath: string) => {
   const path = join(fixturesDirectory, subpath)
-  return await Deno.readTextFile(path)
+  return await defaultRuntime().readTextFile(path)
 }
 
 export const loadNousFixture = async () =>
@@ -35,6 +36,7 @@ export const searchFixtureNodeModules = () =>
 
 export const createSearchFixtureNodeModules = async () => {
   const path = searchFixtureNodeModules()
-  await Deno.mkdir(path, { recursive: true })
-  await Deno.writeTextFile(join(path, 'skipped.txt'), 'two')
+  const runtime = defaultRuntime()
+  await runtime.mkdir(path)
+  await runtime.writeTextFile(join(path, 'skipped.txt'), 'two')
 }

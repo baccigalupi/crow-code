@@ -63,18 +63,14 @@ describe('useKeypress', () => {
     unmount()
   })
 
-  it('when confirmed, saves the config and finishes', async () => {
-    let saved = ''
-    const signals = keypressSignals('confirm', (config) => {
-      saved = config.crowConfigPath
-    })
+  it('when confirmed, moves to the write step', async () => {
+    const signals = keypressSignals('confirm')
     const { stdin, unmount } = render(<KeypressProbe signals={signals} />)
 
     stdin.write('\r')
     await settle()
 
-    expect(saved).toBe('.crow/config.json')
-    expect(signals.step.peek()).toBe('done')
+    expect(signals.step.peek()).toBe('write')
     unmount()
   })
 })

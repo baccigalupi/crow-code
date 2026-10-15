@@ -2,7 +2,7 @@ import type { Knex } from 'knex'
 import { OpenAI } from 'openai'
 import type { OpenAiClientOptions } from '../model-requests/types.ts'
 import type { CrowConfig } from './config.ts'
-import { DenoRuntime } from './deno-runtime.ts'
+import type { Runtime } from './runtime.ts'
 import type { Environment } from './env-vars.ts'
 import { Io } from './io.ts'
 import type { ParsedArguments } from './arguments.ts'
@@ -11,23 +11,15 @@ import { AllowedPaths } from './allowed-paths.ts'
 import type { PathPermissions } from './allowed-paths/path-permissions.ts'
 import { expandHome } from './allowed-paths/expand-home.ts'
 import { openAndMigrateDatabase } from '../database/open-and-migrate-database.ts'
-import type {
-  ConsoleError,
-  ConsoleLog,
-  DenoCommand,
-  Logger,
-  RealPath,
-} from '../types.ts'
+import type { ConsoleError, ConsoleLog, DenoCommand, Logger } from '../types.ts'
 
 @delegate(
   {
     args: 'args',
-    cwd: 'cwd',
     denoCommand: 'denoCommand',
     envars: 'envars',
-    getRealPath: 'getRealPath',
   },
-  'denoRuntime',
+  'runtime',
 )
 @delegate(
   {
@@ -49,10 +41,10 @@ import type {
 export class ApplicationData {
   allowedPaths = new AllowedPaths(this)
   config!: CrowConfig
-  denoRuntime!: DenoRuntime
   io!: Io
   parsedArguments!: ParsedArguments
   repositoryRoot!: string
+  runtime!: Runtime
 
   async close() {
     await (await this.database()).destroy()
@@ -83,7 +75,11 @@ export class ApplicationData {
 
   @memoize
   database() {
-    return openAndMigrateDatabase(this.crowGlobalDirectory(), this.logger())
+    return openAndMigrateDatabase(
+      this.crowGlobalDirectory(),
+      this.logger(),
+      this.runtime,
+    )
   }
 }
 
@@ -91,11 +87,9 @@ export interface ApplicationData {
   args(): string[]
   consoleError(): ConsoleError
   consoleLog(): ConsoleLog
-  cwd(): string
   denoCommand(): DenoCommand
   envars(): Environment
   fetch(): typeof fetch
-  getRealPath(): RealPath
   gitPathPermissions(): PathPermissions
   logger(): Logger
   readPathPermissions(): PathPermissions

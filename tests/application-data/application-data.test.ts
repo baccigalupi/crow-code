@@ -4,7 +4,7 @@ import { stub } from '@std/testing/mock'
 import { OpenAI } from 'openai'
 import { ApplicationData } from '../../src/application-data/application-data.ts'
 import { CrowConfig } from '../../src/application-data/config.ts'
-import { DenoRuntime } from '../../src/application-data/deno-runtime.ts'
+import { Runtime } from '../../src/application-data/runtime.ts'
 import { Io } from '../../src/application-data/io.ts'
 import { join } from '@std/path/join'
 import { mockEnvironment } from '../support/mock-environment.ts'
@@ -32,9 +32,9 @@ describe('ApplicationData', () => {
     expect(appData.consoleLog()).toEqual(console.log)
   })
 
-  it('delegates denoRuntime to the attribute', () => {
+  it('delegates runtime to the attribute', () => {
     const appData = new ApplicationData()
-    appData.denoRuntime = new DenoRuntime(Deno)
+    appData.runtime = new Runtime(Deno)
 
     const denoCommand = appData.denoCommand()
 
@@ -43,7 +43,7 @@ describe('ApplicationData', () => {
 
   it('delegates write path permissions to allowedPaths', () => {
     const appData = new ApplicationData()
-    appData.denoRuntime = new DenoRuntime(Deno)
+    appData.runtime = new Runtime(Deno)
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory: join(fixturesDirectory, 'database'),
       envFile: join(fixturesDirectory, 'database', '.env'),
@@ -57,7 +57,7 @@ describe('ApplicationData', () => {
 
   it('delegates read path permissions to allowedPaths', () => {
     const appData = new ApplicationData()
-    appData.denoRuntime = new DenoRuntime(Deno)
+    appData.runtime = new Runtime(Deno)
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory: join(fixturesDirectory, 'database'),
       envFile: join(fixturesDirectory, 'database', '.env'),
@@ -71,7 +71,7 @@ describe('ApplicationData', () => {
 
   it('delegates git path permissions to allowedPaths', () => {
     const appData = new ApplicationData()
-    appData.denoRuntime = new DenoRuntime(Deno)
+    appData.runtime = new Runtime(Deno)
     appData.repositoryRoot = fixturesDirectory
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory: join(fixturesDirectory, 'database'),
@@ -87,7 +87,7 @@ describe('ApplicationData', () => {
   it('opens the database in the crow global directory', async () => {
     const crowGlobalDirectory = join(fixturesDirectory, 'database')
     const appData = new ApplicationData()
-    appData.denoRuntime = new DenoRuntime(Deno)
+    appData.runtime = new Runtime(Deno)
     appData.io = new Io(join(fixturesDirectory, 'logger'))
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory,
@@ -106,7 +106,7 @@ describe('ApplicationData', () => {
   it('when the global directory starts with ~, opens the database under HOME', async () => {
     const home = join(fixturesDirectory, 'database')
     const appData = new ApplicationData()
-    appData.denoRuntime = new DenoRuntime(Deno)
+    appData.runtime = new Runtime(Deno)
     appData.io = new Io(join(fixturesDirectory, 'logger'))
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory: '~/.crow',
@@ -139,7 +139,7 @@ describe('ApplicationData', () => {
 
   it('when closed, destroys the database connection', async () => {
     const appData = new ApplicationData()
-    appData.denoRuntime = new DenoRuntime(Deno)
+    appData.runtime = new Runtime(Deno)
     appData.io = new Io(join(fixturesDirectory, 'logger'))
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory: join(fixturesDirectory, 'database'),

@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { delegate, memoize } from '../src/decorators.ts'
-import type { DenoCommand, RealPath } from '../src/types.ts'
+import type { DenoCommand } from '../src/types.ts'
 
 describe('decorators', () => {
   describe('delegate', () => {
@@ -32,7 +32,9 @@ describe('decorators', () => {
       class DenoHost {
         private deno = new FakeDeno()
       }
-      const host = new DenoHost() as unknown as { getRealPath(): RealPath }
+      const host = new DenoHost() as unknown as {
+        getRealPath(): typeof Deno.realPath
+      }
 
       const result = host.getRealPath()
 
@@ -55,7 +57,7 @@ describe('decorators', () => {
       }
       const host = new DenoHost() as unknown as {
         denoCommand(): DenoCommand
-        getRealPath(): RealPath
+        getRealPath(): typeof Deno.realPath
       }
 
       const results = [host.denoCommand(), host.getRealPath()]

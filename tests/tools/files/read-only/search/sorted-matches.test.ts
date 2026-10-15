@@ -3,6 +3,11 @@ import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { sortedMatches } from '../../../../../src/tools/files/read-only/search/sorted-matches.ts'
 import {
+  defaultRuntime,
+  Runtime,
+} from '../../../../../src/application-data/runtime.ts'
+import { mockEnvironment } from '../../../../support/mock-environment.ts'
+import {
   clearDirectory,
   createSearchFixtureNodeModules,
   fixturesDirectory,
@@ -20,7 +25,7 @@ describe('sorted-matches', () => {
       path,
       pattern: 'two|one',
       ignoredDirectories: [join(path, 'node_modules')],
-      cwd: Deno.cwd(),
+      runtime: defaultRuntime(),
     }).all()
 
     expect(matches).toEqual([
@@ -37,7 +42,7 @@ describe('sorted-matches', () => {
       path,
       pattern: 'BETA',
       flags: 'i',
-      cwd: Deno.cwd(),
+      runtime: defaultRuntime(),
     }).all()
 
     expect(matches).toEqual([{
@@ -53,7 +58,7 @@ describe('sorted-matches', () => {
     const matches = await sortedMatches({
       path,
       pattern: 'two',
-      cwd: Deno.cwd(),
+      runtime: defaultRuntime(),
     })
       .all()
 
@@ -72,7 +77,7 @@ describe('sorted-matches', () => {
       pattern: 'two|one',
       filePattern: '*.txt',
       ignoredDirectories: [join(path, 'node_modules')],
-      cwd: Deno.cwd(),
+      runtime: defaultRuntime(),
     }).all()
 
     expect(matches).toEqual([
@@ -81,11 +86,32 @@ describe('sorted-matches', () => {
     ])
   })
 
+  it('when the path is relative, resolves it against the runtime working directory', async () => {
+    const runtime = new Runtime(
+      Deno,
+      mockEnvironment({}),
+      join(fixturesDirectory, 'tools'),
+    )
+
+    const matches = await sortedMatches({
+      path: 'search',
+      pattern: 'BETA',
+      flags: 'i',
+      runtime,
+    }).all()
+
+    expect(matches).toEqual([{
+      path: 'nested/beta.md',
+      line: 1,
+      text: '# Beta',
+    }])
+  })
+
   it('when the pattern is an invalid regex, throws', () => {
     const path = join(fixturesDirectory, 'tools', 'search')
 
     const construct = () =>
-      sortedMatches({ path, pattern: '(', cwd: Deno.cwd() })
+      sortedMatches({ path, pattern: '(', runtime: defaultRuntime() })
 
     expect(construct).toThrow('Invalid regular expression')
   })

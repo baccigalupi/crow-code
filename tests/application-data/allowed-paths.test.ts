@@ -4,6 +4,7 @@ import { join } from '@std/path/join'
 import { resolve } from '@std/path/resolve'
 import { AllowedPaths } from '../../src/application-data/allowed-paths.ts'
 import { CrowConfig } from '../../src/application-data/config.ts'
+import { Runtime } from '../../src/application-data/runtime.ts'
 import { mockEnvironment } from '../support/mock-environment.ts'
 import { mockApplicationData } from '../support/mock-application-data.ts'
 import { fixturesDirectory } from '../support/fixtures.ts'
@@ -87,6 +88,38 @@ describe('AllowedPaths', () => {
     expect(await permissions.allows(join(home, 'docs', 'a.txt'))).toBe(true)
     expect(await permissions.allows('src/app.ts')).toBe(true)
     expect(await permissions.allows(join('..', 'outside.txt'))).toBe(false)
+  })
+
+  it('when the runtime has its own working directory, bounds write permissions to it', async () => {
+    const appData = mockApplicationData()
+    appData.runtime = new Runtime(
+      Deno,
+      mockEnvironment({}),
+      join(fixturesDirectory, 'tools'),
+    )
+
+    const permissions = new AllowedPaths(appData).write()
+
+    expect(await permissions.allows(join(fixturesDirectory, 'tools', 'git')))
+      .toBe(true)
+    expect(await permissions.allows(join(fixturesDirectory, 'config.json')))
+      .toBe(false)
+  })
+
+  it('when the runtime has its own working directory, bounds read permissions to it', async () => {
+    const appData = mockApplicationData()
+    appData.runtime = new Runtime(
+      Deno,
+      mockEnvironment({}),
+      join(fixturesDirectory, 'tools'),
+    )
+
+    const permissions = new AllowedPaths(appData).read()
+
+    expect(await permissions.allows(join(fixturesDirectory, 'tools', 'git')))
+      .toBe(true)
+    expect(await permissions.allows(join(fixturesDirectory, 'config.json')))
+      .toBe(false)
   })
 
   it('bounds git permissions to the repository root', async () => {

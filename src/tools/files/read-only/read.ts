@@ -20,7 +20,9 @@ export class ReadFile
   }
 
   protected override async perform() {
-    const contents = await Deno.readTextFile(this.operationArguments.path)
+    const contents = await this.applicationData.runtime.readTextFile(
+      this.operationArguments.path,
+    )
     this.text = this.select(contents)
   }
 

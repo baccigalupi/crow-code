@@ -15,7 +15,7 @@ describe('gitRepositoryRoot', () => {
     const root = gitRepositoryRoot({
       denoCommand: applicationData.denoCommand(),
       logger: applicationData.logger(),
-      cwd: applicationData.cwd(),
+      cwd: '/working/directory',
     })
     await root.run()
 
@@ -34,11 +34,11 @@ describe('gitRepositoryRoot', () => {
     const root = gitRepositoryRoot({
       denoCommand: applicationData.denoCommand(),
       logger: applicationData.logger(),
-      cwd: applicationData.cwd(),
+      cwd: '/working/directory',
     })
     await root.run()
 
-    expect(root.result()).toBe(Deno.cwd())
+    expect(root.result()).toBe('/working/directory')
   })
 
   it('when git fails, falls back to the working directory', async () => {
@@ -53,13 +53,13 @@ describe('gitRepositoryRoot', () => {
     const root = gitRepositoryRoot({
       denoCommand: applicationData.denoCommand(),
       logger: applicationData.logger(),
-      cwd: applicationData.cwd(),
+      cwd: '/working/directory',
     })
     await root.run()
 
     expect(root.success()).toBe(false)
     expect(root.reason).toBe('fatal: not a git repository')
-    expect(root.result()).toBe(Deno.cwd())
+    expect(root.result()).toBe('/working/directory')
   })
 
   it('when git cannot be executed, falls back to the working directory', async () => {
@@ -72,10 +72,10 @@ describe('gitRepositoryRoot', () => {
     const root = gitRepositoryRoot({
       denoCommand: applicationData.denoCommand(),
       logger: applicationData.logger(),
-      cwd: applicationData.cwd(),
+      cwd: '/working/directory',
     })
     await root.run()
 
-    expect(root.result()).toBe(Deno.cwd())
+    expect(root.result()).toBe('/working/directory')
   })
 })

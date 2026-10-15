@@ -34,7 +34,10 @@ export class FindFiles
   }
 
   private searchPath() {
-    return resolve(this.applicationData.cwd(), this.operationArguments.path)
+    return resolve(
+      this.applicationData.runtime.cwd(),
+      this.operationArguments.path,
+    )
   }
 }
 
