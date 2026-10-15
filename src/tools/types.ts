@@ -60,6 +60,11 @@ export type MoveResult = {
   to: string
 }
 
+export type DeleteResult = {
+  path: string
+  deleted: boolean
+}
+
 export type PathExistsResult = {
   path: string
   exists: boolean
