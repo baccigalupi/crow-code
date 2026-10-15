@@ -33,7 +33,7 @@ export type InstallAppProps = {
   readonly confirmation?: Signal<boolean>
 }
 
-export type InstallSignals = {
+export type InstallState = {
   readonly repoDirectory: Signal<InputBuffer>
   readonly globalDirectory: Signal<InputBuffer>
   readonly envFile: Signal<InputBuffer>
@@ -42,12 +42,12 @@ export type InstallSignals = {
 }
 
 export type WriteCrowConfigArguments = {
-  readonly signals: InstallSignals
+  readonly signals: InstallState
   readonly runtime: Runtime
 }
 
 export type KeypressArguments = {
-  readonly signals: InstallSignals
+  readonly signals: InstallState
   readonly exit: ExitApp
   readonly input: string
   readonly key: KeyFlags

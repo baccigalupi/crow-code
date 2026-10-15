@@ -1,4 +1,4 @@
-import { installRunner } from '../../tui/install/runner.ts'
+import { runInstalltTui } from '../../tui/install/runner.ts'
 import { Command } from './command.ts'
 
 export class Install extends Command {
@@ -12,6 +12,6 @@ export class Install extends Command {
   }
 
   runner() {
-    return installRunner(this.applicationData.runtime)
+    return runInstalltTui(this.applicationData.runtime)
   }
 }

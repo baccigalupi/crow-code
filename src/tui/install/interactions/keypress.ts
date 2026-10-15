@@ -1,10 +1,10 @@
 import type { Signal } from '@preact/signals-core'
 import type { ExitApp, InputBuffer, KeyFlags } from '../../types.ts'
-import type { InstallSignals, KeypressArguments } from '../types.ts'
+import type { InstallState, KeypressArguments } from '../types.ts'
 import { textInput } from './text-input.ts'
 
 export class Keypress {
-  private signals: InstallSignals
+  private signals: InstallState
   private exit: ExitApp
   private input: string
   private key: KeyFlags

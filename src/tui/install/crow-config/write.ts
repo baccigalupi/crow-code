@@ -1,6 +1,6 @@
 import { effect } from '@preact/signals-core'
 import type { Runtime } from '../../../application-data/runtime.ts'
-import type { InstallSignals, WriteCrowConfigArguments } from '../types.ts'
+import type { InstallState, WriteCrowConfigArguments } from '../types.ts'
 import { buildCrowConfig } from './build.ts'
 
 // WRITE side: watches the install step and, once the user has confirmed
@@ -9,7 +9,7 @@ import { buildCrowConfig } from './build.ts'
 // hooks; nothing in the TUI sees the runtime. Deriving the config lives in
 // build.ts.
 export class CrowConfigWrite {
-  private signals: InstallSignals
+  private signals: InstallState
   private runtime: Runtime
 
   constructor({ signals, runtime }: WriteCrowConfigArguments) {
