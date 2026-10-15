@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { expandHome } from '../../../src/application-data/path-permissions/expand-home.ts'
+import { expandHome } from '../../../src/application-data/allowed-paths/expand-home.ts'
 import { mockEnvironment } from '../../support/mock-environment.ts'
 
 describe('expandHome', () => {

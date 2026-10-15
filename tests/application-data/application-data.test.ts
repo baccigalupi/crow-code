@@ -7,9 +7,8 @@ import { CrowConfig } from '../../src/application-data/config.ts'
 import { DenoRuntime } from '../../src/application-data/deno-runtime.ts'
 import { Io } from '../../src/application-data/io.ts'
 import { join } from '@std/path/join'
-import { resolve } from '@std/path/resolve'
+import { pathPermissions } from '../../src/application-data/allowed-paths/path-permissions.ts'
 import { mockEnvironment } from '../support/mock-environment.ts'
-import { mockApplicationData } from '../support/mock-application-data.ts'
 import { clearDirectory, fixturesDirectory } from '../support/fixtures.ts'
 import { createTestDatabase } from '../support/test-database.ts'
 import { mockFetchSuccess } from '../support/mock-fetch.ts'
@@ -43,48 +42,46 @@ describe('ApplicationData', () => {
     expect(denoCommand).toBe(Deno.Command)
   })
 
-  it('bounds path permissions to the working directory', async () => {
+  it('delegates write path permissions to allowedPaths', () => {
     const appData = new ApplicationData()
-    appData.denoRuntime = new DenoRuntime(Deno)
+    const permissions = pathPermissions({
+      getRealPath: Deno.realPath,
+      envars: mockEnvironment({}),
+      allowedDirectories: [],
+    })
+    using _write = stub(appData.allowedPaths, 'write', () => permissions)
 
-    const permissions = appData.writePathPermissions()
+    const delegated = appData.writePathPermissions()
 
-    expect(await permissions.allows('src/app.ts')).toBe(true)
-    expect(await permissions.allows(join('..', 'outside.txt'))).toBe(false)
+    expect(delegated).toBe(permissions)
   })
 
-  it('bounds read path permissions to the working directory and configured read directories', async () => {
-    const home = resolve(Deno.cwd(), '..', 'outside-home')
-    const appData = mockApplicationData({
-      envars: mockEnvironment({ HOME: home }),
+  it('delegates read path permissions to allowedPaths', () => {
+    const appData = new ApplicationData()
+    const permissions = pathPermissions({
+      getRealPath: Deno.realPath,
+      envars: mockEnvironment({}),
+      allowedDirectories: [],
     })
-    appData.config = new CrowConfig('.', {
-      crowGlobalDirectory: '~/.crow',
-      envFile: '~/.crow/.env',
-      permissions: {
-        ignore: [],
-        additionalRead: ['~/docs'],
-        additionalWrite: [],
-      },
-    })
+    using _read = stub(appData.allowedPaths, 'read', () => permissions)
 
-    const permissions = appData.readPathPermissions()
+    const delegated = appData.readPathPermissions()
 
-    expect(await permissions.allows(join(home, 'docs', 'a.txt'))).toBe(true)
-    expect(await permissions.allows('src/app.ts')).toBe(true)
-    expect(await permissions.allows(join('..', 'outside.txt'))).toBe(false)
+    expect(delegated).toBe(permissions)
   })
 
-  it('bounds git path permissions to the repository root', async () => {
+  it('delegates git path permissions to allowedPaths', () => {
     const appData = new ApplicationData()
-    appData.denoRuntime = new DenoRuntime(Deno)
-    appData.repositoryRoot = fixturesDirectory
+    const permissions = pathPermissions({
+      getRealPath: Deno.realPath,
+      envars: mockEnvironment({}),
+      allowedDirectories: [],
+    })
+    using _git = stub(appData.allowedPaths, 'git', () => permissions)
 
-    const permissions = appData.gitPathPermissions()
+    const delegated = appData.gitPathPermissions()
 
-    expect(await permissions.allows(join(fixturesDirectory, 'config.json')))
-      .toBe(true)
-    expect(await permissions.allows(join('..', 'outside.txt'))).toBe(false)
+    expect(delegated).toBe(permissions)
   })
 
   it('opens the database in the crow global directory', async () => {

@@ -5,10 +5,10 @@ import { returnsNext, spy, stub } from '@std/testing/mock'
 import {
   PathPermissions,
   pathPermissions,
-} from '../../src/application-data/path-permissions.ts'
-import { mockEnvironment } from '../support/mock-environment.ts'
-import { mockApplicationData } from '../support/mock-application-data.ts'
-import { fixturesDirectory } from '../support/fixtures.ts'
+} from '../../../src/application-data/allowed-paths/path-permissions.ts'
+import { mockEnvironment } from '../../support/mock-environment.ts'
+import { mockApplicationData } from '../../support/mock-application-data.ts'
+import { fixturesDirectory } from '../../support/fixtures.ts'
 
 describe('path-permissions', () => {
   it('when the path is inside an allowed directory, allows it', async () => {

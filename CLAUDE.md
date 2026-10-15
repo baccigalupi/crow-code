@@ -150,8 +150,8 @@ own `get-*-models.ts` fetcher + `parser.ts`, merged by `populate-models.ts` /
 `src/tools/*` implements the agent's file and git tools (read-only: `read`,
 `list`, `search`, `find`, git `log`/`blame`/`diff`/`show`; mutating: file
 `edit`/`mkdir`, git `add`/`commit`). All path-taking tools are checked against
-`AppData#pathPermissions()`/`gitPathPermissions()`
-(`src/application-data/path-permissions.ts`) before touching the filesystem —
+`ApplicationData#writePathPermissions()`/`readPathPermissions()`/`gitPathPermissions()`
+(`src/application-data/allowed-paths.ts`) before touching the filesystem —
 permissions are resolved against allowed directories (default: cwd) and cached
 per-path.
 

@@ -1,8 +1,8 @@
 import { resolve } from '@std/path'
-import type { RealPath } from '../types.ts'
-import type { Environment } from './env-vars.ts'
-import { requestedPath } from './path-permissions/requested-path.ts'
-import { expandHome } from './path-permissions/expand-home.ts'
+import type { RealPath } from '../../types.ts'
+import type { Environment } from '../env-vars.ts'
+import { requestedPath } from './requested-path.ts'
+import { expandHome } from './expand-home.ts'
 
 type PathPermissionsArguments = {
   getRealPath: RealPath

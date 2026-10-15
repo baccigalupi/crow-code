@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { spy, stub } from '@std/testing/mock'
-import { pathPermissions } from '../../../../src/application-data/path-permissions.ts'
+import { pathPermissions } from '../../../../src/application-data/allowed-paths/path-permissions.ts'
 import { moveFile } from '../../../../src/tools/files/mutations/move.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'

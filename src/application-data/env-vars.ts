@@ -1,6 +1,6 @@
 import { parse } from '@std/dotenv'
 import type { EnvironmentValues } from '../model-discovery/types.ts'
-import { expandHome } from './path-permissions/expand-home.ts'
+import { expandHome } from './allowed-paths/expand-home.ts'
 
 export class Environment {
   private deno: typeof Deno

@@ -6,7 +6,7 @@ import {
   SearchFiles,
   searchFiles,
 } from '../../../../src/tools/files/read-only/search.ts'
-import { pathPermissions } from '../../../../src/application-data/path-permissions.ts'
+import { pathPermissions } from '../../../../src/application-data/allowed-paths/path-permissions.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import {
   clearDirectory,

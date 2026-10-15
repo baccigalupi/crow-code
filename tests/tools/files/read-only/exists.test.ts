@@ -3,7 +3,7 @@ import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { spy, stub } from '@std/testing/mock'
 import { pathExists } from '../../../../src/tools/files/read-only/exists.ts'
-import { pathPermissions } from '../../../../src/application-data/path-permissions.ts'
+import { pathPermissions } from '../../../../src/application-data/allowed-paths/path-permissions.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { fixturesDirectory } from '../../../support/fixtures.ts'
 

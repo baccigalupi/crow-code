@@ -7,8 +7,9 @@ import type { Environment } from './env-vars.ts'
 import { Io } from './io.ts'
 import type { ParsedArguments } from './arguments.ts'
 import { delegate, memoize } from '../decorators.ts'
-import { pathPermissions } from './path-permissions.ts'
-import { expandHome } from './path-permissions/expand-home.ts'
+import { AllowedPaths } from './allowed-paths.ts'
+import type { PathPermissions } from './allowed-paths/path-permissions.ts'
+import { expandHome } from './allowed-paths/expand-home.ts'
 import { openAndMigrateDatabase } from '../database/open-and-migrate-database.ts'
 import type {
   ConsoleError,
@@ -36,7 +37,16 @@ import type {
   },
   'io',
 )
+@delegate(
+  {
+    git: 'gitPathPermissions',
+    read: 'readPathPermissions',
+    write: 'writePathPermissions',
+  },
+  'allowedPaths',
+)
 export class ApplicationData {
+  allowedPaths = new AllowedPaths(this)
   config!: CrowConfig
   denoRuntime!: DenoRuntime
   io!: Io
@@ -74,33 +84,6 @@ export class ApplicationData {
   database() {
     return openAndMigrateDatabase(this.crowGlobalDirectory(), this.logger())
   }
-
-  @memoize
-  writePathPermissions() {
-    return pathPermissions({
-      getRealPath: this.getRealPath(),
-      envars: this.envars(),
-      allowedDirectories: [Deno.cwd()],
-    })
-  }
-
-  @memoize
-  readPathPermissions() {
-    return pathPermissions({
-      getRealPath: this.getRealPath(),
-      envars: this.envars(),
-      allowedDirectories: [Deno.cwd(), ...this.config.readableDirectories],
-    })
-  }
-
-  @memoize
-  gitPathPermissions() {
-    return pathPermissions({
-      getRealPath: this.getRealPath(),
-      envars: this.envars(),
-      allowedDirectories: [this.repositoryRoot],
-    })
-  }
 }
 
 export interface ApplicationData {
@@ -111,5 +94,8 @@ export interface ApplicationData {
   envars(): Environment
   fetch(): typeof fetch
   getRealPath(): RealPath
+  gitPathPermissions(): PathPermissions
   logger(): Logger
+  readPathPermissions(): PathPermissions
+  writePathPermissions(): PathPermissions
 }
