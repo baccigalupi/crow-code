@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { join, resolve } from '@std/path'
 import { spy, stub } from '@std/testing/mock'
 import { writeFile } from '../../../../src/tools/files/mutations/write.ts'
-import { pathPermissions } from '../../../../src/application-data/allowed-paths/path-permissions.ts'
+import { denyAllPermissions } from '../../../support/deny-permissions.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
 
@@ -54,12 +54,7 @@ describe('writeFile', () => {
     using _permissionsStub = stub(
       applicationData,
       'readPathPermissions',
-      () =>
-        pathPermissions({
-          getRealPath: applicationData.getRealPath(),
-          envars: applicationData.envars(),
-          allowedDirectories: [join(fixturesDirectory, 'tools')],
-        }),
+      denyAllPermissions,
     )
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
@@ -77,20 +72,8 @@ describe('writeFile', () => {
   })
 
   it('when the path is outside the allowed directories, fails without writing', async () => {
-    const directory = join(fixturesDirectory, 'write')
-    Deno.mkdirSync(directory, { recursive: true })
-    const path = join(directory, 'denied.txt')
+    const path = resolve(Deno.cwd(), '..', 'outside-write-denied.txt')
     const applicationData = mockApplicationData()
-    using _permissionsStub = stub(
-      applicationData,
-      'writePathPermissions',
-      () =>
-        pathPermissions({
-          getRealPath: applicationData.getRealPath(),
-          envars: applicationData.envars(),
-          allowedDirectories: [join(fixturesDirectory, 'tools')],
-        }),
-    )
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const file = writeFile({

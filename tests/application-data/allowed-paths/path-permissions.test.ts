@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { join, resolve } from '@std/path'
 import { returnsNext, spy, stub } from '@std/testing/mock'
 import {
   PathPermissions,
@@ -8,6 +8,7 @@ import {
 } from '../../../src/application-data/allowed-paths/path-permissions.ts'
 import { mockEnvironment } from '../../support/mock-environment.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
+import { configWithIgnore } from '../../support/mock-crow-config.ts'
 import { fixturesDirectory } from '../../support/fixtures.ts'
 
 describe('path-permissions', () => {
@@ -15,8 +16,7 @@ describe('path-permissions', () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-      envars: applicationData.envars(),
+      applicationData,
       allowedDirectories: [directory],
     })
 
@@ -29,13 +29,12 @@ describe('path-permissions', () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-      envars: applicationData.envars(),
+      applicationData,
       allowedDirectories: [directory],
     })
 
     const allowed = await permissions.allows(
-      join(fixturesDirectory, 'devin-config.json'),
+      resolve(Deno.cwd(), '..', 'outside.txt'),
     )
 
     expect(allowed).toBe(false)
@@ -52,8 +51,7 @@ describe('path-permissions', () => {
       () => mockDenoRealPath,
     )
     const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-      envars: applicationData.envars(),
+      applicationData,
       allowedDirectories: ['.'],
     })
 
@@ -66,8 +64,7 @@ describe('path-permissions', () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'missing-directory')
     const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-      envars: applicationData.envars(),
+      applicationData,
       allowedDirectories: [directory],
     })
 
@@ -77,12 +74,13 @@ describe('path-permissions', () => {
   })
 
   it('when an allowed directory starts with tilde, expands it from home', async () => {
-    const applicationData = mockApplicationData()
     const home = join(fixturesDirectory, 'tools')
-    const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-      allowedDirectories: ['~/git'],
+    const applicationData = mockApplicationData({
       envars: mockEnvironment({ HOME: home }),
+    })
+    const permissions = pathPermissions({
+      applicationData,
+      allowedDirectories: ['~/git'],
     })
 
     const allowed = await permissions.allows(join(home, 'git', 'git-diff.diff'))
@@ -94,8 +92,7 @@ describe('path-permissions', () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-      envars: applicationData.envars(),
+      applicationData,
       allowedDirectories: [join(fixturesDirectory, 'style-checks'), directory],
     })
 
@@ -120,8 +117,7 @@ describe('path-permissions', () => {
       () => mockDenoRealPath,
     )
     const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-      envars: applicationData.envars(),
+      applicationData,
       allowedDirectories: [directory],
     })
 
@@ -135,8 +131,7 @@ describe('path-permissions', () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-      envars: applicationData.envars(),
+      applicationData,
       allowedDirectories: [directory],
     })
 
@@ -152,14 +147,13 @@ describe('path-permissions', () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-      envars: applicationData.envars(),
+      applicationData,
       allowedDirectories: [directory],
     })
 
     const allowed = await permissions.allowsEvery([
       join(directory, 'git-diff.diff'),
-      join(fixturesDirectory, 'devin-config.json'),
+      resolve(Deno.cwd(), '..', 'outside.txt'),
     ])
 
     expect(allowed).toBe(false)
@@ -169,14 +163,13 @@ describe('path-permissions', () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-      envars: applicationData.envars(),
+      applicationData,
       allowedDirectories: [directory],
     })
 
     const filtered = await permissions.filterPaths([
       join(directory, 'git-diff.diff'),
-      join(fixturesDirectory, 'devin-config.json'),
+      resolve(Deno.cwd(), '..', 'outside.txt'),
       join(directory, 'git-diff-files.txt'),
     ])
 
@@ -190,13 +183,12 @@ describe('path-permissions', () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-      envars: applicationData.envars(),
+      applicationData,
       allowedDirectories: [directory],
     })
 
     const filtered = await permissions.filterPaths([
-      join(fixturesDirectory, 'devin-config.json'),
+      resolve(Deno.cwd(), '..', 'outside.txt'),
     ])
 
     expect(filtered).toEqual([])
@@ -206,26 +198,24 @@ describe('path-permissions', () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-      envars: applicationData.envars(),
+      applicationData,
       allowedDirectories: [directory],
     })
 
     const forbidden = await permissions.forbiddenPaths([
       join(directory, 'git-diff.diff'),
-      join(fixturesDirectory, 'devin-config.json'),
+      resolve(Deno.cwd(), '..', 'outside.txt'),
       join(directory, 'git-diff-files.txt'),
     ])
 
-    expect(forbidden).toEqual([join(fixturesDirectory, 'devin-config.json')])
+    expect(forbidden).toEqual([resolve(Deno.cwd(), '..', 'outside.txt')])
   })
 
   it('when every path is allowed, forbiddenPaths returns an empty array', async () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'tools', 'git')
     const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-      envars: applicationData.envars(),
+      applicationData,
       allowedDirectories: [directory],
     })
 
@@ -241,11 +231,121 @@ describe('path-permissions', () => {
     const directory = join(fixturesDirectory, 'tools', 'git')
 
     const permissions = pathPermissions({
-      getRealPath: applicationData.getRealPath(),
-      envars: applicationData.envars(),
+      applicationData,
       allowedDirectories: [directory],
     })
 
     expect(permissions).toBeInstanceOf(PathPermissions)
+  })
+
+  it('when the path is inside an ignored directory, refuses it', async () => {
+    const applicationData = mockApplicationData({
+      config: configWithIgnore(['vendor']),
+    })
+    const permissions = pathPermissions({
+      applicationData,
+      allowedDirectories: [Deno.cwd()],
+    })
+
+    const allowed = await permissions.allows('vendor/x.js')
+
+    expect(allowed).toBe(false)
+  })
+
+  it('when the path is an ignored file, refuses it', async () => {
+    const applicationData = mockApplicationData({
+      config: configWithIgnore(['src/secret.txt']),
+    })
+    const permissions = pathPermissions({
+      applicationData,
+      allowedDirectories: [Deno.cwd()],
+    })
+
+    const allowed = await permissions.allows('src/secret.txt')
+
+    expect(allowed).toBe(false)
+  })
+
+  it('when a path shares only the name of an ignored directory deeper down, allows it', async () => {
+    const applicationData = mockApplicationData({
+      config: configWithIgnore(['vendor']),
+    })
+    const permissions = pathPermissions({
+      applicationData,
+      allowedDirectories: [Deno.cwd()],
+    })
+
+    const allowed = await permissions.allows('src/vendor/x.js')
+
+    expect(allowed).toBe(true)
+  })
+
+  it('when an ignored path starts with tilde, expands it from home', async () => {
+    const home = join(fixturesDirectory, 'tools')
+    const applicationData = mockApplicationData({
+      envars: mockEnvironment({ HOME: home }),
+      config: configWithIgnore(['~/git']),
+    })
+    const permissions = pathPermissions({
+      applicationData,
+      allowedDirectories: [home],
+    })
+
+    const allowed = await permissions.allows(join(home, 'git', 'git-diff.diff'))
+
+    expect(allowed).toBe(false)
+  })
+
+  it('when an ignored path is nested in an allowed directory, refuses inside it and allows beside it', async () => {
+    const directory = join(fixturesDirectory, 'tools')
+    const applicationData = mockApplicationData({
+      config: configWithIgnore([join(directory, 'git')]),
+    })
+    const permissions = pathPermissions({
+      applicationData,
+      allowedDirectories: [directory],
+    })
+
+    const inside = await permissions.allows(join(directory, 'git', 'a'))
+    const beside = await permissions.allows(join(directory, 'other', 'a'))
+
+    expect(inside).toBe(false)
+    expect(beside).toBe(true)
+  })
+
+  it('when a symlink resolves into an ignored path, refuses it', async () => {
+    const directory = join(fixturesDirectory, 'tools')
+    const ignored = join(directory, 'git')
+    const applicationData = mockApplicationData({
+      config: configWithIgnore([ignored]),
+    })
+    const realPath = spy(returnsNext([Promise.resolve(join(ignored, 'a'))]))
+    using _realPath = stub(applicationData, 'getRealPath', () => realPath)
+    const permissions = pathPermissions({
+      applicationData,
+      allowedDirectories: [directory],
+    })
+
+    const allowed = await permissions.allows(join(directory, 'link'))
+
+    expect(allowed).toBe(false)
+  })
+
+  it('when asked for ignored paths, returns them resolved to absolute paths', () => {
+    const applicationData = mockApplicationData({
+      config: configWithIgnore(['/abs/dir', '/abs/../other']),
+    })
+    const permissions = pathPermissions({
+      applicationData,
+      allowedDirectories: [Deno.cwd()],
+    })
+
+    const ignored = permissions.ignoredPaths()
+
+    expect(ignored).toEqual([
+      '/abs/dir',
+      '/other',
+      join(Deno.cwd(), '.git'),
+    ])
   })
 })

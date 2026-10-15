@@ -7,10 +7,7 @@ export const defaultCrowConfig = (): CrowConfigData => ({
   crowGlobalDirectory: '~/.crow',
   envFile: '~/.crow/.env',
   permissions: {
-    ignore: [
-      'node_modules',
-      '.git',
-    ],
+    ignore: [],
     additionalRead: [],
     additionalWrite: [],
   },

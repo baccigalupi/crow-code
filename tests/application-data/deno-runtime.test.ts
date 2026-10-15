@@ -24,6 +24,14 @@ describe('DenoRuntime', () => {
     expect(denoCommand).toBe(Deno.Command)
   })
 
+  it('returns the current working directory', () => {
+    const runtime = new DenoRuntime(Deno)
+
+    const cwd = runtime.cwd()
+
+    expect(cwd).toBe(Deno.cwd())
+  })
+
   it('returns the real path function', () => {
     const runtime = new DenoRuntime(Deno)
 

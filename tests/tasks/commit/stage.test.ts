@@ -1,9 +1,8 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { resolve } from '@std/path'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { stageAndCommit } from '../../../src/tasks/commit/stage.ts'
-import { fixturesDirectory } from '../../support/fixtures.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { mockDenoCommand } from '../../support/mock-deno-command.ts'
 
@@ -98,18 +97,18 @@ describe('stageAndCommit', () => {
     const applicationData = mockApplicationData({
       denoCommand: mockDenoCommand({ commandSpy }),
     })
-    applicationData.repositoryRoot = join(fixturesDirectory, 'tools', 'git')
+    const path = resolve(Deno.cwd(), '..', 'outside-stage-commit.ts')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const staged = await stageAndCommit({
       applicationData,
-      operationArguments: { files: ['src/a.ts'], message: 'Subject\n\nBody.' },
+      operationArguments: { files: [path], message: 'Subject\n\nBody.' },
     }).run()
 
     expect(commandSpy.calls.length).toBe(0)
     expect(staged.success()).toBe(false)
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      'Git add: path not allowed: src/a.ts',
+      `Git add: path not allowed: ${path}`,
     )
   })
 })

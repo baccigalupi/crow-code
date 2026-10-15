@@ -18,6 +18,10 @@ export class DenoRuntime {
     return this.deno.args
   }
 
+  cwd() {
+    return this.deno.cwd()
+  }
+
   denoCommand() {
     return this.deno.Command
   }

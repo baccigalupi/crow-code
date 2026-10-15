@@ -1,9 +1,8 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { resolve } from '@std/path'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { gitLogHistory } from '../../../../../src/tools/git/read-only/log/history.ts'
-import { fixturesDirectory } from '../../../../support/fixtures.ts'
 import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 import { mockDenoCommand } from '../../../../support/mock-deno-command.ts'
 
@@ -100,12 +99,12 @@ describe('gitLogHistory', () => {
     const applicationData = mockApplicationData({
       denoCommand: mockDenoCommand({ commandSpy }),
     })
-    applicationData.repositoryRoot = join(fixturesDirectory, 'tools', 'git')
+    const path = resolve(Deno.cwd(), '..', 'outside-git-log-history.ts')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const history = gitLogHistory({
       applicationData,
-      operationArguments: { filter: ['src/a.ts'] },
+      operationArguments: { filter: [path] },
     })
     await history.run()
 
@@ -113,7 +112,7 @@ describe('gitLogHistory', () => {
     expect(history.success()).toBe(false)
     expect(history.result()).toEqual([])
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      'Git log history: path not allowed: src/a.ts',
+      `Git log history: path not allowed: ${path}`,
     )
   })
 

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
+import { resolve } from '@std/path'
 import { spy, stub } from '@std/testing/mock'
-import { pathPermissions } from '../../../../src/application-data/allowed-paths/path-permissions.ts'
 import { moveFile } from '../../../../src/tools/files/mutations/move.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
@@ -58,26 +58,35 @@ describe('moveFile', () => {
 
   it('when the source is outside the allowed directories, fails without moving', async () => {
     Deno.mkdirSync(`${fixturesDirectory}/move`, { recursive: true })
-    Deno.writeTextFileSync(`${fixturesDirectory}/move/alpha.txt`, 'one\n')
+    const from = resolve(Deno.cwd(), '..', 'outside-move-source.txt')
+    Deno.writeTextFileSync(from, 'one\n')
     const applicationData = mockApplicationData()
-    using _permissionsStub = stub(
-      applicationData,
-      'writePathPermissions',
-      () =>
-        pathPermissions({
-          getRealPath: applicationData.getRealPath(),
-          envars: applicationData.envars(),
-          allowedDirectories: [`${fixturesDirectory}/move/inside`],
-        }),
-    )
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const move = moveFile({
       applicationData,
-      operationArguments: {
-        from: `${fixturesDirectory}/move/alpha.txt`,
-        to: `${fixturesDirectory}/move/inside/beta.txt`,
-      },
+      operationArguments: { from, to: `${fixturesDirectory}/move/beta.txt` },
+    })
+    await move.run()
+
+    expect(move.success()).toBe(false)
+    expect(Deno.readTextFileSync(from)).toBe('one\n')
+    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+      `Move file: path not allowed: ${from}`,
+    )
+    Deno.removeSync(from)
+  })
+
+  it('when the destination is outside the allowed directories, fails without moving', async () => {
+    Deno.mkdirSync(`${fixturesDirectory}/move`, { recursive: true })
+    Deno.writeTextFileSync(`${fixturesDirectory}/move/alpha.txt`, 'one\n')
+    const to = resolve(Deno.cwd(), '..', 'outside-move-destination.txt')
+    const applicationData = mockApplicationData()
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+
+    const move = moveFile({
+      applicationData,
+      operationArguments: { from: `${fixturesDirectory}/move/alpha.txt`, to },
     })
     await move.run()
 
@@ -85,46 +94,9 @@ describe('moveFile', () => {
     expect(
       Deno.readTextFileSync(`${fixturesDirectory}/move/alpha.txt`),
     ).toBe('one\n')
+    expect(() => Deno.statSync(to)).toThrow()
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      `Move file: path not allowed: ${fixturesDirectory}/move/alpha.txt`,
-    )
-  })
-
-  it('when the destination is outside the allowed directories, fails without moving', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/move/inside`, { recursive: true })
-    Deno.writeTextFileSync(
-      `${fixturesDirectory}/move/inside/alpha.txt`,
-      'one\n',
-    )
-    const applicationData = mockApplicationData()
-    using _permissionsStub = stub(
-      applicationData,
-      'writePathPermissions',
-      () =>
-        pathPermissions({
-          getRealPath: applicationData.getRealPath(),
-          envars: applicationData.envars(),
-          allowedDirectories: [`${fixturesDirectory}/move/inside`],
-        }),
-    )
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
-
-    const move = moveFile({
-      applicationData,
-      operationArguments: {
-        from: `${fixturesDirectory}/move/inside/alpha.txt`,
-        to: `${fixturesDirectory}/move/outside/beta.txt`,
-      },
-    })
-    await move.run()
-
-    expect(move.success()).toBe(false)
-    expect(
-      Deno.readTextFileSync(`${fixturesDirectory}/move/inside/alpha.txt`),
-    ).toBe('one\n')
-    expect(() => Deno.statSync(`${fixturesDirectory}/move/outside`)).toThrow()
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      `Move file: path not allowed: ${fixturesDirectory}/move/outside/beta.txt`,
+      `Move file: path not allowed: ${to}`,
     )
   })
 

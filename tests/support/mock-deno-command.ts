@@ -63,6 +63,7 @@ export const mockDeno = (
   ({
     args,
     Command: mockDenoCommand(command),
+    cwd: Deno.cwd,
     env: Deno.env,
     readTextFile: Deno.readTextFile,
     realPath: Deno.realPath,

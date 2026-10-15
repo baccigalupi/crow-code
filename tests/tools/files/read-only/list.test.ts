@@ -1,12 +1,11 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { join } from '@std/path'
-import { spy, stub } from '@std/testing/mock'
+import { join, resolve } from '@std/path'
+import { spy } from '@std/testing/mock'
 import {
   ListDirectory,
   listDirectory,
 } from '../../../../src/tools/files/read-only/list.ts'
-import { pathPermissions } from '../../../../src/application-data/allowed-paths/path-permissions.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { fixturesDirectory } from '../../../support/fixtures.ts'
 
@@ -53,17 +52,7 @@ describe('list', () => {
 
   it('when the path is outside the allowed directories, returns no entries and logs', async () => {
     const applicationData = mockApplicationData()
-    const path = join(fixturesDirectory, 'tools', 'files')
-    using _permissionsStub = stub(
-      applicationData,
-      'readPathPermissions',
-      () =>
-        pathPermissions({
-          getRealPath: applicationData.getRealPath(),
-          envars: applicationData.envars(),
-          allowedDirectories: [join(fixturesDirectory, 'tools', 'git')],
-        }),
-    )
+    const path = resolve(Deno.cwd(), '..', 'outside-directory')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const listing = listDirectory({

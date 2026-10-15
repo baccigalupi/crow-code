@@ -1,11 +1,10 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { resolve } from '@std/path'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { gitCommit } from '../../../../src/tools/git/mutations/commit.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { mockDenoCommand } from '../../../support/mock-deno-command.ts'
-import { fixturesDirectory } from '../../../support/fixtures.ts'
 
 describe('gitCommit', () => {
   it('commits with the requested message', async () => {
@@ -71,11 +70,11 @@ describe('gitCommit', () => {
     const applicationData = mockApplicationData({
       denoCommand: mockDenoCommand({ commandSpy }),
     })
-    applicationData.repositoryRoot = join(fixturesDirectory, 'tools', 'git')
+    const path = resolve(Deno.cwd(), '..', 'outside-git-commit.ts')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
     const commit = gitCommit({
       applicationData,
-      operationArguments: { message: 'msg', paths: ['src/a.ts'] },
+      operationArguments: { message: 'msg', paths: [path] },
     })
 
     await commit.run()
@@ -84,7 +83,7 @@ describe('gitCommit', () => {
     expect(commit.success()).toBe(false)
     expect(commit.result()).toBe('')
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      'Git commit: path not allowed: src/a.ts',
+      `Git commit: path not allowed: ${path}`,
     )
   })
 

@@ -1,9 +1,8 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { join } from '@std/path'
-import { spy, stub } from '@std/testing/mock'
+import { join, resolve } from '@std/path'
+import { spy } from '@std/testing/mock'
 import { pathExists } from '../../../../src/tools/files/read-only/exists.ts'
-import { pathPermissions } from '../../../../src/application-data/allowed-paths/path-permissions.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { fixturesDirectory } from '../../../support/fixtures.ts'
 
@@ -43,17 +42,7 @@ describe('pathExists', () => {
 
   it('when the path is outside the allowed directories, fails', async () => {
     const applicationData = mockApplicationData()
-    const path = join(fixturesDirectory, 'tools', 'files', 'alpha.txt')
-    using _permissionsStub = stub(
-      applicationData,
-      'readPathPermissions',
-      () =>
-        pathPermissions({
-          getRealPath: applicationData.getRealPath(),
-          envars: applicationData.envars(),
-          allowedDirectories: [join(fixturesDirectory, 'elsewhere')],
-        }),
-    )
+    const path = resolve(Deno.cwd(), '..', 'outside-exists-check.txt')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const exists = pathExists({ applicationData, operationArguments: { path } })

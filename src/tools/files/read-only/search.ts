@@ -8,7 +8,6 @@ type TaskArguments = {
   pattern: string
   flags?: string
   context?: number
-  ignoredDirectories?: string[]
   filePattern?: string
 }
 
@@ -24,7 +23,15 @@ export class SearchFiles
   }
 
   protected override async perform() {
-    this.matches = await sortedMatches(this.operationArguments).all()
+    this.matches = await this.sortedMatches().all()
+  }
+
+  private sortedMatches() {
+    return sortedMatches({
+      ...this.operationArguments,
+      ignoredDirectories: this.permissions().ignoredPaths(),
+      cwd: this.applicationData.cwd(),
+    })
   }
 }
 

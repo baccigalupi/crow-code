@@ -15,6 +15,7 @@ describe('gitRepositoryRoot', () => {
     const root = gitRepositoryRoot({
       denoCommand: applicationData.denoCommand(),
       logger: applicationData.logger(),
+      cwd: applicationData.cwd(),
     })
     await root.run()
 
@@ -33,6 +34,7 @@ describe('gitRepositoryRoot', () => {
     const root = gitRepositoryRoot({
       denoCommand: applicationData.denoCommand(),
       logger: applicationData.logger(),
+      cwd: applicationData.cwd(),
     })
     await root.run()
 
@@ -51,6 +53,7 @@ describe('gitRepositoryRoot', () => {
     const root = gitRepositoryRoot({
       denoCommand: applicationData.denoCommand(),
       logger: applicationData.logger(),
+      cwd: applicationData.cwd(),
     })
     await root.run()
 
@@ -69,6 +72,7 @@ describe('gitRepositoryRoot', () => {
     const root = gitRepositoryRoot({
       denoCommand: applicationData.denoCommand(),
       logger: applicationData.logger(),
+      cwd: applicationData.cwd(),
     })
     await root.run()
 

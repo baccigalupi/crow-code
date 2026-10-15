@@ -1,12 +1,9 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { resolve } from '@std/path'
 import { spy } from '@std/testing/mock'
 import { gitDiffFiles } from '../../../../../src/tools/git/read-only/diff/files.ts'
-import {
-  fixturesDirectory,
-  loadTextFixture,
-} from '../../../../../tests/support/fixtures.ts'
+import { loadTextFixture } from '../../../../../tests/support/fixtures.ts'
 import { mockApplicationData } from '../../../../../tests/support/mock-application-data.ts'
 import { mockDenoCommand } from '../../../../../tests/support/mock-deno-command.ts'
 
@@ -132,12 +129,12 @@ describe('gitDiffFiles', () => {
     const applicationData = mockApplicationData({
       denoCommand: mockDenoCommand({ commandSpy }),
     })
-    applicationData.repositoryRoot = join(fixturesDirectory, 'tools', 'git')
+    const path = resolve(Deno.cwd(), '..', 'outside-git-diff-files.ts')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const gitDiff = gitDiffFiles({
       applicationData,
-      operationArguments: { filter: ['tests/tools/git/diff/files.test.ts'] },
+      operationArguments: { filter: [path] },
     })
     await gitDiff.run()
 
@@ -145,7 +142,7 @@ describe('gitDiffFiles', () => {
     expect(gitDiff.success()).toBe(false)
     expect(gitDiff.result()).toEqual([])
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      'Git diff files: path not allowed: tests/tools/git/diff/files.test.ts',
+      `Git diff files: path not allowed: ${path}`,
     )
   })
 })

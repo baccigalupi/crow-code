@@ -10,6 +10,7 @@ type SortedMatchesArguments = {
   context?: number
   ignoredDirectories?: string[]
   filePattern?: string
+  cwd: string
 }
 
 export class SortedMatches {
@@ -20,10 +21,17 @@ export class SortedMatches {
   private filePattern?: string
 
   constructor(
-    { path, pattern, flags = '', context = 0, ignoredDirectories, filePattern }:
-      SortedMatchesArguments,
+    {
+      path,
+      pattern,
+      flags = '',
+      context = 0,
+      ignoredDirectories,
+      filePattern,
+      cwd,
+    }: SortedMatchesArguments,
   ) {
-    this.directory = resolve(Deno.cwd(), path)
+    this.directory = resolve(cwd, path)
     this.pattern = new RegExp(pattern, flags)
     this.context = context
     this.ignoredDirectories = ignoredDirectories

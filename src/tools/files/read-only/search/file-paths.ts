@@ -7,8 +7,6 @@ type FilePathsArguments = {
   filePattern?: string
 }
 
-const defaultIgnoredDirectories = ['node_modules', '.git']
-
 export class FilePaths {
   private directory: string
   private ignoredDirectories: string[]
@@ -16,11 +14,7 @@ export class FilePaths {
   private include?: RegExp
 
   constructor(
-    {
-      directory,
-      ignoredDirectories = defaultIgnoredDirectories,
-      filePattern,
-    }: FilePathsArguments,
+    { directory, ignoredDirectories = [], filePattern }: FilePathsArguments,
   ) {
     this.directory = directory
     this.ignoredDirectories = ignoredDirectories
@@ -60,12 +54,12 @@ export class FilePaths {
       includeDirs: false,
       includeSymlinks: false,
       followSymlinks: false,
-      skip: this.ignoredDirectories.map((name) => this.skipPattern(name)),
+      skip: this.ignoredDirectories.map((path) => this.skipPattern(path)),
     }
   }
 
-  private skipPattern(name: string) {
-    return new RegExp(`(^|/)${this.escapeRegex(name)}(/|$)`)
+  private skipPattern(path: string) {
+    return new RegExp(`^${this.escapeRegex(path)}(/|$)`)
   }
 
   private escapeRegex(name: string) {

@@ -1,16 +1,13 @@
 import type { Signal } from '@preact/signals-core'
 import type { ExitApp, InputBuffer, KeyFlags } from '../types.ts'
+import type { CrowPermissionsConfig } from '../../types.ts'
 
 export type InstallStep = 'repo' | 'user' | 'env' | 'confirm' | 'done'
 
 export type CrowConfig = {
   readonly crowGlobalDirectory: string
   readonly envFile: string
-  readonly permissions: {
-    readonly ignore: string[]
-    readonly additionalRead: string[]
-    readonly additionalWrite: string[]
-  }
+  readonly permissions: CrowPermissionsConfig
 }
 
 export type BuiltCrowConfig = {

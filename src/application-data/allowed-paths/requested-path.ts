@@ -5,42 +5,50 @@ type RequestedPathArguments = {
   path: string
   allowedDirectories: string[]
   getRealPath: RealPath
+  ignoredPaths: string[]
+  cwd: string
 }
 
 export class RequestedPath {
   private path: string
   private allowedDirectories: string[]
   private getRealPath: RealPath
+  private ignoredPaths: string[]
+  private cwd: string
 
   constructor(
-    { path, allowedDirectories, getRealPath }: RequestedPathArguments,
+    { path, allowedDirectories, getRealPath, ignoredPaths, cwd }:
+      RequestedPathArguments,
   ) {
     this.path = path
     this.allowedDirectories = allowedDirectories
     this.getRealPath = getRealPath
+    this.ignoredPaths = ignoredPaths
+    this.cwd = cwd
   }
 
   async isAllowed() {
-    if (!this.inAllowedDirectory()) return false
+    if (!this.permitted(this.absolutePath())) return false
 
-    return await this.symlinkWithinDirectory()
+    return this.permitted(await this.followingSymlinks())
   }
 
-  private inAllowedDirectory() {
+  private permitted(path: string) {
+    return this.inAllowedDirectory(path) && !this.inIgnoredPath(path)
+  }
+
+  private inAllowedDirectory(path: string) {
     return this.allowedDirectories.some((directory) =>
-      this.within(directory, this.absolutePath())
+      this.within(directory, path)
     )
   }
 
-  private async symlinkWithinDirectory() {
-    const realPath = await this.followingSymlinks()
-    return this.allowedDirectories.some((directory) =>
-      this.within(directory, realPath)
-    )
+  private inIgnoredPath(path: string) {
+    return this.ignoredPaths.some((ignored) => this.within(ignored, path))
   }
 
   private absolutePath() {
-    return resolve(Deno.cwd(), this.path)
+    return resolve(this.cwd, this.path)
   }
 
   private async followingSymlinks() {

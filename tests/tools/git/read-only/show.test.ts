@@ -1,9 +1,8 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { resolve } from '@std/path'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { gitShow } from '../../../../src/tools/git/read-only/show.ts'
-import { fixturesDirectory } from '../../../support/fixtures.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { mockDenoCommand } from '../../../support/mock-deno-command.ts'
 
@@ -123,20 +122,20 @@ describe('gitShow', () => {
     const applicationData = mockApplicationData({
       denoCommand: mockDenoCommand({ commandSpy }),
     })
-    applicationData.repositoryRoot = join(fixturesDirectory, 'tools', 'git')
+    const path = resolve(Deno.cwd(), '..', 'outside-git-show.ts')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const show = gitShow({
       applicationData,
-      operationArguments: { rev: 'abc123', path: 'src/a.ts' },
+      operationArguments: { rev: 'abc123', path },
     })
     await show.run()
 
     expect(commandSpy.calls.length).toBe(0)
     expect(show.success()).toBe(false)
-    expect(show.result()).toEqual({ path: 'src/a.ts', text: '' })
+    expect(show.result()).toEqual({ path, text: '' })
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      'Git show: path not allowed: src/a.ts',
+      `Git show: path not allowed: ${path}`,
     )
   })
 

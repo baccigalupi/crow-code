@@ -13,31 +13,25 @@ describe('file-paths', () => {
   beforeEach(createSearchFixtureNodeModules)
   afterEach(() => clearDirectory(searchFixtureNodeModules()))
 
-  it('when no ignoredDirectories are given, skips node_modules', async () => {
+  it('when no ignoredDirectories are given, includes every file', async () => {
     const directory = join(fixturesDirectory, 'tools', 'search')
 
     const paths = await filePaths({ directory }).all()
 
-    expect(paths).toHaveLength(3)
+    expect(paths).toHaveLength(4)
     expect(paths).toContain('alpha.txt')
     expect(paths).toContain('nested/beta.md')
     expect(paths).toContain('nested/blob.bin')
-  })
-
-  it('when ignoredDirectories is empty, includes node_modules', async () => {
-    const directory = join(fixturesDirectory, 'tools', 'search')
-
-    const paths = await filePaths({ directory, ignoredDirectories: [] }).all()
-
-    expect(paths).toHaveLength(4)
     expect(paths).toContain('node_modules/skipped.txt')
   })
 
-  it('when ignoredDirectories names a directory, skips only that directory', async () => {
+  it('when ignoredDirectories names an absolute directory, skips only that directory', async () => {
     const directory = join(fixturesDirectory, 'tools', 'search')
 
-    const paths = await filePaths({ directory, ignoredDirectories: ['nested'] })
-      .all()
+    const paths = await filePaths({
+      directory,
+      ignoredDirectories: [join(directory, 'nested')],
+    }).all()
 
     expect(paths).toHaveLength(2)
     expect(paths).toContain('alpha.txt')
@@ -63,8 +57,10 @@ describe('file-paths', () => {
   it('when an ignored name contains regex characters, does not skip similar names', async () => {
     const directory = join(fixturesDirectory, 'tools', 'search')
 
-    const paths = await filePaths({ directory, ignoredDirectories: ['n.sted'] })
-      .all()
+    const paths = await filePaths({
+      directory,
+      ignoredDirectories: [join(directory, 'n.sted')],
+    }).all()
 
     expect(paths).toContain('nested/beta.md')
   })

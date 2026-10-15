@@ -1,27 +1,23 @@
-import { resolve } from '@std/path'
-import type { RealPath } from '../../types.ts'
-import type { Environment } from '../env-vars.ts'
+import { join, resolve } from '@std/path'
+import type { ApplicationData } from '../application-data.ts'
 import { requestedPath } from './requested-path.ts'
 import { expandHome } from './expand-home.ts'
 
 type PathPermissionsArguments = {
-  getRealPath: RealPath
-  allowedDirectories: string[]
-  envars: Environment
+  applicationData: ApplicationData
+  allowedDirectories: readonly string[]
 }
 
 export class PathPermissions {
-  private allowedDirectories: string[]
-  private getRealPath: RealPath
-  private envars: Environment
+  private applicationData: ApplicationData
+  private allowedDirectories: readonly string[]
   private cache: Map<string, boolean>
 
   constructor(
-    { getRealPath, allowedDirectories, envars }: PathPermissionsArguments,
+    { applicationData, allowedDirectories }: PathPermissionsArguments,
   ) {
+    this.applicationData = applicationData
     this.allowedDirectories = allowedDirectories
-    this.getRealPath = getRealPath
-    this.envars = envars
     this.cache = new Map()
   }
 
@@ -48,19 +44,33 @@ export class PathPermissions {
     return paths.filter((_, index) => !verdicts[index])
   }
 
-  protected absoluteDirectories(): string[] {
-    return expandHome({
-      directories: this.allowedDirectories,
-      envars: this.envars,
-    }).directories()
-      .map((directory) => resolve(Deno.cwd(), directory))
+  ignoredPaths() {
+    return [
+      ...this.absolute(this.applicationData.config.ignoredDirectories),
+      join(this.applicationData.repositoryRoot, '.git'),
+    ]
+  }
+
+  protected absoluteDirectories() {
+    return this.absolute([
+      this.applicationData.cwd(),
+      ...this.allowedDirectories,
+    ])
+  }
+
+  private absolute(directories: string[]) {
+    const envars = this.applicationData.envars()
+    return expandHome({ directories, envars }).directories()
+      .map((directory) => resolve(this.applicationData.cwd(), directory))
   }
 
   private requested(path: string) {
     return requestedPath({
       path,
       allowedDirectories: this.absoluteDirectories(),
-      getRealPath: this.getRealPath,
+      ignoredPaths: this.ignoredPaths(),
+      getRealPath: this.applicationData.getRealPath(),
+      cwd: this.applicationData.cwd(),
     })
   }
 }

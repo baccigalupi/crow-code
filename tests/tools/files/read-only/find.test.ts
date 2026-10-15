@@ -3,6 +3,7 @@ import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { spy } from '@std/testing/mock'
 import { findFiles } from '../../../../src/tools/files/read-only/find.ts'
+import { CrowConfig } from '../../../../src/application-data/config.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import {
   clearDirectory,
@@ -46,13 +47,13 @@ describe('find', () => {
     expect(find.result().paths).toEqual(['nested/beta.md'])
   })
 
-  it('when ignoredDirectories is empty, files under node_modules are included', async () => {
+  it('when the config ignores only the default, files under node_modules are included', async () => {
     const applicationData = mockApplicationData()
     const path = join(fixturesDirectory, 'tools', 'search')
 
     const find = findFiles({
       applicationData,
-      operationArguments: { path, pattern: '**/*', ignoredDirectories: [] },
+      operationArguments: { path, pattern: '**/*' },
     })
     await find.run()
 
@@ -60,17 +61,23 @@ describe('find', () => {
     expect(find.result().paths).toContain('node_modules/skipped.txt')
   })
 
-  it('when ignoredDirectories names a directory, that directory is skipped', async () => {
-    const applicationData = mockApplicationData()
+  it('when the config ignores a directory, that directory is skipped', async () => {
     const path = join(fixturesDirectory, 'tools', 'search')
+    const applicationData = mockApplicationData({
+      config: new CrowConfig('.', {
+        crowGlobalDirectory: '~/.crow',
+        envFile: '~/.crow/.env',
+        permissions: {
+          ignore: [join(path, 'nested')],
+          additionalRead: [],
+          additionalWrite: [],
+        },
+      }),
+    })
 
     const find = findFiles({
       applicationData,
-      operationArguments: {
-        path,
-        pattern: '**/*',
-        ignoredDirectories: ['nested'],
-      },
+      operationArguments: { path, pattern: '**/*' },
     })
     await find.run()
 

@@ -7,7 +7,6 @@ import { ReadOnlyFileOperation } from './base-operation.ts'
 type TaskArguments = {
   path: string
   pattern: string
-  ignoredDirectories?: string[]
 }
 
 type FindFilesArguments = ApplicationOperationArguments<TaskArguments>
@@ -27,16 +26,15 @@ export class FindFiles
   }
 
   private matchingPaths() {
-    const { ignoredDirectories, pattern } = this.operationArguments
     return filePaths({
       directory: this.searchPath(),
-      ignoredDirectories,
-      filePattern: pattern,
+      ignoredDirectories: this.permissions().ignoredPaths(),
+      filePattern: this.operationArguments.pattern,
     }).all()
   }
 
   private searchPath() {
-    return resolve(Deno.cwd(), this.operationArguments.path)
+    return resolve(this.applicationData.cwd(), this.operationArguments.path)
   }
 }
 

@@ -7,19 +7,22 @@ import type {
 type GitRepositoryRootArguments = {
   denoCommand: DenoCommand
   logger: Logger
+  cwd: string
 }
 
 export class GitRepositoryRoot implements AsyncOperationWithResult<string> {
   private logPrefix = 'Git repository root: '
   private denoCommand: DenoCommand
   private logger: Logger
+  private cwd: string
   private responseText = ''
   private succeeded = true
   reason = ''
 
-  constructor({ denoCommand, logger }: GitRepositoryRootArguments) {
+  constructor({ denoCommand, logger, cwd }: GitRepositoryRootArguments) {
     this.denoCommand = denoCommand
     this.logger = logger
+    this.cwd = cwd
   }
 
   async run() {
@@ -51,7 +54,7 @@ export class GitRepositoryRoot implements AsyncOperationWithResult<string> {
   }
 
   result() {
-    return this.responseText.trim() || Deno.cwd()
+    return this.responseText.trim() || this.cwd
   }
 
   private fail(reason: string) {

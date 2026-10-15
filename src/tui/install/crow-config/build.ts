@@ -4,7 +4,7 @@ import {
   defaultCrowRepoDirectory,
 } from '../interactions/state/config-buffer.ts'
 import type { InputBuffer } from '../../types.ts'
-import type { BuildCrowConfigArguments, CrowConfig } from '../types.ts'
+import type { BuildCrowConfigArguments } from '../types.ts'
 
 // READ side: builds the config the installer would write from the typed
 // inputs. Pure; touches no files. Writing lives in write.ts.
@@ -59,7 +59,7 @@ export class CrowConfigBuilder {
     return input.text
   }
 
-  private crowConfig(): CrowConfig {
+  private crowConfig() {
     return {
       crowGlobalDirectory: this.crowGlobalDirectory(),
       envFile: this.envFile(),
@@ -67,9 +67,9 @@ export class CrowConfigBuilder {
     }
   }
 
-  private permissions(): CrowConfig['permissions'] {
+  private permissions() {
     return {
-      ignore: ['node_modules', '.git'],
+      ignore: [],
       additionalRead: [],
       additionalWrite: [],
     }

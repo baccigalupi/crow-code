@@ -63,7 +63,7 @@ describe('loadConfig', () => {
 
     expect(operation.success()).toBe(false)
     expect(config.crowGlobalDirectory).toBe('~/.crow')
-    expect(config.ignoredDirectories).toEqual(['node_modules', '.git'])
+    expect(config.ignoredDirectories).toEqual([])
     expect(config.readableDirectories).toEqual([])
     expect(config.writableDirectories).toEqual([])
   })
@@ -78,7 +78,7 @@ describe('loadConfig', () => {
 
     expect(operation.success()).toBe(false)
     expect(config.crowGlobalDirectory).toBe('~/.crow')
-    expect(config.ignoredDirectories).toEqual(['node_modules', '.git'])
+    expect(config.ignoredDirectories).toEqual([])
     expect(config.readableDirectories).toEqual([])
     expect(config.writableDirectories).toEqual([])
   })
@@ -104,7 +104,7 @@ describe('loadConfig', () => {
 
     expect(operation.success()).toBe(false)
     expect(config.crowGlobalDirectory).toBe('~/.crow')
-    expect(config.ignoredDirectories).toEqual(['node_modules', '.git'])
+    expect(config.ignoredDirectories).toEqual([])
     expect(config.readableDirectories).toEqual([])
     expect(config.writableDirectories).toEqual([])
   })

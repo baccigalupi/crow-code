@@ -22,6 +22,7 @@ import type {
 @delegate(
   {
     args: 'args',
+    cwd: 'cwd',
     denoCommand: 'denoCommand',
     envars: 'envars',
     getRealPath: 'getRealPath',
@@ -90,6 +91,7 @@ export interface ApplicationData {
   args(): string[]
   consoleError(): ConsoleError
   consoleLog(): ConsoleLog
+  cwd(): string
   denoCommand(): DenoCommand
   envars(): Environment
   fetch(): typeof fetch

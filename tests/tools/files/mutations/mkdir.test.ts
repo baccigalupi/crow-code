@@ -1,8 +1,10 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
+import { resolve } from '@std/path'
 import { spy, stub } from '@std/testing/mock'
 import { makeDirectory } from '../../../../src/tools/files/mutations/mkdir.ts'
-import { pathPermissions } from '../../../../src/application-data/allowed-paths/path-permissions.ts'
+import { CrowConfig } from '../../../../src/application-data/config.ts'
+import { denyAllPermissions } from '../../../support/deny-permissions.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
 
@@ -53,34 +55,49 @@ describe('makeDirectory', () => {
   })
 
   it('when the path is outside the allowed directories, fails without creating', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/mkdir`, { recursive: true })
+    const path = resolve(Deno.cwd(), '..', 'outside-mkdir-denied')
     const applicationData = mockApplicationData()
-    using _permissionsStub = stub(
-      applicationData,
-      'writePathPermissions',
-      () =>
-        pathPermissions({
-          getRealPath: applicationData.getRealPath(),
-          envars: applicationData.envars(),
-          allowedDirectories: [`${fixturesDirectory}/tools`],
-        }),
-    )
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const mkdir = makeDirectory({
       applicationData,
-      operationArguments: { path: `${fixturesDirectory}/mkdir/denied` },
+      operationArguments: { path },
     })
     await mkdir.run()
 
     expect(mkdir.success()).toBe(false)
-    expect(mkdir.result()).toEqual({
-      path: `${fixturesDirectory}/mkdir/denied`,
-      created: false,
-    })
-    expect(() => Deno.statSync(`${fixturesDirectory}/mkdir/denied`)).toThrow()
+    expect(mkdir.result()).toEqual({ path, created: false })
+    expect(() => Deno.statSync(path)).toThrow()
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      `Make directory: path not allowed: ${fixturesDirectory}/mkdir/denied`,
+      `Make directory: path not allowed: ${path}`,
+    )
+  })
+
+  it('when the path is inside a configured ignored directory, fails without creating', async () => {
+    Deno.mkdirSync(`${fixturesDirectory}/mkdir`, { recursive: true })
+    const applicationData = mockApplicationData({
+      config: new CrowConfig('.', {
+        crowGlobalDirectory: '~/.crow',
+        envFile: '~/.crow/.env',
+        permissions: {
+          ignore: [`${fixturesDirectory}/mkdir/ignored`],
+          additionalRead: [],
+          additionalWrite: [],
+        },
+      }),
+    })
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+
+    const mkdir = makeDirectory({
+      applicationData,
+      operationArguments: { path: `${fixturesDirectory}/mkdir/ignored/child` },
+    })
+    await mkdir.run()
+
+    expect(mkdir.success()).toBe(false)
+    expect(() => Deno.statSync(`${fixturesDirectory}/mkdir/ignored`)).toThrow()
+    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+      `Make directory: path not allowed: ${fixturesDirectory}/mkdir/ignored/child`,
     )
   })
 
@@ -90,12 +107,7 @@ describe('makeDirectory', () => {
     using _permissionsStub = stub(
       applicationData,
       'readPathPermissions',
-      () =>
-        pathPermissions({
-          getRealPath: applicationData.getRealPath(),
-          envars: applicationData.envars(),
-          allowedDirectories: [`${fixturesDirectory}/tools`],
-        }),
+      denyAllPermissions,
     )
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 

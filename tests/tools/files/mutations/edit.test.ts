@@ -1,9 +1,8 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { join } from '@std/path'
-import { spy, stub } from '@std/testing/mock'
+import { join, resolve } from '@std/path'
+import { spy } from '@std/testing/mock'
 import { editFile } from '../../../../src/tools/files/mutations/edit.ts'
-import { pathPermissions } from '../../../../src/application-data/allowed-paths/path-permissions.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
 
@@ -96,21 +95,9 @@ describe('editFile', () => {
   })
 
   it('when the path is outside the allowed directories, fails without writing', async () => {
-    const directory = join(fixturesDirectory, 'edit')
-    Deno.mkdirSync(directory, { recursive: true })
-    const path = join(directory, 'alpha.txt')
+    const path = resolve(Deno.cwd(), '..', 'outside-edit-denied.txt')
     Deno.writeTextFileSync(path, 'one\ntwo\nthree\n')
     const applicationData = mockApplicationData()
-    using _permissionsStub = stub(
-      applicationData,
-      'writePathPermissions',
-      () =>
-        pathPermissions({
-          getRealPath: applicationData.getRealPath(),
-          envars: applicationData.envars(),
-          allowedDirectories: [join(fixturesDirectory, 'tools')],
-        }),
-    )
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const file = editFile({
@@ -124,6 +111,7 @@ describe('editFile', () => {
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
       `Edit file: path not allowed: ${path}`,
     )
+    Deno.removeSync(path)
   })
 
   it('when the file does not exist, fails and logs', async () => {

@@ -11,31 +11,34 @@ export class AllowedPaths {
 
   @memoize
   write() {
-    return this.permitting([
-      Deno.cwd(),
-      ...this.applicationData.config.writableDirectories,
-    ])
+    return pathPermissions({
+      applicationData: this.applicationData,
+      allowedDirectories: this.config().writableDirectories,
+    })
   }
 
   @memoize
   read() {
-    return this.permitting([
-      Deno.cwd(),
-      ...this.applicationData.config.readableDirectories,
-      ...this.applicationData.config.writableDirectories,
-    ])
+    return pathPermissions({
+      applicationData: this.applicationData,
+      allowedDirectories: [
+        ...this.config().readableDirectories,
+        ...this.config().writableDirectories,
+      ],
+    })
   }
 
   @memoize
   git() {
-    return this.permitting([this.applicationData.repositoryRoot])
+    const { applicationData: data } = this
+    return pathPermissions({
+      applicationData: data,
+      allowedDirectories: [data.repositoryRoot],
+    })
   }
 
-  private permitting(allowedDirectories: string[]) {
-    return pathPermissions({
-      getRealPath: this.applicationData.getRealPath(),
-      envars: this.applicationData.envars(),
-      allowedDirectories,
-    })
+  @memoize
+  private config() {
+    return this.applicationData.config
   }
 }

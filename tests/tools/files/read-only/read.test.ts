@@ -1,12 +1,12 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { join } from '@std/path'
-import { spy, stub } from '@std/testing/mock'
+import { join, resolve } from '@std/path'
+import { spy } from '@std/testing/mock'
 import {
   ReadFile,
   readFile,
 } from '../../../../src/tools/files/read-only/read.ts'
-import { pathPermissions } from '../../../../src/application-data/allowed-paths/path-permissions.ts'
+import { CrowConfig } from '../../../../src/application-data/config.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { fixturesDirectory } from '../../../support/fixtures.ts'
 
@@ -52,23 +52,38 @@ describe('readFile', () => {
 
   it('when the path is outside the allowed directories, returns empty text and logs', async () => {
     const applicationData = mockApplicationData()
-    const path = join(fixturesDirectory, 'tools', 'git', 'git-diff.diff')
-    using _permissionsStub = stub(
-      applicationData,
-      'readPathPermissions',
-      () =>
-        pathPermissions({
-          getRealPath: applicationData.getRealPath(),
-          envars: applicationData.envars(),
-          allowedDirectories: [join(fixturesDirectory, 'tools', 'files')],
-        }),
-    )
+    const path = resolve(Deno.cwd(), '..', 'outside.txt')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const file = readFile({
       applicationData,
       operationArguments: { path },
     })
+    await file.run()
+
+    expect(file.success()).toBe(false)
+    expect(file.result()).toEqual({ path, text: '' })
+    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+      `Read file: path not allowed: ${path}`,
+    )
+  })
+
+  it('when the path is inside a configured ignored directory, returns empty text and logs', async () => {
+    const path = join(fixturesDirectory, 'tools', 'files', 'alpha.txt')
+    const applicationData = mockApplicationData({
+      config: new CrowConfig('.', {
+        crowGlobalDirectory: '~/.crow',
+        envFile: '~/.crow/.env',
+        permissions: {
+          ignore: [join(fixturesDirectory, 'tools', 'files')],
+          additionalRead: [],
+          additionalWrite: [],
+        },
+      }),
+    })
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+
+    const file = readFile({ applicationData, operationArguments: { path } })
     await file.run()
 
     expect(file.success()).toBe(false)

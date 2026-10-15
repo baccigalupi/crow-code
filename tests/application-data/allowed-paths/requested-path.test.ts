@@ -17,6 +17,8 @@ describe('requested-path', () => {
       path: join(directory, 'git-diff.diff'),
       allowedDirectories: [directory],
       getRealPath: applicationData.getRealPath(),
+      cwd: applicationData.cwd(),
+      ignoredPaths: [],
     })
 
     const allowed = await requested.isAllowed()
@@ -31,6 +33,8 @@ describe('requested-path', () => {
       path: join(directory, '..'),
       allowedDirectories: [directory],
       getRealPath: applicationData.getRealPath(),
+      cwd: applicationData.cwd(),
+      ignoredPaths: [],
     })
 
     const allowed = await requested.isAllowed()
@@ -45,6 +49,8 @@ describe('requested-path', () => {
       path: directory,
       allowedDirectories: [directory],
       getRealPath: applicationData.getRealPath(),
+      cwd: applicationData.cwd(),
+      ignoredPaths: [],
     })
 
     const allowed = await requested.isAllowed()
@@ -59,6 +65,8 @@ describe('requested-path', () => {
       path: join(directory, '..', 'devin-config.json'),
       allowedDirectories: [directory],
       getRealPath: applicationData.getRealPath(),
+      cwd: applicationData.cwd(),
+      ignoredPaths: [],
     })
 
     const allowed = await requested.isAllowed()
@@ -73,6 +81,8 @@ describe('requested-path', () => {
       path: join(directory, '..hidden'),
       allowedDirectories: [directory],
       getRealPath: applicationData.getRealPath(),
+      cwd: applicationData.cwd(),
+      ignoredPaths: [],
     })
 
     const allowed = await requested.isAllowed()
@@ -90,6 +100,8 @@ describe('requested-path', () => {
       path: 'deno.json',
       allowedDirectories: [Deno.cwd()],
       getRealPath: applicationData.getRealPath(),
+      cwd: applicationData.cwd(),
+      ignoredPaths: [],
     })
 
     const allowed = await requested.isAllowed()
@@ -110,6 +122,8 @@ describe('requested-path', () => {
       path: join(directory, 'escape', 'git-diff.diff'),
       allowedDirectories: [directory],
       getRealPath: applicationData.getRealPath(),
+      cwd: applicationData.cwd(),
+      ignoredPaths: [],
     })
 
     const allowed = await requested.isAllowed()
@@ -125,11 +139,49 @@ describe('requested-path', () => {
       path: join(directory, 'missing.txt'),
       allowedDirectories: [directory],
       getRealPath: applicationData.getRealPath(),
+      cwd: applicationData.cwd(),
+      ignoredPaths: [],
     })
 
     const allowed = await requested.isAllowed()
 
     expect(allowed).toBe(true)
+  })
+
+  it('when the path is inside an ignored path, isAllowed is false', async () => {
+    const applicationData = mockApplicationData()
+    const directory = join(fixturesDirectory, 'tools')
+    const requested = requestedPath({
+      path: join(directory, 'git', 'git-diff.diff'),
+      allowedDirectories: [directory],
+      getRealPath: applicationData.getRealPath(),
+      cwd: applicationData.cwd(),
+      ignoredPaths: [join(directory, 'git')],
+    })
+
+    const allowed = await requested.isAllowed()
+
+    expect(allowed).toBe(false)
+  })
+
+  it('when the real path is inside an ignored path, isAllowed is false', async () => {
+    const applicationData = mockApplicationData()
+    const directory = join(fixturesDirectory, 'tools')
+    const fakeRealPath = spy(
+      returnsNext([Promise.resolve(join(directory, 'git', 'a'))]),
+    )
+    using _realPath = stub(applicationData, 'getRealPath', () => fakeRealPath)
+    const requested = requestedPath({
+      path: join(directory, 'link'),
+      allowedDirectories: [directory],
+      getRealPath: applicationData.getRealPath(),
+      cwd: applicationData.cwd(),
+      ignoredPaths: [join(directory, 'git')],
+    })
+
+    const allowed = await requested.isAllowed()
+
+    expect(allowed).toBe(false)
   })
 
   it('when called through requestedPath, returns a RequestedPath', () => {
@@ -140,6 +192,8 @@ describe('requested-path', () => {
       path: join(directory, 'git-diff.diff'),
       allowedDirectories: [directory],
       getRealPath: applicationData.getRealPath(),
+      cwd: applicationData.cwd(),
+      ignoredPaths: [],
     })
 
     expect(requested).toBeInstanceOf(RequestedPath)

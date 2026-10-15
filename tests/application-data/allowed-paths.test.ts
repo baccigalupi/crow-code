@@ -100,6 +100,68 @@ describe('AllowedPaths', () => {
     expect(await permissions.allows(join('..', 'outside.txt'))).toBe(false)
   })
 
+  it('denies configured ignored directories for read', async () => {
+    const appData = mockApplicationData({
+      config: new CrowConfig('.', {
+        crowGlobalDirectory: '~/.crow',
+        envFile: '~/.crow/.env',
+        permissions: {
+          ignore: ['vendor'],
+          additionalRead: [],
+          additionalWrite: [],
+        },
+      }),
+    })
+
+    const permissions = new AllowedPaths(appData).read()
+
+    expect(await permissions.allows('vendor/a.txt')).toBe(false)
+    expect(await permissions.allows('src/app.ts')).toBe(true)
+  })
+
+  it('denies configured ignored directories for write', async () => {
+    const appData = mockApplicationData({
+      config: new CrowConfig('.', {
+        crowGlobalDirectory: '~/.crow',
+        envFile: '~/.crow/.env',
+        permissions: {
+          ignore: ['vendor'],
+          additionalRead: [],
+          additionalWrite: [],
+        },
+      }),
+    })
+
+    const permissions = new AllowedPaths(appData).write()
+
+    expect(await permissions.allows('vendor/a.txt')).toBe(false)
+    expect(await permissions.allows('src/app.ts')).toBe(true)
+  })
+
+  it('denies configured ignored directories and the repository .git for git', async () => {
+    const appData = mockApplicationData({
+      config: new CrowConfig('.', {
+        crowGlobalDirectory: '~/.crow',
+        envFile: '~/.crow/.env',
+        permissions: {
+          ignore: [join(fixturesDirectory, 'vendor')],
+          additionalRead: [],
+          additionalWrite: [],
+        },
+      }),
+    })
+    appData.repositoryRoot = fixturesDirectory
+
+    const permissions = new AllowedPaths(appData).git()
+
+    expect(await permissions.allows(join(fixturesDirectory, 'vendor', 'a')))
+      .toBe(false)
+    expect(await permissions.allows(join(fixturesDirectory, '.git', 'config')))
+      .toBe(false)
+    expect(await permissions.allows(join(fixturesDirectory, 'config.json')))
+      .toBe(true)
+  })
+
   it('when asked twice, returns the same permissions', () => {
     const allowedPaths = new AllowedPaths(mockApplicationData())
 

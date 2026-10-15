@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { spy, stub } from '@std/testing/mock'
+import { resolve } from '@std/path'
+import { spy } from '@std/testing/mock'
 import { deleteFile } from '../../../../src/tools/files/mutations/delete.ts'
-import { pathPermissions } from '../../../../src/application-data/allowed-paths/path-permissions.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
 
@@ -98,33 +98,22 @@ describe('deleteFile', () => {
   })
 
   it('when the path is outside the allowed directories, fails without deleting', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/delete`, { recursive: true })
-    Deno.writeTextFileSync(`${fixturesDirectory}/delete/alpha.txt`, 'one\n')
+    const path = resolve(Deno.cwd(), '..', 'outside-delete-denied.txt')
+    Deno.writeTextFileSync(path, 'one\n')
     const applicationData = mockApplicationData()
-    using _permissionsStub = stub(
-      applicationData,
-      'writePathPermissions',
-      () =>
-        pathPermissions({
-          getRealPath: applicationData.getRealPath(),
-          envars: applicationData.envars(),
-          allowedDirectories: [`${fixturesDirectory}/tools`],
-        }),
-    )
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const operation = deleteFile({
       applicationData,
-      operationArguments: { path: `${fixturesDirectory}/delete/alpha.txt` },
+      operationArguments: { path },
     })
     await operation.run()
 
     expect(operation.success()).toBe(false)
-    expect(
-      Deno.readTextFileSync(`${fixturesDirectory}/delete/alpha.txt`),
-    ).toBe('one\n')
+    expect(Deno.readTextFileSync(path)).toBe('one\n')
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      `Delete file: path not allowed: ${fixturesDirectory}/delete/alpha.txt`,
+      `Delete file: path not allowed: ${path}`,
     )
+    Deno.removeSync(path)
   })
 })

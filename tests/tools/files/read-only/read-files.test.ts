@@ -1,9 +1,8 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { join } from '@std/path'
-import { spy, stub } from '@std/testing/mock'
+import { join, resolve } from '@std/path'
+import { spy } from '@std/testing/mock'
 import { readFiles } from '../../../../src/tools/files/read-only/read-files.ts'
-import { pathPermissions } from '../../../../src/application-data/allowed-paths/path-permissions.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { fixturesDirectory } from '../../../support/fixtures.ts'
 
@@ -86,27 +85,12 @@ describe('readFiles', () => {
   it('when a path is not allowed, logs the failure and omits that path', async () => {
     const applicationData = mockApplicationData()
     const alphaPath = join(fixturesDirectory, 'tools', 'files', 'alpha.txt')
-    const gitFixturePath = join(
-      fixturesDirectory,
-      'tools',
-      'git',
-      'git-diff.diff',
-    )
-    using _permissionsStub = stub(
-      applicationData,
-      'readPathPermissions',
-      () =>
-        pathPermissions({
-          getRealPath: applicationData.getRealPath(),
-          envars: applicationData.envars(),
-          allowedDirectories: [join(fixturesDirectory, 'tools', 'files')],
-        }),
-    )
+    const outsidePath = resolve(Deno.cwd(), '..', 'outside.txt')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const files = readFiles({
       applicationData,
-      operationArguments: { paths: [alphaPath, gitFixturePath] },
+      operationArguments: { paths: [alphaPath, outsidePath] },
     })
     await files.run()
 
@@ -115,7 +99,7 @@ describe('readFiles', () => {
       { path: alphaPath, text: 'one\ntwo\nthree\n' },
     ])
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      `Read file: path not allowed: ${gitFixturePath}`,
+      `Read file: path not allowed: ${outsidePath}`,
     )
   })
 

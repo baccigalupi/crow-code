@@ -16,7 +16,12 @@ describe('sorted-matches', () => {
   it('when several files match, returns matches sorted by path then line', async () => {
     const path = join(fixturesDirectory, 'tools', 'search')
 
-    const matches = await sortedMatches({ path, pattern: 'two|one' }).all()
+    const matches = await sortedMatches({
+      path,
+      pattern: 'two|one',
+      ignoredDirectories: [join(path, 'node_modules')],
+      cwd: Deno.cwd(),
+    }).all()
 
     expect(matches).toEqual([
       { path: 'alpha.txt', line: 1, text: 'one' },
@@ -28,8 +33,12 @@ describe('sorted-matches', () => {
   it('when flags are given, applies them to the pattern', async () => {
     const path = join(fixturesDirectory, 'tools', 'search')
 
-    const matches = await sortedMatches({ path, pattern: 'BETA', flags: 'i' })
-      .all()
+    const matches = await sortedMatches({
+      path,
+      pattern: 'BETA',
+      flags: 'i',
+      cwd: Deno.cwd(),
+    }).all()
 
     expect(matches).toEqual([{
       path: 'nested/beta.md',
@@ -38,14 +47,15 @@ describe('sorted-matches', () => {
     }])
   })
 
-  it('when ignoredDirectories is empty, includes node_modules matches', async () => {
+  it('when no ignoredDirectories are given, includes node_modules matches', async () => {
     const path = join(fixturesDirectory, 'tools', 'search')
 
     const matches = await sortedMatches({
       path,
       pattern: 'two',
-      ignoredDirectories: [],
-    }).all()
+      cwd: Deno.cwd(),
+    })
+      .all()
 
     expect(matches).toContainEqual({
       path: 'node_modules/skipped.txt',
@@ -61,6 +71,8 @@ describe('sorted-matches', () => {
       path,
       pattern: 'two|one',
       filePattern: '*.txt',
+      ignoredDirectories: [join(path, 'node_modules')],
+      cwd: Deno.cwd(),
     }).all()
 
     expect(matches).toEqual([
@@ -72,7 +84,8 @@ describe('sorted-matches', () => {
   it('when the pattern is an invalid regex, throws', () => {
     const path = join(fixturesDirectory, 'tools', 'search')
 
-    const construct = () => sortedMatches({ path, pattern: '(' })
+    const construct = () =>
+      sortedMatches({ path, pattern: '(', cwd: Deno.cwd() })
 
     expect(construct).toThrow('Invalid regular expression')
   })

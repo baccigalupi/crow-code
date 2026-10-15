@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { join } from '@std/path'
-import { spy, stub } from '@std/testing/mock'
+import { join, resolve } from '@std/path'
+import { spy } from '@std/testing/mock'
 import {
   SearchFiles,
   searchFiles,
 } from '../../../../src/tools/files/read-only/search.ts'
-import { pathPermissions } from '../../../../src/application-data/allowed-paths/path-permissions.ts'
+import { CrowConfig } from '../../../../src/application-data/config.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import {
   clearDirectory,
@@ -19,9 +19,19 @@ describe('search', () => {
   beforeEach(createSearchFixtureNodeModules)
   afterEach(() => clearDirectory(searchFixtureNodeModules()))
 
-  it('when the pattern matches in several files, returns matches with the default ignore list applied', async () => {
-    const applicationData = mockApplicationData()
+  it('when the pattern matches in several files, returns matches outside the configured ignored directories', async () => {
     const path = join(fixturesDirectory, 'tools', 'search')
+    const applicationData = mockApplicationData({
+      config: new CrowConfig('.', {
+        crowGlobalDirectory: '~/.crow',
+        envFile: '~/.crow/.env',
+        permissions: {
+          ignore: [join(path, 'node_modules')],
+          additionalRead: [],
+          additionalWrite: [],
+        },
+      }),
+    })
 
     const search = searchFiles({
       applicationData,
@@ -56,13 +66,13 @@ describe('search', () => {
     ])
   })
 
-  it('when ignoredDirectories is empty, files under node_modules are included', async () => {
+  it('when the config ignores only the default, files under node_modules are included', async () => {
     const applicationData = mockApplicationData()
     const path = join(fixturesDirectory, 'tools', 'search')
 
     const search = searchFiles({
       applicationData,
-      operationArguments: { path, pattern: 'two', ignoredDirectories: [] },
+      operationArguments: { path, pattern: 'two' },
     })
     await search.run()
 
@@ -74,17 +84,23 @@ describe('search', () => {
     ])
   })
 
-  it('when ignoredDirectories names a directory, that directory is skipped', async () => {
-    const applicationData = mockApplicationData()
+  it('when the config ignores a directory, that directory is skipped', async () => {
     const path = join(fixturesDirectory, 'tools', 'search')
+    const applicationData = mockApplicationData({
+      config: new CrowConfig('.', {
+        crowGlobalDirectory: '~/.crow',
+        envFile: '~/.crow/.env',
+        permissions: {
+          ignore: [join(path, 'nested')],
+          additionalRead: [],
+          additionalWrite: [],
+        },
+      }),
+    })
 
     const search = searchFiles({
       applicationData,
-      operationArguments: {
-        path,
-        pattern: 'two',
-        ignoredDirectories: ['nested'],
-      },
+      operationArguments: { path, pattern: 'two' },
     })
     await search.run()
 
@@ -112,8 +128,18 @@ describe('search', () => {
   })
 
   it('when context is given, matches include surrounding lines', async () => {
-    const applicationData = mockApplicationData()
     const path = join(fixturesDirectory, 'tools', 'search')
+    const applicationData = mockApplicationData({
+      config: new CrowConfig('.', {
+        crowGlobalDirectory: '~/.crow',
+        envFile: '~/.crow/.env',
+        permissions: {
+          ignore: [join(path, 'node_modules')],
+          additionalRead: [],
+          additionalWrite: [],
+        },
+      }),
+    })
 
     const search = searchFiles({
       applicationData,
@@ -176,17 +202,7 @@ describe('search', () => {
 
   it('when the path is outside the allowed directories, returns no matches and logs', async () => {
     const applicationData = mockApplicationData()
-    const path = join(fixturesDirectory, 'tools', 'search')
-    using _permissionsStub = stub(
-      applicationData,
-      'readPathPermissions',
-      () =>
-        pathPermissions({
-          getRealPath: applicationData.getRealPath(),
-          envars: applicationData.envars(),
-          allowedDirectories: [join(fixturesDirectory, 'tools', 'git')],
-        }),
-    )
+    const path = resolve(Deno.cwd(), '..', 'outside-directory')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const search = searchFiles({

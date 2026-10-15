@@ -88,7 +88,7 @@ describe('build', () => {
       envFile: emptyBuffer(),
     }).all()
 
-    expect(config.permissions.ignore).toEqual(['node_modules', '.git'])
+    expect(config.permissions.ignore).toEqual([])
     expect(config.permissions.additionalRead).toEqual([])
     expect(config.permissions.additionalWrite).toEqual([])
   })

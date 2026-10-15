@@ -1,12 +1,9 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { resolve } from '@std/path'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { gitTrackedChanges } from '../../../../../src/tools/git/read-only/diff/tracked-changes.ts'
-import {
-  fixturesDirectory,
-  loadTextFixture,
-} from '../../../../support/fixtures.ts'
+import { loadTextFixture } from '../../../../support/fixtures.ts'
 import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 import { mockDenoCommand } from '../../../../support/mock-deno-command.ts'
 
@@ -79,12 +76,12 @@ describe('gitTrackedChanges', () => {
     const applicationData = mockApplicationData({
       denoCommand: mockDenoCommand({ commandSpy }),
     })
-    applicationData.repositoryRoot = join(fixturesDirectory, 'tools', 'git')
+    const path = resolve(Deno.cwd(), '..', 'outside-git-tracked-changes.ts')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const diff = gitTrackedChanges({
       applicationData,
-      operationArguments: { filter: ['src/a.ts'] },
+      operationArguments: { filter: [path] },
     })
     await diff.run()
 
@@ -92,7 +89,7 @@ describe('gitTrackedChanges', () => {
     expect(diff.success()).toBe(false)
     expect(diff.result()).toEqual([])
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      'Git tracked changes: path not allowed: src/a.ts',
+      `Git tracked changes: path not allowed: ${path}`,
     )
   })
 })

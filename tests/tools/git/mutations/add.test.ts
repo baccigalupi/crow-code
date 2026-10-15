@@ -1,11 +1,10 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { resolve } from '@std/path'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { gitAdd } from '../../../../src/tools/git/mutations/add.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { mockDenoCommand } from '../../../support/mock-deno-command.ts'
-import { fixturesDirectory } from '../../../support/fixtures.ts'
 
 describe('gitAdd', () => {
   it('adds the requested paths', async () => {
@@ -65,11 +64,11 @@ describe('gitAdd', () => {
     const applicationData = mockApplicationData({
       denoCommand: mockDenoCommand({ commandSpy }),
     })
-    applicationData.repositoryRoot = join(fixturesDirectory, 'tools', 'git')
+    const path = resolve(Deno.cwd(), '..', 'outside-git-add.ts')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
     const add = gitAdd({
       applicationData,
-      operationArguments: { paths: ['src/a.ts'] },
+      operationArguments: { paths: [path] },
     })
 
     await add.run()
@@ -78,7 +77,7 @@ describe('gitAdd', () => {
     expect(add.success()).toBe(false)
     expect(add.result()).toBe('')
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
-      'Git add: path not allowed: src/a.ts',
+      `Git add: path not allowed: ${path}`,
     )
   })
 

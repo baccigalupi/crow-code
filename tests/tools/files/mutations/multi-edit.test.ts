@@ -1,8 +1,7 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { join, resolve } from '@std/path'
 import { spy, stub } from '@std/testing/mock'
-import { pathPermissions } from '../../../../src/application-data/allowed-paths/path-permissions.ts'
 import { multiEdit } from '../../../../src/tools/files/mutations/multi-edit.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
@@ -123,24 +122,12 @@ describe('multiEdit', () => {
 
   it('when a path is not allowed, fails before writing anything', async () => {
     const allowedDirectory = join(fixturesDirectory, 'multi-edit', 'allowed')
-    const deniedDirectory = join(fixturesDirectory, 'multi-edit', 'denied')
     Deno.mkdirSync(allowedDirectory, { recursive: true })
-    Deno.mkdirSync(deniedDirectory, { recursive: true })
     const alpha = join(allowedDirectory, 'alpha.txt')
-    const beta = join(deniedDirectory, 'beta.txt')
+    const beta = resolve(Deno.cwd(), '..', 'outside-multi-edit-denied.txt')
     Deno.writeTextFileSync(alpha, 'one\ntwo\n')
     Deno.writeTextFileSync(beta, 'red\nblue\n')
     const applicationData = mockApplicationData()
-    using _permissionsStub = stub(
-      applicationData,
-      'writePathPermissions',
-      () =>
-        pathPermissions({
-          getRealPath: applicationData.getRealPath(),
-          envars: applicationData.envars(),
-          allowedDirectories: [allowedDirectory],
-        }),
-    )
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
     const batch = multiEdit({
@@ -159,6 +146,7 @@ describe('multiEdit', () => {
     expect(loggerErrorSpy.calls[0].args[0]).toBe(
       `Multi edit: path not allowed: ${beta}`,
     )
+    Deno.removeSync(beta)
   })
 
   it('when a file is missing, fails and leaves other files', async () => {
