@@ -55,6 +55,16 @@ export type WriteResult = {
   created: boolean
 }
 
+export type MoveResult = {
+  from: string
+  to: string
+}
+
+export type PathExistsResult = {
+  path: string
+  exists: boolean
+}
+
 export type DirectoryEntryKind = 'file' | 'directory' | 'symlink'
 
 export type DirectoryEntry = {

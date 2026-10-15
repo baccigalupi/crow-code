@@ -2,6 +2,7 @@ import { dirname } from '@std/path'
 import type { ApplicationOperationArguments } from '../../../types.ts'
 import type { WriteResult } from '../../types.ts'
 import { FileOperation } from '../file-operation.ts'
+import { type PathExists, pathExists } from '../read-only/exists.ts'
 import { makeDirectory } from './mkdir.ts'
 
 type TaskArguments = {
@@ -24,7 +25,7 @@ export class WriteFile extends FileOperation<TaskArguments, WriteResult> {
 
   protected override async perform() {
     await this.ensureParentDirectory()
-    await this.write()
+    await this.save(await this.existing())
   }
 
   private async ensureParentDirectory() {
@@ -36,23 +37,21 @@ export class WriteFile extends FileOperation<TaskArguments, WriteResult> {
     }))
   }
 
-  private async write() {
+  private existing() {
+    return this.runSubOperation(pathExists({
+      applicationData: this.applicationData,
+      operationArguments: { path: this.operationArguments.path },
+    }))
+  }
+
+  private async save(existing: PathExists) {
     if (!this.succeeded) return
 
-    const existed = await this.exists()
     await Deno.writeTextFile(
       this.operationArguments.path,
       this.operationArguments.content,
     )
-    this.created = !existed
-  }
-
-  private async exists() {
-    try {
-      return (await Deno.stat(this.operationArguments.path)).isFile
-    } catch {
-      return false
-    }
+    this.created = !existing.result().exists
   }
 }
 

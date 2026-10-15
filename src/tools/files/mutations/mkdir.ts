@@ -1,6 +1,7 @@
 import type { ApplicationOperationArguments } from '../../../types.ts'
 import type { MakeDirectoryResult } from '../../types.ts'
 import { FileOperation } from '../file-operation.ts'
+import { type PathExists, pathExists } from '../read-only/exists.ts'
 
 type TaskArguments = {
   path: string
@@ -21,17 +22,18 @@ export class MakeDirectory
   }
 
   protected override async perform() {
-    const exists = await this.exists()
-    await Deno.mkdir(this.operationArguments.path, { recursive: true })
-    this.created = !exists
+    const existing = await this.runSubOperation(pathExists({
+      applicationData: this.applicationData,
+      operationArguments: { path: this.operationArguments.path },
+    }))
+    await this.create(existing)
   }
 
-  private async exists() {
-    try {
-      return (await Deno.stat(this.operationArguments.path)).isDirectory
-    } catch {
-      return false
-    }
+  private async create(existing: PathExists) {
+    if (!this.succeeded) return
+
+    await Deno.mkdir(this.operationArguments.path, { recursive: true })
+    this.created = !existing.result().exists
   }
 }
 

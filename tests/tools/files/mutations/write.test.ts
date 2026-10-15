@@ -46,6 +46,36 @@ describe('writeFile', () => {
     expect(Deno.readTextFileSync(path)).toBe('new content\n')
   })
 
+  it('when the existence check is not allowed, fails without writing', async () => {
+    const directory = join(fixturesDirectory, 'write')
+    Deno.mkdirSync(directory, { recursive: true })
+    const path = join(directory, 'denied.txt')
+    const applicationData = mockApplicationData()
+    using _permissionsStub = stub(
+      applicationData,
+      'readPathPermissions',
+      () =>
+        pathPermissions({
+          getRealPath: applicationData.getRealPath(),
+          envars: applicationData.envars(),
+          allowedDirectories: [join(fixturesDirectory, 'tools')],
+        }),
+    )
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+
+    const file = writeFile({
+      applicationData,
+      operationArguments: { path, content: 'one\n' },
+    })
+    await file.run()
+
+    expect(file.success()).toBe(false)
+    expect(() => Deno.statSync(path)).toThrow()
+    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+      `Path exists: path not allowed: ${directory}`,
+    )
+  })
+
   it('when the path is outside the allowed directories, fails without writing', async () => {
     const directory = join(fixturesDirectory, 'write')
     Deno.mkdirSync(directory, { recursive: true })

@@ -84,6 +84,34 @@ describe('makeDirectory', () => {
     )
   })
 
+  it('when the existence check is not allowed, fails without creating', async () => {
+    Deno.mkdirSync(`${fixturesDirectory}/mkdir`, { recursive: true })
+    const applicationData = mockApplicationData()
+    using _permissionsStub = stub(
+      applicationData,
+      'readPathPermissions',
+      () =>
+        pathPermissions({
+          getRealPath: applicationData.getRealPath(),
+          envars: applicationData.envars(),
+          allowedDirectories: [`${fixturesDirectory}/tools`],
+        }),
+    )
+    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+
+    const mkdir = makeDirectory({
+      applicationData,
+      operationArguments: { path: `${fixturesDirectory}/mkdir/denied` },
+    })
+    await mkdir.run()
+
+    expect(mkdir.success()).toBe(false)
+    expect(() => Deno.statSync(`${fixturesDirectory}/mkdir/denied`)).toThrow()
+    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+      `Path exists: path not allowed: ${fixturesDirectory}/mkdir/denied`,
+    )
+  })
+
   it('when the path exists as a file, fails and leaves the file unchanged', async () => {
     Deno.mkdirSync(`${fixturesDirectory}/mkdir`, { recursive: true })
     Deno.writeTextFileSync(`${fixturesDirectory}/mkdir/alpha.txt`, 'one\ntwo\n')
