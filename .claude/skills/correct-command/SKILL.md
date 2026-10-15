@@ -11,14 +11,13 @@ description: >-
 # Correct command
 
 **Stop before the shell runs.** `.claude/hooks/claude-command-gate.ts` decides
-every Bash call deterministically — allow or deny, never a human prompt. It
-reuses this repo's existing, already-tested Devin gate
-(`agents/hooks/command-allowed.ts` + `devin-config.ts` + `block-reason.ts`,
-backed by `.devin/config.json`) as its single source of truth, so Claude Code
-and Devin are held to the exact same rules — there is one allowlist, not two
-that can drift apart. Under pressure, agents `cd`, chain commands, run bare
-`deno`/`bash`/`sh`, or invent workarounds — none of that matches, the deny
-carries a rewrite, and retrying the same shape just repeats the deny.
+every Bash call deterministically — allow or deny, never a human prompt. It uses
+this repo's tested gate logic (`agents/hooks/command-allowed.ts` +
+`devin-config.ts` + `block-reason.ts`, backed by `.devin/config.json`, a legacy
+directory name) as its single source of truth — there is one allowlist. Under
+pressure, agents `cd`, chain commands, run bare `deno`/`bash`/`sh`, or invent
+workarounds — none of that matches, the deny carries a rewrite, and retrying the
+same shape just repeats the deny.
 
 ## The gate is real and terminal
 
@@ -28,12 +27,11 @@ carries a rewrite, and retrying the same shape just repeats the deny.
   `grep`, `egrep`, `fgrep`, `ls`, `find`, `ps`, `cat`, `head`, `tail`, `sed`,
   `awk`, `wc`, `jq`, `sort`, `uniq`, `stat`, `file`, `tree`, `diff`, `pwd`,
   `echo`, `printf`, `basename`, `dirname`, `realpath`. These aren't in
-  `.devin/config.json` at all — Devin has separate non-exec tools for reading
-  and searching, so it never needed them on its exec allowlist. This Claude Code
-  session has no dedicated search tool, so Bash is the only way to grep the
-  repo; `claude-command-gate.ts` allows these by name with its **own**
-  quote-aware check (track `'...'`/`"..."` state, deny only a _live_
-  `` ` $( < > ; | & `` or newline outside quotes) — not Devin's shared one.
+  `.devin/config.json` at all. This session has no dedicated search tool, so
+  Bash is the only way to grep the repo; `claude-command-gate.ts` allows these
+  by name with its **own** quote-aware check (track `'...'`/`"..."` state, deny
+  only a _live_ `` ` $( < > ; | & `` or newline outside quotes) — not the
+  quote-blind check used for allowlisted commands.
 - **`git` is otherwise ungated by command text** — any subcommand except `push`
   passes (`git worktree`, `git rebase`, `git reset`, etc. all pass
   mechanically). The restraint on _which_ git operations are appropriate (never
@@ -41,7 +39,7 @@ carries a rewrite, and retrying the same shape just repeats the deny.
   is enforced by **instruction** in `AGENTS.md`, not by this gate — `git push`
   is the only one denied outright at this layer.
 - **Shell shape is denied outright for everything else, not reviewed**: for any
-  command that isn't a read-only inspector, Devin's shared check is
+  command that isn't a read-only inspector, the allowlist check is
   **quote-blind** — any `` ` ``, `$(`, `<`, `>`, `;`, `|`, `&`, or literal
   newline _anywhere in the command text_ fails it, even inside quotes. No
   piping, ever, for `dev/*`/`agents/*`/`git`/etc. The two exceptions:
@@ -62,17 +60,15 @@ carries a rewrite, and retrying the same shape just repeats the deny.
 above is **denied**, not escalated to a permission prompt. The deny reason names
 the fix — do not retry a variant of a denied command, run the approved form it
 names. If a command is genuinely missing from the gate, the fix is adding it to
-`.devin/config.json`'s `permissions.allow` (one file, shared with Devin), not
-working around the deny.
+`.devin/config.json`'s `permissions.allow`, not working around the deny.
 
 ## Worktrees — no `cd`, use `EnterWorktree`
 
 Claude Code's Bash tool has no per-call working-directory parameter — `cd` is
 the only shell mechanism to change it, and the gate denies it outright (the
-reason text says so explicitly, pointing here instead of at Devin's `workdir`
-parameter, which doesn't exist in this harness). The actual fix for "I need to
-run tests against files in a worktree" is the **`EnterWorktree`** tool, not
-`cd`:
+reason text says so explicitly, pointing here since there is no `workdir`
+parameter in this harness). The actual fix for "I need to run tests against
+files in a worktree" is the **`EnterWorktree`** tool, not `cd`:
 
 1. `EnterWorktree({ name: "<full-issue-id-or-feature-description>" })` (never a
    bare ID postfix) — creates `.claude/worktrees/<name>` on a new branch and
@@ -121,9 +117,8 @@ the session's cwd has to actually be inside the worktree, which is exactly what
 6. **No ad-hoc `bash -c`/`sh -c`** — issue the real command directly.
 7. Don't background `dev/test`, `dev/coverage`, or `agents/pre-commit` — they
    run `--clean` and wipe the shared `coverage/` directory; a backgrounded
-   second run stomps on a foreground one. This one check is Claude-Code-specific
-   (`run_in_background` doesn't exist in Devin's exec tool), layered on top of
-   the shared gate in `claude-command-gate.ts`.
+   second run stomps on a foreground one. This check lives in
+   `claude-command-gate.ts`, on top of the allowlist.
 
 ## Wrong → right
 

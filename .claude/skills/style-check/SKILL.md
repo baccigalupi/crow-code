@@ -7,12 +7,9 @@ description: >-
 
 # Style check
 
-Claude Code port of Devin's `style-check` skill
-(`.devin/skills/style-check/SKILL.md`). Devin's version also declared
-`permissions.allow` entries for the three `agents/style-check` invocations — not
-needed here: `.claude/hooks/claude-command-gate.ts` already allows
-`agents/style-check` (and its `--changed`/`--all`/`FILE...` forms) by reusing
-the same `.devin/config.json` allowlist, so there's nothing extra to grant.
+`.claude/hooks/claude-command-gate.ts` already allows `agents/style-check` (and
+its `--changed`/`--all`/`FILE...` forms) through the `.devin/config.json`
+allowlist, so there's nothing extra to grant.
 
 Run `agents/style-check` to enforce the mechanical style and test conventions on
 every file in the codebase.

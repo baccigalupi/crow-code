@@ -7,12 +7,10 @@ description: >-
 
 # Code style
 
-Claude Code port of Devin's `code-style` rule (`.devin/rules/code-style.md`).
-Devin applies this automatically by glob (`src/**/*.ts`); Claude Code has no
-glob-triggered rule mechanism, so treat this skill as applying any time you're
-creating or changing production TypeScript here — most of it is self-enforced
-(see rule 14), only a subset is linted by `agents/style-checks/*` (see the
-`style-check` skill).
+Claude Code has no glob-triggered rule mechanism, so treat this skill as
+applying any time you're creating or changing production TypeScript here — most
+of it is self-enforced (see rule 14), only a subset is linted by
+`agents/style-checks/*` (see the `style-check` skill).
 
 ## Hard rules
 

@@ -9,10 +9,6 @@ description: >-
 
 # File too large
 
-Claude Code port of Devin's `file-too-large` skill
-(`.devin/skills/file-too-large/SKILL.md`) — unchanged content, ported for
-discoverability in this harness.
-
 ## The real goal
 
 Size limits exist to catch unclear structure. The file being too long is a

@@ -5,8 +5,8 @@ This is a CLI based coding agent.
 ## Exec, scripts and tools
 
 This application is locked down to prevent incorrect exec commands from running.
-Devin config at `.devin/config.json` is the source of truth for allowed
-commands.
+The allowlist in `.devin/config.json` is the source of truth for allowed
+commands; the Claude Code command gate enforces it on every Bash call.
 
 Only the `agents/` and `dev/` scripts listed in `.devin/config.json` can be run.
 Never create scripts there to try to circumvent permissions.
@@ -22,10 +22,10 @@ Never create scripts there to try to circumvent permissions.
 
 ### Exec rules
 
-- NEVER use `cd` in exec commands. The exec tool accepts a `workdir` parameter
-  for the working directory.
+- NEVER use `cd` in Bash commands. To work in a worktree, use `EnterWorktree`,
+  which moves the session's working directory.
 - Commands must not use `&&`, `;`, `|`, `>`, `<`, backticks, or `$(...)`. One
-  command per exec call.
+  command per Bash call.
 - Run only the approved commands above. Do not try `deno`, `npm`, `bash`, etc.
 - A rejected or canceled tool call is not a stopping condition — continue
   permitted work (retry canceled siblings individually) without reporting blocks
@@ -64,17 +64,19 @@ Never create scripts there to try to circumvent permissions.
 
 - All planned work happens in a dedicated git worktree, never directly on the
   main checkout.
-- Worktrees live under `.worktrees/` (already gitignored and excluded from
-  `deno.json` tasks).
+- Worktrees live under `.claude/worktrees/` (already gitignored and excluded
+  from `deno.json`).
 - Creating the worktree is the first step of implementing a plan, never part of
-  planning: run `git worktree add .worktrees/<name> -b <branch>` from the repo
-  root, where `<name>`/`<branch>` are the values recorded in the plan (derived
-  from the Beads issue or feature name).
+  planning: call `EnterWorktree({ name: "<name>" })`, where `<name>` is the
+  value recorded in the plan (derived from the Beads issue or feature name). It
+  creates the branch and moves the session's working directory into the
+  worktree.
 - `<name>`/`<branch>` and every reference to an issue in plans and reports is
   the full issue ID (e.g. `crow-code-4vz.2`), the issue title, or a description
   of the feature. Never a bare ID postfix (`4vz`) — it is unreadable.
-- Do all subsequent work inside the worktree — file paths, exec `workdir`, and
-  verification commands all target `.worktrees/<name>`, not the main checkout.
+- Do all subsequent work inside the worktree — file paths and verification
+  commands all target it, not the main checkout. `dev/*` and `agents/*` need no
+  flags or absolute paths once the session is inside it.
 
 ### Landing
 
@@ -86,11 +88,12 @@ Landing is a fixed sequence. Request approval once — "approval to land the wor
    `git commit -F - <<'EOF'`. `.beads/*.jsonl` will not appear there: `bd` has
    one database in the main checkout and always writes its exports to the main
    checkout's `.beads/`, never the worktree's.
-2. `git rebase main` in the worktree.
+2. `git rebase main` in the worktree, then `ExitWorktree({ action: "keep" })`.
 3. `git merge --ff-only <branch>` in the main checkout. If it fails because
    `main` moved, repeat step 2, rerun `agents/pre-commit`, and retry — never
    create a merge commit.
-4. `git worktree remove .worktrees/<name>`.
+4. `git worktree remove .claude/worktrees/<name>`, then
+   `git branch -d <branch>`.
 5. `bd close <id>` in the main checkout, then stage `.beads/` and commit it
    there (`Close <issue title>`). `git status` on `main` must end empty.
 

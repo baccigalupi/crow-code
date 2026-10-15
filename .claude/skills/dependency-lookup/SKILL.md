@@ -9,12 +9,10 @@ description: >-
 
 # Dependency lookup
 
-Claude Code port of Devin's `dependency-lookup` skill
-(`.devin/skills/dependency-lookup/SKILL.md`) — corrected, not copied verbatim:
-that file still pins a project named `exotui` as crow-code's TUI dependency. It
-isn't. `CLAUDE.md`'s own Dependency lookup section already flags this: the TUI
-(`src/tui/*`) is built on **Ink + React** with **`@preact/signals-core`** for
-state; nothing in `src/` or `deno.json`/`deno.lock` references `exotui` or
+Note on the TUI: older notes pin a project named `exotui` as crow-code's TUI
+dependency. It isn't. `CLAUDE.md`'s Dependency lookup section flags this: the
+TUI (`src/tui/*`) is built on **Ink + React** with **`@preact/signals-core`**
+for state; nothing in `src/` or `deno.json`/`deno.lock` references `exotui` or
 `terminal-ui`. Don't route TUI questions to either indexed project — there isn't
 one. Read `src/tui/*` source directly for TUI questions instead.
 

@@ -10,12 +10,9 @@ description: >-
 
 # Planning
 
-Claude Code port of Devin's `planning` skill (`.devin/skills/planning/SKILL.md`)
-— same plan structure and discipline, adapted to this harness's tools and
-plan-mode mechanics (`EnterPlanMode`/`ExitPlanMode`, `EnterWorktree`, the
-command gate in `.claude/hooks/claude-command-gate.ts`) instead of Devin's
-`exec`/`workdir`/plan-link UI. Keep this file in sync by hand if the Devin skill
-changes — there's no automated link between the two.
+Plans use this harness's tools and plan-mode mechanics
+(`EnterPlanMode`/`ExitPlanMode`, `EnterWorktree`, the command gate in
+`.claude/hooks/claude-command-gate.ts`).
 
 ## Interaction rule
 

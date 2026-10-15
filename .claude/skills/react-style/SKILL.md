@@ -7,9 +7,6 @@ description: >-
 
 # React style
 
-Claude Code port of Devin's `react-style` skill
-(`.devin/skills/react-style/SKILL.md`) — unchanged content.
-
 Conventions for TSX views under `src/tui/`, derived from `src/tui/app/views/`.
 Follow these when writing or reviewing any `.tsx` file.
 

@@ -7,10 +7,8 @@ description: >-
 
 # Unit tests
 
-Claude Code port of Devin's `unit-tests` rule (`.devin/rules/unit-tests.md`).
-Devin applies this automatically by glob (`tests/**/*.test.ts`); Claude Code has
-no glob-triggered rule mechanism, so treat this skill as applying any time
-you're creating or changing test files here.
+Claude Code has no glob-triggered rule mechanism, so treat this skill as
+applying any time you're creating or changing test files here.
 
 ## Hard rules
 

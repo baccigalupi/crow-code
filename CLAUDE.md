@@ -29,15 +29,15 @@ Run a single test file: `dev/test tests/path/to/file.test.ts`. Tests use
 ### Execution restrictions (this environment)
 
 This repo is locked down to an allowlist of safe commands in
-`.devin/config.json`. **For Claude Code specifically**, that same allowlist is
-enforced live by `.claude/settings.json` +
+`.devin/config.json` (a legacy directory name; Claude Code is the only agent
+that uses it). The allowlist is enforced live by `.claude/settings.json` +
 `.claude/hooks/claude-command-gate.ts`, which decides every Bash call
-deterministically (allow or deny, never a prompt) by calling the existing,
-tested Devin gate (`agents/hooks/command-allowed.ts` + `devin-config.ts` +
-`block-reason.ts`) against `.devin/config.json` — one allowlist, not two that
-can drift — see `.claude/skills/correct-command/SKILL.md` for the full command
-table and wrong→right rewrites. In short: only `dev/*`, `agents/*`, `bin/crow`,
-`bd`, `curl`, `chmod`, `rm`, `git mv`, any `git` subcommand except `push`, and
+deterministically (allow or deny, never a prompt) using
+`agents/hooks/command-allowed.ts` + `devin-config.ts` + `block-reason.ts`
+against `.devin/config.json` — one allowlist. See
+`.claude/skills/correct-command/SKILL.md` for the full command table and
+wrong→right rewrites. In short: only `dev/*`, `agents/*`, `bin/crow`, `bd`,
+`curl`, `chmod`, `rm`, `git mv`, any `git` subcommand except `push`, and
 `deno doc` are permitted — never bare `deno`, `bash`, `sh`, or `cd`. Any shell
 metacharacter (`` ` ``, `$(`, `<`, `>`, `;`, `|`, `&`, literal newline) anywhere
 in the command denies it outright — there is no piping, even between two
@@ -45,19 +45,16 @@ read-only inspectors — except the two commit shapes: repeated `-m` flags, or
 `git commit -F - <<'EOF' ... EOF`.
 
 **No `cd`, no `--config` flags, no absolute-path workarounds for targeting a
-worktree.** The Claude Code Bash tool has no `workdir` parameter, so `cd` is the
-_only_ shell-level way to change it — which is exactly why it's denied. Deno's
-config auto-discovery walks up from the process's actual `cwd`, not from a file
+worktree.** The Bash tool has no `workdir` parameter, so `cd` is the _only_
+shell-level way to change it — which is exactly why it's denied. Deno's config
+auto-discovery walks up from the process's actual `cwd`, not from a file
 argument's path, so running `dev/test` against an absolute path into a worktree
 from the main checkout still picks up the main checkout's `deno.json` (which
 excludes worktree directories) and silently finds nothing. The actual fix is the
 `EnterWorktree` tool, which creates `.claude/worktrees/<name>` and switches the
 session's real cwd into it — then `dev/test`, `agents/*`, and file paths all
 just work, unprefixed. Use `ExitWorktree({ action: "keep" })` to return to the
-main checkout for the landing sequence. This supersedes AGENTS.md's manual
-`git worktree add .worktrees/<name>` instructions when operating as Claude Code
-— that flow is written for an exec tool with a real `workdir` parameter, which
-this harness's Bash tool doesn't have.
+main checkout for the landing sequence.
 
 Before finishing any TypeScript change, run `agents/style-check` (narrow with
 `--changed` or explicit files). Before finishing any requested task, run
@@ -176,20 +173,17 @@ vs. advisory.
 
 ## Git / worktree / issue workflow
 
-See `AGENTS.md` for the full, authoritative rules (written for an exec tool with
-a `workdir` parameter) — summary, with the Claude Code-specific worktree
-mechanism called out:
+See `AGENTS.md` for the full, authoritative rules — summary:
 
 - Never commit/stage/push without explicit user ask; commit messages via
   `git commit -F - <<'EOF'` heredoc.
 - All planned work happens in a dedicated worktree, created as the first step of
-  implementation (not planning). **As Claude Code**, use
-  `EnterWorktree({ name: "<id>" })` — not
-  `git worktree add .worktrees/<name> -b <branch>` — so the session's actual cwd
-  moves into `.claude/worktrees/<name>` (gitignored, excluded from `deno.json`)
-  and `dev/*`/`agents/*` resolve the worktree's own `deno.json` with no flags or
-  absolute paths. See `.claude/skills/correct-command/SKILL.md` § Worktrees for
-  why `cd`/`--config` don't work here.
+  implementation (not planning). Use `EnterWorktree({ name: "<id>" })` so the
+  session's actual cwd moves into `.claude/worktrees/<name>` (gitignored,
+  excluded from `deno.json`) and `dev/*`/`agents/*` resolve the worktree's own
+  `deno.json` with no flags or absolute paths. See
+  `.claude/skills/correct-command/SKILL.md` § Worktrees for why `cd`/`--config`
+  don't work here.
 - Landing is a fixed, approval-gated sequence: commit in the worktree →
   `git rebase main` → `ExitWorktree({ action: "keep" })` back to the main
   checkout → `git merge --ff-only <branch>` → remove the worktree and branch →
@@ -206,17 +200,17 @@ mechanism called out:
 live, deterministic PreToolUse decision on every Bash call — allow or deny,
 never a permission prompt (idea modeled on a hook system from a sibling project,
 adapted to reuse what this repo already had). `claude-command-gate.ts` is the
-decision hook; it reuses the existing, tested Devin gate
+decision hook; it calls the tested gate logic
 (`agents/hooks/command-allowed.ts` + `devin-config.ts` + `block-reason.ts`,
-backed by `.devin/config.json`) as the single source of truth, so there's one
-allowlist, not two that can drift — it only patches the one Devin-specific
-wording (`workdir` parameter → `EnterWorktree`) and adds a Claude-only check
-(deny backgrounding `dev/test`/`dev/coverage`/`agents/pre-commit`, which would
-stomp the shared `coverage/` directory). `worktree-path-gate.ts` (decision logic
-in `worktree-path-decision.ts`) separately validates `EnterWorktree`'s `path`
-argument. Tests: `tests/claude-hooks/*.test.ts`. A deny always names the exact
-command to run instead; don't retry a variant of a denied command. Full command
-table and wrong→right rewrites: `.claude/skills/correct-command/SKILL.md`.
+backed by `.devin/config.json`) as the single source of truth — it rewrites the
+`workdir` wording in deny reasons to point at `EnterWorktree` and adds one more
+check (deny backgrounding `dev/test`/`dev/coverage`/`agents/pre-commit`, which
+would stomp the shared `coverage/` directory). `worktree-path-gate.ts` (decision
+logic in `worktree-path-decision.ts`) separately validates `EnterWorktree`'s
+`path` argument. Tests: `tests/claude-hooks/*.test.ts`. A deny always names the
+exact command to run instead; don't retry a variant of a denied command. Full
+command table and wrong→right rewrites:
+`.claude/skills/correct-command/SKILL.md`.
 
 ## Dependency lookup (codebase-memory-mcp)
 
