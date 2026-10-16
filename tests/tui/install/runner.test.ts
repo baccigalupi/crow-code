@@ -3,36 +3,38 @@ import { join } from '@std/path'
 import { expect } from '@std/expect'
 import { runInstalltTui } from '../../../src/tui/install/runner.ts'
 import { defaultRuntime } from '../../../src/application-data/runtime.ts'
-import {
-  crowRepoDirectoryInput,
-  installStep,
-} from '../../../src/tui/install/interactions/state/config-buffer.ts'
 import { emptyBuffer, insertText } from '../../../src/tui/input-buffer.ts'
-import { effect } from '@preact/signals-core'
+import { effect, signal } from '@preact/signals-core'
 import { mockTerminal } from '../../support/mock-terminal.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
+import type { InstallStep } from '../../../src/tui/install/types.ts'
 
 describe('runInstalltTui', () => {
   beforeEach(() => clearDirectory(join(fixturesDirectory, 'install-runner')))
-  afterEach(async () => {
-    await clearDirectory(join(fixturesDirectory, 'install-runner'))
-    crowRepoDirectoryInput.value = emptyBuffer()
-    installStep.value = 'repo'
-  })
+  afterEach(() => clearDirectory(join(fixturesDirectory, 'install-runner')))
 
-  it('when the wizard reaches the write step, writes the config through the runtime and finishes', async () => {
-    runInstalltTui(defaultRuntime(), mockTerminal({}).io)
-    crowRepoDirectoryInput.value = insertText(
-      emptyBuffer(),
-      join(fixturesDirectory, 'install-runner', 'crow'),
-    )
+  it('when the installer reaches the write step, writes the config through the runtime and finishes', async () => {
+    const step = signal<InstallStep>('repo')
+    const state = {
+      repoDirectory: signal(
+        insertText(
+          emptyBuffer(),
+          join(fixturesDirectory, 'install-runner', 'crow'),
+        ),
+      ),
+      globalDirectory: signal(emptyBuffer()),
+      envFile: signal(emptyBuffer()),
+      step,
+      confirmation: signal(true),
+    }
+    runInstalltTui(defaultRuntime(), mockTerminal({}).io, state)
     const finished = new Promise((resolve) =>
       effect(() => {
-        if (installStep.value === 'done') resolve(true)
+        if (step.value === 'done') resolve(true)
       })
     )
 
-    installStep.value = 'write'
+    step.value = 'write'
     await finished
 
     const written = JSON.parse(
@@ -42,6 +44,5 @@ describe('runInstalltTui', () => {
     )
     expect(written.crowGlobalDirectory).toBe('~/.crow')
     expect(written.permissions.ignore).toEqual([])
-    expect(installStep.peek()).toBe('done')
   })
 })

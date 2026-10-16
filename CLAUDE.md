@@ -158,9 +158,9 @@ per-path.
 `src/tui/*` is an Ink/React (`react-jsx`) terminal UI. `app/` is the main chat
 REPL (view-models in `*-view-model.ts` paired with `.tsx` views,
 `interactions/state/chat-session.ts` for session state, `interactions/keymap.ts`
-for key bindings); `install/` is the first-run config wizard with an analogous
-view-model/view/interaction split. State uses `@preact/signals-core` (see
-`use-signal-value.ts`).
+for key bindings); `install/` is the first-run config installer with an
+analogous view-model/view/interaction split. State uses `@preact/signals-core`
+(see `use-signal-value.ts`).
 
 ## Style gates
 

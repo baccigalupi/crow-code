@@ -1,68 +1,70 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { delegate, memoize } from '../src/decorators.ts'
-import type { DenoCommand } from '../src/types.ts'
 
 describe('decorators', () => {
   describe('delegate', () => {
     it('when a delegated member is called, calls it on the attribute', () => {
-      class FakeDeno {
-        Command() {
-          return Deno.Command
+      class Greeter {
+        greet() {
+          return 'hello'
         }
       }
-      @delegate({ Command: 'denoCommand' }, 'deno')
-      class DenoHost {
-        private deno = new FakeDeno()
+      @delegate({ greet: 'greet' }, 'greeter')
+      class Host {
+        private greeter = new Greeter()
       }
-      const host = new DenoHost() as unknown as { denoCommand(): DenoCommand }
+      interface Host {
+        greet(): string
+      }
 
-      const result = host.denoCommand()
+      const result = new Host().greet()
 
-      expect(result).toBe(Deno.Command)
+      expect(result).toBe('hello')
     })
 
     it('when renamed, exposes the member under the given name', () => {
-      class FakeDeno {
-        realPath() {
-          return Deno.realPath
+      class Greeter {
+        greet() {
+          return 'hello'
         }
       }
-      @delegate({ realPath: 'getRealPath' }, 'deno')
-      class DenoHost {
-        private deno = new FakeDeno()
+      @delegate({ greet: 'welcome' }, 'greeter')
+      class Host {
+        private greeter = new Greeter()
       }
-      const host = new DenoHost() as unknown as {
-        getRealPath(): typeof Deno.realPath
+      interface Host {
+        welcome(): string
       }
 
-      const result = host.getRealPath()
+      const result = new Host().welcome()
 
-      expect(result).toBe(Deno.realPath)
+      expect(result).toBe('hello')
     })
 
     it('when several members are delegated, exposes each under its name', () => {
-      class FakeDeno {
-        Command() {
-          return Deno.Command
+      class Greeter {
+        greet() {
+          return 'hello'
         }
 
-        realPath() {
-          return Deno.realPath
+        farewell() {
+          return 'goodbye'
         }
       }
-      @delegate({ Command: 'denoCommand', realPath: 'getRealPath' }, 'deno')
-      class DenoHost {
-        private deno = new FakeDeno()
+      @delegate({ greet: 'welcome', farewell: 'sendOff' }, 'greeter')
+      class Host {
+        private greeter = new Greeter()
       }
-      const host = new DenoHost() as unknown as {
-        denoCommand(): DenoCommand
-        getRealPath(): typeof Deno.realPath
+      interface Host {
+        welcome(): string
+        sendOff(): string
       }
+      const host = new Host()
 
-      const results = [host.denoCommand(), host.getRealPath()]
+      const results = [host.welcome(), host.sendOff()]
 
-      expect(results).toEqual([Deno.Command, Deno.realPath])
+      expect(results).toEqual(['hello', 'goodbye'])
     })
   })
 

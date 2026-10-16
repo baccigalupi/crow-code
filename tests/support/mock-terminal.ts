@@ -1,4 +1,5 @@
-import { PassThrough, Writable } from 'node:stream'
+import { EventEmitter } from 'node:events'
+import { Writable } from 'node:stream'
 import { spy } from '@std/testing/mock'
 import type { ReplIo } from '../../src/tui/types.ts'
 
@@ -17,9 +18,39 @@ const voidWrite = (
   callback()
 }
 
+// A stdin whose writes are delivered synchronously, so a key written to it
+// has been handled by Ink before `write` returns. A real stream would
+// deliver on the next tick.
+class MockStdin extends EventEmitter {
+  isTTY: boolean
+  private data: string | null = null
+
+  constructor(tty: boolean) {
+    super()
+    this.isTTY = tty
+  }
+
+  write = (data: string) => {
+    this.data = data
+    this.emit('readable')
+    this.emit('data', data)
+  }
+
+  read = () => {
+    const { data } = this
+    this.data = null
+    return data
+  }
+
+  setEncoding() {}
+  ref() {}
+  unref() {}
+  resume() {}
+  pause() {}
+}
+
 const mockStdin = (tty: boolean, rawMode: boolean) => {
-  const stdin = new PassThrough()
-  Object.assign(stdin, { isTTY: tty, ref: () => {}, unref: () => {} })
+  const stdin = new MockStdin(tty)
   if (rawMode) Object.assign(stdin, { setRawMode: spy(() => {}) })
   return stdin
 }
@@ -31,10 +62,11 @@ const mockStdout = (columns: number, rows: number) => {
     rows,
   })
   const write = spy(stdout, 'write')
+  // Ink's waitUntilRenderFlush writes an empty barrier chunk; it is not a frame.
   const lastFrame = () => {
-    if (write.calls.length === 0) return ''
-    const last = write.calls[write.calls.length - 1]
-    return String(last.args[0])
+    const frames = write.calls.filter((call) => String(call.args[0]) !== '')
+    if (frames.length === 0) return ''
+    return String(frames[frames.length - 1].args[0])
   }
   return { stdout, write, lastFrame }
 }

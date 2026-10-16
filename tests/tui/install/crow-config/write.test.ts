@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { join } from '@std/path'
 import { expect } from '@std/expect'
+import { spy } from '@std/testing/mock'
 import { effect, signal } from '@preact/signals-core'
 import { writeCrowConfig } from '../../../../src/tui/install/crow-config/write.ts'
 import { defaultRuntime } from '../../../../src/application-data/runtime.ts'
 import type { InstallStep } from '../../../../src/tui/install/types.ts'
 import { inputSignal } from '../../../support/input-signal.ts'
-import { settle } from '../../../support/settle.ts'
 import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
 
 describe('write', () => {
@@ -45,7 +45,9 @@ describe('write', () => {
     dispose()
   })
 
-  it('when the step is not write, writes nothing', async () => {
+  it('when the step is not write, writes nothing', () => {
+    const runtime = defaultRuntime()
+    using mkdir = spy(runtime, 'mkdir')
     const signals = {
       repoDirectory: inputSignal(
         join(fixturesDirectory, 'write-crow-config', 'crow'),
@@ -55,15 +57,11 @@ describe('write', () => {
       step: signal<InstallStep>('env'),
       confirmation: signal(true),
     }
-    const dispose = writeCrowConfig({ signals, runtime: defaultRuntime() })
-      .subscribe()
+    const dispose = writeCrowConfig({ signals, runtime }).subscribe()
 
     signals.step.value = 'confirm'
-    await settle()
 
-    expect(() =>
-      Deno.statSync(join(fixturesDirectory, 'write-crow-config', 'crow'))
-    ).toThrow()
+    expect(mkdir.calls).toHaveLength(0)
     expect(signals.step.peek()).toBe('confirm')
     dispose()
   })
