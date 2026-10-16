@@ -4,7 +4,7 @@ import { resolve } from '@std/path'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { gitUntrackedChange } from '../../../../../src/tools/git/read-only/diff/untracked-change.ts'
 import { mockApplicationData } from '../../../../support/mock-application-data.ts'
-import { mockDenoCommand } from '../../../../support/mock-deno-command.ts'
+import { mockCommand } from '../../../../support/mock-command.ts'
 
 describe('gitUntrackedChange', () => {
   it('when git diff exits with code 1, returns the diff for the given path', async () => {
@@ -12,7 +12,7 @@ describe('gitUntrackedChange', () => {
       `diff --git a/src/new-file.ts b/src/new-file.ts\nnew file mode 100644\nindex 0000000..9daeafb\n--- /dev/null\n+++ b/src/new-file.ts\n@@ -0,0 +1 @@\n+hello\n`
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         commandSpy,
         stdout,
         success: false,
@@ -45,7 +45,7 @@ describe('gitUntrackedChange', () => {
   it('when git cannot be executed, returns an empty diff', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         commandSpy,
         outputError: 'No such file or directory (os error 2): git',
       }),
@@ -73,7 +73,7 @@ describe('gitUntrackedChange', () => {
 
   it('when git exits with a non-1 error code, returns an empty diff', async () => {
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         stderr: 'fatal: not a git repository',
         success: false,
         code: 128,
@@ -97,7 +97,7 @@ describe('gitUntrackedChange', () => {
   it('when the path is outside the repository, fails without running git', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
     const path = resolve(Deno.cwd(), '..', 'outside-git-untracked-change.ts')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')

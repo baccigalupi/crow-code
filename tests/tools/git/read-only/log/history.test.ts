@@ -4,7 +4,7 @@ import { resolve } from '@std/path'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { gitLogHistory } from '../../../../../src/tools/git/read-only/log/history.ts'
 import { mockApplicationData } from '../../../../support/mock-application-data.ts'
-import { mockDenoCommand } from '../../../../support/mock-deno-command.ts'
+import { mockCommand } from '../../../../support/mock-command.ts'
 
 describe('gitLogHistory', () => {
   it('when no arguments are given, returns the last twenty history entries', async () => {
@@ -14,7 +14,7 @@ describe('gitLogHistory', () => {
     ].join('\n') + '\n'
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ stdout, commandSpy }),
+      command: mockCommand({ stdout, commandSpy }),
     })
 
     const history = gitLogHistory({ applicationData })
@@ -45,7 +45,7 @@ describe('gitLogHistory', () => {
   it('when a count is given, limits the history to that many entries', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
 
     const history = gitLogHistory({
@@ -65,7 +65,7 @@ describe('gitLogHistory', () => {
   it('when a filter is present, limits the history to those paths', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
 
     const history = gitLogHistory({
@@ -97,7 +97,7 @@ describe('gitLogHistory', () => {
   it('when a filter path is outside the repository, fails without running git', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
     const path = resolve(Deno.cwd(), '..', 'outside-git-log-history.ts')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
@@ -118,7 +118,7 @@ describe('gitLogHistory', () => {
 
   it('when git cannot be executed, returns an empty list', async () => {
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         outputError: 'No such file or directory (os error 2): git',
       }),
     })

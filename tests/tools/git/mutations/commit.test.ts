@@ -4,13 +4,13 @@ import { resolve } from '@std/path'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { gitCommit } from '../../../../src/tools/git/mutations/commit.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
-import { mockDenoCommand } from '../../../support/mock-deno-command.ts'
+import { mockCommand } from '../../../support/mock-command.ts'
 
 describe('gitCommit', () => {
   it('commits with the requested message', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ stdout: 'committed', commandSpy }),
+      command: mockCommand({ stdout: 'committed', commandSpy }),
     })
     const commit = gitCommit({
       applicationData,
@@ -29,7 +29,7 @@ describe('gitCommit', () => {
   it('when paths are given, commits only those paths', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ stdout: 'committed', commandSpy }),
+      command: mockCommand({ stdout: 'committed', commandSpy }),
     })
     const commit = gitCommit({
       applicationData,
@@ -50,7 +50,7 @@ describe('gitCommit', () => {
 
   it('when git fails, reports failure', async () => {
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ success: false, stderr: 'commit failed' }),
+      command: mockCommand({ success: false, stderr: 'commit failed' }),
     })
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
     const commit = gitCommit({
@@ -68,7 +68,7 @@ describe('gitCommit', () => {
   it('when a path is outside the repository, fails without running git', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
     const path = resolve(Deno.cwd(), '..', 'outside-git-commit.ts')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
@@ -90,7 +90,7 @@ describe('gitCommit', () => {
   it('when a path uses git pathspec magic, fails without running git', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
     const commit = gitCommit({

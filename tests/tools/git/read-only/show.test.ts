@@ -4,13 +4,13 @@ import { resolve } from '@std/path'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { gitShow } from '../../../../src/tools/git/read-only/show.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
-import { mockDenoCommand } from '../../../support/mock-deno-command.ts'
+import { mockCommand } from '../../../support/mock-command.ts'
 
 describe('gitShow', () => {
   it('returns the contents of the file at the given revision', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         stdout: 'const a = 1\nconst b = 2\n',
         commandSpy,
       }),
@@ -34,7 +34,7 @@ describe('gitShow', () => {
   it('when no rev is given, shows the file at HEAD', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
 
     const show = gitShow({
@@ -74,7 +74,7 @@ describe('gitShow', () => {
     ].join('\n')
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ stdout, commandSpy }),
+      command: mockCommand({ stdout, commandSpy }),
     })
 
     const show = gitShow({
@@ -120,7 +120,7 @@ describe('gitShow', () => {
   it('when the path is outside the allowed directories, fails without running git', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
     const path = resolve(Deno.cwd(), '..', 'outside-git-show.ts')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
@@ -142,7 +142,7 @@ describe('gitShow', () => {
   it('when the path uses git pathspec magic, fails without running git', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
 
@@ -161,7 +161,7 @@ describe('gitShow', () => {
 
   it('when git fails to show the commit, returns an empty diff list', async () => {
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         success: false,
         code: 128,
         stderr: 'fatal: bad revision abc123',
@@ -184,7 +184,7 @@ describe('gitShow', () => {
 
   it('when git cannot be executed, returns empty file contents', async () => {
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         outputError: 'No such file or directory (os error 2): git',
       }),
     })
@@ -205,7 +205,7 @@ describe('gitShow', () => {
 
   it('when git exits with an error, returns empty file contents', async () => {
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         success: false,
         code: 128,
         stderr: "fatal: path 'src/a.ts' does not exist in 'abc123'",

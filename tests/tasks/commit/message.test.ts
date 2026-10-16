@@ -3,7 +3,7 @@ import { expect } from '@std/expect'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { commitMessage } from '../../../src/tasks/commit/message.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
-import { mockDenoCommand } from '../../support/mock-deno-command.ts'
+import { mockCommand } from '../../support/mock-command.ts'
 import { mockFetchSuccess } from '../../support/mock-fetch.ts'
 import {
   mockOpenAiClient,
@@ -18,7 +18,7 @@ describe('commitMessage', () => {
       chatClient: mockOpenAiClient(
         '{"subject":"Add login","body":"Adds the login form."}',
       ),
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         commandSpy,
         stdout: 'Fix tests\n',
       }),
@@ -69,7 +69,7 @@ describe('commitMessage', () => {
       chatClient: mockOpenAiClient(
         '{"subject":"Add login","body":"Adds the login form."}',
       ),
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         stdout: [new Error('no commits')],
       }),
     })
@@ -114,7 +114,7 @@ describe('commitMessage', () => {
   it('when every model fails, returns undefined', async () => {
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClientError(500),
-      denoCommand: mockDenoCommand({ stdout: 'Fix tests\n' }),
+      command: mockCommand({ stdout: 'Fix tests\n' }),
     })
     const database = await applicationData.database()
     await database('providers').insert({
@@ -155,7 +155,7 @@ describe('commitMessage', () => {
     const fetch = mockFetchSuccess({})
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClientWithFetch(fetch),
-      denoCommand: mockDenoCommand({ stdout: 'Fix tests\n' }),
+      command: mockCommand({ stdout: 'Fix tests\n' }),
     })
 
     const operation = await commitMessage({

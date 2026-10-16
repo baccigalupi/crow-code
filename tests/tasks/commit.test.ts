@@ -3,7 +3,7 @@ import { expect } from '@std/expect'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { commit } from '../../src/tasks/commit.ts'
 import { mockApplicationData } from '../support/mock-application-data.ts'
-import { mockDenoCommand } from '../support/mock-deno-command.ts'
+import { mockCommand } from '../support/mock-command.ts'
 import { mockFetchSuccess } from '../support/mock-fetch.ts'
 import {
   mockOpenAiClient,
@@ -26,7 +26,7 @@ describe('commit', () => {
     })
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClientWithFetch(fetch),
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         commandSpy,
         stdout: [
           'diff --git a/src/a.ts b/src/a.ts\n--- a/src/a.ts\n+++ b/src/a.ts\n@@ -1 +1 @@\n-old\n+new\n',
@@ -114,7 +114,7 @@ describe('commit', () => {
     const fetch = mockFetchSuccess({})
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClientWithFetch(fetch),
-      denoCommand: mockDenoCommand({ commandSpy, success: false }),
+      command: mockCommand({ commandSpy, success: false }),
     })
     const task = commit({
       applicationData,
@@ -134,7 +134,7 @@ describe('commit', () => {
     const fetch = mockFetchSuccess({})
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClientWithFetch(fetch),
-      denoCommand: mockDenoCommand({ commandSpy, stdout: ['', ''] }),
+      command: mockCommand({ commandSpy, stdout: ['', ''] }),
     })
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
     const task = commit({
@@ -165,7 +165,7 @@ describe('commit', () => {
     })
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClientWithFetch(fetch),
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         commandSpy,
         stdout: [
           'diff --git a/src/a.ts b/src/a.ts\n--- a/src/a.ts\n+++ b/src/a.ts\n@@ -1 +1 @@\n-old\n+new\n',
@@ -227,7 +227,7 @@ describe('commit', () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClientError(500),
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         commandSpy,
         stdout: [
           'diff --git a/src/a.ts b/src/a.ts\n--- a/src/a.ts\n+++ b/src/a.ts\n@@ -1 +1 @@\n-old\n+new\n',
@@ -273,7 +273,7 @@ describe('commit', () => {
       chatClient: mockOpenAiClient(
         '{"subject":"Add login","body":"Adds the login form."}',
       ),
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         commandSpy,
         stdout: [
           'diff --git a/src/a.ts b/src/a.ts\n--- a/src/a.ts\n+++ b/src/a.ts\n@@ -1 +1 @@\n-old\n+new\n',
@@ -320,7 +320,7 @@ describe('commit', () => {
       chatClient: mockOpenAiClient(
         '{"subject":"Add login","body":"Adds the login form."}',
       ),
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         commandSpy,
         stdout: [
           'diff --git a/src/a.ts b/src/a.ts\n--- a/src/a.ts\n+++ b/src/a.ts\n@@ -1 +1 @@\n-old\n+new\n',
@@ -368,7 +368,7 @@ describe('commit', () => {
       chatClient: mockOpenAiClient(
         '{"subject":"Add login","body":"Adds the login form."}',
       ),
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         commandSpy,
         stdout: [
           'diff --git a/src/a.ts b/src/a.ts\n--- a/src/a.ts\n+++ b/src/a.ts\n@@ -1 +1 @@\n-old\n+new\n',

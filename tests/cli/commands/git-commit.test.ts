@@ -4,7 +4,7 @@ import { spy } from '@std/testing/mock'
 import { command } from '../../../src/cli/commands/command.ts'
 import { GitCommit } from '../../../src/cli/commands/git-commit.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
-import { mockDenoCommand } from '../../support/mock-deno-command.ts'
+import { mockCommand } from '../../support/mock-command.ts'
 import { mockFetchSuccess } from '../../support/mock-fetch.ts'
 import { mockOpenAiClient } from '../../support/mock-openai-client.ts'
 
@@ -35,7 +35,7 @@ describe('GitCommit', () => {
       consoleLog,
       consoleError,
       fetch,
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
 
     const gitCommit = command(GitCommit, applicationData)
@@ -58,7 +58,7 @@ describe('GitCommit', () => {
       args: ['git-commit', '--goal=add login', 'src/a.ts'],
       consoleLog,
       consoleError,
-      denoCommand: mockDenoCommand({ success: false }),
+      command: mockCommand({ success: false }),
     })
 
     const gitCommit = command(GitCommit, applicationData)
@@ -83,7 +83,7 @@ describe('GitCommit', () => {
       chatClient: mockOpenAiClient(
         '{"subject":"Add login","body":"Adds the login form."}',
       ),
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         commandSpy,
         stdout: [
           'diff --git a/src/a.ts b/src/a.ts\n--- a/src/a.ts\n+++ b/src/a.ts\n@@ -1 +1 @@\n-old\n+new\n',

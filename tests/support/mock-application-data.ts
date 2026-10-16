@@ -11,6 +11,7 @@ import { parseArguments } from '../../src/application-data/arguments.ts'
 import type { Environment } from '../../src/application-data/env-vars.ts'
 import { mockEnvironment } from './mock-environment.ts'
 import type {
+  Command,
   ConsoleError,
   ConsoleLog,
   DenoCommand,
@@ -29,6 +30,7 @@ export type MockApplicationDataOverrides = {
   fetch?: typeof fetch
   chatClient?: (options: OpenAiClientOptions) => OpenAI
   denoCommand?: DenoCommand
+  command?: Command
   envars?: Environment
   config?: CrowConfig
 }
@@ -71,6 +73,7 @@ export const mockApplicationData = (
   stub(data, 'consoleError', () => consoleError)
   stub(data, 'fetch', () => fetchClient)
   stub(data, 'denoCommand', () => denoCommand)
+  if (overrides.command) stub(data.runtime, 'command', overrides.command)
   stub(data, 'envars', () => envars)
   stub(data, 'chatClient', chatClient)
 

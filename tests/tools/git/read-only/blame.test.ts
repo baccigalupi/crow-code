@@ -4,7 +4,7 @@ import { resolve } from '@std/path'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { gitBlame } from '../../../../src/tools/git/read-only/blame.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
-import { mockDenoCommand } from '../../../support/mock-deno-command.ts'
+import { mockCommand } from '../../../support/mock-command.ts'
 
 describe('gitBlame', () => {
   it('returns structured blame data for each line of the file', async () => {
@@ -37,7 +37,7 @@ describe('gitBlame', () => {
     ].join('\n')
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ stdout, commandSpy }),
+      command: mockCommand({ stdout, commandSpy }),
     })
 
     const blame = gitBlame({
@@ -75,7 +75,7 @@ describe('gitBlame', () => {
   it('when start and end are given, limits the blame to that line range', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
 
     const blame = gitBlame({
@@ -97,7 +97,7 @@ describe('gitBlame', () => {
   it('when only start is given, blames from that line to the end of file', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
 
     const blame = gitBlame({
@@ -117,7 +117,7 @@ describe('gitBlame', () => {
   it('when a rev is given, blames the file at that revision', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
 
     const blame = gitBlame({
@@ -139,7 +139,7 @@ describe('gitBlame', () => {
   it('when the path is outside the repository, fails without running git', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
     const path = resolve(Deno.cwd(), '..', 'outside-git-blame.ts')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
@@ -160,7 +160,7 @@ describe('gitBlame', () => {
 
   it('when git cannot be executed, returns an empty list', async () => {
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         outputError: 'No such file or directory (os error 2): git',
       }),
     })

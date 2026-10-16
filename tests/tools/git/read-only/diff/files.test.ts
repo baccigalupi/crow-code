@@ -5,13 +5,13 @@ import { spy } from '@std/testing/mock'
 import { gitDiffFiles } from '../../../../../src/tools/git/read-only/diff/files.ts'
 import { loadTextFixture } from '../../../../../tests/support/fixtures.ts'
 import { mockApplicationData } from '../../../../../tests/support/mock-application-data.ts'
-import { mockDenoCommand } from '../../../../../tests/support/mock-deno-command.ts'
+import { mockCommand } from '../../../../support/mock-command.ts'
 
 describe('gitDiffFiles', () => {
   it('when filter is null, returns all files in the current uncommitted diff', async () => {
     const stdout = await loadTextFixture('tools/git/git-diff-files.txt')
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ stdout }),
+      command: mockCommand({ stdout }),
     })
 
     const gitDiff = gitDiffFiles({ applicationData })
@@ -47,7 +47,7 @@ describe('gitDiffFiles', () => {
   it('when filter is provided, returns only files in the filter', async () => {
     const stdout = await loadTextFixture('tools/git/git-diff-files.txt')
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ stdout }),
+      command: mockCommand({ stdout }),
     })
 
     const gitDiff = gitDiffFiles({
@@ -71,7 +71,7 @@ describe('gitDiffFiles', () => {
   it('when filter is provided and no files match, returns an empty array', async () => {
     const stdout = await loadTextFixture('tools/git/git-diff-files.txt')
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ stdout }),
+      command: mockCommand({ stdout }),
     })
 
     const gitDiff = gitDiffFiles({
@@ -88,7 +88,7 @@ describe('gitDiffFiles', () => {
 
   it('when git cannot be executed, returns an empty array', async () => {
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         outputError: 'No such file or directory (os error 2): git',
       }),
     })
@@ -106,7 +106,7 @@ describe('gitDiffFiles', () => {
 
   it('when git exits non-zero, returns an empty array', async () => {
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         stderr: 'fatal: not a git repository',
         success: false,
         code: 128,
@@ -127,7 +127,7 @@ describe('gitDiffFiles', () => {
   it('when a filter path is outside the repository, fails without running git', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
     const path = resolve(Deno.cwd(), '..', 'outside-git-diff-files.ts')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')

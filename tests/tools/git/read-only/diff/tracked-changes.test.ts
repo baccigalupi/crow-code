@@ -5,14 +5,14 @@ import { assertSpyCall, spy } from '@std/testing/mock'
 import { gitTrackedChanges } from '../../../../../src/tools/git/read-only/diff/tracked-changes.ts'
 import { loadTextFixture } from '../../../../support/fixtures.ts'
 import { mockApplicationData } from '../../../../support/mock-application-data.ts'
-import { mockDenoCommand } from '../../../../support/mock-deno-command.ts'
+import { mockCommand } from '../../../../support/mock-command.ts'
 
 describe('gitTrackedChanges', () => {
   it('when no filter is present, returns the full diff', async () => {
     const stdout = await loadTextFixture('tools/git/git-diff.diff')
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ stdout, commandSpy }),
+      command: mockCommand({ stdout, commandSpy }),
     })
 
     const diff = gitTrackedChanges({ applicationData })
@@ -34,7 +34,7 @@ describe('gitTrackedChanges', () => {
   it('when a filter is present, limits the diff to those files', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
 
     const diff = gitTrackedChanges({
@@ -55,7 +55,7 @@ describe('gitTrackedChanges', () => {
 
   it('when git cannot be executed, returns an empty diff', async () => {
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         outputError: 'No such file or directory (os error 2): git',
       }),
     })
@@ -74,7 +74,7 @@ describe('gitTrackedChanges', () => {
   it('when a filter path is outside the repository, fails without running git', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
     const path = resolve(Deno.cwd(), '..', 'outside-git-tracked-changes.ts')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')

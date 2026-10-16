@@ -3,13 +3,13 @@ import { expect } from '@std/expect'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { gitUntrackedChanges } from '../../../../../src/tools/git/read-only/diff/untracked-changes.ts'
 import { mockApplicationData } from '../../../../support/mock-application-data.ts'
-import { mockDenoCommand } from '../../../../support/mock-deno-command.ts'
+import { mockCommand } from '../../../../support/mock-command.ts'
 
 describe('gitUntrackedChanges', () => {
   it('when there are untracked files, returns a diff for each one', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         commandSpy,
         stdout: [
           ' M src/tracked.ts\n?? src/a.ts\n?? src/b.ts\n',
@@ -41,7 +41,7 @@ describe('gitUntrackedChanges', () => {
 
   it('when one file diff fails, fails but keeps the diffs that worked', async () => {
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         stdout: [
           '?? src/a.ts\n?? src/b.ts\n',
           'diff --git a/src/a.ts b/src/a.ts\nnew file mode 100644\n--- /dev/null\n+++ b/src/a.ts\n@@ -0,0 +1 @@\n+alpha\n',
@@ -66,7 +66,7 @@ describe('gitUntrackedChanges', () => {
   it('when git status fails, does not diff any files and returns an empty array', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         commandSpy,
         stderr: 'fatal: not a git repository',
         success: false,

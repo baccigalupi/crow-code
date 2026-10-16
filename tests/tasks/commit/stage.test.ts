@@ -4,13 +4,13 @@ import { resolve } from '@std/path'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { stageAndCommit } from '../../../src/tasks/commit/stage.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
-import { mockDenoCommand } from '../../support/mock-deno-command.ts'
+import { mockCommand } from '../../support/mock-command.ts'
 
 describe('stageAndCommit', () => {
   it('when add and commit succeed, returns true and runs both', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         commandSpy,
         stdout: ['', ''],
       }),
@@ -36,7 +36,7 @@ describe('stageAndCommit', () => {
   it('when files are omitted, adds all changes and commits', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         commandSpy,
         stdout: ['', ''],
       }),
@@ -59,7 +59,7 @@ describe('stageAndCommit', () => {
   it('when add fails, returns false without committing', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         commandSpy,
         stdout: [new Error('add failed')],
       }),
@@ -77,7 +77,7 @@ describe('stageAndCommit', () => {
   it('when commit fails, returns false', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         commandSpy,
         stdout: ['', new Error('commit failed')],
       }),
@@ -95,7 +95,7 @@ describe('stageAndCommit', () => {
   it('when a file is outside the repository, fails before staging', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
     const path = resolve(Deno.cwd(), '..', 'outside-stage-commit.ts')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')

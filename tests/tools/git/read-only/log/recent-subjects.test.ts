@@ -3,14 +3,14 @@ import { expect } from '@std/expect'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { gitRecentSubjects } from '../../../../../src/tools/git/read-only/log/recent-subjects.ts'
 import { mockApplicationData } from '../../../../support/mock-application-data.ts'
-import { mockDenoCommand } from '../../../../support/mock-deno-command.ts'
+import { mockCommand } from '../../../../support/mock-command.ts'
 
 describe('gitRecentSubjects', () => {
   it('when no count is given, returns the last ten commit subjects', async () => {
     const stdout = 'Add login\nFix tests\n'
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ stdout, commandSpy }),
+      command: mockCommand({ stdout, commandSpy }),
     })
 
     const subjects = gitRecentSubjects({ applicationData })
@@ -25,7 +25,7 @@ describe('gitRecentSubjects', () => {
   it('when a count is given, limits the log to that many subjects', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
 
     const subjects = gitRecentSubjects({
@@ -41,7 +41,7 @@ describe('gitRecentSubjects', () => {
 
   it('when git cannot be executed, returns an empty list', async () => {
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         outputError: 'No such file or directory (os error 2): git',
       }),
     })

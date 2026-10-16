@@ -8,7 +8,7 @@ import { run } from '../src/cli.ts'
 import { clearDirectory, fixturesDirectory } from './support/fixtures.ts'
 import { mockApplicationData } from './support/mock-application-data.ts'
 import { mockFetchRoutes } from './support/mock-fetch.ts'
-import { mockDenoCommand } from './support/mock-deno-command.ts'
+import { mockCommand } from './support/mock-command.ts'
 
 describe('run', () => {
   beforeEach(async () => {
@@ -136,7 +136,7 @@ describe('run', () => {
       args: ['git-commit', '--goal=add login'],
       consoleLog,
       consoleError,
-      denoCommand: mockDenoCommand({ success: false }),
+      command: mockCommand({ success: false }),
     })
 
     await run(applicationData, () => {})

@@ -4,13 +4,13 @@ import { resolve } from '@std/path'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { gitAdd } from '../../../../src/tools/git/mutations/add.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
-import { mockDenoCommand } from '../../../support/mock-deno-command.ts'
+import { mockCommand } from '../../../support/mock-command.ts'
 
 describe('gitAdd', () => {
   it('adds the requested paths', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
     const add = gitAdd({
       applicationData,
@@ -29,7 +29,7 @@ describe('gitAdd', () => {
   it('when no paths are given, adds all changes', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
     const add = gitAdd({ applicationData })
 
@@ -44,7 +44,7 @@ describe('gitAdd', () => {
 
   it('when git fails, reports failure', async () => {
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ success: false, stderr: 'add failed' }),
+      command: mockCommand({ success: false, stderr: 'add failed' }),
     })
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
     const add = gitAdd({
@@ -62,7 +62,7 @@ describe('gitAdd', () => {
   it('when a path is outside the repository, fails without running git', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
     const path = resolve(Deno.cwd(), '..', 'outside-git-add.ts')
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
@@ -84,7 +84,7 @@ describe('gitAdd', () => {
   it('when a path uses git pathspec magic, fails without running git', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
     using loggerErrorSpy = spy(applicationData.logger(), 'error')
     const add = gitAdd({
@@ -105,7 +105,7 @@ describe('gitAdd', () => {
   it('when paths stay inside the repository, runs git', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
     const add = gitAdd({
       applicationData,

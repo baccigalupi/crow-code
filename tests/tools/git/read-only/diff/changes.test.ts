@@ -3,13 +3,13 @@ import { expect } from '@std/expect'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { gitChanges } from '../../../../../src/tools/git/read-only/diff/changes.ts'
 import { mockApplicationData } from '../../../../support/mock-application-data.ts'
-import { mockDenoCommand } from '../../../../support/mock-deno-command.ts'
+import { mockCommand } from '../../../../support/mock-command.ts'
 
 describe('gitChanges', () => {
   it('when tracked and untracked files changed, returns both diffs and succeeds', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         commandSpy,
         stdout: [
           'diff --git a/src/a.ts b/src/a.ts\n--- a/src/a.ts\n+++ b/src/a.ts\n@@ -1 +1 @@\n-old\n+new\n',
@@ -40,7 +40,7 @@ describe('gitChanges', () => {
   it('when a filter is given, scopes both children', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         commandSpy,
         stdout: [
           'diff --git a/src/a.ts b/src/a.ts\n--- a/src/a.ts\n+++ b/src/a.ts\n@@ -1 +1 @@\n-old\n+new\n',
@@ -69,7 +69,7 @@ describe('gitChanges', () => {
 
   it('when the tracked diff fails, fails', async () => {
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         stdout: [new Error('diff failed'), ''],
       }),
     })
@@ -82,7 +82,7 @@ describe('gitChanges', () => {
 
   it('when the status command fails, fails but keeps the tracked diff', async () => {
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         stdout: [
           'diff --git a/src/a.ts b/src/a.ts\n--- a/src/a.ts\n+++ b/src/a.ts\n@@ -1 +1 @@\n-old\n+new\n',
           new Error('status failed'),
@@ -101,7 +101,7 @@ describe('gitChanges', () => {
   it('when only applicationData is given, diffs HEAD without a filter', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
     const changes = gitChanges({ applicationData })
 
@@ -115,7 +115,7 @@ describe('gitChanges', () => {
   it('when a filter path is outside the repository, fails without running git', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy }),
+      command: mockCommand({ commandSpy }),
     })
     const changes = gitChanges({
       applicationData,

@@ -5,7 +5,7 @@ import { exists } from '@std/fs'
 import { spy, stub } from '@std/testing/mock'
 import { buildApplicationData } from '../../src/application-data/builder.ts'
 import { Runtime } from '../../src/application-data/runtime.ts'
-import { mockDeno } from '../support/mock-deno-command.ts'
+import { mockDeno } from '../support/mock-command.ts'
 import { clearDirectory, fixturesDirectory } from '../support/fixtures.ts'
 
 describe('buildApplicationData', () => {

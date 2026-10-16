@@ -1,6 +1,9 @@
 import { parseArguments } from './arguments.ts'
 import { memoize } from '../decorators.ts'
 import { Environment, loadEnvironmentalVariables } from './env-vars.ts'
+import type { CommandOptions, CommandOutput, Signal } from '../types.ts'
+
+const decode = (bytes: Uint8Array) => new TextDecoder().decode(bytes)
 
 export class Runtime {
   private deno: typeof Deno
@@ -23,6 +26,35 @@ export class Runtime {
 
   denoCommand() {
     return this.deno.Command
+  }
+
+  async command(
+    executable: string,
+    options: CommandOptions,
+  ): Promise<CommandOutput> {
+    const output = await new this.deno.Command(executable, options).output()
+    return {
+      success: output.success,
+      code: output.code,
+      stdout: decode(output.stdout),
+      stderr: decode(output.stderr),
+    }
+  }
+
+  exit(code: number): never {
+    return this.deno.exit(code)
+  }
+
+  addSignalListener(signal: Signal, handler: () => void) {
+    this.deno.addSignalListener(signal, handler)
+  }
+
+  removeSignalListener(signal: Signal, handler: () => void) {
+    this.deno.removeSignalListener(signal, handler)
+  }
+
+  writeStderr(text: string) {
+    this.deno.stderr.writeSync(new TextEncoder().encode(text))
   }
 
   envars() {
