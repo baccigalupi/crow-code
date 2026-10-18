@@ -1,28 +1,26 @@
+import type { Runtime } from '../runtime.ts'
 import type {
   AsyncOperationWithResult,
-  DenoCommand,
+  CommandOutput,
   Logger,
 } from '../../types.ts'
 
 type GitRepositoryRootArguments = {
-  denoCommand: DenoCommand
+  runtime: Runtime
   logger: Logger
-  cwd: string
 }
 
 export class GitRepositoryRoot implements AsyncOperationWithResult<string> {
   private logPrefix = 'Git repository root: '
-  private denoCommand: DenoCommand
+  private runtime: Runtime
   private logger: Logger
-  private cwd: string
   private responseText = ''
   private succeeded = true
   reason = ''
 
-  constructor({ denoCommand, logger, cwd }: GitRepositoryRootArguments) {
-    this.denoCommand = denoCommand
+  constructor({ runtime, logger }: GitRepositoryRootArguments) {
+    this.runtime = runtime
     this.logger = logger
-    this.cwd = cwd
   }
 
   async run() {
@@ -35,17 +33,16 @@ export class GitRepositoryRoot implements AsyncOperationWithResult<string> {
   }
 
   private output() {
-    return new this.denoCommand(
-      'git',
-      { args: ['rev-parse', '--show-toplevel'] },
-    ).output()
+    return this.runtime.command('git', {
+      args: ['rev-parse', '--show-toplevel'],
+    })
   }
 
-  private handleResponse(response: Deno.CommandOutput) {
-    if (response.success) {
-      this.responseText = new TextDecoder().decode(response.stdout)
+  private handleResponse(output: CommandOutput) {
+    if (output.success) {
+      this.responseText = output.stdout
     } else {
-      this.fail(new TextDecoder().decode(response.stderr))
+      this.fail(output.stderr)
     }
   }
 
@@ -54,7 +51,7 @@ export class GitRepositoryRoot implements AsyncOperationWithResult<string> {
   }
 
   result() {
-    return this.responseText.trim() || this.cwd
+    return this.responseText.trim() || this.runtime.cwd
   }
 
   private fail(reason: string) {

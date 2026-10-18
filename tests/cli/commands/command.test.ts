@@ -1,6 +1,6 @@
 import { describe, it, mock } from 'node:test'
 import { expect } from '@std/expect'
-import { Command, command } from '../../../src/cli/commands/command.ts'
+import { Command } from '../../../src/cli/commands/command.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('Command', () => {
@@ -14,11 +14,12 @@ describe('Command', () => {
         return Promise.resolve(this)
       }
     }
+    const applicationData = mockApplicationData({ args: ['first'] })
 
-    const first = command(
-      FirstCommand,
-      mockApplicationData({ args: ['first'] }),
-    )
+    const first = new FirstCommand({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    })
 
     expect(first.isMatch()).toBe(true)
   })
@@ -33,11 +34,12 @@ describe('Command', () => {
         return Promise.resolve(this)
       }
     }
+    const applicationData = mockApplicationData({ args: ['--goal=ship'] })
 
-    const goal = command(
-      GoalCommand,
-      mockApplicationData({ args: ['--goal=ship'] }),
-    )
+    const goal = new GoalCommand({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    })
 
     expect(goal.isMatch()).toBe(true)
   })
@@ -58,7 +60,10 @@ describe('Command', () => {
       args: ['first', 'arg'],
       consoleError,
     })
-    const failing = command(FailingCommand, applicationData)
+    const failing = new FailingCommand({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    })
 
     await failing.run()
     failing.reportFailure()
@@ -80,10 +85,11 @@ describe('Command', () => {
         return Promise.resolve(this)
       }
     }
-    const failing = command(
-      SilentFailure,
-      mockApplicationData({ args: [], consoleError }),
-    )
+    const applicationData = mockApplicationData({ args: [], consoleError })
+    const failing = new SilentFailure({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    })
 
     await failing.run()
     failing.reportFailure()
@@ -91,6 +97,49 @@ describe('Command', () => {
     expect(consoleError.mock.calls[0].arguments[0]).toBe(
       'Error: no widgets for silent failure',
     )
+  })
+
+  it('when a command succeeds, its exit code is 0', async () => {
+    class Quiet extends Command {
+      isMatch() {
+        return true
+      }
+
+      run() {
+        return Promise.resolve(this)
+      }
+    }
+    const applicationData = mockApplicationData()
+    const quiet = new Quiet({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    })
+
+    await quiet.run()
+
+    expect(quiet.exitCode()).toBe(0)
+  })
+
+  it('when a command fails, its exit code is 1', async () => {
+    class Loud extends Command {
+      isMatch() {
+        return true
+      }
+
+      run() {
+        this.fail('no widgets')
+        return Promise.resolve(this)
+      }
+    }
+    const applicationData = mockApplicationData()
+    const loud = new Loud({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    })
+
+    await loud.run()
+
+    expect(loud.exitCode()).toBe(1)
   })
 
   it('when constructed, exposes the application data to subclasses', async () => {
@@ -107,7 +156,10 @@ describe('Command', () => {
     }
     const applicationData = mockApplicationData({ consoleLog })
 
-    await command(Echo, applicationData).run()
+    await new Echo({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    }).run()
 
     expect(consoleLog.mock.calls[0].arguments[0]).toBe('echo')
   })

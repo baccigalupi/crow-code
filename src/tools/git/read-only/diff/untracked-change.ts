@@ -1,4 +1,7 @@
-import type { ApplicationOperationArguments } from '../../../../types.ts'
+import type {
+  ApplicationOperationArguments,
+  CommandOutput,
+} from '../../../../types.ts'
 import { GitExec } from '../../git-exec.ts'
 import type { GitFileDiff } from '../../../types.ts'
 
@@ -32,8 +35,8 @@ export class GitUntrackedChange extends GitExec<TaskArguments, GitFileDiff> {
     return [this.operationArguments.path]
   }
 
-  protected override isSuccessful(response: Deno.CommandOutput) {
-    return response.success || response.code === 1
+  protected override isSuccessful(output: CommandOutput) {
+    return output.success || output.code === 1
   }
 }
 

@@ -32,15 +32,6 @@ describe('ApplicationData', () => {
     expect(appData.consoleLog()).toEqual(console.log)
   })
 
-  it('delegates runtime to the attribute', () => {
-    const appData = new ApplicationData()
-    appData.runtime = new Runtime(Deno)
-
-    const denoCommand = appData.denoCommand()
-
-    expect(denoCommand).toBe(Deno.Command)
-  })
-
   it('delegates write path permissions to allowedPaths', () => {
     const appData = new ApplicationData()
     appData.runtime = new Runtime(Deno)

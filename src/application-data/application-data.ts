@@ -11,12 +11,11 @@ import { AllowedPaths } from './allowed-paths.ts'
 import type { PathPermissions } from './allowed-paths/path-permissions.ts'
 import { expandHome } from './allowed-paths/expand-home.ts'
 import { openAndMigrateDatabase } from '../database/open-and-migrate-database.ts'
-import type { ConsoleError, ConsoleLog, DenoCommand, Logger } from '../types.ts'
+import type { ConsoleError, ConsoleLog, Logger } from '../types.ts'
 
 @delegate(
   {
     args: 'args',
-    denoCommand: 'denoCommand',
     envars: 'envars',
   },
   'runtime',
@@ -87,7 +86,6 @@ export interface ApplicationData {
   args(): string[]
   consoleError(): ConsoleError
   consoleLog(): ConsoleLog
-  denoCommand(): DenoCommand
   envars(): Environment
   fetch(): typeof fetch
   gitPathPermissions(): PathPermissions

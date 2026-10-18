@@ -15,5 +15,5 @@ export const runInstalltTui = (
   state: InstallState = installState,
 ) => {
   writeCrowConfig({ signals: state, runtime }).subscribe()
-  return createRunner(io, InstallApp)
+  return createRunner(runtime, io, InstallApp)
 }

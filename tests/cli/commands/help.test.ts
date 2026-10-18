@@ -1,6 +1,5 @@
 import { describe, it, mock } from 'node:test'
 import { expect } from '@std/expect'
-import { command } from '../../../src/cli/commands/command.ts'
 import { Help } from '../../../src/cli/commands/help.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
@@ -8,7 +7,10 @@ describe('Help', () => {
   it('when any arguments are passed, matches', () => {
     const applicationData = mockApplicationData({ args: ['unknown'] })
 
-    const help = command(Help, applicationData)
+    const help = new Help({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    })
 
     expect(help.isMatch()).toBe(true)
   })
@@ -19,7 +21,10 @@ describe('Help', () => {
       args: ['--help'],
       consoleLog,
     })
-    const help = command(Help, applicationData)
+    const help = new Help({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    })
 
     await help.run()
 

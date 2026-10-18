@@ -3,7 +3,7 @@ import type { Knex } from 'knex'
 import type OpenAI from 'openai'
 import { stub } from '@std/testing/mock'
 import { ApplicationData } from '../../src/application-data/application-data.ts'
-import { defaultRuntime } from '../../src/application-data/runtime.ts'
+import { Runtime } from '../../src/application-data/runtime.ts'
 import { CrowConfig } from '../../src/application-data/config.ts'
 import { defaultCrowConfig } from '../../src/application-data/load-config.ts'
 import { Io } from '../../src/application-data/io.ts'
@@ -14,7 +14,6 @@ import type {
   Command,
   ConsoleError,
   ConsoleLog,
-  DenoCommand,
   Logger,
 } from '../../src/types.ts'
 import type { OpenAiClientOptions } from '../../src/model-requests/types.ts'
@@ -29,10 +28,11 @@ export type MockApplicationDataOverrides = {
   consoleError?: ConsoleError
   fetch?: typeof fetch
   chatClient?: (options: OpenAiClientOptions) => OpenAI
-  denoCommand?: DenoCommand
   command?: Command
+  exit?: (code: number) => void
   envars?: Environment
   config?: CrowConfig
+  cwd?: string
 }
 
 export const mockApplicationData = (
@@ -40,10 +40,10 @@ export const mockApplicationData = (
 ): ApplicationData => {
   const data = new ApplicationData()
   const args = overrides.args || []
-  data.runtime = defaultRuntime()
+  data.runtime = new Runtime(Deno, undefined, overrides.cwd)
   data.io = new Io('')
   data.parsedArguments = parseArguments(args)
-  data.repositoryRoot = data.runtime.cwd()
+  data.repositoryRoot = data.runtime.cwd
   data.config = overrides.config || new CrowConfig('.', defaultCrowConfig())
 
   const logger = overrides.logger || pino({ enabled: false })
@@ -61,7 +61,6 @@ export const mockApplicationData = (
   const consoleLog = overrides.consoleLog || (() => {})
   const consoleError = overrides.consoleError || (() => {})
   const fetchClient = overrides.fetch || mockFetchSuccess({})
-  const denoCommand = overrides.denoCommand || Deno.Command
   const envars = overrides.envars || mockEnvironment({})
   const chatClient = overrides.chatClient || mockOpenAiClient('')
 
@@ -72,8 +71,9 @@ export const mockApplicationData = (
   stub(data, 'consoleLog', () => consoleLog)
   stub(data, 'consoleError', () => consoleError)
   stub(data, 'fetch', () => fetchClient)
-  stub(data, 'denoCommand', () => denoCommand)
   if (overrides.command) stub(data.runtime, 'command', overrides.command)
+  const exit = (overrides.exit || (() => {})) as Runtime['exit']
+  stub(data.runtime, 'exit', exit)
   stub(data, 'envars', () => envars)
   stub(data, 'chatClient', chatClient)
 

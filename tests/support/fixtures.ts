@@ -2,7 +2,7 @@ import { join } from '@std/path'
 import { defaultRuntime } from '../../src/application-data/runtime.ts'
 
 export const fixturesDirectory = join(
-  defaultRuntime().cwd(),
+  defaultRuntime().cwd,
   'tests',
   'support',
   'fixtures',

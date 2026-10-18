@@ -3,19 +3,19 @@ import { expect } from '@std/expect'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { gitRepositoryRoot } from '../../../src/application-data/allowed-paths/repository-root.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
-import { mockDenoCommand } from '../../support/mock-deno-command.ts'
+import { mockCommand } from '../../support/mock-command.ts'
 
 describe('gitRepositoryRoot', () => {
   it('returns the worktree root from git', async () => {
     const commandSpy = spy()
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ commandSpy, stdout: '/some/repo\n' }),
+      command: mockCommand({ commandSpy, stdout: '/some/repo\n' }),
+      cwd: '/working/directory',
     })
 
     const root = gitRepositoryRoot({
-      denoCommand: applicationData.denoCommand(),
+      runtime: applicationData.runtime,
       logger: applicationData.logger(),
-      cwd: '/working/directory',
     })
     await root.run()
 
@@ -28,13 +28,13 @@ describe('gitRepositoryRoot', () => {
 
   it('when git prints nothing, falls back to the working directory', async () => {
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({ stdout: '   \n' }),
+      command: mockCommand({ stdout: '   \n' }),
+      cwd: '/working/directory',
     })
 
     const root = gitRepositoryRoot({
-      denoCommand: applicationData.denoCommand(),
+      runtime: applicationData.runtime,
       logger: applicationData.logger(),
-      cwd: '/working/directory',
     })
     await root.run()
 
@@ -43,17 +43,17 @@ describe('gitRepositoryRoot', () => {
 
   it('when git fails, falls back to the working directory', async () => {
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         stderr: 'fatal: not a git repository',
         success: false,
         code: 128,
       }),
+      cwd: '/working/directory',
     })
 
     const root = gitRepositoryRoot({
-      denoCommand: applicationData.denoCommand(),
+      runtime: applicationData.runtime,
       logger: applicationData.logger(),
-      cwd: '/working/directory',
     })
     await root.run()
 
@@ -64,15 +64,15 @@ describe('gitRepositoryRoot', () => {
 
   it('when git cannot be executed, falls back to the working directory', async () => {
     const applicationData = mockApplicationData({
-      denoCommand: mockDenoCommand({
+      command: mockCommand({
         outputError: 'No such file or directory (os error 2): git',
       }),
+      cwd: '/working/directory',
     })
 
     const root = gitRepositoryRoot({
-      denoCommand: applicationData.denoCommand(),
+      runtime: applicationData.runtime,
       logger: applicationData.logger(),
-      cwd: '/working/directory',
     })
     await root.run()
 

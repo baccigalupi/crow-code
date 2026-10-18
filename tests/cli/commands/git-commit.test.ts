@@ -1,7 +1,6 @@
 import { describe, it, mock } from 'node:test'
 import { expect } from '@std/expect'
 import { spy } from '@std/testing/mock'
-import { command } from '../../../src/cli/commands/command.ts'
 import { GitCommit } from '../../../src/cli/commands/git-commit.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { mockCommand } from '../../support/mock-command.ts'
@@ -12,7 +11,10 @@ describe('GitCommit', () => {
   it('when the command is git-commit, matches', () => {
     const applicationData = mockApplicationData({ args: ['git-commit'] })
 
-    const gitCommit = command(GitCommit, applicationData)
+    const gitCommit = new GitCommit({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    })
 
     expect(gitCommit.isMatch()).toBe(true)
   })
@@ -20,7 +22,10 @@ describe('GitCommit', () => {
   it('when the command is something else, does not match', () => {
     const applicationData = mockApplicationData({ args: ['add-provider'] })
 
-    const gitCommit = command(GitCommit, applicationData)
+    const gitCommit = new GitCommit({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    })
 
     expect(gitCommit.isMatch()).toBe(false)
   })
@@ -38,7 +43,10 @@ describe('GitCommit', () => {
       command: mockCommand({ commandSpy }),
     })
 
-    const gitCommit = command(GitCommit, applicationData)
+    const gitCommit = new GitCommit({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    })
     await gitCommit.run()
     gitCommit.reportFailure()
 
@@ -61,7 +69,10 @@ describe('GitCommit', () => {
       command: mockCommand({ success: false }),
     })
 
-    const gitCommit = command(GitCommit, applicationData)
+    const gitCommit = new GitCommit({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    })
     await gitCommit.run()
     gitCommit.reportFailure()
 
@@ -115,7 +126,10 @@ describe('GitCommit', () => {
       reasoning_options: '{}',
     })
 
-    const gitCommit = command(GitCommit, applicationData)
+    const gitCommit = new GitCommit({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    })
     await gitCommit.run()
 
     expect(gitCommit.success()).toBe(true)

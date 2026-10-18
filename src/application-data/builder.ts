@@ -84,9 +84,8 @@ export class ApplicationDataBuilder
 
   private async repositoryRoot() {
     const root = gitRepositoryRoot({
-      denoCommand: this.appData.runtime!.denoCommand(),
+      runtime: this.appData.runtime!,
       logger: this.appData.io!.logger(),
-      cwd: this.appData.runtime!.cwd(),
     })
     await this.subOperations.run(root, 'find the repository root')
     return root.result()

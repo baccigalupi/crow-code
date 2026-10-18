@@ -1,44 +1,30 @@
 import { parseArguments } from './arguments.ts'
 import { memoize } from '../decorators.ts'
 import { Environment, loadEnvironmentalVariables } from './env-vars.ts'
+import { runtimeExec } from './runtime-exec.ts'
 import type { CommandOptions, CommandOutput, Signal } from '../types.ts'
-
-const decode = (bytes: Uint8Array) => new TextDecoder().decode(bytes)
 
 export class Runtime {
   private deno: typeof Deno
   private environment: Environment
-  private directory: string
+  readonly cwd: string
 
   constructor(
     deno: typeof Deno,
     environment: Environment = new Environment(deno),
-    directory: string = deno.cwd(),
+    cwd: string = deno.cwd(),
   ) {
     this.deno = deno
     this.environment = environment
-    this.directory = directory
+    this.cwd = cwd
   }
 
   args() {
     return this.deno.args
   }
 
-  denoCommand() {
-    return this.deno.Command
-  }
-
-  async command(
-    executable: string,
-    options: CommandOptions,
-  ): Promise<CommandOutput> {
-    const output = await new this.deno.Command(executable, options).output()
-    return {
-      success: output.success,
-      code: output.code,
-      stdout: decode(output.stdout),
-      stderr: decode(output.stderr),
-    }
+  command(executable: string, options: CommandOptions): Promise<CommandOutput> {
+    return runtimeExec(this.deno, executable, options)
   }
 
   exit(code: number): never {
@@ -59,10 +45,6 @@ export class Runtime {
 
   envars() {
     return this.environment
-  }
-
-  cwd() {
-    return this.directory
   }
 
   readTextFile(path: string) {
@@ -99,7 +81,7 @@ export class Runtime {
 
   async withEnvironmentFile(path: string) {
     const environment = await loadEnvironmentalVariables(path, this.deno)
-    return new Runtime(this.deno, environment, this.directory)
+    return new Runtime(this.deno, environment, this.cwd)
   }
 
   @memoize

@@ -1,22 +1,27 @@
 import { createElement, type FunctionComponent } from 'react'
 import { render } from 'ink'
 import type { Instance } from 'ink'
+import type { Runtime } from '../application-data/runtime.ts'
+import type { Signal } from '../types.ts'
 import { App } from './app/views/app.tsx'
 import type { ReplIo, ReplStatus } from './types.ts'
 
 export class Runner {
+  private runtime: Runtime
   private io: ReplIo
   private view: FunctionComponent
   private instance!: Instance
-  private signals: Deno.Signal[] = ['SIGINT', 'SIGTERM']
+  private interrupted = false
+  private signals: Signal[] = ['SIGINT', 'SIGTERM']
 
-  constructor(io: ReplIo, view: FunctionComponent = App) {
+  constructor(
+    runtime: Runtime,
+    io: ReplIo,
+    view: FunctionComponent = App,
+  ) {
+    this.runtime = runtime
     this.io = io
     this.view = view
-  }
-
-  async run() {
-    Deno.exit(await this.exitCode())
   }
 
   async status(): Promise<ReplStatus> {
@@ -40,7 +45,7 @@ export class Runner {
 
   private waitForExit() {
     return this.instance.waitUntilExit().then(
-      () => 'completed' as const,
+      () => this.completedStatus(),
       (error: unknown) => this.failed(error),
     )
   }
@@ -56,32 +61,35 @@ export class Runner {
     if (this.io.stderr) {
       this.io.stderr.write(message)
     } else {
-      Deno.stderr.writeSync(new TextEncoder().encode(message))
+      this.runtime.writeStderr(message)
     }
   }
 
   private listen() {
     this.signals.forEach((signal) =>
-      Deno.addSignalListener(signal, this.interrupt)
+      this.runtime.addSignalListener(signal, this.interrupt)
     )
   }
 
   private unlisten() {
     this.signals.forEach((signal) =>
-      Deno.removeSignalListener(signal, this.interrupt)
+      this.runtime.removeSignalListener(signal, this.interrupt)
     )
   }
 
   interrupt = () => {
+    this.interrupted = true
     this.instance.unmount()
-    Deno.exit(1)
   }
 
-  private async exitCode() {
-    if ((await this.status()) === 'completed') return 0
-    return 1
+  private completedStatus(): ReplStatus {
+    if (this.interrupted) return 'interrupted'
+    return 'completed'
   }
 }
 
-export const createRunner = (io: ReplIo = {}, view?: FunctionComponent) =>
-  new Runner(io, view)
+export const createRunner = (
+  runtime: Runtime,
+  io: ReplIo = {},
+  view?: FunctionComponent,
+) => new Runner(runtime, io, view)

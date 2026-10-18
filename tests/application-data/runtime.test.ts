@@ -21,14 +21,6 @@ describe('runtime', () => {
     expect(args).toBe(Deno.args)
   })
 
-  it('returns the Deno command constructor', () => {
-    const runtime = new Runtime(Deno)
-
-    const denoCommand = runtime.denoCommand()
-
-    expect(denoCommand).toBe(Deno.Command)
-  })
-
   it('runs a command and decodes its output', async () => {
     const runtime = new Runtime(Deno)
 
@@ -131,7 +123,7 @@ describe('runtime', () => {
   it('when no working directory is given, returns the process working directory', () => {
     const runtime = new Runtime(Deno)
 
-    const cwd = runtime.cwd()
+    const cwd = runtime.cwd
 
     expect(cwd).toBe(Deno.cwd())
   })
@@ -143,7 +135,7 @@ describe('runtime', () => {
       'tests/support/fixtures/builder-values.env',
     )
 
-    expect(loaded.cwd()).toBe('/somewhere')
+    expect(loaded.cwd).toBe('/somewhere')
     expect(loaded.envars().value('BUILDER_ONLY_KEY')).toBe('builder-value')
   })
 

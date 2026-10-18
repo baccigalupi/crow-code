@@ -1,6 +1,4 @@
-import type { ApplicationData } from '../../application-data/application-data.ts'
 import { humanName, Operation } from '../../operation.ts'
-import type { ApplicationOperationArguments } from '../../types.ts'
 import type { ParsedArguments } from '../types.ts'
 
 export abstract class Command extends Operation<ParsedArguments> {
@@ -15,6 +13,11 @@ export abstract class Command extends Operation<ParsedArguments> {
   }
 
   abstract isMatch(): boolean
+
+  exitCode() {
+    if (this.success()) return 0
+    return 1
+  }
 
   reportFailure() {
     this.applicationData.consoleError()(this.failureMessage())
@@ -33,14 +36,3 @@ export abstract class Command extends Operation<ParsedArguments> {
     return this.commands[0]
   }
 }
-
-export const command = <T extends Command>(
-  CommandClass: new (
-    args: ApplicationOperationArguments<ParsedArguments>,
-  ) => T,
-  applicationData: ApplicationData,
-): T =>
-  new CommandClass({
-    applicationData,
-    operationArguments: applicationData.parsedArguments,
-  })

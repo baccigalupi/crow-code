@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
-import { command } from '../../../src/cli/commands/command.ts'
 import { CreateModelCatalog } from '../../../src/cli/commands/create-model-catalog.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import { mockFetchSuccess } from '../../support/mock-fetch.ts'
@@ -20,7 +19,10 @@ describe('CreateModelCatalog', () => {
       args: ['create-model-catalog'],
     })
 
-    const catalog = command(CreateModelCatalog, applicationData)
+    const catalog = new CreateModelCatalog({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    })
 
     expect(catalog.isMatch()).toBe(true)
   })
@@ -28,7 +30,10 @@ describe('CreateModelCatalog', () => {
   it('when the command is something else, does not match', () => {
     const applicationData = mockApplicationData({ args: ['git-commit'] })
 
-    const catalog = command(CreateModelCatalog, applicationData)
+    const catalog = new CreateModelCatalog({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    })
 
     expect(catalog.isMatch()).toBe(false)
   })
@@ -49,7 +54,10 @@ describe('CreateModelCatalog', () => {
       api_key_env_var: null,
     })
 
-    await command(CreateModelCatalog, applicationData).run()
+    await new CreateModelCatalog({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    }).run()
 
     expect(await database('models').select('identifier')).toEqual([
       { identifier: 'author/model' },

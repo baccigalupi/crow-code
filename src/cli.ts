@@ -1,7 +1,7 @@
 import type { ApplicationData } from './application-data/application-data.ts'
 import { buildApplicationData } from './application-data/builder.ts'
 import { memoize } from './decorators.ts'
-import { type Command, command } from './cli/commands/command.ts'
+import type { Command } from './cli/commands/command.ts'
 import { AddProvider } from './cli/commands/add-provider.ts'
 import { CreateModelCatalog } from './cli/commands/create-model-catalog.ts'
 import { GitCommit } from './cli/commands/git-commit.ts'
@@ -22,19 +22,14 @@ const commandClasses = [
 
 class Cli {
   private applicationData: ApplicationData
-  private quit: (exitCode: number) => void
 
-  constructor(
-    applicationData: ApplicationData,
-    quit?: (exitCode: number) => void,
-  ) {
+  constructor(applicationData: ApplicationData) {
     this.applicationData = applicationData
-    this.quit = quit || ((exitCode) => Deno.exit(exitCode))
   }
 
   async run(): Promise<number> {
     const exitCode = await this.attempt()
-    await this.shutdown(exitCode)
+    await this.applicationData.close()
     return exitCode
   }
 
@@ -44,11 +39,6 @@ class Cli {
     } catch (error) {
       return this.logFailure(error)
     }
-  }
-
-  private async shutdown(exitCode: number) {
-    await this.applicationData.close()
-    this.quit(exitCode)
   }
 
   private async runMatched() {
@@ -64,14 +54,16 @@ class Cli {
   }
 
   private exitCode() {
-    if (!this.matchedCommand().success()) return 1
-    return 0
+    return this.matchedCommand().exitCode()
   }
 
   @memoize
   private commands(): Command[] {
     return commandClasses.map((CommandClass) =>
-      command(CommandClass, this.applicationData)
+      new CommandClass({
+        applicationData: this.applicationData,
+        operationArguments: this.applicationData.parsedArguments,
+      })
     )
   }
 
@@ -81,10 +73,8 @@ class Cli {
   }
 }
 
-export const run = async (
-  applicationData?: ApplicationData,
-  quit?: (exitCode: number) => void,
-): Promise<number> => {
+export const run = async (applicationData?: ApplicationData) => {
   const data = applicationData || (await buildApplicationData().run()).result()
-  return new Cli(data, quit).run()
+  const cli = new Cli(data)
+  data.runtime.exit(await cli.run())
 }

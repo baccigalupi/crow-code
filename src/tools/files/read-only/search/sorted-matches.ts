@@ -33,7 +33,7 @@ export class SortedMatches {
       runtime,
     }: SortedMatchesArguments,
   ) {
-    this.directory = resolve(runtime.cwd(), path)
+    this.directory = resolve(runtime.cwd, path)
     this.pattern = new RegExp(pattern, flags)
     this.context = context
     this.ignoredDirectories = ignoredDirectories

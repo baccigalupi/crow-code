@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, it, mock } from 'node:test'
 import { expect } from '@std/expect'
 import { exists } from '@std/fs'
 import { join } from '@std/path'
-import { spy, stub } from '@std/testing/mock'
+import { assertSpyCall, assertSpyCalls, spy, stub } from '@std/testing/mock'
 import pino from 'pino'
 import { run } from '../src/cli.ts'
 import { clearDirectory, fixturesDirectory } from './support/fixtures.ts'
@@ -34,7 +34,7 @@ describe('run', () => {
       api_key_env_var: null,
     })
 
-    await run(applicationData, () => {})
+    await run(applicationData)
 
     expect(fetchMock.calls).toHaveLength(1)
   })
@@ -51,7 +51,7 @@ describe('run', () => {
     })
     const database = await applicationData.database()
 
-    await run(applicationData, () => {})
+    await run(applicationData)
 
     const rows = await database('providers').select('*')
     expect(rows).toEqual([{
@@ -63,69 +63,57 @@ describe('run', () => {
     }])
   })
 
-  it('when git-commit is requested without a goal, reports the error on stderr and exits with a non-zero code', async () => {
+  it('when git-commit is requested without a goal, reports the error on stderr and exits with code 1', async () => {
     const consoleLog = mock.fn()
     const consoleError = mock.fn()
-    const quit = mock.fn()
+    const exit = spy()
     const applicationData = mockApplicationData({
       args: ['git-commit', 'src/a.ts'],
       consoleLog,
       consoleError,
+      exit,
     })
 
-    const exitCode = await run(applicationData, quit)
+    await run(applicationData)
 
-    expect(exitCode).not.toBe(0)
-    expect(quit.mock.calls[0].arguments[0]).toBe(exitCode)
+    assertSpyCalls(exit, 1)
+    assertSpyCall(exit, 0, { args: [1] })
     expect(consoleError.mock.calls[0].arguments[0]).toBe(
       'Error: missing --goal=<goal> for git-commit',
     )
     expect(consoleLog.mock.calls).toHaveLength(0)
   })
 
-  it('when no quit handler is given, exits the process with the code', async () => {
-    const exit = mock.fn()
-    using _exit = stub(Deno, 'exit', exit as unknown as typeof Deno.exit)
-    const applicationData = mockApplicationData({
-      args: ['-V'],
-      consoleLog: () => {},
-    })
-
-    const exitCode = await run(applicationData)
-
-    expect(exitCode).toBe(0)
-    expect(exit.mock.calls[0].arguments[0]).toBe(0)
-  })
-
   it('when the command succeeds, exits with code 0', async () => {
-    const quit = mock.fn()
+    const exit = spy()
     const applicationData = mockApplicationData({
       args: ['-V'],
       consoleLog: () => {},
+      exit,
     })
 
-    const exitCode = await run(applicationData, quit)
+    await run(applicationData)
 
-    expect(exitCode).toBe(0)
-    expect(quit.mock.calls[0].arguments[0]).toBe(0)
+    assertSpyCalls(exit, 1)
+    assertSpyCall(exit, 0, { args: [0] })
   })
 
-  it('when the command throws, logs the error and exits with a non-zero code', async () => {
+  it('when the command throws, logs the error and exits with code 1', async () => {
     const logger = pino({ enabled: false })
     using error = spy(logger, 'error')
-    const quit = mock.fn()
+    const exit = spy()
     const applicationData = mockApplicationData({
       args: ['-V'],
       logger,
       consoleLog: () => {
         throw new Error('boom')
       },
+      exit,
     })
 
-    const exitCode = await run(applicationData, quit)
+    await run(applicationData)
 
-    expect(exitCode).not.toBe(0)
-    expect(quit.mock.calls[0].arguments[0]).toBe(exitCode)
+    assertSpyCall(exit, 0, { args: [1] })
     expect(error.calls).toHaveLength(1)
   })
 
@@ -139,7 +127,7 @@ describe('run', () => {
       command: mockCommand({ success: false }),
     })
 
-    await run(applicationData, () => {})
+    await run(applicationData)
 
     expect(consoleLog.mock.calls).toHaveLength(0)
     expect(consoleError.mock.calls[0].arguments[0]).not.toContain(
@@ -154,7 +142,7 @@ describe('run', () => {
       consoleLog,
     })
 
-    await run(applicationData, () => {})
+    await run(applicationData)
 
     expect(consoleLog.mock.calls[0].arguments[0]).toContain(
       'Usage: crow <command>',
@@ -171,7 +159,7 @@ describe('run', () => {
       },
     })
 
-    await run(applicationData, () => {})
+    await run(applicationData)
 
     expect(outputs[0]).toContain('Usage: crow')
     expect(outputs[0]).toContain(
@@ -189,7 +177,7 @@ describe('run', () => {
       },
     })
 
-    await run(applicationData, () => {})
+    await run(applicationData)
 
     expect(outputs[0]).toContain('Usage: crow')
     expect(outputs[0]).toContain(
@@ -207,7 +195,7 @@ describe('run', () => {
       },
     })
 
-    await run(applicationData, () => {})
+    await run(applicationData)
 
     expect(outputs[0]).toBe('crow 0.0.1')
   })
@@ -222,7 +210,7 @@ describe('run', () => {
       },
     })
 
-    await run(applicationData, () => {})
+    await run(applicationData)
 
     expect(outputs[0]).toBe('crow 0.0.1')
   })
@@ -234,7 +222,7 @@ describe('run', () => {
     })
     using close = stub(applicationData, 'close', () => Promise.resolve())
 
-    await run(applicationData, () => {})
+    await run(applicationData)
 
     expect(close.calls).toHaveLength(1)
   })
@@ -249,7 +237,7 @@ describe('run', () => {
       },
     })
 
-    await run(applicationData, () => {})
+    await run(applicationData)
 
     expect(consoleLog.mock.calls[0].arguments[0]).toContain(
       'Usage: crow <command>',

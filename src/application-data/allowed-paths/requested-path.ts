@@ -44,7 +44,7 @@ export class RequestedPath {
   }
 
   private absolutePath() {
-    return resolve(this.runtime.cwd(), this.path)
+    return resolve(this.runtime.cwd, this.path)
   }
 
   private async followingSymlinks() {

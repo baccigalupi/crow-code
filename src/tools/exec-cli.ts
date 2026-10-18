@@ -1,15 +1,9 @@
 import { OperationWithResult } from '../operation.ts'
-import type { DenoCommand } from '../types.ts'
+import type { CommandOptions, CommandOutput } from '../types.ts'
 
 export abstract class ExecCli<T extends Record<string, unknown>, U>
   extends OperationWithResult<T, U> {
-  private command!: Deno.Command
-  private response!: Deno.CommandOutput
   protected responseText!: string
-
-  private get denoCommand(): DenoCommand {
-    return this.applicationData.denoCommand()
-  }
 
   async run() {
     if (!await this.allowedToRun()) return this
@@ -33,10 +27,10 @@ export abstract class ExecCli<T extends Record<string, unknown>, U>
   abstract executable: string
   abstract parse(): U
   abstract emptyResult(): U
-  abstract executableOptions(): Deno.CommandOptions
+  abstract executableOptions(): CommandOptions
 
-  protected isSuccessful(response: Deno.CommandOutput) {
-    return response.success
+  protected isSuccessful(output: CommandOutput) {
+    return output.success
   }
 
   protected allowedToRun(): Promise<boolean> {
@@ -44,29 +38,11 @@ export abstract class ExecCli<T extends Record<string, unknown>, U>
   }
 
   private async runCommand() {
-    this.setCommand()
-    await this.setResponse()
-    this.setResponseText()
-    this.handleResponse()
-  }
-
-  private handleResponse() {
-    if (this.isSuccessful(this.response)) return
-    this.fail(new TextDecoder().decode(this.response.stderr))
-  }
-
-  private setCommand() {
-    this.command = new this.denoCommand(
+    const output = await this.applicationData.runtime.command(
       this.executable,
       this.executableOptions(),
     )
-  }
-
-  private async setResponse() {
-    this.response = await this.command.output()
-  }
-
-  private setResponseText() {
-    this.responseText = new TextDecoder().decode(this.response.stdout)
+    this.responseText = output.stdout
+    if (!this.isSuccessful(output)) this.fail(output.stderr)
   }
 }

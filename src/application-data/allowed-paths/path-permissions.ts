@@ -52,13 +52,13 @@ export class PathPermissions {
   }
 
   protected absoluteDirectories() {
-    return this.absolute([this.runtime().cwd(), ...this.allowedDirectories])
+    return this.absolute([this.runtime().cwd, ...this.allowedDirectories])
   }
 
   private absolute(directories: string[]) {
     const envars = this.applicationData.envars()
     return expandHome({ directories, envars }).directories()
-      .map((directory) => resolve(this.runtime().cwd(), directory))
+      .map((directory) => resolve(this.runtime().cwd, directory))
   }
 
   private requested(path: string) {

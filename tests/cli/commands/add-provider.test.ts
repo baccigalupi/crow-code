@@ -2,7 +2,6 @@ import { afterEach, beforeEach, describe, it, mock } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { AddProvider } from '../../../src/cli/commands/add-provider.ts'
-import { command } from '../../../src/cli/commands/command.ts'
 import { CrowConfig } from '../../../src/application-data/config.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
@@ -14,7 +13,10 @@ describe('AddProvider', () => {
   it('when the command is add-provider, matches', () => {
     const applicationData = mockApplicationData({ args: ['add-provider'] })
 
-    const addProvider = command(AddProvider, applicationData)
+    const addProvider = new AddProvider({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    })
 
     expect(addProvider.isMatch()).toBe(true)
   })
@@ -22,7 +24,10 @@ describe('AddProvider', () => {
   it('when the command is something else, does not match', () => {
     const applicationData = mockApplicationData({ args: ['git-commit'] })
 
-    const addProvider = command(AddProvider, applicationData)
+    const addProvider = new AddProvider({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    })
 
     expect(addProvider.isMatch()).toBe(false)
   })
@@ -38,7 +43,10 @@ describe('AddProvider', () => {
     })
     const database = await applicationData.database()
 
-    await command(AddProvider, applicationData).run()
+    await new AddProvider({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    }).run()
 
     const rows = await database('providers').select('*')
     expect(rows).toEqual([{
@@ -62,7 +70,10 @@ describe('AddProvider', () => {
       consoleLog,
     })
 
-    await command(AddProvider, applicationData).run()
+    await new AddProvider({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    }).run()
 
     expect(consoleLog.mock.calls[0].arguments[0]).toBe(
       'Provider added. Add your api key <api_key> to ~/.crow/.env',
@@ -81,7 +92,10 @@ describe('AddProvider', () => {
       }),
     })
 
-    await command(AddProvider, applicationData).run()
+    await new AddProvider({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    }).run()
 
     expect(consoleLog.mock.calls[0].arguments[0]).toBe(
       'Provider added. Add your api key <api_key> to /secrets/crow.env',
@@ -95,7 +109,10 @@ describe('AddProvider', () => {
       consoleLog,
     })
 
-    await command(AddProvider, applicationData).run()
+    await new AddProvider({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    }).run()
 
     expect(consoleLog.mock.calls[0].arguments[0]).toBe(
       'Provider added. Add your api key <api_key> to ~/.crow/.env',
@@ -116,7 +133,10 @@ describe('AddProvider', () => {
       base_url: 'http://x',
     })
 
-    const addProvider = command(AddProvider, applicationData)
+    const addProvider = new AddProvider({
+      applicationData,
+      operationArguments: applicationData.parsedArguments,
+    })
     await addProvider.run()
     addProvider.reportFailure()
 
