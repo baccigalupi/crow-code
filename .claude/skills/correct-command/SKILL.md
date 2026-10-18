@@ -70,9 +70,9 @@ reason text says so explicitly, pointing here since there is no `workdir`
 parameter in this harness). The actual fix for "I need to run tests against
 files in a worktree" is the **`EnterWorktree`** tool, not `cd`:
 
-1. `EnterWorktree({ name: "<full-issue-id-or-feature-description>" })` (never a
-   bare ID postfix) — creates `.claude/worktrees/<name>` on a new branch and
-   switches the session's effective working directory into it.
+1. `EnterWorktree({ name: "<kebab-case-work-description>" })` (never an issue
+   ID) — creates `.claude/worktrees/<name>` on a new branch and switches the
+   session's effective working directory into it.
    (`.claude/hooks/worktree-path-gate.ts` rejects absolute, `~`-relative,
    `..`-containing, or out-of-tree `path` arguments if you instead re-enter an
    existing worktree by path.)

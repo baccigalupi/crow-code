@@ -53,13 +53,13 @@ worktree does not exist during planning — record the intended values, create i
 only when implementation starts:
 
 1. In the plan, record the intended worktree name as planned — e.g.
-   `Worktree: write-tool (to be created)`. The name is the full Beads issue ID
-   (`crow-code-4vz.2`) or a kebab-case description of the feature. Never a bare
-   ID postfix (`4vz`, `akj`) — it is gibberish to a reader.
+   `Worktree: git-compare-tool (to be created)`. The name is a kebab-case phrase
+   describing the work. Never the Beads issue ID, full or bare postfix
+   (`crow-code-4vz.2`, `4vz`, `akj`) — an ID tells a reader nothing.
 2. As the first step of implementation — never during planning — call
-   `EnterWorktree({ name: "<full-issue-id-or-feature-description>" })`. This
-   creates `.claude/worktrees/<name>` on a new branch and moves the session's
-   cwd into it; no `git worktree add`, no `cd`, no `--config` flags (see the
+   `EnterWorktree({ name: "<kebab-case-work-description>" })`. This creates
+   `.claude/worktrees/<name>` on a new branch and moves the session's cwd into
+   it; no `git worktree add`, no `cd`, no `--config` flags (see the
    `correct-command` skill).
 3. All subsequent file paths, `dev/*`/`agents/*` calls, and verification
    commands then target the worktree automatically.
@@ -149,7 +149,7 @@ Never present an unresolved assumption as a decision.
 
 Step 0, in this order (see Worktree setup / Beads issue):
 
-1. `EnterWorktree({ name: "<full-issue-id-or-feature-description>" })`.
+1. `EnterWorktree({ name: "<kebab-case-work-description>" })`.
 2. `bd create` (unless the plan names an existing issue), then
    `bd update <id> --claim`.
 
