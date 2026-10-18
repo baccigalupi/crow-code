@@ -19,6 +19,10 @@ export type GitFileDiff = {
   diff: string
 }
 
+export type GitCompare = {
+  diff: string
+}
+
 export type ChangedFile = {
   path: string
   changeType: string
