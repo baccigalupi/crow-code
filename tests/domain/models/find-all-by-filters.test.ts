@@ -3,7 +3,8 @@ import { expect } from '@std/expect'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import pino from 'pino'
 import { ModelEntity } from '../../../src/domain/models/model.ts'
-import { mockEnvironment } from '../../support/mock-environment.ts'
+import { Environment } from '../../../src/application-data/env-vars.ts'
+import { defaultFilesystem } from '../../../src/application-data/filesystem.ts'
 import { modelFindAllByFilters } from '../../../src/domain/models/find-all-by-filters.ts'
 import { dropAllTables } from '../../support/test-database.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
@@ -11,7 +12,10 @@ import { mockApplicationData } from '../../support/mock-application-data.ts'
 describe('modelFindAllByFilters', () => {
   it('when models match, returns ModelEntity instances ordered by id', async () => {
     const logger = pino({ enabled: false })
-    const envars = mockEnvironment({ PROVIDER_API_KEY: 'secret' })
+    const envars = new Environment({
+      runtimeEnvironment: { PROVIDER_API_KEY: 'secret' },
+      filesystem: defaultFilesystem(),
+    })
     const applicationData = mockApplicationData({ logger, envars })
     const database = await applicationData.database()
     await database('providers').insert({

@@ -1,21 +1,30 @@
 import { parse } from '@std/dotenv'
 import type { EnvironmentValues } from '../model-discovery/types.ts'
+import type { Filesystem } from './filesystem.ts'
 import { expandHome } from './allowed-paths/expand-home.ts'
 
+type EnvironmentArguments = {
+  runtimeEnvironment: EnvironmentValues
+  filesystem: Filesystem
+  path?: string
+}
+
 export class Environment {
-  private deno: typeof Deno
+  private filesystem: Filesystem
   private path: string
-  private processValues: EnvironmentValues
+  private runtimeEnvironment: EnvironmentValues
   private fileValues: EnvironmentValues = {}
 
-  constructor(deno: typeof Deno = Deno, path = '') {
-    this.deno = deno
+  constructor(
+    { runtimeEnvironment, filesystem, path = '' }: EnvironmentArguments,
+  ) {
+    this.runtimeEnvironment = runtimeEnvironment
+    this.filesystem = filesystem
     this.path = path
-    this.processValues = deno.env.toObject()
   }
 
   async run() {
-    const text = await this.deno.readTextFile(this.expandedPath())
+    const text = await this.filesystem.readTextFile(this.expandedPath())
       .catch(() => '')
     this.fileValues = parse(text)
     return this
@@ -34,7 +43,7 @@ export class Environment {
   }
 
   private values() {
-    return { ...this.fileValues, ...this.processValues }
+    return { ...this.fileValues, ...this.runtimeEnvironment }
   }
 
   private expandedPath() {
@@ -44,8 +53,7 @@ export class Environment {
 }
 
 export const loadEnvironmentalVariables = (
-  environmentPath: string,
-  deno: typeof Deno = Deno,
+  environmentArguments: EnvironmentArguments,
 ) => {
-  return new Environment(deno, environmentPath).run()
+  return new Environment(environmentArguments).run()
 }

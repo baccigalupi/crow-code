@@ -75,7 +75,7 @@ export class MultiEdit
   private async restoreIfFailed() {
     if (this.succeeded) return
 
-    const restore = await this.runIndependentSubOperation(restoreSnapshot({
+    const restore = await this.runNonBlockingOperation(restoreSnapshot({
       applicationData: this.applicationData,
       operationArguments: { entries: this.entries },
     }))

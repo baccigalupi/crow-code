@@ -23,7 +23,7 @@ export class ProviderFindAll {
     ProviderRecord[],
     ProviderEntity[]
   > {
-    return (result) => providerEntities(result, this.applicationData.envars())
+    return (result) => providerEntities(result, this.applicationData.envars)
   }
 
   private async runQuery(query: PromiseLike<ProviderRecord[]>) {

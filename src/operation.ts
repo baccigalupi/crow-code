@@ -16,7 +16,6 @@ export abstract class Operation<OperationArguments> implements AsyncOperation {
   protected applicationData: ApplicationData
   protected operationArguments: OperationArguments
   protected succeeded = true
-  protected logger: Logger
   reason = ''
   protected abstract logPrefix: string
   protected subOperations: AsyncOperation[]
@@ -28,8 +27,11 @@ export abstract class Operation<OperationArguments> implements AsyncOperation {
   ) {
     this.applicationData = applicationData
     this.operationArguments = operationArguments
-    this.logger = applicationData.logger()
     this.subOperations = []
+  }
+
+  protected get logger(): Logger {
+    return this.applicationData.logger()
   }
 
   success() {
@@ -49,17 +51,22 @@ export abstract class Operation<OperationArguments> implements AsyncOperation {
   ) {
     if (!this.succeeded) return operation
 
-    await this.runIndependentSubOperation(operation)
+    await this.runNonBlockingOperation(operation)
     if (!operation.success()) this.fail(failedOperationReason(operation))
     return operation
   }
 
-  protected async runIndependentSubOperation<T extends AsyncOperation>(
+  protected async runNonBlockingOperation<T extends AsyncOperation>(
     operation: T,
   ) {
     await operation.run()
     this.subOperations.push(operation)
     return operation
+  }
+
+  protected failFromSubOperations() {
+    const failed = this.subOperations.find((operation) => !operation.success())
+    if (failed) this.fail(failedOperationReason(failed))
   }
 
   protected fail(reason: string) {

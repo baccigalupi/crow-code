@@ -1,6 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { mockEnvironment } from '../../support/mock-environment.ts'
+import { Environment } from '../../../src/application-data/env-vars.ts'
+import { defaultFilesystem } from '../../../src/application-data/filesystem.ts'
 import {
   ProviderEntity,
   providerEntity,
@@ -8,7 +9,10 @@ import {
 
 describe('provider', () => {
   it('exposes pass-through attributes', () => {
-    const environment = mockEnvironment({})
+    const environment = new Environment({
+      runtimeEnvironment: {},
+      filesystem: defaultFilesystem(),
+    })
     const provider = new ProviderEntity({
       id: 1,
       name: 'provider-name',
@@ -28,7 +32,10 @@ describe('provider', () => {
 
   describe('modelsUrl', () => {
     it('when base url has no trailing slash and path has a leading slash, joins them with one slash', () => {
-      const environment = mockEnvironment({})
+      const environment = new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      })
       const provider = new ProviderEntity({
         id: 1,
         name: 'provider-name',
@@ -43,7 +50,10 @@ describe('provider', () => {
     })
 
     it('when base url has a trailing slash and path has no leading slash, joins them with one slash', () => {
-      const environment = mockEnvironment({})
+      const environment = new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      })
       const provider = new ProviderEntity({
         id: 1,
         name: 'provider-name',
@@ -58,7 +68,10 @@ describe('provider', () => {
     })
 
     it('when base url and path both have slashes, joins them with one slash', () => {
-      const environment = mockEnvironment({})
+      const environment = new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      })
       const provider = new ProviderEntity({
         id: 1,
         name: 'provider-name',
@@ -73,7 +86,10 @@ describe('provider', () => {
     })
 
     it('when models_path is null, uses the default path', () => {
-      const environment = mockEnvironment({})
+      const environment = new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      })
       const provider = new ProviderEntity({
         id: 1,
         name: 'provider-name',
@@ -90,8 +106,11 @@ describe('provider', () => {
 
   describe('apiKey', () => {
     it('returns the value from the environment variable', () => {
-      const environment = mockEnvironment({
-        PROVIDER_API_KEY: 'provider-api-key',
+      const environment = new Environment({
+        runtimeEnvironment: {
+          PROVIDER_API_KEY: 'provider-api-key',
+        },
+        filesystem: defaultFilesystem(),
       })
       const provider = new ProviderEntity({
         id: 1,
@@ -107,7 +126,10 @@ describe('provider', () => {
     })
 
     it('when api_key_env_var is null, returns an empty string', () => {
-      const environment = mockEnvironment({})
+      const environment = new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      })
       const provider = new ProviderEntity({
         id: 1,
         name: 'provider-name',
@@ -122,7 +144,10 @@ describe('provider', () => {
     })
 
     it('when the environment variable is not set, returns an empty string', () => {
-      const environment = mockEnvironment({})
+      const environment = new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      })
       const provider = new ProviderEntity({
         id: 1,
         name: 'provider-name',
@@ -139,7 +164,10 @@ describe('provider', () => {
 
   describe('providerEntity', () => {
     it('when given a record, returns a provider entity', () => {
-      const environment = mockEnvironment({})
+      const environment = new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      })
 
       const provider = providerEntity({
         id: 1,
@@ -153,7 +181,10 @@ describe('provider', () => {
     })
 
     it('when the record is undefined, returns undefined', () => {
-      const environment = mockEnvironment({})
+      const environment = new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      })
 
       const provider = providerEntity(undefined, environment)
 
@@ -161,7 +192,10 @@ describe('provider', () => {
     })
 
     it('when given a record, normalizes the record fields', () => {
-      const environment = mockEnvironment({})
+      const environment = new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      })
 
       const provider = providerEntity({
         id: 2,

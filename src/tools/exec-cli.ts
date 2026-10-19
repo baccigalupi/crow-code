@@ -38,7 +38,7 @@ export abstract class ExecCli<T extends Record<string, unknown>, U>
   }
 
   private async runCommand() {
-    const output = await this.applicationData.runtime.command(
+    const output = await this.applicationData.runtime.runCommand(
       this.executable,
       this.executableOptions(),
     )

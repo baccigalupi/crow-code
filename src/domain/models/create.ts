@@ -15,11 +15,11 @@ export class CreateModel
   }
 
   protected override serialize(rows: ModelRow[]) {
-    return modelEntity(rows[0])
+    return modelEntity(rows[0], this.applicationData.envars)
   }
 
   protected override emptyRecord() {
-    return modelEntity()
+    return modelEntity(undefined, this.applicationData.envars)
   }
 }
 

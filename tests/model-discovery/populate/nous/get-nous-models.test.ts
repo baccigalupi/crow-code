@@ -10,7 +10,8 @@ import { loadNousFixture } from '../../../support/fixtures.ts'
 import { getNousModels } from '../../../../src/model-discovery/populate/nous/get-nous-models.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { ProviderEntity } from '../../../../src/domain/providers/entity.ts'
-import { mockEnvironment } from '../../../support/mock-environment.ts'
+import { Environment } from '../../../../src/application-data/env-vars.ts'
+import { defaultFilesystem } from '../../../../src/application-data/filesystem.ts'
 
 describe('getNousModels', () => {
   it('when fetched, returns parsed records', async () => {
@@ -22,7 +23,10 @@ describe('getNousModels', () => {
         modelsPath: null,
         apiKeyEnvVar: null,
       },
-      mockEnvironment({}),
+      new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      }),
     )
     const fixture = await loadNousFixture()
     const logger = pino({ enabled: false })
@@ -48,7 +52,10 @@ describe('getNousModels', () => {
         modelsPath: null,
         apiKeyEnvVar: null,
       },
-      mockEnvironment({}),
+      new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      }),
     )
     const logger = pino({ enabled: false })
     const record = {
@@ -85,7 +92,10 @@ describe('getNousModels', () => {
         modelsPath: null,
         apiKeyEnvVar: null,
       },
-      mockEnvironment({}),
+      new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      }),
     )
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess({ data: [] })
@@ -109,7 +119,10 @@ describe('getNousModels', () => {
         modelsPath: null,
         apiKeyEnvVar: null,
       },
-      mockEnvironment({}),
+      new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      }),
     )
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchError(500)
@@ -134,7 +147,10 @@ describe('getNousModels', () => {
         modelsPath: null,
         apiKeyEnvVar: null,
       },
-      mockEnvironment({}),
+      new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      }),
     )
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchRejected('network down')

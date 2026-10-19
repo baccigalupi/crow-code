@@ -2,11 +2,7 @@ import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { sortedMatches } from '../../../../../src/tools/files/read-only/search/sorted-matches.ts'
-import {
-  defaultRuntime,
-  Runtime,
-} from '../../../../../src/application-data/runtime.ts'
-import { mockEnvironment } from '../../../../support/mock-environment.ts'
+import { defaultFilesystem } from '../../../../../src/application-data/filesystem.ts'
 import {
   clearDirectory,
   createSearchFixtureNodeModules,
@@ -25,7 +21,8 @@ describe('sorted-matches', () => {
       path,
       pattern: 'two|one',
       ignoredDirectories: [join(path, 'node_modules')],
-      runtime: defaultRuntime(),
+      cwd: Deno.cwd(),
+      filesystem: defaultFilesystem(),
     }).all()
 
     expect(matches).toEqual([
@@ -42,7 +39,8 @@ describe('sorted-matches', () => {
       path,
       pattern: 'BETA',
       flags: 'i',
-      runtime: defaultRuntime(),
+      cwd: Deno.cwd(),
+      filesystem: defaultFilesystem(),
     }).all()
 
     expect(matches).toEqual([{
@@ -58,7 +56,8 @@ describe('sorted-matches', () => {
     const matches = await sortedMatches({
       path,
       pattern: 'two',
-      runtime: defaultRuntime(),
+      cwd: Deno.cwd(),
+      filesystem: defaultFilesystem(),
     })
       .all()
 
@@ -77,7 +76,8 @@ describe('sorted-matches', () => {
       pattern: 'two|one',
       filePattern: '*.txt',
       ignoredDirectories: [join(path, 'node_modules')],
-      runtime: defaultRuntime(),
+      cwd: Deno.cwd(),
+      filesystem: defaultFilesystem(),
     }).all()
 
     expect(matches).toEqual([
@@ -87,17 +87,14 @@ describe('sorted-matches', () => {
   })
 
   it('when the path is relative, resolves it against the runtime working directory', async () => {
-    const runtime = new Runtime(
-      Deno,
-      mockEnvironment({}),
-      join(fixturesDirectory, 'tools'),
-    )
+    const cwd = join(fixturesDirectory, 'tools')
 
     const matches = await sortedMatches({
       path: 'search',
       pattern: 'BETA',
       flags: 'i',
-      runtime,
+      cwd,
+      filesystem: defaultFilesystem(),
     }).all()
 
     expect(matches).toEqual([{
@@ -111,7 +108,12 @@ describe('sorted-matches', () => {
     const path = join(fixturesDirectory, 'tools', 'search')
 
     const construct = () =>
-      sortedMatches({ path, pattern: '(', runtime: defaultRuntime() })
+      sortedMatches({
+        path,
+        pattern: '(',
+        cwd: Deno.cwd(),
+        filesystem: defaultFilesystem(),
+      })
 
     expect(construct).toThrow('Invalid regular expression')
   })

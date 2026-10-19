@@ -1,5 +1,6 @@
 import { join } from '@std/path'
 import { defaultRuntime } from '../../src/application-data/runtime.ts'
+import { defaultFilesystem } from '../../src/application-data/filesystem.ts'
 
 export const fixturesDirectory = join(
   defaultRuntime().cwd,
@@ -15,7 +16,7 @@ export const loadFixture = async (subpath: string) => {
 
 export const loadTextFixture = async (subpath: string) => {
   const path = join(fixturesDirectory, subpath)
-  return await defaultRuntime().readTextFile(path)
+  return await defaultFilesystem().readTextFile(path)
 }
 
 export const loadNousFixture = async () =>
@@ -36,7 +37,7 @@ export const searchFixtureNodeModules = () =>
 
 export const createSearchFixtureNodeModules = async () => {
   const path = searchFixtureNodeModules()
-  const runtime = defaultRuntime()
-  await runtime.mkdir(path)
-  await runtime.writeTextFile(join(path, 'skipped.txt'), 'two')
+  const filesystem = defaultFilesystem()
+  await filesystem.mkdirWithParents(path)
+  await filesystem.writeTextFile(join(path, 'skipped.txt'), 'two')
 }

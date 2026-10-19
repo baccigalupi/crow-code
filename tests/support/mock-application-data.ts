@@ -4,12 +4,12 @@ import type OpenAI from 'openai'
 import { stub } from '@std/testing/mock'
 import { ApplicationData } from '../../src/application-data/application-data.ts'
 import { Runtime } from '../../src/application-data/runtime.ts'
+import { defaultFilesystem } from '../../src/application-data/filesystem.ts'
 import { CrowConfig } from '../../src/application-data/config.ts'
-import { defaultCrowConfig } from '../../src/application-data/load-config.ts'
+import { defaultCrowConfig } from '../../src/domain/config.ts'
 import { Io } from '../../src/application-data/io.ts'
 import { parseArguments } from '../../src/application-data/arguments.ts'
-import type { Environment } from '../../src/application-data/env-vars.ts'
-import { mockEnvironment } from './mock-environment.ts'
+import { Environment } from '../../src/application-data/env-vars.ts'
 import type {
   Command,
   ConsoleError,
@@ -40,11 +40,14 @@ export const mockApplicationData = (
 ): ApplicationData => {
   const data = new ApplicationData()
   const args = overrides.args || []
-  data.runtime = new Runtime(Deno, undefined, overrides.cwd)
+  data.runtime = new Runtime(Deno, overrides.cwd)
+  data.filesystem = defaultFilesystem()
   data.io = new Io('')
   data.parsedArguments = parseArguments(args)
   data.repositoryRoot = data.runtime.cwd
   data.config = overrides.config || new CrowConfig('.', defaultCrowConfig())
+  data.envars = overrides.envars ||
+    new Environment({ runtimeEnvironment: {}, filesystem: defaultFilesystem() })
 
   const logger = overrides.logger || pino({ enabled: false })
   // Lazy on purpose: createTestDatabase starts native better-sqlite3 work
@@ -61,7 +64,6 @@ export const mockApplicationData = (
   const consoleLog = overrides.consoleLog || (() => {})
   const consoleError = overrides.consoleError || (() => {})
   const fetchClient = overrides.fetch || mockFetchSuccess({})
-  const envars = overrides.envars || mockEnvironment({})
   const chatClient = overrides.chatClient || mockOpenAiClient('')
 
   stub(data, 'args', () => args)
@@ -71,10 +73,9 @@ export const mockApplicationData = (
   stub(data, 'consoleLog', () => consoleLog)
   stub(data, 'consoleError', () => consoleError)
   stub(data, 'fetch', () => fetchClient)
-  if (overrides.command) stub(data.runtime, 'command', overrides.command)
+  if (overrides.command) stub(data.runtime, 'runCommand', overrides.command)
   const exit = (overrides.exit || (() => {})) as Runtime['exit']
   stub(data.runtime, 'exit', exit)
-  stub(data, 'envars', () => envars)
   stub(data, 'chatClient', chatClient)
 
   return data

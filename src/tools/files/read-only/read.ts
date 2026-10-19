@@ -20,7 +20,7 @@ export class ReadFile
   }
 
   protected override async perform() {
-    const contents = await this.applicationData.runtime.readTextFile(
+    const contents = await this.applicationData.filesystem.readTextFile(
       this.operationArguments.path,
     )
     this.text = this.select(contents)

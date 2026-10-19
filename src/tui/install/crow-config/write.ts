@@ -1,20 +1,20 @@
 import { effect } from '@preact/signals-core'
-import type { Runtime } from '../../../application-data/runtime.ts'
+import type { Filesystem } from '../../../application-data/filesystem.ts'
 import type { InstallState, WriteCrowConfigArguments } from '../types.ts'
 import { buildCrowConfig } from './build.ts'
 
 // WRITE side: watches the install step and, once the user has confirmed
 // (step 'write'), creates the repo directory and writes config.json through
-// the runtime, then marks the step done. Plain TS outside the views and
-// hooks; nothing in the TUI sees the runtime. Deriving the config lives in
+// the filesystem, then marks the step done. Plain TS outside the views and
+// hooks; nothing in the TUI sees the filesystem. Deriving the config lives in
 // build.ts.
 export class CrowConfigWrite {
   private signals: InstallState
-  private runtime: Runtime
+  private filesystem: Filesystem
 
-  constructor({ signals, runtime }: WriteCrowConfigArguments) {
+  constructor({ signals, filesystem }: WriteCrowConfigArguments) {
     this.signals = signals
-    this.runtime = runtime
+    this.filesystem = filesystem
   }
 
   subscribe() {
@@ -31,8 +31,8 @@ export class CrowConfigWrite {
 
   private async save() {
     const { crowRepoDirectory, crowConfigPath, crowConfigJson } = this.config()
-    await this.runtime.mkdir(crowRepoDirectory)
-    await this.runtime.writeTextFile(crowConfigPath, `${crowConfigJson}\n`)
+    await this.filesystem.mkdirWithParents(crowRepoDirectory)
+    await this.filesystem.writeTextFile(crowConfigPath, `${crowConfigJson}\n`)
   }
 
   private config() {

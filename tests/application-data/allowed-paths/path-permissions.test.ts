@@ -6,9 +6,11 @@ import {
   pathPermissions,
 } from '../../../src/application-data/allowed-paths/path-permissions.ts'
 import { Runtime } from '../../../src/application-data/runtime.ts'
-import { mockEnvironment } from '../../support/mock-environment.ts'
+import { Environment } from '../../../src/application-data/env-vars.ts'
+import { defaultFilesystem } from '../../../src/application-data/filesystem.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
-import { configWithIgnore } from '../../support/mock-crow-config.ts'
+import { CrowConfig } from '../../../src/application-data/config.ts'
+import { defaultCrowConfig } from '../../../src/domain/config.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 
 describe('path-permissions', () => {
@@ -47,7 +49,6 @@ describe('path-permissions', () => {
     const applicationData = mockApplicationData()
     applicationData.runtime = new Runtime(
       Deno,
-      mockEnvironment({}),
       join(fixturesDirectory, 'tools', 'git'),
     )
     const permissions = pathPermissions({
@@ -78,7 +79,10 @@ describe('path-permissions', () => {
   it('when an allowed directory starts with tilde, expands it from home', async () => {
     const home = join(fixturesDirectory, 'tools')
     const applicationData = mockApplicationData({
-      envars: mockEnvironment({ HOME: home }),
+      envars: new Environment({
+        runtimeEnvironment: { HOME: home },
+        filesystem: defaultFilesystem(),
+      }),
     })
     const permissions = pathPermissions({
       applicationData,
@@ -117,7 +121,6 @@ describe('path-permissions', () => {
     const applicationData = mockApplicationData()
     applicationData.runtime = new Runtime(
       Deno,
-      mockEnvironment({}),
       `${fixturesDirectory}/path-permissions/inside`,
     )
     const permissions = pathPermissions({
@@ -249,7 +252,14 @@ describe('path-permissions', () => {
 
   it('when the path is inside an ignored directory, refuses it', async () => {
     const applicationData = mockApplicationData({
-      config: configWithIgnore(['vendor']),
+      config: new CrowConfig('.', {
+        ...defaultCrowConfig(),
+        permissions: {
+          ignore: ['vendor'],
+          additionalRead: [],
+          additionalWrite: [],
+        },
+      }),
     })
     const permissions = pathPermissions({
       applicationData,
@@ -263,7 +273,14 @@ describe('path-permissions', () => {
 
   it('when the path is an ignored file, refuses it', async () => {
     const applicationData = mockApplicationData({
-      config: configWithIgnore(['src/secret.txt']),
+      config: new CrowConfig('.', {
+        ...defaultCrowConfig(),
+        permissions: {
+          ignore: ['src/secret.txt'],
+          additionalRead: [],
+          additionalWrite: [],
+        },
+      }),
     })
     const permissions = pathPermissions({
       applicationData,
@@ -277,7 +294,14 @@ describe('path-permissions', () => {
 
   it('when a path shares only the name of an ignored directory deeper down, allows it', async () => {
     const applicationData = mockApplicationData({
-      config: configWithIgnore(['vendor']),
+      config: new CrowConfig('.', {
+        ...defaultCrowConfig(),
+        permissions: {
+          ignore: ['vendor'],
+          additionalRead: [],
+          additionalWrite: [],
+        },
+      }),
     })
     const permissions = pathPermissions({
       applicationData,
@@ -292,8 +316,18 @@ describe('path-permissions', () => {
   it('when an ignored path starts with tilde, expands it from home', async () => {
     const home = join(fixturesDirectory, 'tools')
     const applicationData = mockApplicationData({
-      envars: mockEnvironment({ HOME: home }),
-      config: configWithIgnore(['~/git']),
+      envars: new Environment({
+        runtimeEnvironment: { HOME: home },
+        filesystem: defaultFilesystem(),
+      }),
+      config: new CrowConfig('.', {
+        ...defaultCrowConfig(),
+        permissions: {
+          ignore: ['~/git'],
+          additionalRead: [],
+          additionalWrite: [],
+        },
+      }),
     })
     const permissions = pathPermissions({
       applicationData,
@@ -308,7 +342,14 @@ describe('path-permissions', () => {
   it('when an ignored path is nested in an allowed directory, refuses inside it and allows beside it', async () => {
     const directory = join(fixturesDirectory, 'tools')
     const applicationData = mockApplicationData({
-      config: configWithIgnore([join(directory, 'git')]),
+      config: new CrowConfig('.', {
+        ...defaultCrowConfig(),
+        permissions: {
+          ignore: [join(directory, 'git')],
+          additionalRead: [],
+          additionalWrite: [],
+        },
+      }),
     })
     const permissions = pathPermissions({
       applicationData,
@@ -331,9 +372,14 @@ describe('path-permissions', () => {
       `${fixturesDirectory}/path-permissions/link`,
     )
     const applicationData = mockApplicationData({
-      config: configWithIgnore([
-        `${fixturesDirectory}/path-permissions/ignored`,
-      ]),
+      config: new CrowConfig('.', {
+        ...defaultCrowConfig(),
+        permissions: {
+          ignore: [`${fixturesDirectory}/path-permissions/ignored`],
+          additionalRead: [],
+          additionalWrite: [],
+        },
+      }),
     })
     const permissions = pathPermissions({
       applicationData,
@@ -349,7 +395,14 @@ describe('path-permissions', () => {
 
   it('when asked for ignored paths, returns them resolved to absolute paths', () => {
     const applicationData = mockApplicationData({
-      config: configWithIgnore(['/abs/dir', '/abs/../other']),
+      config: new CrowConfig('.', {
+        ...defaultCrowConfig(),
+        permissions: {
+          ignore: ['/abs/dir', '/abs/../other'],
+          additionalRead: [],
+          additionalWrite: [],
+        },
+      }),
     })
     const permissions = pathPermissions({
       applicationData,

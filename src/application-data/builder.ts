@@ -1,10 +1,12 @@
-import type { AsyncOperationWithResult } from '../types.ts'
+import { OperationWithResult } from '../operation.ts'
 import { ApplicationData } from './application-data.ts'
+import { parseArguments } from './arguments.ts'
 import { defaultRuntime, type Runtime } from './runtime.ts'
+import { defaultFilesystem } from './filesystem.ts'
 import { Io } from './io.ts'
+import { loadEnvironmentalVariables } from './env-vars.ts'
 import { loadConfig } from './load-config.ts'
 import { gitRepositoryRoot } from './allowed-paths/repository-root.ts'
-import { SubOperations } from './sub-operations.ts'
 import { verifyDatabase } from './verify-database.ts'
 
 type ApplicationDataBuilderArguments = {
@@ -12,88 +14,81 @@ type ApplicationDataBuilderArguments = {
   runtime?: Runtime
 }
 
-export class ApplicationDataBuilder
-  implements AsyncOperationWithResult<ApplicationData> {
-  readonly configPath: string | undefined
-  private runtime: Runtime
-  private configLoaded = false
-  private subOperations = new SubOperations()
-  appData: Partial<ApplicationData>
-
-  constructor(
-    { path, runtime = defaultRuntime() }: ApplicationDataBuilderArguments = {},
-  ) {
-    this.configPath = path
-    this.runtime = runtime
-    this.appData = new ApplicationData()
-  }
-
-  get reason() {
-    return this.subOperations.reason
-  }
-
-  success() {
-    return this.subOperations.success()
-  }
+export class ApplicationDataBuilder extends OperationWithResult<
+  Required<ApplicationDataBuilderArguments>,
+  ApplicationData
+> {
+  protected override logPrefix = 'Build application data: '
 
   async run() {
     this.setRuntimeAndArgs()
     await this.runConfigLoader()
     await this.setRemainingCollaborators()
-    this.subOperations.reportFailures(this.appData.io!.consoleError())
+    this.failFromSubOperations()
     return this
   }
 
-  result(): ApplicationData {
-    return this.appData as ApplicationData
+  result() {
+    return this.applicationData
   }
 
   private setRuntimeAndArgs() {
-    this.appData.runtime = this.runtime
-    this.appData.parsedArguments = this.runtime.parsedArguments()
+    const { runtime } = this.operationArguments
+    this.applicationData.runtime = runtime
+    this.applicationData.filesystem = defaultFilesystem()
+    this.applicationData.parsedArguments = parseArguments(runtime.args())
   }
 
   private async runConfigLoader() {
-    const loader = loadConfig({ path: this.loadPath(), runtime: this.runtime })
-    const action = `load the config from '${loader.configPath}'`
-    await this.subOperations.run(loader, action)
-    this.configLoaded = loader.success()
-    this.appData.config = loader.result()
-  }
-
-  private loadPath() {
-    return this.configPath || this.appData.parsedArguments!.configPath()
+    const loader = loadConfig({
+      path: this.operationArguments.path,
+      parsedArguments: this.applicationData.parsedArguments,
+      filesystem: this.applicationData.filesystem,
+    })
+    await this.runNonBlockingOperation(loader)
+    this.applicationData.config = loader.result()
   }
 
   private async setRemainingCollaborators() {
-    const { runtime, config } = this.appData
-    this.appData.runtime = await runtime!.withEnvironmentFile(config!.envFile)
-    this.appData.io = new Io(this.appData.config!.crowRepoDirectory)
+    await this.loadEnvars()
+    this.applicationData.io = new Io(
+      this.applicationData.config.crowRepoDirectory,
+    )
     await this.openDatabase()
-    this.appData.repositoryRoot = await this.repositoryRoot()
+    this.applicationData.repositoryRoot = await this.repositoryRoot()
+  }
+
+  private async loadEnvars() {
+    this.applicationData.envars = await loadEnvironmentalVariables({
+      path: this.applicationData.config.envFile,
+      runtimeEnvironment: this.operationArguments.runtime.env(),
+      filesystem: this.applicationData.filesystem,
+    })
   }
 
   private async openDatabase() {
-    if (!this.configLoaded) return
-    const verification = verifyDatabase({
-      database: () => this.appData.database!(),
-      logger: this.appData.io!.logger(),
-    })
-    await this.subOperations.run(verification, 'open the database')
+    await this.runNonBlockingOperation(verifyDatabase({
+      database: () => this.applicationData.database(),
+      logger: this.logger,
+    }))
   }
 
   private async repositoryRoot() {
     const root = gitRepositoryRoot({
-      runtime: this.appData.runtime!,
-      logger: this.appData.io!.logger(),
+      runtime: this.applicationData.runtime,
+      logger: this.logger,
     })
-    await this.subOperations.run(root, 'find the repository root')
+    await this.runNonBlockingOperation(root)
     return root.result()
   }
 }
 
 export const buildApplicationData = (
-  args: ApplicationDataBuilderArguments = {},
+  { path = '', runtime = defaultRuntime() }: ApplicationDataBuilderArguments =
+    {},
 ) => {
-  return new ApplicationDataBuilder(args)
+  return new ApplicationDataBuilder({
+    applicationData: new ApplicationData(),
+    operationArguments: { path, runtime },
+  })
 }

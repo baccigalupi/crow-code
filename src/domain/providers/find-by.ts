@@ -30,8 +30,7 @@ export class ProviderFindBy {
     ProviderRecord[],
     ProviderEntity | undefined
   > {
-    return (result) =>
-      providerEntities(result, this.applicationData.envars())[0]
+    return (result) => providerEntities(result, this.applicationData.envars)[0]
   }
 
   private async runQuery(query: PromiseLike<ProviderRecord[]>) {

@@ -55,7 +55,7 @@ export class ModelFindAllByFilters {
     ModelWithProviderRow[],
     ModelEntity[]
   > {
-    return (rows) => modelEntities(rows, this.applicationData.envars())
+    return (rows) => modelEntities(rows, this.applicationData.envars)
   }
 
   private async runQuery(query: PromiseLike<ModelWithProviderRow[]>) {

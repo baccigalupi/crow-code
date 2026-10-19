@@ -39,7 +39,7 @@ export class EditFile extends FileOperation<TaskArguments, EditResult> {
   private async edit() {
     if (!this.succeeded) return
 
-    const contents = await this.applicationData.runtime.readTextFile(
+    const contents = await this.applicationData.filesystem.readTextFile(
       this.operationArguments.path,
     )
     this.failUnmatched(contents)
@@ -61,7 +61,7 @@ export class EditFile extends FileOperation<TaskArguments, EditResult> {
 
   private async write(contents: string) {
     const { oldString, newString } = this.operationArguments
-    await this.applicationData.runtime.writeTextFile(
+    await this.applicationData.filesystem.writeTextFile(
       this.operationArguments.path,
       contents.replaceAll(oldString, newString),
     )

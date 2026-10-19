@@ -85,24 +85,28 @@ const gitFiles = async (args: string[]): Promise<string[]> => {
     .filter((line) => line.length > 0)
 }
 
-const trackedFiles = async (): Promise<string[]> => [
-  ...new Set([
-    ...await gitFiles([
-      'ls-files',
-      ...codeGlobs,
-      ...testGlobs,
-      ...supportGlobs,
+const trackedFiles = async (): Promise<string[]> => {
+  const files = [
+    ...new Set([
+      ...await gitFiles([
+        'ls-files',
+        ...codeGlobs,
+        ...testGlobs,
+        ...supportGlobs,
+      ]),
+      ...await gitFiles([
+        'ls-files',
+        '--others',
+        '--exclude-standard',
+        ...codeGlobs,
+        ...testGlobs,
+        ...supportGlobs,
+      ]),
     ]),
-    ...await gitFiles([
-      'ls-files',
-      '--others',
-      '--exclude-standard',
-      ...codeGlobs,
-      ...testGlobs,
-      ...supportGlobs,
-    ]),
-  ]),
-]
+  ]
+  const deleted = await gitFiles(['ls-files', '--deleted'])
+  return files.filter((file) => !deleted.includes(file))
+}
 
 const changedFiles = async (): Promise<string[]> => {
   const files = [

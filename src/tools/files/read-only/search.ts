@@ -30,7 +30,8 @@ export class SearchFiles
     return sortedMatches({
       ...this.operationArguments,
       ignoredDirectories: this.permissions().ignoredPaths(),
-      runtime: this.applicationData.runtime,
+      cwd: this.applicationData.runtime.cwd,
+      filesystem: this.applicationData.filesystem,
     })
   }
 }

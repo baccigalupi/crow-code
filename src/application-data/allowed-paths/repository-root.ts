@@ -33,7 +33,7 @@ export class GitRepositoryRoot implements AsyncOperationWithResult<string> {
   }
 
   private output() {
-    return this.runtime.command('git', {
+    return this.runtime.runCommand('git', {
       args: ['rev-parse', '--show-toplevel'],
     })
   }

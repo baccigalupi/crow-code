@@ -9,7 +9,8 @@ import type {
   ModelRow,
   ModelWithProviderRow,
 } from '../../../src/domain/types.ts'
-import { mockEnvironment } from '../../support/mock-environment.ts'
+import { Environment } from '../../../src/application-data/env-vars.ts'
+import { defaultFilesystem } from '../../../src/application-data/filesystem.ts'
 
 describe('model', () => {
   it('exposes pass-through attributes', () => {
@@ -29,7 +30,13 @@ describe('model', () => {
       reasoning_options: '{"mandatory":false}',
     }
 
-    const model = modelEntity(row) as ModelEntity
+    const model = modelEntity(
+      row,
+      new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      }),
+    ) as ModelEntity
 
     expect(model.id()).toBe(1)
     expect(model.providerId()).toBe(2)
@@ -47,7 +54,13 @@ describe('model', () => {
   })
 
   it('when row is undefined, returns a null model', () => {
-    const model = modelEntity()
+    const model = modelEntity(
+      undefined,
+      new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      }),
+    )
 
     expect(model.dynamicDelegation()).toBe(false)
     expect(model.supportedParameters()).toEqual([])
@@ -81,7 +94,10 @@ describe('model', () => {
       provider_base_url: 'https://example.com/v1',
       provider_api_key_env_var: 'PROVIDER_KEY',
     }
-    const environment = mockEnvironment({ PROVIDER_KEY: 'secret' })
+    const environment = new Environment({
+      runtimeEnvironment: { PROVIDER_KEY: 'secret' },
+      filesystem: defaultFilesystem(),
+    })
 
     const model = new ModelEntity(row, environment)
 
@@ -111,7 +127,10 @@ describe('model', () => {
       provider_base_url: 'https://example.com/v1',
       provider_api_key_env_var: null,
     }
-    const environment = mockEnvironment({ PROVIDER_KEY: 'secret' })
+    const environment = new Environment({
+      runtimeEnvironment: { PROVIDER_KEY: 'secret' },
+      filesystem: defaultFilesystem(),
+    })
 
     const model = new ModelEntity(row, environment)
 
@@ -150,7 +169,13 @@ describe('model', () => {
       reasoning_options: '{"mandatory":false}',
     }
 
-    const models = modelEntities([first, second])
+    const models = modelEntities(
+      [first, second],
+      new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      }),
+    )
 
     expect(models).toHaveLength(2)
     expect(models[0]).toBeInstanceOf(ModelEntity)

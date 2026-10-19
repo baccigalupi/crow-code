@@ -3,6 +3,7 @@ import { OpenAI } from 'openai'
 import type { OpenAiClientOptions } from '../model-requests/types.ts'
 import type { CrowConfig } from './config.ts'
 import type { Runtime } from './runtime.ts'
+import type { Filesystem } from './filesystem.ts'
 import type { Environment } from './env-vars.ts'
 import { Io } from './io.ts'
 import type { ParsedArguments } from './arguments.ts'
@@ -13,13 +14,7 @@ import { expandHome } from './allowed-paths/expand-home.ts'
 import { openAndMigrateDatabase } from '../database/open-and-migrate-database.ts'
 import type { ConsoleError, ConsoleLog, Logger } from '../types.ts'
 
-@delegate(
-  {
-    args: 'args',
-    envars: 'envars',
-  },
-  'runtime',
-)
+@delegate({ args: 'args' }, 'runtime')
 @delegate(
   {
     consoleError: 'consoleError',
@@ -40,6 +35,8 @@ import type { ConsoleError, ConsoleLog, Logger } from '../types.ts'
 export class ApplicationData {
   allowedPaths = new AllowedPaths(this)
   config!: CrowConfig
+  envars!: Environment
+  filesystem!: Filesystem
   io!: Io
   parsedArguments!: ParsedArguments
   repositoryRoot!: string
@@ -68,7 +65,7 @@ export class ApplicationData {
   crowGlobalDirectory() {
     return expandHome({
       directories: [this.config.crowGlobalDirectory],
-      envars: this.envars(),
+      envars: this.envars,
     }).directories()[0]
   }
 
@@ -77,7 +74,7 @@ export class ApplicationData {
     return openAndMigrateDatabase(
       this.crowGlobalDirectory(),
       this.logger(),
-      this.runtime,
+      this.filesystem,
     )
   }
 }
@@ -86,7 +83,6 @@ export interface ApplicationData {
   args(): string[]
   consoleError(): ConsoleError
   consoleLog(): ConsoleLog
-  envars(): Environment
   fetch(): typeof fetch
   gitPathPermissions(): PathPermissions
   logger(): Logger

@@ -4,7 +4,7 @@ import { expect } from '@std/expect'
 import { spy } from '@std/testing/mock'
 import { effect, signal } from '@preact/signals-core'
 import { writeCrowConfig } from '../../../../src/tui/install/crow-config/write.ts'
-import { defaultRuntime } from '../../../../src/application-data/runtime.ts'
+import { defaultFilesystem } from '../../../../src/application-data/filesystem.ts'
 import type { InstallStep } from '../../../../src/tui/install/types.ts'
 import { inputSignal } from '../../../support/input-signal.ts'
 import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
@@ -23,8 +23,10 @@ describe('write', () => {
       step: signal<InstallStep>('confirm'),
       confirmation: signal(true),
     }
-    const dispose = writeCrowConfig({ signals, runtime: defaultRuntime() })
-      .subscribe()
+    const dispose = writeCrowConfig({
+      signals,
+      filesystem: defaultFilesystem(),
+    }).subscribe()
     const finished = new Promise((resolve) =>
       effect(() => {
         if (signals.step.value === 'done') resolve(true)
@@ -46,8 +48,8 @@ describe('write', () => {
   })
 
   it('when the step is not write, writes nothing', () => {
-    const runtime = defaultRuntime()
-    using mkdir = spy(runtime, 'mkdir')
+    const filesystem = defaultFilesystem()
+    using mkdir = spy(filesystem, 'mkdirWithParents')
     const signals = {
       repoDirectory: inputSignal(
         join(fixturesDirectory, 'write-crow-config', 'crow'),
@@ -57,7 +59,7 @@ describe('write', () => {
       step: signal<InstallStep>('env'),
       confirmation: signal(true),
     }
-    const dispose = writeCrowConfig({ signals, runtime }).subscribe()
+    const dispose = writeCrowConfig({ signals, filesystem }).subscribe()
 
     signals.step.value = 'confirm'
 

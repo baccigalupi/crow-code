@@ -2,7 +2,7 @@ import knex from 'knex'
 import { join } from '@std/path'
 import { migrateDatabase } from './migrate.ts'
 import type { Logger } from '../types.ts'
-import type { Runtime } from '../application-data/runtime.ts'
+import type { Filesystem } from '../application-data/filesystem.ts'
 
 export const defaultDatabasePath = (crowDirectory: string) => {
   return join(crowDirectory, 'crow.db')
@@ -11,9 +11,9 @@ export const defaultDatabasePath = (crowDirectory: string) => {
 export const openAndMigrateDatabase = async (
   crowDirectory: string,
   logger: Logger,
-  runtime: Runtime,
+  filesystem: Filesystem,
 ) => {
-  await runtime.mkdir(crowDirectory)
+  await filesystem.mkdirWithParents(crowDirectory)
   const database = openDatabase(crowDirectory)
   await configureDatabase(database)
   await migrateDatabase(database, logger)

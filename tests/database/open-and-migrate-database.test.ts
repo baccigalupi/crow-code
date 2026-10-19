@@ -5,7 +5,7 @@ import {
   defaultDatabasePath,
   openAndMigrateDatabase,
 } from '../../src/database/open-and-migrate-database.ts'
-import { defaultRuntime } from '../../src/application-data/runtime.ts'
+import { defaultFilesystem } from '../../src/application-data/filesystem.ts'
 import { clearDirectory, fixturesDirectory } from '../support/fixtures.ts'
 import { createTestDatabase, dropAllTables } from '../support/test-database.ts'
 import pino from 'pino'
@@ -25,7 +25,7 @@ describe('openAndMigrateDatabase', () => {
     await openAndMigrateDatabase(
       crowDirectory,
       logger,
-      defaultRuntime(),
+      defaultFilesystem(),
     )
 
     expect(Deno.statSync(defaultDatabasePath(crowDirectory)).isFile).toBe(true)
@@ -37,7 +37,7 @@ describe('openAndMigrateDatabase', () => {
     const database = await openAndMigrateDatabase(
       crowDirectory,
       logger,
-      defaultRuntime(),
+      defaultFilesystem(),
     )
 
     await database.schema.createTable('notes', (table) => {
@@ -55,7 +55,7 @@ describe('openAndMigrateDatabase', () => {
     const first = await openAndMigrateDatabase(
       crowDirectory,
       logger,
-      defaultRuntime(),
+      defaultFilesystem(),
     )
     await first.schema.createTable('notes', (table) => {
       table.text('content')
@@ -65,7 +65,7 @@ describe('openAndMigrateDatabase', () => {
     const second = await openAndMigrateDatabase(
       crowDirectory,
       logger,
-      defaultRuntime(),
+      defaultFilesystem(),
     )
     const rows = await second('notes').select('content')
 
@@ -78,7 +78,7 @@ describe('openAndMigrateDatabase', () => {
     const database = await openAndMigrateDatabase(
       crowDirectory,
       logger,
-      defaultRuntime(),
+      defaultFilesystem(),
     )
     await database.schema.createTable('notes', (table) => {
       table.text('content')

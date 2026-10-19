@@ -7,7 +7,7 @@ import type { ReplStatus } from '../../../src/tui/types.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('CommandTui', () => {
-  it('when run, starts the tui with the runtime and waits for its status', async () => {
+  it('when run, starts the tui with the application data and waits for its status', async () => {
     const status = spy(() => Promise.resolve('completed' as ReplStatus))
     const runTui = spy(() => ({ status }))
     class FakeTui extends CommandTui {
@@ -25,7 +25,7 @@ describe('CommandTui', () => {
 
     await tui.run()
 
-    expect(runTui.calls[0].args).toEqual([applicationData.runtime])
+    expect(runTui.calls[0].args).toEqual([applicationData])
     expect(status.calls.length).toBe(1)
   })
 

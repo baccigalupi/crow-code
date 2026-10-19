@@ -5,15 +5,18 @@ import {
   Environment,
   loadEnvironmentalVariables,
 } from '../../src/application-data/env-vars.ts'
+import { defaultFilesystem } from '../../src/application-data/filesystem.ts'
 import { clearDirectory, fixturesDirectory } from '../support/fixtures.ts'
-import { denoWithEnv, mockEnvironment } from '../support/mock-environment.ts'
 
 describe('env-vars', () => {
   beforeEach(() => clearDirectory(join(fixturesDirectory, 'env-vars')))
   afterEach(() => clearDirectory(join(fixturesDirectory, 'env-vars')))
 
   it('when a value exists, returns it', () => {
-    const environment = mockEnvironment({ API_KEY: 'secret' })
+    const environment = new Environment({
+      runtimeEnvironment: { API_KEY: 'secret' },
+      filesystem: defaultFilesystem(),
+    })
 
     const value = environment.value('API_KEY')
 
@@ -22,7 +25,10 @@ describe('env-vars', () => {
   })
 
   it('when a value is missing, returns an empty value', () => {
-    const environment = mockEnvironment({})
+    const environment = new Environment({
+      runtimeEnvironment: {},
+      filesystem: defaultFilesystem(),
+    })
 
     const value = environment.value('API_KEY')
 
@@ -30,20 +36,16 @@ describe('env-vars', () => {
     expect(environment.hasValue('API_KEY')).toBe(false)
   })
 
-  it('when no deno is given, reads the process environment', () => {
-    const environment = new Environment()
-
-    const value = environment.value('PATH')
-
-    expect(value).toBe(Deno.env.get('PATH'))
-  })
-
   it('when an environment file exists, loads its values', async () => {
     const directory = join(fixturesDirectory, 'env-vars', 'present')
     Deno.mkdirSync(directory, { recursive: true })
     const path = join(directory, 'values.env')
     Deno.writeTextFileSync(path, 'FILE_ONLY_KEY=file-value\n')
-    const environment = new Environment(denoWithEnv(), path)
+    const environment = new Environment({
+      runtimeEnvironment: {},
+      filesystem: defaultFilesystem(),
+      path,
+    })
 
     await environment.run()
 
@@ -54,59 +56,80 @@ describe('env-vars', () => {
     const home = join(fixturesDirectory, 'env-vars', 'home')
     Deno.mkdirSync(home, { recursive: true })
     Deno.writeTextFileSync(join(home, 'values.env'), 'HOME_KEY=home-value\n')
-    const environment = new Environment(
-      denoWithEnv({ HOME: home }),
-      '~/values.env',
-    )
+    const environment = new Environment({
+      runtimeEnvironment: { HOME: home },
+      filesystem: defaultFilesystem(),
+      path: '~/values.env',
+    })
 
     await environment.run()
 
     expect(environment.value('HOME_KEY')).toBe('home-value')
   })
 
-  it('when an environment file is missing, keeps the process values', async () => {
+  it('when an environment file is missing, keeps the runtime environment', async () => {
     const path = join(fixturesDirectory, 'env-vars', 'missing', 'missing.env')
-    const environment = new Environment(
-      denoWithEnv({ API_KEY: 'secret' }),
+    const environment = new Environment({
+      runtimeEnvironment: { API_KEY: 'secret' },
+      filesystem: defaultFilesystem(),
       path,
-    )
+    })
 
     await environment.run()
 
     expect(environment.value('API_KEY')).toBe('secret')
   })
 
-  it('when the environment path is empty, keeps the process values', async () => {
-    const environment = new Environment(denoWithEnv({ API_KEY: 'secret' }), '')
+  it('when the environment path is empty, keeps the runtime environment', async () => {
+    const environment = new Environment({
+      runtimeEnvironment: { API_KEY: 'secret' },
+      filesystem: defaultFilesystem(),
+      path: '',
+    })
 
     await environment.run()
 
     expect(environment.value('API_KEY')).toBe('secret')
   })
 
-  it('when a process value and a file value share a name, the process value wins', async () => {
+  it('when no path is given, keeps the runtime environment', async () => {
+    const environment = new Environment({
+      runtimeEnvironment: { API_KEY: 'secret' },
+      filesystem: defaultFilesystem(),
+    })
+
+    await environment.run()
+
+    expect(environment.value('API_KEY')).toBe('secret')
+  })
+
+  it('when a runtime environment value and a file value share a name, the runtime environment value wins', async () => {
     const directory = join(fixturesDirectory, 'env-vars', 'shared')
     Deno.mkdirSync(directory, { recursive: true })
     const path = join(directory, 'values.env')
     Deno.writeTextFileSync(path, 'API_KEY=from-file\n')
-    const environment = new Environment(
-      denoWithEnv({ API_KEY: 'from-process' }),
+    const environment = new Environment({
+      runtimeEnvironment: { API_KEY: 'from-runtime-environment' },
+      filesystem: defaultFilesystem(),
       path,
-    )
+    })
 
     await environment.run()
 
-    expect(environment.value('API_KEY')).toBe('from-process')
+    expect(environment.value('API_KEY')).toBe('from-runtime-environment')
   })
 
-  it('when loaded, combines the process values with the environment file', async () => {
+  it('when loaded, combines the runtime environment with the environment file', async () => {
     const directory = join(fixturesDirectory, 'env-vars', 'loaded')
     Deno.mkdirSync(directory, { recursive: true })
     const path = join(directory, 'values.env')
     Deno.writeTextFileSync(path, 'FILE_ONLY_KEY=file-value\n')
-    const deno = denoWithEnv({ API_KEY: 'secret' })
 
-    const environment = await loadEnvironmentalVariables(path, deno)
+    const environment = await loadEnvironmentalVariables({
+      runtimeEnvironment: { API_KEY: 'secret' },
+      filesystem: defaultFilesystem(),
+      path,
+    })
 
     expect(environment.value('API_KEY')).toBe('secret')
     expect(environment.value('FILE_ONLY_KEY')).toBe('file-value')

@@ -1,15 +1,19 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
+import { spy } from '@std/testing/mock'
 import { join } from '@std/path'
+import { pino } from 'pino'
+import type { Logger } from '../../src/types.ts'
 import { loadConfig } from '../../src/application-data/load-config.ts'
-import { defaultRuntime } from '../../src/application-data/runtime.ts'
+import { parseArguments } from '../../src/application-data/arguments.ts'
+import { defaultFilesystem } from '../../src/application-data/filesystem.ts'
 import { fixturesDirectory } from '../support/fixtures.ts'
 
 describe('loadConfig', () => {
   it('returns a config loader with the default config path', () => {
     const path = undefined
 
-    const config = loadConfig({ path, runtime: defaultRuntime() })
+    const config = loadConfig({ path, filesystem: defaultFilesystem() })
 
     expect(config.configPath).toBe('.crow/config.json')
     expect(config.crowRepoDirectory).toBe('.crow')
@@ -18,16 +22,60 @@ describe('loadConfig', () => {
   it('returns a config loader with the provided config path', () => {
     const path = './custom-crow-repo/config.json'
 
-    const config = loadConfig({ path, runtime: defaultRuntime() })
+    const config = loadConfig({ path, filesystem: defaultFilesystem() })
 
     expect(config.configPath).toBe('./custom-crow-repo/config.json')
     expect(config.crowRepoDirectory).toBe('./custom-crow-repo')
   })
 
+  it('when no path is provided, uses the command-line config path', () => {
+    const parsedArguments = parseArguments(['--config=./cli/config.json'])
+
+    const config = loadConfig({
+      parsedArguments,
+      filesystem: defaultFilesystem(),
+    })
+
+    expect(config.configPath).toBe('./cli/config.json')
+  })
+
+  it('when a path is provided, prefers it over the command-line config path', () => {
+    const parsedArguments = parseArguments(['--config=./cli/config.json'])
+
+    const config = loadConfig({
+      path: './custom-crow-repo/config.json',
+      parsedArguments,
+      filesystem: defaultFilesystem(),
+    })
+
+    expect(config.configPath).toBe('./custom-crow-repo/config.json')
+  })
+
+  it('when the config is malformed, logs the failure naming the path', async () => {
+    const errorSpy = spy()
+    const path = join(fixturesDirectory, 'malformed-config.txt')
+    const operation = loadConfig({
+      path,
+      filesystem: defaultFilesystem(),
+      logger: { error: errorSpy } as unknown as Logger,
+    })
+
+    await operation.run()
+    const config = operation.result()
+
+    expect(errorSpy.calls).toHaveLength(1)
+    expect(errorSpy.calls[0].args[0]).toBe(
+      `Load config: '${path}': the file is not valid JSON`,
+    )
+    expect(config.crowGlobalDirectory).toBe('~/.crow')
+    expect(config.envFile).toBe('~/.crow/.env')
+    expect(config.ignoredDirectories).toEqual([])
+  })
+
   it('loads the config at the provided path', async () => {
     const operation = loadConfig({
       path: join(fixturesDirectory, 'config.json'),
-      runtime: defaultRuntime(),
+      filesystem: defaultFilesystem(),
     })
 
     await operation.run()
@@ -42,7 +90,7 @@ describe('loadConfig', () => {
   it('when the config sets envFile, exposes it', async () => {
     const operation = loadConfig({
       path: join(fixturesDirectory, 'env-file-config.json'),
-      runtime: defaultRuntime(),
+      filesystem: defaultFilesystem(),
     })
 
     await operation.run()
@@ -55,7 +103,7 @@ describe('loadConfig', () => {
   it('when using the default config, envFile is .env in ~/.crow', () => {
     const operation = loadConfig({
       path: join(fixturesDirectory, 'missing-config.json'),
-      runtime: defaultRuntime(),
+      filesystem: defaultFilesystem(),
     })
 
     const config = operation.result()
@@ -66,7 +114,8 @@ describe('loadConfig', () => {
   it('returns the default config when the path is not found', async () => {
     const operation = loadConfig({
       path: join(fixturesDirectory, 'missing-config.json'),
-      runtime: defaultRuntime(),
+      filesystem: defaultFilesystem(),
+      logger: pino({ enabled: false }),
     })
 
     await operation.run()
@@ -83,7 +132,8 @@ describe('loadConfig', () => {
   it('fails when the config contains malformed JSON', async () => {
     const operation = loadConfig({
       path: join(fixturesDirectory, 'malformed-config.txt'),
-      runtime: defaultRuntime(),
+      filesystem: defaultFilesystem(),
+      logger: pino({ enabled: false }),
     })
 
     await operation.run()
@@ -99,7 +149,8 @@ describe('loadConfig', () => {
   it('fails with the error message when the path cannot be read', async () => {
     const operation = loadConfig({
       path: fixturesDirectory,
-      runtime: defaultRuntime(),
+      filesystem: defaultFilesystem(),
+      logger: pino({ enabled: false }),
     })
 
     await operation.run()
@@ -113,7 +164,8 @@ describe('loadConfig', () => {
   it('fails when the config does not match the schema', async () => {
     const operation = loadConfig({
       path: join(fixturesDirectory, 'incomplete-config.json'),
-      runtime: defaultRuntime(),
+      filesystem: defaultFilesystem(),
+      logger: pino({ enabled: false }),
     })
 
     await operation.run()

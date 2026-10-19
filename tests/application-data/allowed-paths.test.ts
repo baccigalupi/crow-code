@@ -5,7 +5,8 @@ import { resolve } from '@std/path/resolve'
 import { AllowedPaths } from '../../src/application-data/allowed-paths.ts'
 import { CrowConfig } from '../../src/application-data/config.ts'
 import { Runtime } from '../../src/application-data/runtime.ts'
-import { mockEnvironment } from '../support/mock-environment.ts'
+import { Environment } from '../../src/application-data/env-vars.ts'
+import { defaultFilesystem } from '../../src/application-data/filesystem.ts'
 import { mockApplicationData } from '../support/mock-application-data.ts'
 import { fixturesDirectory } from '../support/fixtures.ts'
 
@@ -28,7 +29,10 @@ describe('AllowedPaths', () => {
   it('bounds write permissions to the working directory and configured write directories', async () => {
     const home = resolve(Deno.cwd(), '..', 'outside-home')
     const appData = mockApplicationData({
-      envars: mockEnvironment({ HOME: home }),
+      envars: new Environment({
+        runtimeEnvironment: { HOME: home },
+        filesystem: defaultFilesystem(),
+      }),
       config: new CrowConfig('.', {
         crowGlobalDirectory: '~/.crow',
         envFile: '~/.crow/.env',
@@ -50,7 +54,10 @@ describe('AllowedPaths', () => {
   it('bounds read permissions to include configured write directories', async () => {
     const home = resolve(Deno.cwd(), '..', 'outside-home')
     const appData = mockApplicationData({
-      envars: mockEnvironment({ HOME: home }),
+      envars: new Environment({
+        runtimeEnvironment: { HOME: home },
+        filesystem: defaultFilesystem(),
+      }),
       config: new CrowConfig('.', {
         crowGlobalDirectory: '~/.crow',
         envFile: '~/.crow/.env',
@@ -71,7 +78,10 @@ describe('AllowedPaths', () => {
   it('bounds read permissions to the working directory and configured read directories', async () => {
     const home = resolve(Deno.cwd(), '..', 'outside-home')
     const appData = mockApplicationData({
-      envars: mockEnvironment({ HOME: home }),
+      envars: new Environment({
+        runtimeEnvironment: { HOME: home },
+        filesystem: defaultFilesystem(),
+      }),
       config: new CrowConfig('.', {
         crowGlobalDirectory: '~/.crow',
         envFile: '~/.crow/.env',
@@ -92,11 +102,7 @@ describe('AllowedPaths', () => {
 
   it('when the runtime has its own working directory, bounds write permissions to it', async () => {
     const appData = mockApplicationData()
-    appData.runtime = new Runtime(
-      Deno,
-      mockEnvironment({}),
-      join(fixturesDirectory, 'tools'),
-    )
+    appData.runtime = new Runtime(Deno, join(fixturesDirectory, 'tools'))
 
     const permissions = new AllowedPaths(appData).write()
 
@@ -108,11 +114,7 @@ describe('AllowedPaths', () => {
 
   it('when the runtime has its own working directory, bounds read permissions to it', async () => {
     const appData = mockApplicationData()
-    appData.runtime = new Runtime(
-      Deno,
-      mockEnvironment({}),
-      join(fixturesDirectory, 'tools'),
-    )
+    appData.runtime = new Runtime(Deno, join(fixturesDirectory, 'tools'))
 
     const permissions = new AllowedPaths(appData).read()
 

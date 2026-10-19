@@ -1,5 +1,5 @@
 import type { DefaultReasoning } from '../types.ts'
-import { Environment } from '../../application-data/env-vars.ts'
+import type { Environment } from '../../application-data/env-vars.ts'
 import type { ModelEndpoint } from '../../model-requests/types.ts'
 import type { ModelEntityRow, ModelRow } from '../types.ts'
 
@@ -15,7 +15,7 @@ export class ModelEntity {
   private row: ModelEntityRow
   private environment: Environment
 
-  constructor(row: ModelEntityRow, environment = new Environment()) {
+  constructor(row: ModelEntityRow, environment: Environment) {
     this.row = row
     this.environment = environment
   }
@@ -87,12 +87,12 @@ export class ModelEntity {
   }
 }
 
-export const modelEntity = (row?: ModelRow, environment?: Environment) => {
-  if (!row) return new ModelEntity(emptyModelRow, environment)
-  return new ModelEntity(row, environment)
-}
+export const modelEntity = (
+  row: ModelRow | undefined,
+  environment: Environment,
+) => new ModelEntity(row || emptyModelRow, environment)
 
 export const modelEntities = (
   rows: ModelRow[],
-  environment?: Environment,
+  environment: Environment,
 ) => rows.map((row) => modelEntity(row, environment))

@@ -2,7 +2,7 @@ import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { fileMatches } from '../../../../../src/tools/files/read-only/search/file-matches.ts'
-import { defaultRuntime } from '../../../../../src/application-data/runtime.ts'
+import { defaultFilesystem } from '../../../../../src/application-data/filesystem.ts'
 import { fixturesDirectory } from '../../../../support/fixtures.ts'
 
 describe('file-matches', () => {
@@ -11,7 +11,7 @@ describe('file-matches', () => {
 
     const matches = await fileMatches({
       directory,
-      runtime: defaultRuntime(),
+      filesystem: defaultFilesystem(),
       path: 'alpha.txt',
       pattern: /t/,
     }).all()
@@ -27,7 +27,7 @@ describe('file-matches', () => {
 
     const matches = await fileMatches({
       directory,
-      runtime: defaultRuntime(),
+      filesystem: defaultFilesystem(),
       path: 'alpha.txt',
       pattern: /t/,
       context: 1,
@@ -50,7 +50,7 @@ describe('file-matches', () => {
 
     const matches = await fileMatches({
       directory,
-      runtime: defaultRuntime(),
+      filesystem: defaultFilesystem(),
       path: 'nested/beta.md',
       pattern: /Beta/,
       context: 2,
@@ -72,7 +72,7 @@ describe('file-matches', () => {
 
     const matches = await fileMatches({
       directory,
-      runtime: defaultRuntime(),
+      filesystem: defaultFilesystem(),
       path: 'alpha.txt',
       pattern: /absent/,
     }).all()
@@ -85,7 +85,7 @@ describe('file-matches', () => {
 
     const matches = await fileMatches({
       directory,
-      runtime: defaultRuntime(),
+      filesystem: defaultFilesystem(),
       path: 'nested/blob.bin',
       pattern: /ary/,
     }).all()
@@ -98,7 +98,7 @@ describe('file-matches', () => {
 
     const matches = await fileMatches({
       directory,
-      runtime: defaultRuntime(),
+      filesystem: defaultFilesystem(),
       path: 'alpha.txt',
       pattern: /t/g,
     }).all()

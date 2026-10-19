@@ -1,5 +1,5 @@
 import type { Signal } from '@preact/signals-core'
-import type { Runtime } from '../../application-data/runtime.ts'
+import type { Filesystem } from '../../application-data/filesystem.ts'
 import type { ExitApp, InputBuffer, KeyFlags } from '../types.ts'
 import type { CrowPermissionsConfig } from '../../types.ts'
 
@@ -43,7 +43,7 @@ export type InstallState = {
 
 export type WriteCrowConfigArguments = {
   readonly signals: InstallState
-  readonly runtime: Runtime
+  readonly filesystem: Filesystem
 }
 
 export type KeypressArguments = {

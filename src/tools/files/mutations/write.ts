@@ -47,7 +47,7 @@ export class WriteFile extends FileOperation<TaskArguments, WriteResult> {
   private async save(existing: PathExists) {
     if (!this.succeeded) return
 
-    await this.applicationData.runtime.writeTextFile(
+    await this.applicationData.filesystem.writeTextFile(
       this.operationArguments.path,
       this.operationArguments.content,
     )

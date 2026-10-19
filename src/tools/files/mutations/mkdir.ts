@@ -32,7 +32,9 @@ export class MakeDirectory
   private async create(existing: PathExists) {
     if (!this.succeeded) return
 
-    await this.applicationData.runtime.mkdir(this.operationArguments.path)
+    await this.applicationData.filesystem.mkdirWithParents(
+      this.operationArguments.path,
+    )
     this.created = !existing.result().exists
   }
 }

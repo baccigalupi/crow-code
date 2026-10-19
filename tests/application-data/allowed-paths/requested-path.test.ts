@@ -5,9 +5,8 @@ import {
   RequestedPath,
   requestedPath,
 } from '../../../src/application-data/allowed-paths/requested-path.ts'
-import { Runtime } from '../../../src/application-data/runtime.ts'
+import { defaultFilesystem } from '../../../src/application-data/filesystem.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
-import { mockEnvironment } from '../../support/mock-environment.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 
 describe('requested-path', () => {
@@ -21,7 +20,8 @@ describe('requested-path', () => {
       path: join(directory, 'git-diff.diff'),
       allowedDirectories: [directory],
       ignoredPaths: [],
-      runtime: applicationData.runtime,
+      cwd: applicationData.runtime.cwd,
+      filesystem: applicationData.filesystem,
     })
 
     const allowed = await requested.isAllowed()
@@ -36,7 +36,8 @@ describe('requested-path', () => {
       path: join(directory, '..'),
       allowedDirectories: [directory],
       ignoredPaths: [],
-      runtime: applicationData.runtime,
+      cwd: applicationData.runtime.cwd,
+      filesystem: applicationData.filesystem,
     })
 
     const allowed = await requested.isAllowed()
@@ -51,7 +52,8 @@ describe('requested-path', () => {
       path: directory,
       allowedDirectories: [directory],
       ignoredPaths: [],
-      runtime: applicationData.runtime,
+      cwd: applicationData.runtime.cwd,
+      filesystem: applicationData.filesystem,
     })
 
     const allowed = await requested.isAllowed()
@@ -66,7 +68,8 @@ describe('requested-path', () => {
       path: join(directory, '..', 'devin-config.json'),
       allowedDirectories: [directory],
       ignoredPaths: [],
-      runtime: applicationData.runtime,
+      cwd: applicationData.runtime.cwd,
+      filesystem: applicationData.filesystem,
     })
 
     const allowed = await requested.isAllowed()
@@ -81,7 +84,8 @@ describe('requested-path', () => {
       path: join(directory, '..hidden'),
       allowedDirectories: [directory],
       ignoredPaths: [],
-      runtime: applicationData.runtime,
+      cwd: applicationData.runtime.cwd,
+      filesystem: applicationData.filesystem,
     })
 
     const allowed = await requested.isAllowed()
@@ -90,16 +94,12 @@ describe('requested-path', () => {
   })
 
   it('when the path is relative, resolves it against the runtime working directory', async () => {
-    const runtime = new Runtime(
-      Deno,
-      mockEnvironment({}),
-      join(fixturesDirectory, 'tools'),
-    )
     const requested = requestedPath({
       path: 'git/git-diff.diff',
       allowedDirectories: [join(fixturesDirectory, 'tools', 'git')],
       ignoredPaths: [],
-      runtime,
+      cwd: join(fixturesDirectory, 'tools'),
+      filesystem: defaultFilesystem(),
     })
 
     const allowed = await requested.isAllowed()
@@ -125,7 +125,8 @@ describe('requested-path', () => {
       path: `${fixturesDirectory}/requested-path/inside/escape/secret.txt`,
       allowedDirectories: [`${fixturesDirectory}/requested-path/inside`],
       ignoredPaths: [],
-      runtime: applicationData.runtime,
+      cwd: applicationData.runtime.cwd,
+      filesystem: applicationData.filesystem,
     })
 
     const allowed = await requested.isAllowed()
@@ -140,7 +141,8 @@ describe('requested-path', () => {
       path: join(directory, 'missing.txt'),
       allowedDirectories: [directory],
       ignoredPaths: [],
-      runtime: applicationData.runtime,
+      cwd: applicationData.runtime.cwd,
+      filesystem: applicationData.filesystem,
     })
 
     const allowed = await requested.isAllowed()
@@ -155,7 +157,8 @@ describe('requested-path', () => {
       path: join(directory, 'git', 'git-diff.diff'),
       allowedDirectories: [directory],
       ignoredPaths: [join(directory, 'git')],
-      runtime: applicationData.runtime,
+      cwd: applicationData.runtime.cwd,
+      filesystem: applicationData.filesystem,
     })
 
     const allowed = await requested.isAllowed()
@@ -176,7 +179,8 @@ describe('requested-path', () => {
       path: `${fixturesDirectory}/requested-path/link`,
       allowedDirectories: [`${fixturesDirectory}/requested-path`],
       ignoredPaths: [`${fixturesDirectory}/requested-path/ignored`],
-      runtime: applicationData.runtime,
+      cwd: applicationData.runtime.cwd,
+      filesystem: applicationData.filesystem,
     })
 
     const allowed = await requested.isAllowed()
@@ -192,7 +196,8 @@ describe('requested-path', () => {
       path: join(directory, 'git-diff.diff'),
       allowedDirectories: [directory],
       ignoredPaths: [],
-      runtime: applicationData.runtime,
+      cwd: applicationData.runtime.cwd,
+      filesystem: applicationData.filesystem,
     })
 
     expect(requested).toBeInstanceOf(RequestedPath)

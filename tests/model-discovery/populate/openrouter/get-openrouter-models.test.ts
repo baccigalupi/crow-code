@@ -10,7 +10,8 @@ import { loadOpenRouterFixture } from '../../../support/fixtures.ts'
 import { getOpenRouterModels } from '../../../../src/model-discovery/populate/openrouter/get-openrouter-models.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { ProviderEntity } from '../../../../src/domain/providers/entity.ts'
-import { mockEnvironment } from '../../../support/mock-environment.ts'
+import { Environment } from '../../../../src/application-data/env-vars.ts'
+import { defaultFilesystem } from '../../../../src/application-data/filesystem.ts'
 
 describe('getOpenRouterModels', () => {
   it('when fetched, returns parsed records', async () => {
@@ -22,7 +23,10 @@ describe('getOpenRouterModels', () => {
         modelsPath: null,
         apiKeyEnvVar: null,
       },
-      mockEnvironment({}),
+      new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      }),
     )
     const fixture = await loadOpenRouterFixture()
     const logger = pino({ enabled: false })
@@ -48,7 +52,10 @@ describe('getOpenRouterModels', () => {
         modelsPath: null,
         apiKeyEnvVar: null,
       },
-      mockEnvironment({}),
+      new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      }),
     )
     const logger = pino({ enabled: false })
     const record = {
@@ -85,7 +92,10 @@ describe('getOpenRouterModels', () => {
         modelsPath: null,
         apiKeyEnvVar: null,
       },
-      mockEnvironment({}),
+      new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      }),
     )
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchSuccess({ data: [] })
@@ -109,7 +119,10 @@ describe('getOpenRouterModels', () => {
         modelsPath: null,
         apiKeyEnvVar: null,
       },
-      mockEnvironment({}),
+      new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      }),
     )
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchError(500)
@@ -134,7 +147,10 @@ describe('getOpenRouterModels', () => {
         modelsPath: null,
         apiKeyEnvVar: null,
       },
-      mockEnvironment({}),
+      new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      }),
     )
     const logger = pino({ enabled: false })
     const mockFetch = mockFetchRejected('network down')

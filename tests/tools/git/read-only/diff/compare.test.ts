@@ -4,7 +4,7 @@ import { resolve } from '@std/path'
 import { assertSpyCall, spy } from '@std/testing/mock'
 import { gitCompare } from '../../../../../src/tools/git/read-only/diff/compare.ts'
 import { CrowConfig } from '../../../../../src/application-data/config.ts'
-import { defaultCrowConfig } from '../../../../../src/application-data/load-config.ts'
+import { defaultCrowConfig } from '../../../../../src/domain/config.ts'
 import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 import { mockCommand } from '../../../../support/mock-command.ts'
 

@@ -5,9 +5,10 @@ import { OpenAI } from 'openai'
 import { ApplicationData } from '../../src/application-data/application-data.ts'
 import { CrowConfig } from '../../src/application-data/config.ts'
 import { Runtime } from '../../src/application-data/runtime.ts'
+import { defaultFilesystem } from '../../src/application-data/filesystem.ts'
 import { Io } from '../../src/application-data/io.ts'
 import { join } from '@std/path/join'
-import { mockEnvironment } from '../support/mock-environment.ts'
+import { Environment } from '../../src/application-data/env-vars.ts'
 import { clearDirectory, fixturesDirectory } from '../support/fixtures.ts'
 import { createTestDatabase } from '../support/test-database.ts'
 import { mockFetchSuccess } from '../support/mock-fetch.ts'
@@ -30,6 +31,33 @@ describe('ApplicationData', () => {
     appData.io = new Io(crowRepoDirectory)
 
     expect(appData.consoleLog()).toEqual(console.log)
+  })
+
+  it('delegates console error to io', () => {
+    const appData = new ApplicationData()
+    appData.io = new Io(join(fixturesDirectory, 'logger'))
+
+    const delegated = appData.consoleError()
+
+    expect(delegated).toBe(console.error)
+  })
+
+  it('delegates fetch to io', () => {
+    const appData = new ApplicationData()
+    appData.io = new Io(join(fixturesDirectory, 'logger'))
+
+    const delegated = appData.fetch()
+
+    expect(delegated).toBe(globalThis.fetch)
+  })
+
+  it('delegates the logger to io', () => {
+    const appData = new ApplicationData()
+    appData.io = new Io(join(fixturesDirectory, 'logger'))
+
+    const delegated = appData.logger()
+
+    expect(delegated).toBe(appData.io.logger())
   })
 
   it('delegates write path permissions to allowedPaths', () => {
@@ -79,11 +107,16 @@ describe('ApplicationData', () => {
     const crowGlobalDirectory = join(fixturesDirectory, 'database')
     const appData = new ApplicationData()
     appData.runtime = new Runtime(Deno)
+    appData.filesystem = defaultFilesystem()
     appData.io = new Io(join(fixturesDirectory, 'logger'))
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory,
       envFile: join(crowGlobalDirectory, '.env'),
       permissions: { ignore: [], additionalRead: [], additionalWrite: [] },
+    })
+    appData.envars = new Environment({
+      runtimeEnvironment: {},
+      filesystem: defaultFilesystem(),
     })
 
     const database = await appData.database()
@@ -98,17 +131,17 @@ describe('ApplicationData', () => {
     const home = join(fixturesDirectory, 'database')
     const appData = new ApplicationData()
     appData.runtime = new Runtime(Deno)
+    appData.filesystem = defaultFilesystem()
     appData.io = new Io(join(fixturesDirectory, 'logger'))
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory: '~/.crow',
       envFile: '~/.crow/.env',
       permissions: { ignore: [], additionalRead: [], additionalWrite: [] },
     })
-    using _envars = stub(
-      appData,
-      'envars',
-      () => mockEnvironment({ HOME: home }),
-    )
+    appData.envars = new Environment({
+      runtimeEnvironment: { HOME: home },
+      filesystem: defaultFilesystem(),
+    })
 
     const database = await appData.database()
 
@@ -131,11 +164,16 @@ describe('ApplicationData', () => {
   it('when closed, destroys the database connection', async () => {
     const appData = new ApplicationData()
     appData.runtime = new Runtime(Deno)
+    appData.filesystem = defaultFilesystem()
     appData.io = new Io(join(fixturesDirectory, 'logger'))
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory: join(fixturesDirectory, 'database'),
       envFile: join(fixturesDirectory, 'database', '.env'),
       permissions: { ignore: [], additionalRead: [], additionalWrite: [] },
+    })
+    appData.envars = new Environment({
+      runtimeEnvironment: {},
+      filesystem: defaultFilesystem(),
     })
     const database = await appData.database()
 

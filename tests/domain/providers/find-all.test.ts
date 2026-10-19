@@ -1,7 +1,8 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import pino from 'pino'
-import { mockEnvironment } from '../../support/mock-environment.ts'
+import { Environment } from '../../../src/application-data/env-vars.ts'
+import { defaultFilesystem } from '../../../src/application-data/filesystem.ts'
 import { ProviderEntity } from '../../../src/domain/providers/entity.ts'
 import { providerFindAll } from '../../../src/domain/providers/find-all.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
@@ -9,7 +10,10 @@ import { mockApplicationData } from '../../support/mock-application-data.ts'
 describe('providerFindAll', () => {
   describe('all', () => {
     it('returns every provider as a ProviderEntity', async () => {
-      const environment = mockEnvironment({ PROVIDER_API_KEY: 'secret' })
+      const environment = new Environment({
+        runtimeEnvironment: { PROVIDER_API_KEY: 'secret' },
+        filesystem: defaultFilesystem(),
+      })
       const logger = pino({ enabled: false })
       const applicationData = mockApplicationData({
         envars: environment,
@@ -44,7 +48,10 @@ describe('providerFindAll', () => {
     })
 
     it('returns an empty array when there are no providers', async () => {
-      const environment = mockEnvironment({})
+      const environment = new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      })
       const logger = pino({ enabled: false })
       const applicationData = mockApplicationData({
         envars: environment,
@@ -57,7 +64,10 @@ describe('providerFindAll', () => {
     })
 
     it('returns an empty api key when the env var is unset', async () => {
-      const environment = mockEnvironment({})
+      const environment = new Environment({
+        runtimeEnvironment: {},
+        filesystem: defaultFilesystem(),
+      })
       const logger = pino({ enabled: false })
       const applicationData = mockApplicationData({
         envars: environment,

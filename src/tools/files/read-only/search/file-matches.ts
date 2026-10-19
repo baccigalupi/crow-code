@@ -1,5 +1,5 @@
 import { join } from '@std/path'
-import type { Runtime } from '../../../../application-data/runtime.ts'
+import type { Filesystem } from '../../../../application-data/filesystem.ts'
 import type { SearchMatch } from '../../../types.ts'
 
 type FileMatchesArguments = {
@@ -7,7 +7,7 @@ type FileMatchesArguments = {
   path: string
   pattern: RegExp
   context?: number
-  runtime: Runtime
+  filesystem: Filesystem
 }
 
 export class FileMatches {
@@ -15,21 +15,21 @@ export class FileMatches {
   private path: string
   private pattern: RegExp
   private context: number
-  private runtime: Runtime
+  private filesystem: Filesystem
 
   constructor(
-    { directory, path, pattern, context = 0, runtime }: FileMatchesArguments,
+    { directory, path, pattern, context = 0, filesystem }: FileMatchesArguments,
   ) {
     this.directory = directory
     this.path = path
     this.pattern = pattern
     this.context = context
-    this.runtime = runtime
+    this.filesystem = filesystem
   }
 
   async all() {
     return this.lines(
-      await this.runtime.readTextFile(join(this.directory, this.path)),
+      await this.filesystem.readTextFile(join(this.directory, this.path)),
     )
   }
 

@@ -27,7 +27,7 @@ export class RestoreSnapshot extends Operation<TaskArguments> {
 
   private async write(path: string, text: string) {
     try {
-      await this.applicationData.runtime.writeTextFile(path, text)
+      await this.applicationData.filesystem.writeTextFile(path, text)
       return true
     } catch {
       return false

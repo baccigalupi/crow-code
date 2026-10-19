@@ -18,12 +18,13 @@ export class PathExists
   }
 
   protected override async perform() {
-    try {
-      await this.applicationData.runtime.lstat(this.operationArguments.path)
-      this.found = true
-    } catch {
-      this.found = false
-    }
+    this.found = await this.exists()
+  }
+
+  private exists() {
+    const { path } = this.operationArguments
+    return this.applicationData.filesystem.assertExists(path)
+      .then(() => true, () => false)
   }
 }
 

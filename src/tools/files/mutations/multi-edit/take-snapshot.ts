@@ -29,7 +29,7 @@ export class TakeSnapshot
   }
 
   private async read(path: string): Promise<SnapshotEntry> {
-    return [path, await this.applicationData.runtime.readTextFile(path)]
+    return [path, await this.applicationData.filesystem.readTextFile(path)]
   }
 }
 

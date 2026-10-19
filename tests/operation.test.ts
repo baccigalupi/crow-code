@@ -5,7 +5,7 @@ import { Operation } from '../src/operation.ts'
 import { mockApplicationData } from './support/mock-application-data.ts'
 
 describe('Operation', () => {
-  it('when an earlier sub-operation failed, runIndependentSubOperation still runs the next one', async () => {
+  it('when an earlier sub-operation failed, runNonBlockingOperation still runs the next one', async () => {
     class Child extends Operation<{ ok: boolean }> {
       protected logPrefix = 'Child: '
       ran = false
@@ -22,7 +22,7 @@ describe('Operation', () => {
 
       async run() {
         await this.runSubOperation(this.child(false))
-        await this.runIndependentSubOperation(this.second)
+        await this.runNonBlockingOperation(this.second)
         return this
       }
 
@@ -57,7 +57,7 @@ describe('Operation', () => {
       protected logPrefix = 'Parent: '
 
       async run() {
-        await this.runIndependentSubOperation(
+        await this.runNonBlockingOperation(
           new Child({
             applicationData: this.applicationData,
             operationArguments: {},

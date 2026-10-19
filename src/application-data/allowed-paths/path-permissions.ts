@@ -56,7 +56,7 @@ export class PathPermissions {
   }
 
   private absolute(directories: string[]) {
-    const envars = this.applicationData.envars()
+    const envars = this.applicationData.envars
     return expandHome({ directories, envars }).directories()
       .map((directory) => resolve(this.runtime().cwd, directory))
   }
@@ -66,7 +66,8 @@ export class PathPermissions {
       path,
       allowedDirectories: this.absoluteDirectories(),
       ignoredPaths: this.ignoredPaths(),
-      runtime: this.runtime(),
+      cwd: this.runtime().cwd,
+      filesystem: this.applicationData.filesystem,
     })
   }
 
