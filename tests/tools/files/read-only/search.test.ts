@@ -196,6 +196,9 @@ describe('search', () => {
     expect(search.success()).toBe(false)
     expect(search.result()).toEqual({ path, matches: [] })
     expect(loggerErrorSpy.calls[0].args[0]).toContain(
+      'Sorted matches: Invalid regular expression',
+    )
+    expect(loggerErrorSpy.calls[1].args[0]).toContain(
       'Search files: Invalid regular expression',
     )
   })
@@ -231,8 +234,9 @@ describe('search', () => {
 
     expect(search.success()).toBe(false)
     expect(search.result()).toEqual({ path, matches: [] })
-    expect(loggerErrorSpy.calls[0].args[0]).toContain('Search files: ')
-    expect(loggerErrorSpy.calls[0].args[0]).toContain(
+    expect(loggerErrorSpy.calls[0].args[0]).toContain('Sorted matches: ')
+    expect(loggerErrorSpy.calls[1].args[0]).toContain('Search files: ')
+    expect(loggerErrorSpy.calls[1].args[0]).toContain(
       'No such file or directory',
     )
   })

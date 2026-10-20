@@ -1,70 +1,87 @@
 import { resolve } from '@std/path'
-import type { Filesystem } from '../../../../application-data/filesystem.ts'
+import { OperationWithResult } from '../../../../operation.ts'
+import type { ApplicationOperationArguments } from '../../../../types.ts'
 import type { SearchMatch } from '../../../types.ts'
 import { fileMatches } from './file-matches.ts'
 import { filePaths } from './file-paths.ts'
 
-type SortedMatchesArguments = {
+type TaskArguments = {
   path: string
   pattern: string
   flags?: string
   context?: number
-  ignoredDirectories?: string[]
   filePattern?: string
-  cwd: string
-  filesystem: Filesystem
 }
 
-export class SortedMatches {
-  private directory: string
-  private pattern: RegExp
-  private context: number
-  private ignoredDirectories?: string[]
-  private filePattern?: string
-  private filesystem: Filesystem
+type SortedMatchesArguments = ApplicationOperationArguments<TaskArguments>
 
-  constructor(
-    {
-      path,
-      pattern,
-      flags = '',
-      context = 0,
-      ignoredDirectories,
-      filePattern,
-      cwd,
-      filesystem,
-    }: SortedMatchesArguments,
-  ) {
-    this.directory = resolve(cwd, path)
-    this.pattern = new RegExp(pattern, flags)
-    this.context = context
-    this.ignoredDirectories = ignoredDirectories
-    this.filePattern = filePattern
-    this.filesystem = filesystem
+export class SortedMatches
+  extends OperationWithResult<TaskArguments, SearchMatch[]> {
+  protected override logPrefix = 'Sorted matches: '
+  private matches: SearchMatch[] = []
+
+  async run() {
+    await this.collect().catch((error: Error) => this.fail(error.message))
+    return this
   }
 
-  async all() {
+  result() {
+    return this.matches
+  }
+
+  private async collect() {
+    const pattern = this.pattern()
     const paths = await this.paths()
     const matched = await paths.reduce(
-      (previous, path) => this.append(previous, path),
+      (previous, path) => this.append(previous, path, pattern),
       Promise.resolve([] as SearchMatch[]),
     )
-    return matched.sort((left, right) => this.order(left, right))
+    this.matches = matched.sort((left, right) => this.order(left, right))
+  }
+
+  private directory() {
+    return resolve(
+      this.applicationData.runtime.cwd,
+      this.operationArguments.path,
+    )
+  }
+
+  private pattern() {
+    const { pattern, flags = '' } = this.operationArguments
+    return new RegExp(pattern, flags)
   }
 
   private paths() {
-    const { directory, ignoredDirectories, filePattern } = this
-    return filePaths({ directory, ignoredDirectories, filePattern }).all()
+    return filePaths({
+      directory: this.directory(),
+      ignoredDirectories: this.applicationData.readPathPermissions()
+        .ignoredPaths(),
+      filePattern: this.operationArguments.filePattern,
+    }).all()
   }
 
-  private async append(previous: Promise<SearchMatch[]>, path: string) {
+  private async append(
+    previous: Promise<SearchMatch[]>,
+    path: string,
+    pattern: RegExp,
+  ) {
     const matches = await previous
-    const { directory, pattern, context, filesystem } = this
-    return [
-      ...matches,
-      ...await fileMatches({ directory, path, pattern, context, filesystem })
-        .all(),
-    ]
+    return [...matches, ...await this.fileMatches(path, pattern)]
+  }
+
+  private fileMatches(path: string, pattern: RegExp) {
+    return fileMatches({
+      directory: this.directory(),
+      path,
+      pattern,
+      context: this.context(),
+      filesystem: this.applicationData.filesystem,
+    }).all()
+  }
+
+  private context() {
+    const { context = 0 } = this.operationArguments
+    return context
   }
 
   private order(left: SearchMatch, right: SearchMatch) {

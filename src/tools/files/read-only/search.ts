@@ -23,16 +23,11 @@ export class SearchFiles
   }
 
   protected override async perform() {
-    this.matches = await this.sortedMatches().all()
-  }
-
-  private sortedMatches() {
-    return sortedMatches({
-      ...this.operationArguments,
-      ignoredDirectories: this.permissions().ignoredPaths(),
-      cwd: this.applicationData.runtime.cwd,
-      filesystem: this.applicationData.filesystem,
-    })
+    const operation = await this.runSubOperation(sortedMatches({
+      applicationData: this.applicationData,
+      operationArguments: this.operationArguments,
+    }))
+    this.matches = operation.result()
   }
 }
 

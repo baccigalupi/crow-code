@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { join } from '@std/path'
 import { sortedMatches } from '../../../../../src/tools/files/read-only/search/sorted-matches.ts'
-import { defaultFilesystem } from '../../../../../src/application-data/filesystem.ts'
+import { CrowConfig } from '../../../../../src/application-data/config.ts'
+import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 import {
   clearDirectory,
   createSearchFixtureNodeModules,
@@ -16,16 +17,26 @@ describe('sorted-matches', () => {
 
   it('when several files match, returns matches sorted by path then line', async () => {
     const path = join(fixturesDirectory, 'tools', 'search')
+    const applicationData = mockApplicationData({
+      config: new CrowConfig('.', {
+        crowGlobalDirectory: '~/.crow',
+        envFile: '~/.crow/.env',
+        permissions: {
+          ignore: [join(path, 'node_modules')],
+          additionalRead: [],
+          additionalWrite: [],
+        },
+      }),
+    })
 
-    const matches = await sortedMatches({
-      path,
-      pattern: 'two|one',
-      ignoredDirectories: [join(path, 'node_modules')],
-      cwd: Deno.cwd(),
-      filesystem: defaultFilesystem(),
-    }).all()
+    const operation = sortedMatches({
+      applicationData,
+      operationArguments: { path, pattern: 'two|one' },
+    })
+    await operation.run()
 
-    expect(matches).toEqual([
+    expect(operation.success()).toBe(true)
+    expect(operation.result()).toEqual([
       { path: 'alpha.txt', line: 1, text: 'one' },
       { path: 'alpha.txt', line: 2, text: 'two' },
       { path: 'nested/beta.md', line: 3, text: 'two of them' },
@@ -35,33 +46,29 @@ describe('sorted-matches', () => {
   it('when flags are given, applies them to the pattern', async () => {
     const path = join(fixturesDirectory, 'tools', 'search')
 
-    const matches = await sortedMatches({
-      path,
-      pattern: 'BETA',
-      flags: 'i',
-      cwd: Deno.cwd(),
-      filesystem: defaultFilesystem(),
-    }).all()
+    const operation = sortedMatches({
+      applicationData: mockApplicationData(),
+      operationArguments: { path, pattern: 'BETA', flags: 'i' },
+    })
+    await operation.run()
 
-    expect(matches).toEqual([{
+    expect(operation.result()).toEqual([{
       path: 'nested/beta.md',
       line: 1,
       text: '# Beta',
     }])
   })
 
-  it('when no ignoredDirectories are given, includes node_modules matches', async () => {
+  it('when no directories are ignored, includes node_modules matches', async () => {
     const path = join(fixturesDirectory, 'tools', 'search')
 
-    const matches = await sortedMatches({
-      path,
-      pattern: 'two',
-      cwd: Deno.cwd(),
-      filesystem: defaultFilesystem(),
+    const operation = sortedMatches({
+      applicationData: mockApplicationData(),
+      operationArguments: { path, pattern: 'two' },
     })
-      .all()
+    await operation.run()
 
-    expect(matches).toContainEqual({
+    expect(operation.result()).toContainEqual({
       path: 'node_modules/skipped.txt',
       line: 1,
       text: 'two',
@@ -70,51 +77,59 @@ describe('sorted-matches', () => {
 
   it('when filePattern is given, matches come only from matching files', async () => {
     const path = join(fixturesDirectory, 'tools', 'search')
+    const applicationData = mockApplicationData({
+      config: new CrowConfig('.', {
+        crowGlobalDirectory: '~/.crow',
+        envFile: '~/.crow/.env',
+        permissions: {
+          ignore: [join(path, 'node_modules')],
+          additionalRead: [],
+          additionalWrite: [],
+        },
+      }),
+    })
 
-    const matches = await sortedMatches({
-      path,
-      pattern: 'two|one',
-      filePattern: '*.txt',
-      ignoredDirectories: [join(path, 'node_modules')],
-      cwd: Deno.cwd(),
-      filesystem: defaultFilesystem(),
-    }).all()
+    const operation = sortedMatches({
+      applicationData,
+      operationArguments: { path, pattern: 'two|one', filePattern: '*.txt' },
+    })
+    await operation.run()
 
-    expect(matches).toEqual([
+    expect(operation.result()).toEqual([
       { path: 'alpha.txt', line: 1, text: 'one' },
       { path: 'alpha.txt', line: 2, text: 'two' },
     ])
   })
 
   it('when the path is relative, resolves it against the runtime working directory', async () => {
-    const cwd = join(fixturesDirectory, 'tools')
+    const applicationData = mockApplicationData({
+      cwd: join(fixturesDirectory, 'tools'),
+    })
 
-    const matches = await sortedMatches({
-      path: 'search',
-      pattern: 'BETA',
-      flags: 'i',
-      cwd,
-      filesystem: defaultFilesystem(),
-    }).all()
+    const operation = sortedMatches({
+      applicationData,
+      operationArguments: { path: 'search', pattern: 'BETA', flags: 'i' },
+    })
+    await operation.run()
 
-    expect(matches).toEqual([{
+    expect(operation.result()).toEqual([{
       path: 'nested/beta.md',
       line: 1,
       text: '# Beta',
     }])
   })
 
-  it('when the pattern is an invalid regex, throws', () => {
+  it('when the pattern is an invalid regex, fails with the regex error and no matches', async () => {
     const path = join(fixturesDirectory, 'tools', 'search')
 
-    const construct = () =>
-      sortedMatches({
-        path,
-        pattern: '(',
-        cwd: Deno.cwd(),
-        filesystem: defaultFilesystem(),
-      })
+    const operation = sortedMatches({
+      applicationData: mockApplicationData(),
+      operationArguments: { path, pattern: '(' },
+    })
+    await operation.run()
 
-    expect(construct).toThrow('Invalid regular expression')
+    expect(operation.success()).toBe(false)
+    expect(operation.reason).toContain('Invalid regular expression')
+    expect(operation.result()).toEqual([])
   })
 })
