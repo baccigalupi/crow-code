@@ -11,7 +11,13 @@ import {
 
 describe('file-paths', () => {
   beforeEach(createSearchFixtureNodeModules)
-  afterEach(() => clearDirectory(searchFixtureNodeModules()))
+  afterEach(async () => {
+    await clearDirectory(searchFixtureNodeModules())
+    await clearDirectory(join(fixturesDirectory, 'tools', 'search', '.dir'))
+    await clearDirectory(
+      join(fixturesDirectory, 'tools', 'search', '.hidden.md'),
+    )
+  })
 
   it('when no ignoredDirectories are given, includes every file', async () => {
     const directory = join(fixturesDirectory, 'tools', 'search')
@@ -51,7 +57,27 @@ describe('file-paths', () => {
 
     const paths = await filePaths({ directory, filePattern: 'nested/**' }).all()
 
-    expect(paths).toEqual(['nested/blob.bin', 'nested/beta.md'])
+    expect(paths).toEqual(['nested/beta.md', 'nested/blob.bin'])
+  })
+
+  it('when a filePattern is a glob, matches dotfiles', async () => {
+    const directory = join(fixturesDirectory, 'tools', 'search')
+    Deno.writeTextFileSync(join(directory, '.hidden.md'), 'hidden')
+
+    const paths = await filePaths({ directory, filePattern: '*.md' }).all()
+
+    expect(paths).toContain('.hidden.md')
+    expect(paths).toContain('nested/beta.md')
+  })
+
+  it('when a filePattern is a glob, matches dot directories', async () => {
+    const directory = join(fixturesDirectory, 'tools', 'search')
+    Deno.mkdirSync(join(directory, '.dir'), { recursive: true })
+    Deno.writeTextFileSync(join(directory, '.dir', 'inner.md'), 'inner')
+
+    const paths = await filePaths({ directory, filePattern: '**/*.md' }).all()
+
+    expect(paths).toContain('.dir/inner.md')
   })
 
   it('when an ignored name contains regex characters, does not skip similar names', async () => {

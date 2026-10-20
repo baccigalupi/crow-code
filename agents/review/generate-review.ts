@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --allow-run --allow-write --allow-read
 // Summarize the current working-tree diff into docs/review.md.
 
-import { resolve } from '@std/path'
+import { resolve } from 'node:path'
 
 const decode = (bytes: Uint8Array) => new TextDecoder().decode(bytes)
 

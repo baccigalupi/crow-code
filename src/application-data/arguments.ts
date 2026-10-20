@@ -1,4 +1,4 @@
-import { parseArgs } from '@std/cli/parse-args'
+import { parseArgs } from 'node:util'
 import type { ParsedArgumentsOptions } from '../cli/types.ts'
 
 export class ParsedArguments {
@@ -17,6 +17,11 @@ export class ParsedArguments {
 }
 
 export const parseArguments = (argumentsList: string[]) => {
-  const { _, ...options } = parseArgs(argumentsList, { boolean: true })
-  return new ParsedArguments(_.map(String), options as ParsedArgumentsOptions)
+  const { positionals, values } = parseArgs({
+    args: argumentsList,
+    options: {},
+    strict: false,
+    allowPositionals: true,
+  })
+  return new ParsedArguments(positionals, values as ParsedArgumentsOptions)
 }

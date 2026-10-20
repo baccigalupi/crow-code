@@ -6,7 +6,7 @@
 // then each callee is resolved through `deno lsp` hover. Returning a
 // void-returning call hides a side effect inside the return statement.
 
-import { relative } from '@std/path'
+import { relative } from 'node:path'
 import { LanguageServer } from '../editor/language-server-client.ts'
 import {
   candidatesByFile,

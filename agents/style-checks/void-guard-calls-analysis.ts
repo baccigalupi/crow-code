@@ -7,7 +7,8 @@
 // void-guard-calls.deno.json`; `collectGuardCallCandidates` wraps the same
 // plugin through `Deno.lint.runPlugin`, which only exists under `deno test`.
 
-import { fromFileUrl, resolve } from '@std/path'
+import { resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 export type GuardCallCandidate = {
   line: number
@@ -139,7 +140,7 @@ export const candidatesByFile = (
 }
 
 export const lintFilePath = (filename: string): string => {
-  if (filename.startsWith('file://')) return fromFileUrl(filename)
+  if (filename.startsWith('file://')) return fileURLToPath(filename)
   return resolve(Deno.cwd(), filename)
 }
 

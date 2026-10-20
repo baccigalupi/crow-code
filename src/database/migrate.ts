@@ -1,4 +1,4 @@
-import { join } from '@std/path'
+import { join } from 'node:path'
 import type { Knex } from 'knex'
 import type { Logger } from '../types.ts'
 

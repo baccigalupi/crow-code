@@ -1,4 +1,4 @@
-import { dirname } from '@std/path'
+import { dirname } from 'node:path'
 import type { ApplicationOperationArguments } from '../../../types.ts'
 import type { MoveResult } from '../../types.ts'
 import { OperationWithResult } from '../../../operation.ts'

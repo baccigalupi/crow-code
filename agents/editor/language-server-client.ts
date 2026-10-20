@@ -1,7 +1,7 @@
 // A client for the Deno language server, the same server the VS Code Deno
 // extension drives, so callers see the diagnostics an editor would show.
 
-import { toFileUrl } from '@std/path'
+import { pathToFileURL } from 'node:url'
 import { JsonRpcStream } from './json-rpc-stream.ts'
 
 export type Diagnostic = {
@@ -41,7 +41,7 @@ export class LanguageServer {
   }
 
   async start() {
-    const rootUri = toFileUrl(Deno.cwd()).href
+    const rootUri = pathToFileURL(Deno.cwd()).href
     await this.stream.send({
       id: initializeId,
       method: 'initialize',
@@ -69,7 +69,7 @@ export class LanguageServer {
 
   async hover(file: string, line: number, character: number) {
     return await this.request('textDocument/hover', {
-      textDocument: { uri: toFileUrl(file).href },
+      textDocument: { uri: pathToFileURL(file).href },
       position: { line, character },
     })
   }
@@ -79,7 +79,7 @@ export class LanguageServer {
       method: 'textDocument/didOpen',
       params: {
         textDocument: {
-          uri: toFileUrl(file).href,
+          uri: pathToFileURL(file).href,
           languageId,
           version: 1,
           text: await Deno.readTextFile(file),
@@ -111,7 +111,7 @@ export class LanguageServer {
   }
 
   diagnosticsFor(file: string) {
-    const found = this.received.get(toFileUrl(file).href)
+    const found = this.received.get(pathToFileURL(file).href)
     if (found === undefined) {
       return []
     }

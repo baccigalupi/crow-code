@@ -1,6 +1,9 @@
-import type { WalkEntry } from '@std/fs'
-import { relative } from '@std/path'
-import type { DirectoryEntry, DirectoryEntryKind } from '../../../types.ts'
+import { relative } from 'node:path'
+import type {
+  DirectoryEntry,
+  DirectoryEntryKind,
+  WalkEntry,
+} from '../../../types.ts'
 
 type DirectoryEntriesArguments = {
   directory: string
@@ -18,7 +21,6 @@ export class DirectoryEntries {
 
   sorted() {
     return this.walked
-      .filter((entry) => entry.path !== this.directory)
       .map((entry) => this.toEntry(entry))
       .sort((left, right) => this.byPath(left, right))
   }

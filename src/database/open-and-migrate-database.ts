@@ -1,5 +1,5 @@
 import knex from 'knex'
-import { join } from '@std/path'
+import { join } from 'node:path'
 import { migrateDatabase } from './migrate.ts'
 import type { Logger } from '../types.ts'
 import type { Filesystem } from '../application-data/filesystem.ts'

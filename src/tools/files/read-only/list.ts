@@ -1,9 +1,9 @@
-import { walk } from '@std/fs'
-import { resolve } from '@std/path'
+import { resolve } from 'node:path'
 import type { ApplicationOperationArguments } from '../../../types.ts'
 import type { DirectoryEntry, DirectoryListing } from '../../types.ts'
 import { directoryEntries } from './list/entries.ts'
 import { ReadOnlyFileOperation } from './base-operation.ts'
+import { walk } from './walk.ts'
 
 type TaskArguments = {
   path: string
@@ -23,12 +23,12 @@ export class ListDirectory
 
   protected override async perform() {
     const directory = this.directory()
-    const walked = await Array.fromAsync(walk(directory, this.options()))
+    const walked = await walk(directory, this.options())
     this.entries = directoryEntries({ directory, walked }).sorted()
   }
 
   private options() {
-    return { maxDepth: this.depth(), followSymlinks: false }
+    return { maxDepth: this.depth() }
   }
 
   private depth() {

@@ -1,36 +1,12 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import type { WalkEntry } from '@std/fs'
 import {
   DirectoryEntries,
   directoryEntries,
 } from '../../../../../src/tools/files/read-only/list/entries.ts'
+import type { WalkEntry } from '../../../../../src/tools/types.ts'
 
 describe('entries', () => {
-  it('when the walked entries include the directory itself, drops it', () => {
-    const directory = '/root'
-    const walked = [
-      {
-        path: '/root',
-        name: 'root',
-        isFile: false,
-        isDirectory: true,
-        isSymlink: false,
-      },
-      {
-        path: '/root/a.txt',
-        name: 'a.txt',
-        isFile: true,
-        isDirectory: false,
-        isSymlink: false,
-      },
-    ]
-
-    const entries = directoryEntries({ directory, walked }).sorted()
-
-    expect(entries).toEqual([{ path: 'a.txt', kind: 'file' }])
-  })
-
   it('when entries are out of order, sorts them by relative path', () => {
     const directory = '/root'
     const walked = [

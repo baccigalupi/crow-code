@@ -57,4 +57,39 @@ describe('parseArguments', () => {
       options: { verbose: true },
     })
   })
+
+  it('when given --no-color, returns a plain no-color option', () => {
+    const argumentsList = ['--no-color']
+
+    const result = parseArguments(argumentsList)
+
+    expect(result).toEqual({ commands: [], options: { 'no-color': true } })
+  })
+
+  it('when given a double dash, returns the rest as unparsed commands', () => {
+    const argumentsList = ['git-commit', '--', '--verbose', 'x']
+
+    const result = parseArguments(argumentsList)
+
+    expect(result).toEqual({
+      commands: ['git-commit', '--verbose', 'x'],
+      options: {},
+    })
+  })
+
+  it('when a bare option precedes a number, returns the number as a command', () => {
+    const argumentsList = ['--verbose', '42']
+
+    const result = parseArguments(argumentsList)
+
+    expect(result).toEqual({ commands: ['42'], options: { verbose: true } })
+  })
+
+  it('when given numeric-looking values, keeps them as strings', () => {
+    const argumentsList = ['--count=5', '007']
+
+    const result = parseArguments(argumentsList)
+
+    expect(result).toEqual({ commands: ['007'], options: { count: '5' } })
+  })
 })

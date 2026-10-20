@@ -1,4 +1,4 @@
-import { join } from '@std/path'
+import { join } from 'node:path'
 import type { Filesystem } from '../../../../application-data/filesystem.ts'
 import type { SearchMatch } from '../../../types.ts'
 

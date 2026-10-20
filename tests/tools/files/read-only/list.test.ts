@@ -83,7 +83,7 @@ describe('list', () => {
     expect(listing.result()).toEqual({ path, entries: [] })
     expect(loggerErrorSpy.calls[0].args[0]).toContain('List directory: ')
     expect(loggerErrorSpy.calls[0].args[0]).toContain(
-      'No such file or directory',
+      'no such file or directory',
     )
   })
 

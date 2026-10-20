@@ -237,7 +237,7 @@ describe('search', () => {
     expect(loggerErrorSpy.calls[0].args[0]).toContain('Sorted matches: ')
     expect(loggerErrorSpy.calls[1].args[0]).toContain('Search files: ')
     expect(loggerErrorSpy.calls[1].args[0]).toContain(
-      'No such file or directory',
+      'no such file or directory',
     )
   })
 

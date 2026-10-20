@@ -1,4 +1,4 @@
-import { relative, resolve } from '@std/path'
+import { relative, resolve } from 'node:path'
 import type { Filesystem } from '../filesystem.ts'
 
 type RequestedPathArguments = {

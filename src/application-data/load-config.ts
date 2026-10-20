@@ -1,4 +1,4 @@
-import { dirname } from '@std/path'
+import { dirname } from 'node:path'
 import type { AsyncOperationWithResult, Logger } from '../types.ts'
 import { normalizeConfig } from '../domain/config.ts'
 import { parseArguments, type ParsedArguments } from './arguments.ts'

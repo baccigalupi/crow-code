@@ -1,7 +1,7 @@
 // Prints the diagnostics the VS Code Deno extension shows for the given roots.
 // Usage: agents/editor-diagnostics src bin tests
 
-import { relative, resolve } from '@std/path'
+import { relative, resolve } from 'node:path'
 import { type Diagnostic, LanguageServer } from './language-server-client.ts'
 
 const pollMilliseconds = 100

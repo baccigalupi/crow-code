@@ -1,4 +1,4 @@
-import { join } from '@std/path'
+import { join } from 'node:path'
 import pino from 'pino'
 
 export const createLogger = (crowDirectory: string, level: pino.Level) => {

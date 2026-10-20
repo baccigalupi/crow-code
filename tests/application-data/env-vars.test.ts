@@ -119,6 +119,27 @@ describe('env-vars', () => {
     expect(environment.value('API_KEY')).toBe('from-runtime-environment')
   })
 
+  it('when an environment file uses export, comments and quotes, parses them', async () => {
+    const directory = join(fixturesDirectory, 'env-vars', 'quoted')
+    Deno.mkdirSync(directory, { recursive: true })
+    const path = join(directory, 'values.env')
+    Deno.writeTextFileSync(
+      path,
+      'export A=1\n# c\nB="x\\ny" # t\nC=\'z\'\n',
+    )
+    const environment = new Environment({
+      runtimeEnvironment: {},
+      filesystem: defaultFilesystem(),
+      path,
+    })
+
+    await environment.run()
+
+    expect(environment.value('A')).toBe('1')
+    expect(environment.value('B')).toBe('x\ny')
+    expect(environment.value('C')).toBe('z')
+  })
+
   it('when loaded, combines the runtime environment with the environment file', async () => {
     const directory = join(fixturesDirectory, 'env-vars', 'loaded')
     Deno.mkdirSync(directory, { recursive: true })

@@ -81,6 +81,14 @@ export type DirectoryEntry = {
   kind: DirectoryEntryKind
 }
 
+export type WalkEntry = {
+  path: string
+  name: string
+  isFile: boolean
+  isDirectory: boolean
+  isSymlink: boolean
+}
+
 export type DirectoryListing = {
   path: string
   entries: DirectoryEntry[]

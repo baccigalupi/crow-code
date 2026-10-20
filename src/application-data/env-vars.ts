@@ -1,4 +1,4 @@
-import { parse } from '@std/dotenv'
+import dotenv from 'dotenv'
 import type { EnvironmentValues } from '../model-discovery/types.ts'
 import type { Filesystem } from './filesystem.ts'
 import { expandHome } from './allowed-paths/expand-home.ts'
@@ -26,7 +26,7 @@ export class Environment {
   async run() {
     const text = await this.filesystem.readTextFile(this.expandedPath())
       .catch(() => '')
-    this.fileValues = parse(text)
+    this.fileValues = dotenv.parse(text)
     return this
   }
 

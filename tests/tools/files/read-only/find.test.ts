@@ -121,7 +121,7 @@ describe('find', () => {
     expect(find.result()).toEqual({ path, paths: [] })
     expect(loggerErrorSpy.calls[0].args[0]).toContain('Find files: ')
     expect(loggerErrorSpy.calls[0].args[0]).toContain(
-      'No such file or directory',
+      'no such file or directory',
     )
   })
 })

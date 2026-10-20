@@ -1,4 +1,4 @@
-import { resolve } from '@std/path'
+import { resolve } from 'node:path'
 import type { ApplicationOperationArguments } from '../../../types.ts'
 import type { PathListing } from '../../types.ts'
 import { filePaths } from './search/file-paths.ts'

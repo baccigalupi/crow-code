@@ -1,4 +1,4 @@
-import { resolve } from '@std/path'
+import { resolve } from 'node:path'
 import { OperationWithResult } from '../../../../operation.ts'
 import type { ApplicationOperationArguments } from '../../../../types.ts'
 import type { SearchMatch } from '../../../types.ts'

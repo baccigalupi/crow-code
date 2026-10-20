@@ -1,4 +1,4 @@
-import { join, resolve } from '@std/path'
+import { join, resolve } from 'node:path'
 import type { ApplicationData } from '../application-data.ts'
 import { requestedPath } from './requested-path.ts'
 import { expandHome } from './expand-home.ts'

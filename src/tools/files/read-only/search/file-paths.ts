@@ -1,5 +1,6 @@
-import { walk } from '@std/fs'
-import { basename, globToRegExp, relative } from '@std/path'
+import { basename, relative } from 'node:path'
+import picomatch from 'picomatch'
+import { walk } from '../walk.ts'
 
 type FilePathsArguments = {
   directory: string
@@ -22,9 +23,7 @@ export class FilePaths {
   }
 
   async all() {
-    const walked = await Array.fromAsync(
-      walk(this.directory, this.walkOptions()),
-    )
+    const walked = await walk(this.directory, this.walkOptions())
     return walked
       .map((entry) => relative(this.directory, entry.path))
       .filter((path) => this.included(path))
@@ -38,7 +37,7 @@ export class FilePaths {
 
   private compiled() {
     if (this.include) return this.include
-    this.include = globToRegExp(this.filePattern!, { globstar: true })
+    this.include = picomatch.makeRe(this.filePattern!, { dot: true })
     return this.include
   }
 
@@ -53,12 +52,11 @@ export class FilePaths {
     return {
       includeDirs: false,
       includeSymlinks: false,
-      followSymlinks: false,
-      skip: this.ignoredDirectories.map((path) => this.skipPattern(path)),
+      ignore: this.ignoredDirectories.map((path) => this.ignorePattern(path)),
     }
   }
 
-  private skipPattern(path: string) {
+  private ignorePattern(path: string) {
     return new RegExp(`^${this.escapeRegex(path)}(/|$)`)
   }
 
