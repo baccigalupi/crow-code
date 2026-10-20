@@ -8,98 +8,98 @@ import { renderHook } from '../../../../support/render-hook.tsx'
 
 describe('useKeypress', () => {
   it('when a char arrives, edits the active directory input', () => {
-    const signals = {
+    const installData = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
-    const { stdin, unmount } = renderHook(() => useKeypress(signals))
+    const { stdin, unmount } = renderHook(() => useKeypress(installData))
 
     stdin.write('x')
 
-    expect(signals.repoDirectory.peek().text).toBe('x')
+    expect(installData.repoDirectory.peek().text).toBe('x')
     unmount()
   })
 
   it('when return arrives, advances the step', () => {
-    const signals = {
+    const installData = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
-    const { stdin, unmount } = renderHook(() => useKeypress(signals))
+    const { stdin, unmount } = renderHook(() => useKeypress(installData))
 
     stdin.write('\r')
 
-    expect(signals.step.peek()).toBe('user')
+    expect(installData.step.peek()).toBe('user')
     unmount()
   })
 
   it('when return arrives on the user step, advances to the env step', () => {
-    const signals = {
+    const installData = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
       step: signal<InstallStep>('user'),
       confirmation: signal(true),
     }
-    const { stdin, unmount } = renderHook(() => useKeypress(signals))
+    const { stdin, unmount } = renderHook(() => useKeypress(installData))
 
     stdin.write('\r')
 
-    expect(signals.step.peek()).toBe('env')
+    expect(installData.step.peek()).toBe('env')
     unmount()
   })
 
   it('when a char arrives on the env step, edits the env input', () => {
-    const signals = {
+    const installData = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
       step: signal<InstallStep>('env'),
       confirmation: signal(true),
     }
-    const { stdin, unmount } = renderHook(() => useKeypress(signals))
+    const { stdin, unmount } = renderHook(() => useKeypress(installData))
 
     stdin.write('x')
 
-    expect(signals.envFile.peek().text).toBe('x')
+    expect(installData.envFile.peek().text).toBe('x')
     unmount()
   })
 
   it('when return arrives on the env step, advances to confirm', () => {
-    const signals = {
+    const installData = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
       step: signal<InstallStep>('env'),
       confirmation: signal(true),
     }
-    const { stdin, unmount } = renderHook(() => useKeypress(signals))
+    const { stdin, unmount } = renderHook(() => useKeypress(installData))
 
     stdin.write('\r')
 
-    expect(signals.step.peek()).toBe('confirm')
+    expect(installData.step.peek()).toBe('confirm')
     unmount()
   })
 
   it('when confirmed, moves to the write step', () => {
-    const signals = {
+    const installData = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
       step: signal<InstallStep>('confirm'),
       confirmation: signal(true),
     }
-    const { stdin, unmount } = renderHook(() => useKeypress(signals))
+    const { stdin, unmount } = renderHook(() => useKeypress(installData))
 
     stdin.write('\r')
 
-    expect(signals.step.peek()).toBe('write')
+    expect(installData.step.peek()).toBe('write')
     unmount()
   })
 })

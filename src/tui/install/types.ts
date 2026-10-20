@@ -42,12 +42,12 @@ export type InstallState = {
 }
 
 export type WriteCrowConfigArguments = {
-  readonly signals: InstallState
+  readonly installData: InstallState
   readonly filesystem: Filesystem
 }
 
 export type KeypressArguments = {
-  readonly signals: InstallState
+  readonly installData: InstallState
   readonly exit: ExitApp
   readonly input: string
   readonly key: KeyFlags

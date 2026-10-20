@@ -15,6 +15,6 @@ export const runInstalltTui = (
   state: InstallState = installState,
 ) => {
   const { filesystem, runtime } = applicationData
-  writeCrowConfig({ signals: state, filesystem }).subscribe()
+  writeCrowConfig({ installData: state, filesystem }).subscribe()
   return createRunner(runtime, io, InstallApp)
 }

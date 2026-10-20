@@ -9,23 +9,23 @@ import { buildCrowConfig } from './build.ts'
 // hooks; nothing in the TUI sees the filesystem. Deriving the config lives in
 // build.ts.
 export class CrowConfigWrite {
-  private signals: InstallState
+  private installData: InstallState
   private filesystem: Filesystem
 
-  constructor({ signals, filesystem }: WriteCrowConfigArguments) {
-    this.signals = signals
+  constructor({ installData, filesystem }: WriteCrowConfigArguments) {
+    this.installData = installData
     this.filesystem = filesystem
   }
 
   subscribe() {
     return effect(() => {
-      if (this.signals.step.value === 'write') this.write()
+      if (this.installData.step.value === 'write') this.write()
     })
   }
 
   private write() {
     this.save().then(() => {
-      this.signals.step.value = 'done'
+      this.installData.step.value = 'done'
     })
   }
 
@@ -37,9 +37,9 @@ export class CrowConfigWrite {
 
   private config() {
     return buildCrowConfig({
-      repoDirectory: this.signals.repoDirectory.peek(),
-      globalDirectory: this.signals.globalDirectory.peek(),
-      envFile: this.signals.envFile.peek(),
+      repoDirectory: this.installData.repoDirectory.peek(),
+      globalDirectory: this.installData.globalDirectory.peek(),
+      envFile: this.installData.envFile.peek(),
     }).all()
   }
 }

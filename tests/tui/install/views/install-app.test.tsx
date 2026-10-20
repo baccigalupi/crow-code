@@ -451,7 +451,7 @@ describe('InstallApp', () => {
     instance.unmount()
   })
 
-  it('when no props are given, uses the shared signals', () => {
+  it('when no props are given, uses the shared install data', () => {
     crowRepoDirectoryInput.value = emptyBuffer()
     crowGlobalDirectoryInput.value = emptyBuffer()
     installStep.value = 'repo'

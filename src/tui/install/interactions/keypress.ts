@@ -4,13 +4,13 @@ import type { InstallState, KeypressArguments } from '../types.ts'
 import { textInput } from './text-input.ts'
 
 export class Keypress {
-  private signals: InstallState
+  private installData: InstallState
   private exit: ExitApp
   private input: string
   private key: KeyFlags
 
-  constructor({ signals, exit, input, key }: KeypressArguments) {
-    this.signals = signals
+  constructor({ installData, exit, input, key }: KeypressArguments) {
+    this.installData = installData
     this.exit = exit
     this.input = input
     this.key = key
@@ -18,34 +18,34 @@ export class Keypress {
 
   handle() {
     if (this.isQuit()) this.exit()
-    else if (this.signals.step.peek() === 'done') this.exit()
-    else if (this.signals.step.peek() === 'confirm') this.confirm()
+    else if (this.installData.step.peek() === 'done') this.exit()
+    else if (this.installData.step.peek() === 'confirm') this.confirm()
     else if (this.key.return === true) this.advance()
     else this.activeEdit()
   }
 
   private advance() {
-    const step = this.signals.step.peek()
-    if (step === 'repo') this.signals.step.value = 'user'
-    else if (step === 'user') this.signals.step.value = 'env'
-    else this.signals.step.value = 'confirm'
+    const step = this.installData.step.peek()
+    if (step === 'repo') this.installData.step.value = 'user'
+    else if (step === 'user') this.installData.step.value = 'env'
+    else this.installData.step.value = 'confirm'
   }
 
   private confirm() {
     if (this.key.leftArrow === true || this.input === 'y') {
-      this.signals.confirmation.value = true
+      this.installData.confirmation.value = true
     } else if (this.key.rightArrow === true || this.input === 'n') {
-      this.signals.confirmation.value = false
+      this.installData.confirmation.value = false
     } else if (this.key.return === true) this.decide()
   }
 
   private decide() {
-    if (this.signals.confirmation.peek() === true) this.write()
+    if (this.installData.confirmation.peek() === true) this.write()
     else this.exit()
   }
 
   private write() {
-    this.signals.step.value = 'write'
+    this.installData.step.value = 'write'
   }
 
   private activeEdit() {
@@ -54,10 +54,10 @@ export class Keypress {
   }
 
   private activeText(): Signal<InputBuffer> {
-    const step = this.signals.step.peek()
-    if (step === 'repo') return this.signals.repoDirectory
-    else if (step === 'user') return this.signals.globalDirectory
-    else return this.signals.envFile
+    const step = this.installData.step.peek()
+    if (step === 'repo') return this.installData.repoDirectory
+    else if (step === 'user') return this.installData.globalDirectory
+    else return this.installData.envFile
   }
 
   private isQuit() {

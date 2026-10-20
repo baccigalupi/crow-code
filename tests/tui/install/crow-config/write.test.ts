@@ -14,7 +14,7 @@ describe('write', () => {
   afterEach(() => clearDirectory(join(fixturesDirectory, 'write-crow-config')))
 
   it('when the step becomes write, saves the json to the repo config path and finishes', async () => {
-    const signals = {
+    const installData = {
       repoDirectory: inputSignal(
         join(fixturesDirectory, 'write-crow-config', 'crow'),
       ),
@@ -24,16 +24,16 @@ describe('write', () => {
       confirmation: signal(true),
     }
     const dispose = writeCrowConfig({
-      signals,
+      installData,
       filesystem: defaultFilesystem(),
     }).subscribe()
     const finished = new Promise((resolve) =>
       effect(() => {
-        if (signals.step.value === 'done') resolve(true)
+        if (installData.step.value === 'done') resolve(true)
       })
     )
 
-    signals.step.value = 'write'
+    installData.step.value = 'write'
     await finished
 
     const written = JSON.parse(
@@ -43,14 +43,14 @@ describe('write', () => {
     )
     expect(written.crowGlobalDirectory).toBe('~/.crow')
     expect(written.envFile).toBe('~/.crow/.env')
-    expect(signals.step.peek()).toBe('done')
+    expect(installData.step.peek()).toBe('done')
     dispose()
   })
 
   it('when the step is not write, writes nothing', () => {
     const filesystem = defaultFilesystem()
     using mkdir = spy(filesystem, 'mkdirWithParents')
-    const signals = {
+    const installData = {
       repoDirectory: inputSignal(
         join(fixturesDirectory, 'write-crow-config', 'crow'),
       ),
@@ -59,12 +59,12 @@ describe('write', () => {
       step: signal<InstallStep>('env'),
       confirmation: signal(true),
     }
-    const dispose = writeCrowConfig({ signals, filesystem }).subscribe()
+    const dispose = writeCrowConfig({ installData, filesystem }).subscribe()
 
-    signals.step.value = 'confirm'
+    installData.step.value = 'confirm'
 
     expect(mkdir.calls).toHaveLength(0)
-    expect(signals.step.peek()).toBe('confirm')
+    expect(installData.step.peek()).toBe('confirm')
     dispose()
   })
 })
