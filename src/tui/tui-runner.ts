@@ -1,12 +1,12 @@
 import { createElement, type FunctionComponent } from 'react'
 import { render } from 'ink'
 import type { Instance } from 'ink'
-import type { Runtime } from '../application-data/runtime.ts'
+import type { ApplicationData } from '../application-data/application-data.ts'
 import type { Signal } from '../types.ts'
 import type { ReplIo, ReplStatus } from './types.ts'
 
 export class TuiRunner {
-  private runtime: Runtime
+  private applicationData: ApplicationData
   private io: ReplIo
   private view: FunctionComponent
   private instance!: Instance
@@ -14,11 +14,11 @@ export class TuiRunner {
   private signals: Signal[] = ['SIGINT', 'SIGTERM']
 
   constructor(
-    runtime: Runtime,
+    applicationData: ApplicationData,
     io: ReplIo,
     view: FunctionComponent,
   ) {
-    this.runtime = runtime
+    this.applicationData = applicationData
     this.io = io
     this.view = view
   }
@@ -56,23 +56,25 @@ export class TuiRunner {
   }
 
   private writeError(error: unknown) {
-    const message = `${String(error)}\n`
+    const message = String(error)
     if (this.io.stderr) {
-      this.io.stderr.write(message)
+      this.io.stderr.write(`${message}\n`)
     } else {
-      this.runtime.writeStderr(message)
+      this.applicationData.consoleError()(message)
     }
   }
 
   private listen() {
+    const { runtime } = this.applicationData
     this.signals.forEach((signal) =>
-      this.runtime.addSignalListener(signal, this.interrupt)
+      runtime.addSignalListener(signal, this.interrupt)
     )
   }
 
   private unlisten() {
+    const { runtime } = this.applicationData
     this.signals.forEach((signal) =>
-      this.runtime.removeSignalListener(signal, this.interrupt)
+      runtime.removeSignalListener(signal, this.interrupt)
     )
   }
 
@@ -88,7 +90,7 @@ export class TuiRunner {
 }
 
 export const createTuiRunner = (
-  runtime: Runtime,
+  applicationData: ApplicationData,
   io: ReplIo,
   view: FunctionComponent,
-) => new TuiRunner(runtime, io, view)
+) => new TuiRunner(applicationData, io, view)

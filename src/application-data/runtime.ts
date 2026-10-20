@@ -36,10 +36,6 @@ export class Runtime {
   removeSignalListener(signal: Signal, handler: () => void) {
     this.deno.removeSignalListener(signal, handler)
   }
-
-  writeStderr(text: string) {
-    this.deno.stderr.writeSync(new TextEncoder().encode(text))
-  }
 }
 
 export const defaultRuntime = () => {

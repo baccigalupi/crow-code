@@ -67,17 +67,6 @@ describe('runtime', () => {
     assertSpyCall(removeSignalListener, 0, { args: ['SIGTERM', handler] })
   })
 
-  it('writes text to stderr through the runtime', () => {
-    const writeSync = spy((_bytes: Uint8Array) => 0)
-    const runtime = new Runtime(
-      { ...Deno, stderr: { writeSync } } as unknown as typeof Deno,
-    )
-
-    runtime.writeStderr('boom\n')
-
-    expect(new TextDecoder().decode(writeSync.calls[0].args[0])).toBe('boom\n')
-  })
-
   it('returns the process environment as a record', () => {
     const runtime = new Runtime(Deno)
 
