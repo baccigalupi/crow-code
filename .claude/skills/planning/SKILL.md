@@ -2,7 +2,7 @@
 name: planning
 description: >-
   Create and revise implementation plans with an immutable Goal, verified
-  research, explicit Assumptions/Decisions, strict TDD, and regression
+  research, Open decisions/Decisions, strict TDD, and regression
   protection. Use whenever creating, researching, or revising an
   implementation plan — including every time EnterPlanMode is used, and
   before every ExitPlanMode call.
@@ -16,12 +16,14 @@ Plans use this harness's tools and plan-mode mechanics
 
 ## Interaction rule
 
-Do not ask planning questions in chat. Put every uncertainty, ambiguity, missing
-fact, and question-shaped item in the plan's Assumptions table, then investigate
-it with available tools. If only the user can resolve an item, leave it
-explicitly unresolved in the table with the consequence of each plausible answer
-— do not silently pick one. Don't ask whether to implement the plan in chat
-text; the user starts implementation when ready.
+Do not ask planning questions in chat. Do all research first, with available
+tools, until the plan has no known unknowns: every fact, count, version,
+behavior difference, and "does X work" question is answered by investigation and
+recorded in Verified research. Never park unresearched work in the plan. Only
+what the user must decide — a choice research cannot settle — goes in the Open
+decisions table, with the consequence of each plausible answer; do not silently
+pick one. Don't ask whether to implement the plan in chat text; the user starts
+implementation when ready.
 
 ## Planning responses
 
@@ -97,7 +99,8 @@ Stable anchor, first content section.
   paraphrasing the source text.
 - Never edit, reinterpret, narrow, or expand this section during research or
   revision unless the user says the goal is incorrect or explicitly changes it.
-  Resolve scope discoveries in Assumptions/Decisions, not by drifting the Goal.
+  Resolve scope discoveries in Open decisions/Decisions, not by drifting the
+  Goal.
 
 ### Verified research
 
@@ -120,30 +123,44 @@ Codebase-memory-mcp graph first — it's the first resort, not a fallback:
 Record only facts verified from source, tests, config, docs, issue state,
 command output, or the indexed graphs. Include concrete paths, qualified
 symbols, call relationships, constraints, current behavior, and coverage
-limitations. Distinguish verified facts from inferences — inferences belong in
-Assumptions.
+limitations. Research is finished before the plan is written: run the commands,
+read the packages, count the affected files, and compare behaviors rather than
+listing them as things to check later. An inference that investigation could
+confirm or refute is not allowed to stand — investigate it. "Verify at
+implementation time" and "to be confirmed" are not acceptable plan content.
 
-### Assumptions
+### Open decisions
 
-| ID | Assumption / unknown | Why it matters |
-| -- | -------------------- | -------------- |
+| ID | Decision needed from the user | Consequence of each plausible answer |
+| -- | ----------------------------- | ------------------------------------ |
 
-- Only genuinely undecided items needing a user decision belong here.
-- Number sequentially (`A1`, `A2`, …); keep an assumption's ID stable through
-  revisions, never renumber later assumptions after resolving one out of order.
-- Every unknown or question-shaped item goes here, never into a chat question.
-- Don't leave a verified or resolved item in this table.
+- Holds only decisions the user must make. Never unresearched work, unverified
+  facts, guesses, or questions that investigation could answer.
+- If a row is something you could look up, look it up and put the answer in
+  Verified research instead.
+- Number sequentially (`D1`, `D2`, …) in one numbering shared with Decisions;
+  never renumber.
+- A row exists only while the user's answer is outstanding. An empty table is
+  fine and normal.
 
 ### Decisions
 
-Move assumptions here once evidence verifies or refutes them and the
-implementation consequence is resolved. Matching numeric ID: resolving `A1`
-creates `D1`. State the originating assumption ID, the evidence, and the
-resulting scope/choice. A decision made directly from an explicit user
-instruction (not a resolved assumption) may use the next unused `D` number and
-must cite the instruction instead of inventing an assumption. Preserve
-superseded decisions with their replacement noted when revision history matters.
-Never present an unresolved assumption as a decision.
+**Resolving an open decision** — do all three, in the same edit, whenever the
+user answers (including answers given as feedback in chat):
+
+1. Delete the whole `D<n>` row from Open decisions. Never leave it behind with
+   "resolved", "decided", or strikethrough text.
+2. Add `D<n>` here with the same number, stating the question, the user's
+   answer, and the resulting scope/choice.
+3. Before ending the turn, re-read the plan and confirm no ID appears in both
+   Open decisions and Decisions. If one does, delete the Open decisions row.
+
+A decision made directly from an explicit user instruction (not an open
+decision) takes the next unused `D` number and must cite the instruction.
+Choices fully settled by research are stated in Verified research or the steps,
+not as Decisions pretending to be user-made. Preserve superseded decisions with
+their replacement noted when revision history matters. Never present an
+unanswered open decision as a decision.
 
 ### Implementation steps (TDD)
 
@@ -169,9 +186,36 @@ as `CLAUDE.md` § TDD):
 6. Repeat per behavior — don't batch all tests before all implementation.
 7. Run the affected suite, then the repository's required full gates.
 
-Name, per step: test file, production file, behavior under test, red
-command/result, minimal implementation, green command/result. Test-only or
-doc-only changes must explain why production TDD doesn't apply.
+The heading is not the practice. Write the plan as a sequence of cycles, one
+behavior per cycle, never one step that bundles several behaviors or swaps a
+whole module. Each cycle is its own numbered step with these fields, all filled
+in — a step missing any field is not a TDD step:
+
+- **Behavior:** one sentence, observable from outside the code.
+- **Test:** file, test name, and the literal assertion to write (input and
+  expected value), so the red is predictable.
+- **Red:** exact command and the exact failure expected — the assertion that
+  fails and why, against the code as it exists at that point. If the test would
+  pass or only fail to compile, rewrite the test or the cycle.
+- **Green:** production file and the minimal change that satisfies only this
+  test — not the final design.
+- **Refactor:** what to clean while green, or "none".
+- **Green command:** exact command and expected pass.
+
+Rules for cycles:
+
+- Order cycles so each red is possible: a later cycle's test depends only on
+  earlier cycles' code. Stubbing a missing module to turn a compile error into
+  an assertion failure is a prefatory part of the red, written in the cycle.
+- Swapping a dependency or porting code is still TDD: first pin current behavior
+  with a characterization test that passes on the old code (say so, that is the
+  only legitimate already-green test), then one cycle per behavior that differs,
+  each red against the new implementation.
+- Mechanical edits with no behavior change (import renames) are not cycles.
+  Group them in one separate step that names the existing tests which fail if
+  the edit is wrong, and run them.
+- Test-only or doc-only changes must explain why production TDD doesn't apply.
+- After the last cycle, a step runs the affected suite, then the full gates.
 
 ### Regression
 
@@ -213,9 +257,9 @@ The plan file's TDD steps already record each red/implementation/green — that'
 where the trail lives, not the chat.
 
 Speak up mid-implementation only for a genuine blocker: something only the user
-can resolve (a new Assumption-shaped decision, a destructive action needing
-confirmation, work that contradicts the plan). Otherwise the next chat message
-is the completion report.
+can resolve (a new open decision, a destructive action needing confirmation,
+work that contradicts the plan). Otherwise the next chat message is the
+completion report.
 
 ## Implementation completion
 
@@ -232,9 +276,11 @@ On every revision:
 
 1. Keep Goal byte-for-byte stable unless the user corrects it.
 2. Recheck Verified research against evidence.
-3. Add newly discovered unknowns to Assumptions.
-4. Move resolved assumptions to Decisions — never duplicate across both
-   sections.
+3. Research newly discovered unknowns until answered and record them in Verified
+   research; add to Open decisions only a decision the user must make.
+4. For every open decision the user answered, resolve it per Decisions →
+   Resolving an open decision: delete the Open decisions row, add the Decisions
+   row with the same ID, then confirm no ID is in both sections.
 5. Update TDD steps and Regression together whenever scope changes.
-6. Reject plan details that are unsupported by either verified research or an
-   explicit assumption.
+6. Reject plan details that are unsupported by verified research or a user
+   decision.
