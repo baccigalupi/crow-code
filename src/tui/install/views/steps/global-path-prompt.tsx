@@ -9,7 +9,7 @@ type GlobalPathPromptProps = {
 }
 
 export const GlobalPathPrompt = ({ step, input }: GlobalPathPromptProps) => {
-  if (step !== 'user') return null
+  if (step !== 'crowGlobalDirectory') return null
 
   return (
     <Prompt

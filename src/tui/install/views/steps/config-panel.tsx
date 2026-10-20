@@ -1,15 +1,11 @@
 import { Box, Text } from 'ink'
 import { configViewModel } from './config-view-model.ts'
 import { configPanel } from '../../../themes/config-panel.ts'
-import type { BuildCrowConfigArguments, InstallStep } from '../../types.ts'
+import type { ConfigPanelProps } from '../../types.ts'
 
-type ConfigPanelProps = BuildCrowConfigArguments & {
-  readonly step: InstallStep
-}
-
-const Config = (buildCrowConfigArguments: BuildCrowConfigArguments) => {
-  const { crowConfigPath, crowConfigJson } = configViewModel(
-    buildCrowConfigArguments,
+const Config = (configPanelProps: ConfigPanelProps) => {
+  const { crowConfigPath, before, highlighted, after } = configViewModel(
+    configPanelProps,
   )
   return (
     <Box flexDirection='column' paddingX={1}>
@@ -24,7 +20,11 @@ const Config = (buildCrowConfigArguments: BuildCrowConfigArguments) => {
         paddingY={1}
         marginTop={1}
       >
-        <Text wrap='wrap'>{crowConfigJson}</Text>
+        <Text wrap='wrap'>
+          {before}
+          <Text inverse>{highlighted}</Text>
+          {after}
+        </Text>
       </Box>
     </Box>
   )
@@ -37,6 +37,7 @@ export const ConfigPanel = (
 
   return (
     <Config
+      step={step}
       globalDirectory={globalDirectory}
       repoDirectory={repoDirectory}
       envFile={envFile}

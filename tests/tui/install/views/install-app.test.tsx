@@ -202,7 +202,7 @@ describe('InstallApp', () => {
   })
 
   it('when the user question is answered, the env file question shows', async () => {
-    const step = signal<InstallStep>('user')
+    const step = signal<InstallStep>('crowGlobalDirectory')
     const { terminal, instance } = mountInstallApp(24, { step })
 
     terminal.stdin.write('\r')
@@ -219,7 +219,7 @@ describe('InstallApp', () => {
 
   it('when the user directory is custom, the env file question defaults inside it', async () => {
     const globalDirectory = inputSignal('/opt/crow')
-    const step = signal<InstallStep>('user')
+    const step = signal<InstallStep>('crowGlobalDirectory')
     const { terminal, instance } = mountInstallApp(24, {
       globalDirectory,
       step,
@@ -236,7 +236,7 @@ describe('InstallApp', () => {
 
   it('when the env file is typed, the config updates', async () => {
     const envFile = inputSignal('')
-    const step = signal<InstallStep>('env')
+    const step = signal<InstallStep>('envFile')
     const { terminal, instance } = mountInstallApp(24, { envFile, step })
 
     terminal.stdin.write('/secrets/crow.env')
@@ -250,7 +250,7 @@ describe('InstallApp', () => {
   })
 
   it('when the env file question is answered, the write confirmation shows', async () => {
-    const step = signal<InstallStep>('env')
+    const step = signal<InstallStep>('envFile')
     const { terminal, instance } = mountInstallApp(24, { step })
 
     terminal.stdin.write('\r')

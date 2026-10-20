@@ -56,7 +56,7 @@ describe('write', () => {
       ),
       globalDirectory: inputSignal(''),
       envFile: inputSignal(''),
-      step: signal<InstallStep>('env'),
+      step: signal<InstallStep>('envFile'),
       confirmation: signal(true),
     }
     const dispose = writeCrowConfig({ installData, filesystem }).subscribe()

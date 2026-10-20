@@ -27,6 +27,7 @@ export const ConfirmPrompt = (
   if (step !== 'confirm') return null
 
   const { crowConfigPath } = configViewModel({
+    step,
     repoDirectory,
     globalDirectory,
     envFile,

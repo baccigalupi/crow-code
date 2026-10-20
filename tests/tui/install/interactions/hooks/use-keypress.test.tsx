@@ -35,32 +35,32 @@ describe('useKeypress', () => {
 
     stdin.write('\r')
 
-    expect(installData.step.peek()).toBe('user')
+    expect(installData.step.peek()).toBe('crowGlobalDirectory')
     unmount()
   })
 
-  it('when return arrives on the user step, advances to the env step', () => {
+  it('when return arrives on the crowGlobalDirectory step, advances to the envFile step', () => {
     const installData = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
-      step: signal<InstallStep>('user'),
+      step: signal<InstallStep>('crowGlobalDirectory'),
       confirmation: signal(true),
     }
     const { stdin, unmount } = renderHook(() => useKeypress(installData))
 
     stdin.write('\r')
 
-    expect(installData.step.peek()).toBe('env')
+    expect(installData.step.peek()).toBe('envFile')
     unmount()
   })
 
-  it('when a char arrives on the env step, edits the env input', () => {
+  it('when a char arrives on the envFile step, edits the env input', () => {
     const installData = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
-      step: signal<InstallStep>('env'),
+      step: signal<InstallStep>('envFile'),
       confirmation: signal(true),
     }
     const { stdin, unmount } = renderHook(() => useKeypress(installData))
@@ -71,12 +71,12 @@ describe('useKeypress', () => {
     unmount()
   })
 
-  it('when return arrives on the env step, advances to confirm', () => {
+  it('when return arrives on the envFile step, advances to confirm', () => {
     const installData = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
-      step: signal<InstallStep>('env'),
+      step: signal<InstallStep>('envFile'),
       confirmation: signal(true),
     }
     const { stdin, unmount } = renderHook(() => useKeypress(installData))

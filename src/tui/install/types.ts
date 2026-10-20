@@ -3,7 +3,13 @@ import type { Filesystem } from '../../application-data/filesystem.ts'
 import type { ExitApp, InputBuffer, KeyFlags } from '../types.ts'
 import type { CrowPermissionsConfig } from '../../types.ts'
 
-export type InstallStep = 'repo' | 'user' | 'env' | 'confirm' | 'write' | 'done'
+export type InstallStep =
+  | 'repo'
+  | 'crowGlobalDirectory'
+  | 'envFile'
+  | 'confirm'
+  | 'write'
+  | 'done'
 
 export type CrowConfig = {
   readonly crowGlobalDirectory: string
@@ -23,6 +29,10 @@ export type BuildCrowConfigArguments = {
   readonly globalDirectory: InputBuffer
   readonly repoDirectory: InputBuffer
   readonly envFile: InputBuffer
+}
+
+export type ConfigPanelProps = BuildCrowConfigArguments & {
+  readonly step: InstallStep
 }
 
 export type InstallAppProps = {

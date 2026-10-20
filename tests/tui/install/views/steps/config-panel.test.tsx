@@ -29,7 +29,7 @@ describe('config panel', () => {
 
     const { lastFrame } = render(
       <ConfigPanel
-        step='user'
+        step='crowGlobalDirectory'
         repoDirectory={repoDirectory}
         globalDirectory={globalDirectory}
         envFile={envFile}
@@ -50,7 +50,7 @@ describe('config panel', () => {
 
     const { lastFrame } = render(
       <ConfigPanel
-        step='env'
+        step='envFile'
         repoDirectory={repoDirectory}
         globalDirectory={globalDirectory}
         envFile={envFile}

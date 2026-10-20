@@ -16,6 +16,7 @@ export const DoneMessage = (
   if (step !== 'done') return null
 
   const { crowConfigPath } = configViewModel({
+    step,
     repoDirectory,
     globalDirectory,
     envFile,

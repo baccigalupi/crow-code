@@ -26,9 +26,10 @@ export class Keypress {
 
   private advance() {
     const step = this.installData.step.peek()
-    if (step === 'repo') this.installData.step.value = 'user'
-    else if (step === 'user') this.installData.step.value = 'env'
-    else this.installData.step.value = 'confirm'
+    if (step === 'repo') this.installData.step.value = 'crowGlobalDirectory'
+    else if (step === 'crowGlobalDirectory') {
+      this.installData.step.value = 'envFile'
+    } else this.installData.step.value = 'confirm'
   }
 
   private confirm() {
@@ -56,8 +57,9 @@ export class Keypress {
   private activeText(): Signal<InputBuffer> {
     const step = this.installData.step.peek()
     if (step === 'repo') return this.installData.repoDirectory
-    else if (step === 'user') return this.installData.globalDirectory
-    else return this.installData.envFile
+    else if (step === 'crowGlobalDirectory') {
+      return this.installData.globalDirectory
+    } else return this.installData.envFile
   }
 
   private isQuit() {

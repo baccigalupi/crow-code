@@ -5,13 +5,13 @@ import { EnvPrompt } from '../../../../../src/tui/install/views/steps/env-prompt
 import { emptyBuffer, insertText } from '../../../../../src/tui/input-buffer.ts'
 
 describe('env-prompt', () => {
-  it('when the step is not env, renders nothing', () => {
+  it('when the step is not envFile, renders nothing', () => {
     const globalDirectory = emptyBuffer()
     const envFile = emptyBuffer()
 
     const { lastFrame } = render(
       <EnvPrompt
-        step='user'
+        step='crowGlobalDirectory'
         globalDirectory={globalDirectory}
         envFile={envFile}
       />,
@@ -20,13 +20,13 @@ describe('env-prompt', () => {
     expect(lastFrame()).toBe('')
   })
 
-  it('when the step is env, shows the derived fallback', () => {
+  it('when the step is envFile, shows the derived fallback', () => {
     const globalDirectory = insertText(emptyBuffer(), '/opt/crow')
     const envFile = emptyBuffer()
 
     const { lastFrame } = render(
       <EnvPrompt
-        step='env'
+        step='envFile'
         globalDirectory={globalDirectory}
         envFile={envFile}
       />,

@@ -13,7 +13,7 @@ export const EnvPrompt = (
   { step, globalDirectory, envFile }: EnvPromptProps,
 ) => {
   const { fallback } = envPromptViewModel({ globalDirectory })
-  if (step !== 'env') return null
+  if (step !== 'envFile') return null
 
   return (
     <Prompt

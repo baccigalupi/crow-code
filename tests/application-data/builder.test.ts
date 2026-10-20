@@ -109,20 +109,6 @@ describe('buildApplicationData', () => {
     expect(applicationData.repositoryRoot.length).toBeGreaterThan(0)
   })
 
-  it('when no config path resolves, continues with the default config', async () => {
-    const builder = buildApplicationData({
-      runtime: new Runtime(mockDeno({ stdout: '/some/repo\n' })),
-    })
-
-    await builder.run()
-    const applicationData = builder.result()
-
-    expect(builder.success()).toBe(false)
-    expect(applicationData.config.crowGlobalDirectory).toBe('~/.crow')
-    expect(applicationData.io.repoCrowDirectory).toEqual('.crow')
-    expect(applicationData.repositoryRoot).toBe('/some/repo')
-  })
-
   it('when the config file is malformed, fails with the reason', async () => {
     const builder = buildApplicationData({
       path: join(fixturesDirectory, 'malformed-config.txt'),

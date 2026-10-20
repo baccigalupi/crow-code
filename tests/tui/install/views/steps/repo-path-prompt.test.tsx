@@ -8,7 +8,9 @@ describe('repo-path-prompt', () => {
   it('when the step is not repo, renders nothing', () => {
     const input = emptyBuffer()
 
-    const { lastFrame } = render(<RepoPathPrompt step='user' input={input} />)
+    const { lastFrame } = render(
+      <RepoPathPrompt step='crowGlobalDirectory' input={input} />,
+    )
 
     expect(lastFrame()).toBe('')
   })
