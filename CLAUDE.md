@@ -155,7 +155,7 @@ per-path.
 
 ### TUI
 
-`src/tui/*` is an Ink/React (`react-jsx`) terminal UI. `app/` is the main chat
+`src/tui/*` is an Ink/React (`react-jsx`) terminal UI. `agent/` is the main chat
 REPL (view-models in `*-view-model.ts` paired with `.tsx` views,
 `interactions/state/chat-session.ts` for session state, `interactions/keymap.ts`
 for key bindings); `install/` is the first-run config installer with an

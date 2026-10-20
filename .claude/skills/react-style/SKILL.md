@@ -7,7 +7,7 @@ description: >-
 
 # React style
 
-Conventions for TSX views under `src/tui/`, derived from `src/tui/app/views/`.
+Conventions for TSX views under `src/tui/`, derived from `src/tui/agent/views/`.
 Follow these when writing or reviewing any `.tsx` file.
 
 The mechanically checkable rules are enforced by `agents/style-check`
@@ -35,7 +35,7 @@ rules to assert here.
 ## Props
 
 - Exported components take a named `*Props` or `*ViewModelArguments` type
-  declared in the sibling `types.ts` (`AppProps`, `ChatViewModelArguments`,
+  declared in the sibling `types.ts` (`AgentProps`, `ChatViewModelArguments`,
   `InputViewModelArguments`) — not inline object types.
 - Tiny helper components may declare inline props:
   `{ readonly entry: HistoryEntry }`. Always `readonly`.
@@ -46,7 +46,7 @@ rules to assert here.
 ## Views are thin — view models do the thinking
 
 - A view computes nothing. Every derived value (sizes, splits, lists,
-  visibility) comes from a `*ViewModel` function: `appViewModel`,
+  visibility) comes from a `*ViewModel` function: `agentViewModel`,
   `chatViewModel`, `inputViewModel`, `bufferViewModel`.
 - The component body is: read signals → call view model(s) → return JSX. Inline
   conditionals for derived data are a smell; push them into the view model where

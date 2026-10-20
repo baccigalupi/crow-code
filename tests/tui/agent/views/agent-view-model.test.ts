@@ -1,18 +1,21 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { appViewModel } from '../../../../src/tui/app/views/app-view-model.ts'
-import type { AppViewModelArguments } from '../../../../src/tui/app/types.ts'
+import { agentViewModel } from '../../../../src/tui/agent/views/agent-view-model.ts'
+import type { AgentViewModelArguments } from '../../../../src/tui/agent/types.ts'
 
-describe('appViewModel', () => {
+describe('agentViewModel', () => {
   it('when stdout reports a size, derives the chat row height from it', () => {
-    const stdout = { columns: 100, rows: 30 } as AppViewModelArguments['stdout']
+    const stdout = {
+      columns: 100,
+      rows: 30,
+    } as AgentViewModelArguments['stdout']
     const state = {
       buffer: { text: 'hi', cursor: 2 },
       inputRows: 2,
       history: [{ id: 'e0', text: 'a' }],
     }
 
-    const view = appViewModel({ stdout, state })
+    const view = agentViewModel({ stdout, state })
 
     expect(view).toEqual({
       columnWidth: 100,
@@ -25,10 +28,10 @@ describe('appViewModel', () => {
   })
 
   it('when stdout reports no size, falls back to 80 by 24', () => {
-    const stdout = {} as AppViewModelArguments['stdout']
+    const stdout = {} as AgentViewModelArguments['stdout']
     const state = { buffer: { text: '', cursor: 0 }, inputRows: 1, history: [] }
 
-    const view = appViewModel({ stdout, state })
+    const view = agentViewModel({ stdout, state })
 
     expect(view.columnWidth).toBe(80)
     expect(view.rowHeight).toBe(24)

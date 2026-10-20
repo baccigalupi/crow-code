@@ -2,13 +2,14 @@ import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { assertSpyCallArg, spy, stub } from '@std/testing/mock'
 import { defaultRuntime } from '../../src/application-data/runtime.ts'
-import { createRunner } from '../../src/tui/runner.ts'
+import { createTuiRunner } from '../../src/tui/tui-runner.ts'
+import { Agent } from '../../src/tui/agent/views/agent.tsx'
 import { mockTerminal } from '../support/mock-terminal.ts'
 
-describe('runner', () => {
+describe('tui-runner', () => {
   it('when ctrl-c is written to stdin, status resolves completed', async () => {
     const terminal = mockTerminal({})
-    const runner = createRunner(defaultRuntime(), terminal.io)
+    const runner = createTuiRunner(defaultRuntime(), terminal.io, Agent)
 
     const pending = runner.status()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -19,7 +20,7 @@ describe('runner', () => {
 
   it('when stdin cannot set raw mode, status resolves interrupted since Ink requires it for user input', async () => {
     const terminal = mockTerminal({ rawMode: false })
-    const runner = createRunner(defaultRuntime(), terminal.io)
+    const runner = createTuiRunner(defaultRuntime(), terminal.io, Agent)
 
     const status = await runner.status()
 
@@ -29,7 +30,7 @@ describe('runner', () => {
   it('when the app runs to completion, its signal listeners are removed', async () => {
     const terminal = mockTerminal({})
     const runtime = defaultRuntime()
-    const runner = createRunner(runtime, terminal.io)
+    const runner = createTuiRunner(runtime, terminal.io, Agent)
     using remove = spy(runtime, 'removeSignalListener')
 
     const pending = runner.status()
@@ -43,7 +44,7 @@ describe('runner', () => {
 
   it('when interrupted, unmounts and resolves interrupted', async () => {
     const terminal = mockTerminal({})
-    const runner = createRunner(defaultRuntime(), terminal.io)
+    const runner = createTuiRunner(defaultRuntime(), terminal.io, Agent)
 
     const status = runner.status()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -54,7 +55,7 @@ describe('runner', () => {
 
   it('when the app fails, writes the error to stderr and resolves interrupted', async () => {
     const terminal = mockTerminal({ rawMode: false })
-    const runner = createRunner(defaultRuntime(), terminal.io)
+    const runner = createTuiRunner(defaultRuntime(), terminal.io, Agent)
     using write = spy(terminal.stderr, 'write')
 
     const status = await runner.status()
@@ -68,10 +69,10 @@ describe('runner', () => {
   it('when no stderr is provided, writes the error through the runtime', async () => {
     const terminal = mockTerminal({ rawMode: false })
     const runtime = defaultRuntime()
-    const runner = createRunner(runtime, {
+    const runner = createTuiRunner(runtime, {
       stdin: terminal.io.stdin,
       stdout: terminal.io.stdout,
-    })
+    }, Agent)
     using write = stub(runtime, 'writeStderr', () => {})
 
     const status = await runner.status()

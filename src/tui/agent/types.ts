@@ -12,7 +12,7 @@ export interface ReplState {
   readonly history: readonly HistoryEntry[]
 }
 
-export type AppViewModelArguments = {
+export type AgentViewModelArguments = {
   readonly stdout: NodeJS.WriteStream
   readonly state: ReplState
 }
@@ -28,6 +28,6 @@ export type InputViewModelArguments = {
   readonly height: number
 }
 
-export type AppProps = {
+export type AgentProps = {
   readonly session?: ChatSession
 }

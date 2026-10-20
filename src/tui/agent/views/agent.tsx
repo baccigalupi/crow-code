@@ -3,18 +3,18 @@ import { useReplKeys } from '../interactions/hooks/use-repl-keys.ts'
 import { useResize } from '../interactions/hooks/use-resize.ts'
 import { useSignalValue } from '../../use-signal-value.ts'
 import { chatSession } from '../interactions/state.ts'
-import { appViewModel } from './app-view-model.ts'
+import { agentViewModel } from './agent-view-model.ts'
 import { Chat } from './chat.tsx'
 import { Header } from './header.tsx'
 import { Input } from './input.tsx'
-import type { AppProps } from '../types.ts'
+import type { AgentProps } from '../types.ts'
 
-export const App = ({ session = chatSession }: AppProps) => {
+export const Agent = ({ session = chatSession }: AgentProps) => {
   const { stdout } = useStdout()
   const buffer = useSignalValue(session.buffer)
   const history = useSignalValue(session.history)
   const inputRows = useSignalValue(session.inputRows)
-  const { columnWidth, rowHeight, chatRowHeight } = appViewModel({
+  const { columnWidth, rowHeight, chatRowHeight } = agentViewModel({
     stdout,
     state: { buffer, history, inputRows },
   })

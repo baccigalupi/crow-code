@@ -1,5 +1,5 @@
 import type { ApplicationData } from '../../application-data/application-data.ts'
-import { createRunner } from '../runner.ts'
+import { createTuiRunner } from '../tui-runner.ts'
 import type { ReplIo } from '../types.ts'
 import { writeCrowConfig } from './crow-config/write.ts'
 import { installState } from './interactions/state/config-buffer.ts'
@@ -16,5 +16,5 @@ export const runInstalltTui = (
 ) => {
   const { filesystem, runtime } = applicationData
   writeCrowConfig({ installData: state, filesystem }).subscribe()
-  return createRunner(runtime, io, InstallApp)
+  return createTuiRunner(runtime, io, InstallApp)
 }

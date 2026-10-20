@@ -1,9 +1,9 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { spy } from '@std/testing/mock'
-import { Keymap } from '../../../../src/tui/app/interactions/keymap.ts'
-import { ChatSession } from '../../../../src/tui/app/interactions/state/chat-session.ts'
-import { chatSession } from '../../../../src/tui/app/interactions/state.ts'
+import { Keymap } from '../../../../src/tui/agent/interactions/keymap.ts'
+import { ChatSession } from '../../../../src/tui/agent/interactions/state/chat-session.ts'
+import { chatSession } from '../../../../src/tui/agent/interactions/state.ts'
 
 describe('Keymap', () => {
   it('when ctrl+c arrives, quits', () => {

@@ -1,4 +1,4 @@
-import type { AppViewModelArguments, ReplState } from '../types.ts'
+import type { AgentViewModelArguments, ReplState } from '../types.ts'
 
 const headerRows = 3
 
@@ -10,16 +10,16 @@ const stdoutSize = (stdout: NodeJS.WriteStream) => ({
 const chatRowHeight = (rowHeight: number, state: ReplState) =>
   rowHeight - headerRows - state.inputRows
 
-const appViewModelFields = (
+const agentViewModelFields = (
   columnWidth: number,
   rowHeight: number,
   chatHeight: number,
   state: ReplState,
 ) => ({ ...state, columnWidth, rowHeight, chatRowHeight: chatHeight })
 
-export const appViewModel = ({ stdout, state }: AppViewModelArguments) => {
+export const agentViewModel = ({ stdout, state }: AgentViewModelArguments) => {
   const { columnWidth, rowHeight } = stdoutSize(stdout)
-  return appViewModelFields(
+  return agentViewModelFields(
     columnWidth,
     rowHeight,
     chatRowHeight(rowHeight, state),

@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
-import { ChatSession } from '../../../../../src/tui/app/interactions/state/chat-session.ts'
+import { ChatSession } from '../../../../../src/tui/agent/interactions/state/chat-session.ts'
 
 describe('ChatSession', () => {
   it('when submitting twice, appends entry-0 and entry-1', () => {

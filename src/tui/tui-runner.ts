@@ -3,10 +3,9 @@ import { render } from 'ink'
 import type { Instance } from 'ink'
 import type { Runtime } from '../application-data/runtime.ts'
 import type { Signal } from '../types.ts'
-import { App } from './app/views/app.tsx'
 import type { ReplIo, ReplStatus } from './types.ts'
 
-export class Runner {
+export class TuiRunner {
   private runtime: Runtime
   private io: ReplIo
   private view: FunctionComponent
@@ -17,7 +16,7 @@ export class Runner {
   constructor(
     runtime: Runtime,
     io: ReplIo,
-    view: FunctionComponent = App,
+    view: FunctionComponent,
   ) {
     this.runtime = runtime
     this.io = io
@@ -88,8 +87,8 @@ export class Runner {
   }
 }
 
-export const createRunner = (
+export const createTuiRunner = (
   runtime: Runtime,
-  io: ReplIo = {},
-  view?: FunctionComponent,
-) => new Runner(runtime, io, view)
+  io: ReplIo,
+  view: FunctionComponent,
+) => new TuiRunner(runtime, io, view)
