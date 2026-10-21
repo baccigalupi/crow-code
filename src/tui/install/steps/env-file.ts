@@ -1,17 +1,17 @@
-import { InstallState } from '../types.ts'
+import { InstallStore } from '../types.ts'
 import { EnvPrompt } from '../views/steps/env-prompt.tsx'
 
 export class EnvFileStep {
-  private installState: InstallState
+  private installStore: InstallStore
   readonly name = 'envFile'
   readonly nextStep = 'additionalRead'
   readonly View = EnvPrompt
 
-  constructor(installState: InstallState) {
-    this.installState = installState
+  constructor(installStore: InstallStore) {
+    this.installStore = installStore
   }
 
   state() {
-    return this.installState.envFile
+    return this.installStore.envFile
   }
 }

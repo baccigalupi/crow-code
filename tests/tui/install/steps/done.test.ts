@@ -8,7 +8,7 @@ import type { InstallStep } from '../../../../src/tui/install/types.ts'
 
 describe('DoneStep', () => {
   it('when asked for the next step, returns done', () => {
-    const installState = {
+    const installStore = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
@@ -20,13 +20,13 @@ describe('DoneStep', () => {
       confirmation: signal(true),
     }
 
-    const step = new DoneStep(installState)
+    const step = new DoneStep(installStore)
 
     expect(step.nextStep).toBe('done')
   })
 
   it('when asked for its view, returns the done message', () => {
-    const installState = {
+    const installStore = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
@@ -38,13 +38,13 @@ describe('DoneStep', () => {
       confirmation: signal(true),
     }
 
-    const step = new DoneStep(installState)
+    const step = new DoneStep(installStore)
 
     expect(step.View).toBe(DoneMessage)
   })
 
   it('when asked for its state, returns the env file input', () => {
-    const installState = {
+    const installStore = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
@@ -56,8 +56,8 @@ describe('DoneStep', () => {
       confirmation: signal(true),
     }
 
-    const state = new DoneStep(installState).state()
+    const state = new DoneStep(installStore).state()
 
-    expect(state).toBe(installState.envFile)
+    expect(state).toBe(installStore.envFile)
   })
 })

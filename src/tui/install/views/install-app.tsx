@@ -1,8 +1,8 @@
 import { Box, useStdout } from 'ink'
-import { installState as sharedInstallState } from '../interactions/state/config-buffer.ts'
+import { installStore as sharedInstallStore } from '../interactions/state/config-buffer.ts'
 import { installAppViewModel } from './install-app-view-model.ts'
 import { useKeypress } from '../interactions/hooks/use-keypress.ts'
-import { useInstallValues } from '../interactions/hooks/use-install-values.ts'
+import { useInstallState } from '../interactions/hooks/use-install-state.ts'
 import { ConfigPanel } from './steps/config-panel.tsx'
 import { StepPrompts } from './step-prompts.tsx'
 import { Header } from './header.tsx'
@@ -10,21 +10,21 @@ import { configPathViewModel } from './config-path-view-model.ts'
 import type { InstallAppProps } from '../types.ts'
 
 export const InstallApp = (
-  { installState = sharedInstallState }: InstallAppProps,
+  { installStore = sharedInstallStore }: InstallAppProps,
 ) => {
   const { stdout } = useStdout()
-  const values = useInstallValues(installState)
+  const installState = useInstallState(installStore)
   const { rowHeight, columnWidth } = installAppViewModel({ stdout })
-  const { crowConfigPath } = configPathViewModel(values)
-  useKeypress(installState)
+  const { crowConfigPath } = configPathViewModel(installState)
+  useKeypress(installStore)
 
   return (
     <Box flexDirection='column' height={rowHeight} width={columnWidth}>
       <Header />
-      <ConfigPanel {...values} />
+      <ConfigPanel {...installState} />
       <StepPrompts
-        installState={installState}
-        values={{ ...values, crowConfigPath }}
+        installStore={installStore}
+        values={{ ...installState, crowConfigPath }}
       />
     </Box>
   )

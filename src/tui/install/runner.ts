@@ -2,8 +2,8 @@ import type { ApplicationData } from '../../application-data/application-data.ts
 import { createTuiRunner } from '../tui-runner.ts'
 import type { ReplIo } from '../types.ts'
 import { writeCrowConfig } from './crow-config/write.ts'
-import { installState } from './interactions/state/config-buffer.ts'
-import type { InstallState } from './types.ts'
+import { installStore } from './interactions/state/config-buffer.ts'
+import type { InstallStore } from './types.ts'
 import { InstallApp } from './views/install-app.tsx'
 
 // The install command's only way into the install TUI. The writer is wired
@@ -12,9 +12,9 @@ import { InstallApp } from './views/install-app.tsx'
 export const runInstalltTui = (
   applicationData: ApplicationData,
   io: ReplIo = {},
-  state: InstallState = installState,
+  store: InstallStore = installStore,
 ) => {
   const { filesystem } = applicationData
-  writeCrowConfig({ installData: state, filesystem }).subscribe()
+  writeCrowConfig({ installData: store, filesystem }).subscribe()
   return createTuiRunner(applicationData, io, InstallApp)
 }

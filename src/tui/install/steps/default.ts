@@ -1,16 +1,16 @@
-import { InstallState } from '../types.ts'
+import { InstallStore } from '../types.ts'
 
 export class DefaultStep {
-  private installState: InstallState
+  private installStore: InstallStore
   readonly name = 'default'
   readonly nextStep = 'confirm'
   readonly View = () => null
 
-  constructor(installState: InstallState) {
-    this.installState = installState
+  constructor(installStore: InstallStore) {
+    this.installStore = installStore
   }
 
   state() {
-    return this.installState.envFile
+    return this.installStore.envFile
   }
 }

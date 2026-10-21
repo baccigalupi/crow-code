@@ -1,17 +1,17 @@
-import { InstallState } from '../types.ts'
+import { InstallStore } from '../types.ts'
 import { ConfirmPrompt } from '../views/steps/confirm-prompt.tsx'
 
 export class ConfirmStep {
-  private installState: InstallState
+  private installStore: InstallStore
   readonly name = 'confirm'
   readonly nextStep = 'write'
   readonly View = ConfirmPrompt
 
-  constructor(installState: InstallState) {
-    this.installState = installState
+  constructor(installStore: InstallStore) {
+    this.installStore = installStore
   }
 
   state() {
-    return this.installState.envFile
+    return this.installStore.envFile
   }
 }

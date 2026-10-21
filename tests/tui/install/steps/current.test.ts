@@ -9,8 +9,8 @@ import {
 import type { InstallStep } from '../../../../src/tui/install/types.ts'
 
 describe('current', () => {
-  it('when asked for the step name, step returns the installState step', () => {
-    const installState = {
+  it('when asked for the step name, step returns the installStore step', () => {
+    const installStore = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
@@ -22,13 +22,13 @@ describe('current', () => {
       confirmation: signal(true),
     }
 
-    const step = new CurrentStep(installState).step()
+    const step = new CurrentStep(installStore).step()
 
     expect(step).toBe('envFile')
   })
 
   it('when all is called, returns the steps in order', () => {
-    const installState = {
+    const installStore = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
@@ -40,7 +40,7 @@ describe('current', () => {
       confirmation: signal(true),
     }
 
-    const steps = new CurrentStep(installState).all()
+    const steps = new CurrentStep(installStore).all()
 
     expect(steps).toHaveLength(9)
     expect(steps[0].name).toBe('repo')
@@ -54,8 +54,8 @@ describe('current', () => {
     expect(steps[8].name).toBe('done')
   })
 
-  it('when the installState step is additionalRead, current returns that step', () => {
-    const installState = {
+  it('when the installStore step is additionalRead, current returns that step', () => {
+    const installStore = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
@@ -67,15 +67,15 @@ describe('current', () => {
       confirmation: signal(true),
     }
 
-    const step = new CurrentStep(installState).current()
+    const step = new CurrentStep(installStore).current()
 
     expect(step.name).toBe('additionalRead')
     expect(step.nextStep).toBe('escalateRead')
-    expect(step.state()).toBe(installState.additionalRead)
+    expect(step.state()).toBe(installStore.additionalRead)
   })
 
-  it('when the installState step is escalateRead, current returns that step', () => {
-    const installState = {
+  it('when the installStore step is escalateRead, current returns that step', () => {
+    const installStore = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
@@ -87,15 +87,15 @@ describe('current', () => {
       confirmation: signal(true),
     }
 
-    const step = new CurrentStep(installState).current()
+    const step = new CurrentStep(installStore).current()
 
     expect(step.name).toBe('escalateRead')
     expect(step.nextStep).toBe('escalateWrite')
-    expect(step.state()).toBe(installState.escalateRead)
+    expect(step.state()).toBe(installStore.escalateRead)
   })
 
-  it('when the installState step has no step class, current returns the default step', () => {
-    const installState = {
+  it('when the installStore step has no step class, current returns the default step', () => {
+    const installStore = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
@@ -107,13 +107,13 @@ describe('current', () => {
       confirmation: signal(true),
     }
 
-    const step = new CurrentStep(installState).current()
+    const step = new CurrentStep(installStore).current()
 
     expect(step.name).toBe('default')
   })
 
   it('when currentStep is called, returns the current step', () => {
-    const installState = {
+    const installStore = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
@@ -125,9 +125,9 @@ describe('current', () => {
       confirmation: signal(true),
     }
 
-    const step = currentStep(installState)
+    const step = currentStep(installStore)
 
     expect(step.name).toBe('allowedLocalScripts')
-    expect(step.state()).toBe(installState.allowedLocalScripts)
+    expect(step.state()).toBe(installStore.allowedLocalScripts)
   })
 })

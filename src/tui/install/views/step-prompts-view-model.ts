@@ -1,6 +1,6 @@
 import { currentStep } from '../steps/current.ts'
-import type { InstallState } from '../types.ts'
+import type { InstallStore } from '../types.ts'
 
-export const stepPromptsViewModel = (installState: InstallState) => {
-  return { View: currentStep(installState).View }
+export const stepPromptsViewModel = (installStore: InstallStore) => {
+  return { View: currentStep(installStore).View }
 }

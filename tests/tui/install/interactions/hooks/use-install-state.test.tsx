@@ -1,15 +1,15 @@
 import { describe, it } from 'node:test'
 import { expect } from '@std/expect'
 import { signal } from '@preact/signals-core'
-import { useInstallValues } from '../../../../../src/tui/install/interactions/hooks/use-install-values.ts'
+import { useInstallState } from '../../../../../src/tui/install/interactions/hooks/use-install-state.ts'
 import { emptyBuffer } from '../../../../../src/tui/input-buffer.ts'
 import type { InstallStep } from '../../../../../src/tui/install/types.ts'
 import { inputSignal } from '../../../../support/input-signal.ts'
 import { renderHook } from '../../../../support/render-hook.tsx'
 
-describe('useInstallValues', () => {
+describe('useInstallState', () => {
   it('when rendered, returns the current value of every install signal', () => {
-    const installState = {
+    const installStore = {
       repoDirectory: inputSignal('./lib'),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
@@ -21,7 +21,7 @@ describe('useInstallValues', () => {
       confirmation: signal(false),
     }
 
-    const { result, unmount } = renderHook(() => useInstallValues(installState))
+    const { result, unmount } = renderHook(() => useInstallState(installStore))
 
     expect(result.current.repoDirectory.text).toBe('./lib')
     expect(result.current.globalDirectory.text).toBe('')
@@ -31,7 +31,7 @@ describe('useInstallValues', () => {
   })
 
   it('when any signal changes, re-renders with the new values', async () => {
-    const installState = {
+    const installStore = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
@@ -42,10 +42,10 @@ describe('useInstallValues', () => {
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
-    const { result, unmount } = renderHook(() => useInstallValues(installState))
+    const { result, unmount } = renderHook(() => useInstallState(installStore))
 
-    installState.allowedLocalScripts.value = inputSignal('./build.sh').peek()
-    installState.step.value = 'confirm'
+    installStore.allowedLocalScripts.value = inputSignal('./build.sh').peek()
+    installStore.step.value = 'confirm'
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(result.current.allowedLocalScripts.text).toBe('./build.sh')

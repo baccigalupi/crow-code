@@ -8,7 +8,7 @@ import type { InstallStep } from '../../../../src/tui/install/types.ts'
 
 describe('ConfirmStep', () => {
   it('when asked for the next step, returns write', () => {
-    const installState = {
+    const installStore = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
@@ -20,13 +20,13 @@ describe('ConfirmStep', () => {
       confirmation: signal(true),
     }
 
-    const step = new ConfirmStep(installState)
+    const step = new ConfirmStep(installStore)
 
     expect(step.nextStep).toBe('write')
   })
 
   it('when asked for its view, returns the confirm prompt', () => {
-    const installState = {
+    const installStore = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
@@ -38,13 +38,13 @@ describe('ConfirmStep', () => {
       confirmation: signal(true),
     }
 
-    const step = new ConfirmStep(installState)
+    const step = new ConfirmStep(installStore)
 
     expect(step.View).toBe(ConfirmPrompt)
   })
 
   it('when asked for its state, returns the env file input', () => {
-    const installState = {
+    const installStore = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
@@ -56,8 +56,8 @@ describe('ConfirmStep', () => {
       confirmation: signal(true),
     }
 
-    const state = new ConfirmStep(installState).state()
+    const state = new ConfirmStep(installStore).state()
 
-    expect(state).toBe(installState.envFile)
+    expect(state).toBe(installStore.envFile)
   })
 })

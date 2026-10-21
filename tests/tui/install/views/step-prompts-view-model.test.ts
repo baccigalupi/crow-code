@@ -9,7 +9,7 @@ import type { InstallStep } from '../../../../src/tui/install/types.ts'
 
 describe('stepPromptsViewModel', () => {
   it('when the step is repo, the view is the repo path prompt', () => {
-    const installState = {
+    const installStore = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
@@ -21,13 +21,13 @@ describe('stepPromptsViewModel', () => {
       confirmation: signal(true),
     }
 
-    const { View } = stepPromptsViewModel(installState)
+    const { View } = stepPromptsViewModel(installStore)
 
     expect(View).toBe(RepoPathPrompt)
   })
 
   it('when the step is done, the view is the done message', () => {
-    const installState = {
+    const installStore = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
@@ -39,7 +39,7 @@ describe('stepPromptsViewModel', () => {
       confirmation: signal(true),
     }
 
-    const { View } = stepPromptsViewModel(installState)
+    const { View } = stepPromptsViewModel(installStore)
 
     expect(View).toBe(DoneMessage)
   })

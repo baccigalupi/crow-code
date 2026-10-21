@@ -5,7 +5,7 @@ import { render as inkRender } from 'ink'
 import { signal } from '@preact/signals-core'
 import { InstallApp } from '../../../../src/tui/install/views/install-app.tsx'
 import type { InstallStep } from '../../../../src/tui/install/types.ts'
-import { installState } from '../../../../src/tui/install/interactions/state/config-buffer.ts'
+import { installStore } from '../../../../src/tui/install/interactions/state/config-buffer.ts'
 import { emptyBuffer } from '../../../../src/tui/input-buffer.ts'
 import { inputSignal } from '../../../support/input-signal.ts'
 import { mountInstallApp } from '../../../support/install-mount.tsx'
@@ -489,9 +489,9 @@ describe('InstallApp', () => {
   })
 
   it('when no props are given, uses the shared install data', () => {
-    installState.repoDirectory.value = emptyBuffer()
-    installState.globalDirectory.value = emptyBuffer()
-    installState.step.value = 'repo'
+    installStore.repoDirectory.value = emptyBuffer()
+    installStore.globalDirectory.value = emptyBuffer()
+    installStore.step.value = 'repo'
 
     const { lastFrame, unmount } = render(<InstallApp />)
 

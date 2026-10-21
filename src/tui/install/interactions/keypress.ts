@@ -1,10 +1,10 @@
 import type { ExitApp, KeyFlags } from '../../types.ts'
-import type { InstallState, KeypressArguments } from '../types.ts'
+import type { InstallStore, KeypressArguments } from '../types.ts'
 import { currentStep } from '../steps/current.ts'
 import { textInput } from './text-input.ts'
 
 export class Keypress {
-  private installData: InstallState
+  private installData: InstallStore
   private exit: ExitApp
   private input: string
   private key: KeyFlags

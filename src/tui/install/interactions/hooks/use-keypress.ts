@@ -1,8 +1,8 @@
 import { useApp, useInput, useStdin } from 'ink'
 import { keypress } from '../keypress.ts'
-import type { InstallState } from '../../types.ts'
+import type { InstallStore } from '../../types.ts'
 
-export const useKeypress = (installData: InstallState) => {
+export const useKeypress = (installData: InstallStore) => {
   const { exit } = useApp()
   const { isRawModeSupported } = useStdin()
   useInput(

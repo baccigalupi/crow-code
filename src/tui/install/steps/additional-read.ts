@@ -1,17 +1,17 @@
-import { InstallState } from '../types.ts'
+import { InstallStore } from '../types.ts'
 import { AdditionalReadPrompt } from '../views/steps/additional-read-prompt.tsx'
 
 export class AdditionalReadStep {
-  private installState: InstallState
+  private installStore: InstallStore
   readonly name = 'additionalRead'
   readonly nextStep = 'escalateRead'
   readonly View = AdditionalReadPrompt
 
-  constructor(installState: InstallState) {
-    this.installState = installState
+  constructor(installStore: InstallStore) {
+    this.installStore = installStore
   }
 
   state() {
-    return this.installState.additionalRead
+    return this.installStore.additionalRead
   }
 }

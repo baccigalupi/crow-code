@@ -54,25 +54,25 @@ export type StepValues = BuildCrowConfigArguments & {
 }
 
 export type InstallAppProps = {
-  readonly installState?: InstallState
+  readonly installStore?: InstallStore
 }
 
-export type InstallValues = BuildCrowConfigArguments & {
+export type InstallState = BuildCrowConfigArguments & {
   readonly step: InstallStep
   readonly confirmation: boolean
 }
 
-export type InstallState = {
-  readonly [Key in keyof InstallValues]: Signal<InstallValues[Key]>
+export type InstallStore = {
+  readonly [Key in keyof InstallState]: Signal<InstallState[Key]>
 }
 
 export type WriteCrowConfigArguments = {
-  readonly installData: InstallState
+  readonly installData: InstallStore
   readonly filesystem: Filesystem
 }
 
 export type KeypressArguments = {
-  readonly installData: InstallState
+  readonly installData: InstallStore
   readonly exit: ExitApp
   readonly input: string
   readonly key: KeyFlags

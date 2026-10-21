@@ -1,6 +1,6 @@
 import { effect } from '@preact/signals-core'
 import type { Filesystem } from '../../../application-data/filesystem.ts'
-import type { InstallState, WriteCrowConfigArguments } from '../types.ts'
+import type { InstallStore, WriteCrowConfigArguments } from '../types.ts'
 import { buildCrowConfig } from './build.ts'
 
 // WRITE side: watches the install step and, once the user has confirmed
@@ -9,7 +9,7 @@ import { buildCrowConfig } from './build.ts'
 // hooks; nothing in the TUI sees the filesystem. Deriving the config lives in
 // build.ts.
 export class CrowConfigWrite {
-  private installData: InstallState
+  private installData: InstallStore
   private filesystem: Filesystem
 
   constructor({ installData, filesystem }: WriteCrowConfigArguments) {
