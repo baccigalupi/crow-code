@@ -9,10 +9,8 @@ const parserPlugins = (path: string) => {
 }
 
 export const instrument = (source: string, path: string) => {
-  const instrumenter = createInstrumenter({
-    esModules: true,
-    parserPlugins: parserPlugins(path),
-  })
+  const options = { esModules: true, parserPlugins: parserPlugins(path) }
+  const instrumenter = createInstrumenter(options)
   const code = instrumenter.instrumentSync(source, path)
 
   return { code, coverage: instrumenter.lastFileCoverage() }

@@ -55,7 +55,7 @@ const countDirectTests = (callback: Deno.lint.Node): number => {
     callback.type !== 'FunctionExpression'
   ) return 0
   if (callback.body.type !== 'BlockStatement') return 0
-  return callback.body.body.filter((statement) =>
+  return callback.body.body.filter((statement: Deno.lint.Statement) =>
     statement.type === 'ExpressionStatement' &&
     isNamedCall(statement.expression, 'it')
   ).length

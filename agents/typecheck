@@ -2,4 +2,8 @@
 # Run the typecheck gate.
 set -euo pipefail
 
-exec deno check src bin tests agents .claude
+if [ "$#" -eq 0 ]; then
+  set -- -p tsconfig.json
+fi
+
+exec node_modules/.bin/tsc --noEmit "$@"

@@ -21,7 +21,7 @@ describe('raw-store', () => {
 
     const result = readAllRaw(dir)
 
-    expect(result).toEqual([
+    expect<unknown>(result).toEqual([
       { 'src/a.ts': { path: 'src/a.ts' } },
       { 'src/b.ts': { path: 'src/b.ts' } },
     ])
@@ -34,7 +34,7 @@ describe('raw-store', () => {
 
     const result = readAllRaw(dir)
 
-    expect(result).toEqual([{ 'src/a.ts': { path: 'new' } }])
+    expect<unknown>(result).toEqual([{ 'src/a.ts': { path: 'new' } }])
   })
 
   it('when cleared, reads back nothing', () => {

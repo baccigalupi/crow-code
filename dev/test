@@ -34,8 +34,9 @@ is_deno_test() {
 run_deno() {
   # --clean empties the coverage directory before collecting profiles so stale
   # lcov/raw files do not accumulate across runs.
-  # --no-check: Deno cannot type the Bun-native src these files reach; type
-  # checking moves to tsc in a later story.
+  # --no-check: Deno cannot type the Bun-native src these files reach;
+  # agents/typecheck runs tsc, with agents/deno-types.d.ts supplying the Deno
+  # types until the last Deno consumer is ported.
   deno test --no-check --clean --coverage --coverage-raw-data-only --allow-env --allow-read --allow-write --allow-ffi --allow-run --allow-sys=hostname "$@"
 }
 

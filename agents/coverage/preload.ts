@@ -10,10 +10,10 @@ const root = process.cwd()
 
 const loaderFor = (path: string) => {
   if (path.endsWith('.tsx')) {
-    return 'tsx'
+    return 'tsx' as const
   }
 
-  return 'ts'
+  return 'ts' as const
 }
 
 const transform = (source: string, path: string) => {

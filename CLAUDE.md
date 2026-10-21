@@ -28,21 +28,19 @@ Run a single test file: `dev/test tests/path/to/file.test.ts`. Tests use
 
 ### Execution restrictions (this environment)
 
-This repo is locked down to an allowlist of safe commands in
-`.devin/config.json` (a legacy directory name; Claude Code is the only agent
-that uses it). The allowlist is enforced live by `.claude/settings.json` +
+This repo is locked down to an allowlist of safe commands. The allowlist is
+enforced live by `.claude/settings.json` +
 `.claude/hooks/claude-command-gate.ts`, which decides every Bash call
 deterministically (allow or deny, never a prompt) using
-`agents/hooks/command-allowed.ts` + `devin-config.ts` + `block-reason.ts`
-against `.devin/config.json` — one allowlist. See
-`.claude/skills/correct-command/SKILL.md` for the full command table and
-wrong→right rewrites. In short: only `dev/*`, `agents/*`, `bin/crow`, `bd`,
-`curl`, `chmod`, `rm`, `git mv`, any `git` subcommand except `push`, and
-`deno doc` are permitted — never bare `deno`, `bash`, `sh`, or `cd`. Any shell
-metacharacter (`` ` ``, `$(`, `<`, `>`, `;`, `|`, `&`, literal newline) anywhere
-in the command denies it outright — there is no piping, even between two
-read-only inspectors — except the two commit shapes: repeated `-m` flags, or
-`git commit -F - <<'EOF' ... EOF`.
+`agents/hooks/command-allowed.ts` + `block-reason.ts` against the allowlist
+config — one allowlist. See `.claude/skills/correct-command/SKILL.md` for the
+full command table and wrong→right rewrites. In short: only `dev/*`, `agents/*`,
+`bin/crow`, `bd`, `curl`, `chmod`, `rm`, `git mv`, any `git` subcommand except
+`push`, and `deno doc` are permitted — never bare `deno`, `bash`, `sh`, or `cd`.
+Any shell metacharacter (`` ` ``, `$(`, `<`, `>`, `;`, `|`, `&`, literal
+newline) anywhere in the command denies it outright — there is no piping, even
+between two read-only inspectors — except the two commit shapes: repeated `-m`
+flags, or `git commit -F - <<'EOF' ... EOF`.
 
 **No `cd`, no `--config` flags, no absolute-path workarounds for targeting a
 worktree.** The Bash tool has no `workdir` parameter, so `cd` is the _only_
@@ -202,16 +200,15 @@ live, deterministic PreToolUse decision on every Bash call — allow or deny,
 never a permission prompt (idea modeled on a hook system from a sibling project,
 adapted to reuse what this repo already had). `claude-command-gate.ts` is the
 decision hook; it calls the tested gate logic
-(`agents/hooks/command-allowed.ts` + `devin-config.ts` + `block-reason.ts`,
-backed by `.devin/config.json`) as the single source of truth — it rewrites the
-`workdir` wording in deny reasons to point at `EnterWorktree` and adds one more
-check (deny backgrounding `dev/test`/`dev/coverage`/`agents/pre-commit`, which
-would stomp the shared `coverage/` directory). `worktree-path-gate.ts` (decision
-logic in `worktree-path-decision.ts`) separately validates `EnterWorktree`'s
-`path` argument. Tests: `tests/claude-hooks/*.test.ts`. A deny always names the
-exact command to run instead; don't retry a variant of a denied command. Full
-command table and wrong→right rewrites:
-`.claude/skills/correct-command/SKILL.md`.
+(`agents/hooks/command-allowed.ts` + `block-reason.ts`, backed by the allowlist
+config) as the single source of truth — it rewrites the `workdir` wording in
+deny reasons to point at `EnterWorktree` and adds one more check (deny
+backgrounding `dev/test`/`dev/coverage`/`agents/pre-commit`, which would stomp
+the shared `coverage/` directory). `worktree-path-gate.ts` (decision logic in
+`worktree-path-decision.ts`) separately validates `EnterWorktree`'s `path`
+argument. Tests: `tests/claude-hooks/*.test.ts`. A deny always names the exact
+command to run instead; don't retry a variant of a denied command. Full command
+table and wrong→right rewrites: `.claude/skills/correct-command/SKILL.md`.
 
 ## Dependency lookup (codebase-memory-mcp)
 

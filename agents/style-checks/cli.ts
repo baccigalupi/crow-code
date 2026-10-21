@@ -174,7 +174,7 @@ const checkCode = async (files: string[]): Promise<boolean> => {
 }
 
 const exists = async (file: string): Promise<boolean> =>
-  (await Deno.stat(file).catch(() => null)) !== null
+  (await Deno.stat(file).catch(() => null))?.isFile === true
 
 const checkMirror = async (testFile: string): Promise<boolean> => {
   const base = testFile.slice('tests/'.length).replace(/\.test\.tsx?$/, '')
@@ -183,6 +183,7 @@ const checkMirror = async (testFile: string): Promise<boolean> => {
     `src/${base}.tsx`,
     `${base}.ts`,
     `${base}.tsx`,
+    base,
     `tests/${base}.ts`,
   ]
   for (const candidate of candidates) {

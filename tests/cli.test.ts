@@ -162,9 +162,9 @@ describe('run', () => {
     const applicationData = mockApplicationData({
       args: ['-h'],
       consoleLog: (summary: string) => outputs.push(summary),
-      fetch: () => {
+      fetch: (() => {
         throw new Error('fetch should not be called')
-      },
+      }) as unknown as typeof fetch,
     })
 
     await run(applicationData)
@@ -180,9 +180,9 @@ describe('run', () => {
     const applicationData = mockApplicationData({
       args: ['--help'],
       consoleLog: (summary: string) => outputs.push(summary),
-      fetch: () => {
+      fetch: (() => {
         throw new Error('fetch should not be called')
-      },
+      }) as unknown as typeof fetch,
     })
 
     await run(applicationData)
@@ -198,9 +198,9 @@ describe('run', () => {
     const applicationData = mockApplicationData({
       args: ['-V'],
       consoleLog: (summary: string) => outputs.push(summary),
-      fetch: () => {
+      fetch: (() => {
         throw new Error('fetch should not be called')
-      },
+      }) as unknown as typeof fetch,
     })
 
     await run(applicationData)
@@ -213,9 +213,9 @@ describe('run', () => {
     const applicationData = mockApplicationData({
       args: ['--version'],
       consoleLog: (summary: string) => outputs.push(summary),
-      fetch: () => {
+      fetch: (() => {
         throw new Error('fetch should not be called')
-      },
+      }) as unknown as typeof fetch,
     })
 
     await run(applicationData)
@@ -242,9 +242,9 @@ describe('run', () => {
     const applicationData = mockApplicationData({
       args: ['--unknown'],
       consoleLog,
-      fetch: () => {
+      fetch: (() => {
         throw new Error('fetch should not be called')
-      },
+      }) as unknown as typeof fetch,
     })
 
     await run(applicationData)

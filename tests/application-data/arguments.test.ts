@@ -7,7 +7,7 @@ describe('parseArguments', () => {
 
     const result = parseArguments(argumentsList)
 
-    expect(result).toEqual({ commands: [], options: {} })
+    expect<unknown>(result).toEqual({ commands: [], options: {} })
     expect(result.configPath()).toBeUndefined()
   })
 
@@ -16,7 +16,7 @@ describe('parseArguments', () => {
 
     const result = parseArguments(argumentsList)
 
-    expect(result).toEqual({ commands: [], options: { help: true } })
+    expect<unknown>(result).toEqual({ commands: [], options: { help: true } })
   })
 
   it('when given -h, returns an h option', () => {
@@ -24,7 +24,7 @@ describe('parseArguments', () => {
 
     const result = parseArguments(argumentsList)
 
-    expect(result).toEqual({ commands: [], options: { h: true } })
+    expect<unknown>(result).toEqual({ commands: [], options: { h: true } })
   })
 
   it('when given --key=value, returns the value as a string option', () => {
@@ -32,7 +32,7 @@ describe('parseArguments', () => {
 
     const result = parseArguments(argumentsList)
 
-    expect(result).toEqual({
+    expect<unknown>(result).toEqual({
       commands: ['git-commit'],
       options: { goal: 'Refactor hallucinatory tests' },
     })
@@ -51,7 +51,7 @@ describe('parseArguments', () => {
 
     const result = parseArguments(argumentsList)
 
-    expect(result).toEqual({
+    expect<unknown>(result).toEqual({
       commands: ['git-commit'],
       options: { verbose: true },
     })
@@ -62,7 +62,10 @@ describe('parseArguments', () => {
 
     const result = parseArguments(argumentsList)
 
-    expect(result).toEqual({ commands: [], options: { 'no-color': true } })
+    expect<unknown>(result).toEqual({
+      commands: [],
+      options: { 'no-color': true },
+    })
   })
 
   it('when given a double dash, returns the rest as unparsed commands', () => {
@@ -70,7 +73,7 @@ describe('parseArguments', () => {
 
     const result = parseArguments(argumentsList)
 
-    expect(result).toEqual({
+    expect<unknown>(result).toEqual({
       commands: ['git-commit', '--verbose', 'x'],
       options: {},
     })
@@ -81,7 +84,10 @@ describe('parseArguments', () => {
 
     const result = parseArguments(argumentsList)
 
-    expect(result).toEqual({ commands: ['42'], options: { verbose: true } })
+    expect<unknown>(result).toEqual({
+      commands: ['42'],
+      options: { verbose: true },
+    })
   })
 
   it('when given numeric-looking values, keeps them as strings', () => {
@@ -89,6 +95,9 @@ describe('parseArguments', () => {
 
     const result = parseArguments(argumentsList)
 
-    expect(result).toEqual({ commands: ['007'], options: { count: '5' } })
+    expect<unknown>(result).toEqual({
+      commands: ['007'],
+      options: { count: '5' },
+    })
   })
 })

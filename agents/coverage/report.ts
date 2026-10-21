@@ -40,7 +40,7 @@ const branchLines = (file: FileCoverage) => {
 
 const lineLines = (file: FileCoverage) => {
   const lines = file.getLineCoverage()
-  const numbers = Object.keys(lines)
+  const numbers = Object.keys(lines).map(Number)
 
   return [
     ...numbers.map((line) => `DA:${line},${lines[line]}`),

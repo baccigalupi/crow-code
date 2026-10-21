@@ -71,7 +71,7 @@ describe('runtime', () => {
 
     const env = runtime.env()
 
-    expect(env.PATH).toBe(process.env.PATH)
+    expect<string | undefined>(env.PATH).toBe(process.env.PATH)
   })
 
   it('when no working directory is given, returns the process working directory', () => {

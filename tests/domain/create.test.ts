@@ -27,7 +27,7 @@ describe('CreateRecord', () => {
     await creator.run()
 
     expect(creator.success()).toBe(true)
-    expect(creator.result()).toEqual({
+    expect<unknown>(creator.result()).toEqual({
       id: expect.any(Number),
       name: 'provider-name',
       base_url: 'https://www.example.com',
@@ -69,7 +69,7 @@ describe('CreateRecord', () => {
     await creator.run()
 
     expect(creator.success()).toBe(true)
-    expect(creator.result()).toEqual({
+    expect<unknown>(creator.result()).toEqual({
       id: expect.any(Number),
       name: 'provider-name',
       base_url: 'https://www.example.com',

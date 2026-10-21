@@ -74,7 +74,9 @@ const discriminantText = (
 const containsReturn = (node: Deno.lint.Statement): boolean => {
   if (node.type === 'ReturnStatement') return true
   if (node.type === 'BlockStatement') {
-    return node.body.some((statement) => containsReturn(statement))
+    return node.body.some((statement: Deno.lint.Statement) =>
+      containsReturn(statement)
+    )
   }
   return false
 }
@@ -169,9 +171,9 @@ const delegatedInterface = (
   if (declaration.type !== 'TSInterfaceDeclaration') return false
   const name = (declaration as unknown as { id: { name: string } }).id.name
   const program = context.sourceCode.getAncestors(node)[0]
-  return (program as Deno.lint.Program).body.some((statement) =>
-    isDelegateDecoratedClass(statement, name)
-  )
+  return (program as Deno.lint.Program).body.some((
+    statement: Deno.lint.Statement,
+  ) => isDelegateDecoratedClass(statement, name))
 }
 
 const plugin: Deno.lint.Plugin = {
