@@ -194,6 +194,7 @@ describe('InstallApp', () => {
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
     await instance.waitUntilRenderFlush()
 
     expect(stripAnsi(terminal.lastFrame())).toContain(
@@ -252,8 +253,34 @@ describe('InstallApp', () => {
     instance.unmount()
   })
 
-  it('when the env file question is answered, the escalate read question shows', async () => {
+  it('when the env file question is answered, the additional read question shows', async () => {
     const step = signal<InstallStep>('envFile')
+    const { terminal, instance } = mountInstallApp(24, { step })
+
+    terminal.stdin.write('\r')
+    await instance.waitUntilRenderFlush()
+
+    expect(stripAnsi(terminal.lastFrame())).toContain(
+      'Additional read directories: (none)',
+    )
+    instance.unmount()
+  })
+
+  it('when additional read directories are typed, the config updates', async () => {
+    const additionalRead = inputSignal('')
+    const step = signal<InstallStep>('additionalRead')
+    const { terminal, instance } = mountInstallApp(24, { additionalRead, step })
+
+    terminal.stdin.write('/docs')
+    await instance.waitUntilRenderFlush()
+
+    expect(stripAnsi(terminal.lastFrame())).toContain('"/docs"')
+    expect(additionalRead.peek().text).toBe('/docs')
+    instance.unmount()
+  })
+
+  it('when the additional read question is answered, the escalate read question shows', async () => {
+    const step = signal<InstallStep>('additionalRead')
     const { terminal, instance } = mountInstallApp(24, { step })
 
     terminal.stdin.write('\r')
@@ -348,6 +375,7 @@ describe('InstallApp', () => {
     stdin.write('\r')
     stdin.write('\r')
     stdin.write('\r')
+    stdin.write('\r')
     stdin.write('\x1b[C')
 
     expect(confirmation.peek()).toBe(false)
@@ -365,6 +393,7 @@ describe('InstallApp', () => {
       />,
     )
 
+    stdin.write('\r')
     stdin.write('\r')
     stdin.write('\r')
     stdin.write('\r')
@@ -395,6 +424,7 @@ describe('InstallApp', () => {
     stdin.write('\r')
     stdin.write('\r')
     stdin.write('\r')
+    stdin.write('\r')
     stdin.write('n')
 
     expect(confirmation.peek()).toBe(false)
@@ -405,6 +435,7 @@ describe('InstallApp', () => {
     const step = signal<InstallStep>('repo')
     const { terminal, instance } = mountInstallApp(24, { step })
 
+    terminal.stdin.write('\r')
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
@@ -439,6 +470,7 @@ describe('InstallApp', () => {
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
     terminal.stdin.write('\x1b[C')
     terminal.stdin.write('\r')
     await instance.waitUntilExit()
@@ -450,6 +482,7 @@ describe('InstallApp', () => {
     const step = signal<InstallStep>('repo')
     const { terminal, instance } = mountInstallApp(8, { step })
 
+    terminal.stdin.write('\r')
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')

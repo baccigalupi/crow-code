@@ -1,6 +1,7 @@
 import { Box, useStdout } from 'ink'
 import { useSignalValue } from '../../use-signal-value.ts'
 import {
+  additionalReadInput,
   allowedLocalScriptsInput,
   crowGlobalDirectoryInput,
   crowRepoDirectoryInput,
@@ -23,6 +24,7 @@ export const InstallApp = (
     repoDirectory = crowRepoDirectoryInput,
     globalDirectory = crowGlobalDirectoryInput,
     envFile = envFileInput,
+    additionalRead = additionalReadInput,
     escalateRead = escalateReadInput,
     escalateWrite = escalateWriteInput,
     allowedLocalScripts = allowedLocalScriptsInput,
@@ -34,6 +36,7 @@ export const InstallApp = (
   const crowRepoDirectory = useSignalValue(repoDirectory)
   const crowGlobalDirectory = useSignalValue(globalDirectory)
   const envFileText = useSignalValue(envFile)
+  const additionalReadText = useSignalValue(additionalRead)
   const escalateReadText = useSignalValue(escalateRead)
   const escalateWriteText = useSignalValue(escalateWrite)
   const allowedLocalScriptsText = useSignalValue(allowedLocalScripts)
@@ -44,6 +47,7 @@ export const InstallApp = (
     repoDirectory: crowRepoDirectory,
     globalDirectory: crowGlobalDirectory,
     envFile: envFileText,
+    additionalRead: additionalReadText,
     escalateRead: escalateReadText,
     escalateWrite: escalateWriteText,
     allowedLocalScripts: allowedLocalScriptsText,
@@ -52,6 +56,7 @@ export const InstallApp = (
     repoDirectory,
     globalDirectory,
     envFile,
+    additionalRead,
     escalateRead,
     escalateWrite,
     allowedLocalScripts,
@@ -68,6 +73,7 @@ export const InstallApp = (
         globalDirectory={crowGlobalDirectory}
         repoDirectory={crowRepoDirectory}
         envFile={envFileText}
+        additionalRead={additionalReadText}
         escalateRead={escalateReadText}
         escalateWrite={escalateWriteText}
         allowedLocalScripts={allowedLocalScriptsText}
@@ -78,6 +84,7 @@ export const InstallApp = (
           globalDirectory: crowGlobalDirectory,
           repoDirectory: crowRepoDirectory,
           envFile: envFileText,
+          additionalRead: additionalReadText,
           escalateRead: escalateReadText,
           escalateWrite: escalateWriteText,
           allowedLocalScripts: allowedLocalScriptsText,

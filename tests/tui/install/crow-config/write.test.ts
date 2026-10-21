@@ -21,6 +21,7 @@ describe('write', () => {
       globalDirectory: inputSignal(''),
       envFile: inputSignal(''),
       escalateRead: inputSignal(''),
+      additionalRead: inputSignal(''),
       escalateWrite: inputSignal(''),
       allowedLocalScripts: inputSignal(''),
       step: signal<InstallStep>('confirm'),
@@ -50,6 +51,42 @@ describe('write', () => {
     dispose()
   })
 
+  it('when additional read directories are typed, writes them to the config', async () => {
+    const installData = {
+      repoDirectory: inputSignal(
+        join(fixturesDirectory, 'write-crow-config', 'crow'),
+      ),
+      globalDirectory: inputSignal(''),
+      envFile: inputSignal(''),
+      additionalRead: inputSignal('/docs'),
+      escalateRead: inputSignal(''),
+      escalateWrite: inputSignal(''),
+      allowedLocalScripts: inputSignal(''),
+      step: signal<InstallStep>('confirm'),
+      confirmation: signal(true),
+    }
+    const dispose = writeCrowConfig({
+      installData,
+      filesystem: defaultFilesystem(),
+    }).subscribe()
+    const finished = new Promise((resolve) =>
+      effect(() => {
+        if (installData.step.value === 'done') resolve(true)
+      })
+    )
+
+    installData.step.value = 'write'
+    await finished
+
+    const written = JSON.parse(
+      Deno.readTextFileSync(
+        join(fixturesDirectory, 'write-crow-config', 'crow', 'config.json'),
+      ),
+    )
+    expect(written.permissions.additionalRead).toEqual(['/docs'])
+    dispose()
+  })
+
   it('when the step is not write, writes nothing', () => {
     const filesystem = defaultFilesystem()
     using mkdir = spy(filesystem, 'mkdirWithParents')
@@ -60,6 +97,7 @@ describe('write', () => {
       globalDirectory: inputSignal(''),
       envFile: inputSignal(''),
       escalateRead: inputSignal(''),
+      additionalRead: inputSignal(''),
       escalateWrite: inputSignal(''),
       allowedLocalScripts: inputSignal(''),
       step: signal<InstallStep>('envFile'),

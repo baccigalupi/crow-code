@@ -10,6 +10,7 @@ describe('config-path-view-model', () => {
       globalDirectory: emptyBuffer(),
       envFile: emptyBuffer(),
       escalateRead: emptyBuffer(),
+      additionalRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
       allowedLocalScripts: emptyBuffer(),
     }
@@ -25,6 +26,7 @@ describe('config-path-view-model', () => {
       globalDirectory: emptyBuffer(),
       envFile: emptyBuffer(),
       escalateRead: emptyBuffer(),
+      additionalRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
       allowedLocalScripts: emptyBuffer(),
     }

@@ -13,6 +13,7 @@ describe('build', () => {
       globalDirectory,
       envFile: emptyBuffer(),
       escalateRead: emptyBuffer(),
+      additionalRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
       allowedLocalScripts: emptyBuffer(),
     })
@@ -32,6 +33,7 @@ describe('build', () => {
       globalDirectory,
       envFile: emptyBuffer(),
       escalateRead: emptyBuffer(),
+      additionalRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
       allowedLocalScripts: emptyBuffer(),
     })
@@ -52,6 +54,7 @@ describe('build', () => {
       globalDirectory,
       envFile,
       escalateRead: emptyBuffer(),
+      additionalRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
       allowedLocalScripts: emptyBuffer(),
     }).all()
@@ -69,6 +72,7 @@ describe('build', () => {
       globalDirectory,
       envFile,
       escalateRead: emptyBuffer(),
+      additionalRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
       allowedLocalScripts: emptyBuffer(),
     }).all()
@@ -86,6 +90,7 @@ describe('build', () => {
       globalDirectory,
       envFile,
       escalateRead: emptyBuffer(),
+      additionalRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
       allowedLocalScripts: emptyBuffer(),
     }).all()
@@ -102,6 +107,7 @@ describe('build', () => {
       globalDirectory,
       envFile: emptyBuffer(),
       escalateRead: emptyBuffer(),
+      additionalRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
       allowedLocalScripts: emptyBuffer(),
     }).all()
@@ -109,6 +115,22 @@ describe('build', () => {
     expect(config.permissions.ignore).toEqual([])
     expect(config.permissions.additionalRead).toEqual([])
     expect(config.permissions.additionalWrite).toEqual([])
+  })
+
+  it('when additional read directories are given, splits them on commas', () => {
+    const additionalRead = insertText(emptyBuffer(), '/docs, ~/notes')
+
+    const { config } = buildCrowConfig({
+      repoDirectory: emptyBuffer(),
+      globalDirectory: emptyBuffer(),
+      envFile: emptyBuffer(),
+      additionalRead,
+      escalateRead: emptyBuffer(),
+      escalateWrite: emptyBuffer(),
+      allowedLocalScripts: emptyBuffer(),
+    }).all()
+
+    expect(config.permissions.additionalRead).toEqual(['/docs', '~/notes'])
   })
 
   it('when no escalate directories are given, resolves the defaults', () => {
@@ -119,6 +141,7 @@ describe('build', () => {
       repoDirectory: emptyBuffer(),
       globalDirectory: emptyBuffer(),
       envFile: emptyBuffer(),
+      additionalRead: emptyBuffer(),
       escalateRead,
       escalateWrite,
       allowedLocalScripts: emptyBuffer(),
@@ -136,6 +159,7 @@ describe('build', () => {
       repoDirectory: emptyBuffer(),
       globalDirectory: emptyBuffer(),
       envFile: emptyBuffer(),
+      additionalRead: emptyBuffer(),
       escalateRead,
       escalateWrite,
       allowedLocalScripts: emptyBuffer(),
@@ -152,6 +176,7 @@ describe('build', () => {
       repoDirectory: emptyBuffer(),
       globalDirectory: emptyBuffer(),
       envFile: emptyBuffer(),
+      additionalRead: emptyBuffer(),
       escalateRead: emptyBuffer(),
       escalateWrite,
       allowedLocalScripts: emptyBuffer(),
@@ -169,6 +194,7 @@ describe('build', () => {
       globalDirectory,
       envFile: emptyBuffer(),
       escalateRead: emptyBuffer(),
+      additionalRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
       allowedLocalScripts: emptyBuffer(),
     }).all()

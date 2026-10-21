@@ -1,11 +1,6 @@
 import { defaultCrowConfig } from '../../../domain/config.ts'
 import type { InputBuffer } from '../../types.ts'
-
-type PermissionsArguments = {
-  readonly escalateRead: InputBuffer
-  readonly escalateWrite: InputBuffer
-  readonly allowedLocalScripts: InputBuffer
-}
+import type { PermissionInputs } from '../types.ts'
 
 const entries = (text: string) => {
   return text.split(',').map((entry) => entry.trim()).filter((entry) =>
@@ -22,15 +17,30 @@ const directoryList = (input: InputBuffer, defaultValue: string[]) => {
   return orDefault(entries(input.text), defaultValue)
 }
 
-export const buildPermissions = (
-  { escalateRead, escalateWrite, allowedLocalScripts: scripts }:
-    PermissionsArguments,
-) => {
-  const defaults = defaultCrowConfig().permissions
+const defaultPermissions = () => defaultCrowConfig().permissions
+
+const readLists = ({ additionalRead, escalateRead }: PermissionInputs) => {
+  const defaults = defaultPermissions()
   return {
-    ...defaults,
+    additionalRead: directoryList(additionalRead, defaults.additionalRead),
     escalateRead: directoryList(escalateRead, defaults.escalateRead),
+  }
+}
+
+const writeLists = (
+  { escalateWrite, allowedLocalScripts: scripts }: PermissionInputs,
+) => {
+  const defaults = defaultPermissions()
+  return {
     escalateWrite: directoryList(escalateWrite, defaults.escalateWrite),
     allowedLocalScripts: directoryList(scripts, defaults.allowedLocalScripts),
+  }
+}
+
+export const buildPermissions = (inputs: PermissionInputs) => {
+  return {
+    ...defaultPermissions(),
+    ...readLists(inputs),
+    ...writeLists(inputs),
   }
 }

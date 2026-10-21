@@ -4,7 +4,7 @@ import { EnvPrompt } from '../views/steps/env-prompt.tsx'
 export class EnvFileStep {
   private installState: InstallState
   readonly name = 'envFile'
-  readonly nextStep = 'escalateRead'
+  readonly nextStep = 'additionalRead'
   readonly View = EnvPrompt
 
   constructor(installState: InstallState) {

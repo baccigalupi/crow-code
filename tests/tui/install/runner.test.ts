@@ -25,6 +25,7 @@ describe('runInstalltTui', () => {
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
       escalateRead: signal(emptyBuffer()),
+      additionalRead: signal(emptyBuffer()),
       escalateWrite: signal(emptyBuffer()),
       allowedLocalScripts: signal(emptyBuffer()),
       step,

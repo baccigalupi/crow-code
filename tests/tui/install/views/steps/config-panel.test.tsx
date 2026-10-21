@@ -17,6 +17,7 @@ describe('config panel', () => {
         globalDirectory={globalDirectory}
         envFile={envFile}
         escalateRead={emptyBuffer()}
+        additionalRead={emptyBuffer()}
         escalateWrite={emptyBuffer()}
         allowedLocalScripts={emptyBuffer()}
       />,
@@ -37,6 +38,7 @@ describe('config panel', () => {
         globalDirectory={globalDirectory}
         envFile={envFile}
         escalateRead={emptyBuffer()}
+        additionalRead={emptyBuffer()}
         escalateWrite={emptyBuffer()}
         allowedLocalScripts={emptyBuffer()}
       />,
@@ -61,6 +63,7 @@ describe('config panel', () => {
         globalDirectory={globalDirectory}
         envFile={envFile}
         escalateRead={emptyBuffer()}
+        additionalRead={emptyBuffer()}
         escalateWrite={emptyBuffer()}
         allowedLocalScripts={emptyBuffer()}
       />,

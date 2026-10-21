@@ -9,6 +9,7 @@ type EnvPromptViewModelArguments = {
 const blankInputs = {
   repoDirectory: emptyBuffer(),
   envFile: emptyBuffer(),
+  additionalRead: emptyBuffer(),
   escalateRead: emptyBuffer(),
   escalateWrite: emptyBuffer(),
   allowedLocalScripts: emptyBuffer(),

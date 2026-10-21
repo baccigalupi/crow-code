@@ -7,6 +7,7 @@ export type InstallStep =
   | 'repo'
   | 'crowGlobalDirectory'
   | 'envFile'
+  | 'additionalRead'
   | 'escalateRead'
   | 'escalateWrite'
   | 'allowedLocalScripts'
@@ -32,10 +33,16 @@ export type BuildCrowConfigArguments = {
   readonly globalDirectory: InputBuffer
   readonly repoDirectory: InputBuffer
   readonly envFile: InputBuffer
+  readonly additionalRead: InputBuffer
   readonly escalateRead: InputBuffer
   readonly escalateWrite: InputBuffer
   readonly allowedLocalScripts: InputBuffer
 }
+
+export type PermissionInputs = Pick<
+  BuildCrowConfigArguments,
+  'additionalRead' | 'escalateRead' | 'escalateWrite' | 'allowedLocalScripts'
+>
 
 export type ConfigPanelProps = BuildCrowConfigArguments & {
   readonly step: InstallStep
@@ -50,6 +57,7 @@ export type InstallAppProps = {
   readonly repoDirectory?: Signal<InputBuffer>
   readonly globalDirectory?: Signal<InputBuffer>
   readonly envFile?: Signal<InputBuffer>
+  readonly additionalRead?: Signal<InputBuffer>
   readonly escalateRead?: Signal<InputBuffer>
   readonly escalateWrite?: Signal<InputBuffer>
   readonly allowedLocalScripts?: Signal<InputBuffer>
@@ -61,6 +69,7 @@ export type InstallState = {
   readonly repoDirectory: Signal<InputBuffer>
   readonly globalDirectory: Signal<InputBuffer>
   readonly envFile: Signal<InputBuffer>
+  readonly additionalRead: Signal<InputBuffer>
   readonly escalateRead: Signal<InputBuffer>
   readonly escalateWrite: Signal<InputBuffer>
   readonly allowedLocalScripts: Signal<InputBuffer>

@@ -52,6 +52,7 @@ export class CrowConfigWrite {
 
   private permissionInputs() {
     return {
+      additionalRead: this.installData.additionalRead.peek(),
       escalateRead: this.installData.escalateRead.peek(),
       escalateWrite: this.installData.escalateWrite.peek(),
       allowedLocalScripts: this.installData.allowedLocalScripts.peek(),

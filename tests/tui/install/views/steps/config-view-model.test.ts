@@ -15,6 +15,7 @@ describe('configViewModel', () => {
       globalDirectory,
       envFile,
       escalateRead: emptyBuffer(),
+      additionalRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
       allowedLocalScripts: emptyBuffer(),
     })
@@ -34,11 +35,30 @@ describe('configViewModel', () => {
       globalDirectory,
       envFile,
       escalateRead: emptyBuffer(),
+      additionalRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
       allowedLocalScripts: emptyBuffer(),
     })
 
     expect(viewModel.highlighted).toBe('"envFile": "~/.crow/.env",')
+  })
+
+  it('when the step is additionalRead, highlights the additionalRead line', () => {
+    const repoDirectory = emptyBuffer()
+    const globalDirectory = emptyBuffer()
+
+    const viewModel = configViewModel({
+      step: 'additionalRead',
+      repoDirectory,
+      globalDirectory,
+      envFile: emptyBuffer(),
+      escalateRead: emptyBuffer(),
+      additionalRead: emptyBuffer(),
+      escalateWrite: emptyBuffer(),
+      allowedLocalScripts: emptyBuffer(),
+    })
+
+    expect(viewModel.highlighted).toBe('"additionalRead": [],')
   })
 
   it('when the step is escalateRead, highlights the escalateRead line', () => {
@@ -51,6 +71,7 @@ describe('configViewModel', () => {
       globalDirectory,
       envFile: emptyBuffer(),
       escalateRead: emptyBuffer(),
+      additionalRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
       allowedLocalScripts: emptyBuffer(),
     })
@@ -68,6 +89,7 @@ describe('configViewModel', () => {
       globalDirectory,
       envFile: emptyBuffer(),
       escalateRead: emptyBuffer(),
+      additionalRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
       allowedLocalScripts: emptyBuffer(),
     })
@@ -88,6 +110,7 @@ describe('configViewModel', () => {
       globalDirectory,
       envFile,
       escalateRead: emptyBuffer(),
+      additionalRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
       allowedLocalScripts: emptyBuffer(),
     })

@@ -15,6 +15,7 @@ describe('current', () => {
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
       escalateRead: signal(emptyBuffer()),
+      additionalRead: signal(emptyBuffer()),
       escalateWrite: signal(emptyBuffer()),
       allowedLocalScripts: signal(emptyBuffer()),
       step: signal<InstallStep>('envFile'),
@@ -32,6 +33,7 @@ describe('current', () => {
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
       escalateRead: signal(emptyBuffer()),
+      additionalRead: signal(emptyBuffer()),
       escalateWrite: signal(emptyBuffer()),
       allowedLocalScripts: signal(emptyBuffer()),
       step: signal<InstallStep>('repo'),
@@ -40,15 +42,36 @@ describe('current', () => {
 
     const steps = new CurrentStep(installState).all()
 
-    expect(steps).toHaveLength(8)
+    expect(steps).toHaveLength(9)
     expect(steps[0].name).toBe('repo')
     expect(steps[1].name).toBe('crowGlobalDirectory')
     expect(steps[2].name).toBe('envFile')
-    expect(steps[3].name).toBe('escalateRead')
-    expect(steps[4].name).toBe('escalateWrite')
-    expect(steps[5].name).toBe('allowedLocalScripts')
-    expect(steps[6].name).toBe('confirm')
-    expect(steps[7].name).toBe('done')
+    expect(steps[3].name).toBe('additionalRead')
+    expect(steps[4].name).toBe('escalateRead')
+    expect(steps[5].name).toBe('escalateWrite')
+    expect(steps[6].name).toBe('allowedLocalScripts')
+    expect(steps[7].name).toBe('confirm')
+    expect(steps[8].name).toBe('done')
+  })
+
+  it('when the installState step is additionalRead, current returns that step', () => {
+    const installState = {
+      repoDirectory: signal(emptyBuffer()),
+      globalDirectory: signal(emptyBuffer()),
+      envFile: signal(emptyBuffer()),
+      escalateRead: signal(emptyBuffer()),
+      additionalRead: signal(emptyBuffer()),
+      escalateWrite: signal(emptyBuffer()),
+      allowedLocalScripts: signal(emptyBuffer()),
+      step: signal<InstallStep>('additionalRead'),
+      confirmation: signal(true),
+    }
+
+    const step = new CurrentStep(installState).current()
+
+    expect(step.name).toBe('additionalRead')
+    expect(step.nextStep).toBe('escalateRead')
+    expect(step.state()).toBe(installState.additionalRead)
   })
 
   it('when the installState step is escalateRead, current returns that step', () => {
@@ -57,6 +80,7 @@ describe('current', () => {
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
       escalateRead: signal(emptyBuffer()),
+      additionalRead: signal(emptyBuffer()),
       escalateWrite: signal(emptyBuffer()),
       allowedLocalScripts: signal(emptyBuffer()),
       step: signal<InstallStep>('escalateRead'),
@@ -76,6 +100,7 @@ describe('current', () => {
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
       escalateRead: signal(emptyBuffer()),
+      additionalRead: signal(emptyBuffer()),
       escalateWrite: signal(emptyBuffer()),
       allowedLocalScripts: signal(emptyBuffer()),
       step: signal<InstallStep>('write'),
@@ -93,6 +118,7 @@ describe('current', () => {
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
       escalateRead: signal(emptyBuffer()),
+      additionalRead: signal(emptyBuffer()),
       escalateWrite: signal(emptyBuffer()),
       allowedLocalScripts: signal(emptyBuffer()),
       step: signal<InstallStep>('allowedLocalScripts'),
