@@ -9,7 +9,7 @@ bash agents/format-check
 
 echo ""
 echo "--> Lint (read-only)"
-deno lint
+node_modules/.bin/oxlint
 
 echo ""
 echo "--> Typecheck"

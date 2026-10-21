@@ -11,11 +11,11 @@ code in this repository.
 ## Commands
 
 ```
-dev/lint               # deno lint --fix, deno fmt, then agents/typecheck
+dev/lint               # oxlint --fix, prettier --write, then agents/typecheck
 dev/test [args]        # deno test with coverage (--allow-env --allow-read --allow-write --allow-ffi --allow-run --allow-sys=hostname); args forward to deno test
 dev/coverage [args]    # dev/test, then lcov export + human-readable coverage summary
 agents/typecheck       # TS check only
-agents/format-check    # deno fmt check only
+agents/format-check    # prettier check only
 agents/style-check [--changed | --all | FILE...]   # style/test-convention audit (src/, tests/ blocking; other paths advisory)
 agents/coverage-report # generate lcov/html coverage reports
 agents/check-coverage  # enforce 95% per-file coverage on branches/functions/lines

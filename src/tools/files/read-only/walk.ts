@@ -35,13 +35,15 @@ class Walker {
     depth: number,
   ): Promise<WalkEntry[]> {
     if (depth < 1) return []
-
     const dirents = await readdir(directory, { withFileTypes: true })
-    const expanded = dirents.sort(this.byName)
-      .map((dirent) =>
-        this.expand(new Entry(directory, dirent, this.settings), depth)
-      )
+    const expanded = dirents
+      .sort(this.byName)
+      .map((dirent) => this.expandDirent(directory, dirent, depth))
     return (await Promise.all(expanded)).flat()
+  }
+
+  private expandDirent(directory: string, dirent: Dirent, depth: number) {
+    return this.expand(new Entry(directory, dirent, this.settings), depth)
   }
 
   private byName(left: Dirent, right: Dirent) {

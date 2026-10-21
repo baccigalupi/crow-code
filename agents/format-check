@@ -2,4 +2,4 @@
 # Format gate for CI and pre-commit. Read-only.
 set -euo pipefail
 
-exec deno fmt --check
+exec node_modules/.bin/prettier --check "${@:-.}"

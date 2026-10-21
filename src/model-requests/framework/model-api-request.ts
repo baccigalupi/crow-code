@@ -9,8 +9,10 @@ import { OpenAiRequest } from './openai-request.ts'
 import { RequestParser } from './request-parser.ts'
 import { OperationWithResult } from '../../operation.ts'
 
-export abstract class ModelApiRequest<TRequest, TResponse>
-  extends OperationWithResult<ModelApiRequestArguments<TRequest>, TResponse> {
+export abstract class ModelApiRequest<
+  TRequest,
+  TResponse,
+> extends OperationWithResult<ModelApiRequestArguments<TRequest>, TResponse> {
   messages: ModelMessages[] = []
   apiRequest!: OpenAiRequest
   private failureReasonValue: ModelRequestFailureReason = ''
@@ -83,14 +85,12 @@ export abstract class ModelApiRequest<TRequest, TResponse>
 
   private logParseFailure() {
     if (this.unloggedFailure()) return
-    this.logError(
-      `${this.failureReasonValue}: \`${this.answer.rawAnswer()}\``,
-    )
+    this.logError(`${this.failureReasonValue}: \`${this.answer.rawAnswer()}\``)
   }
 
   private unloggedFailure() {
-    return this.failureReasonValue === '' ||
-      this.failureReasonValue === 'api-error'
+    const reason = this.failureReasonValue
+    return reason === '' || reason === 'api-error'
   }
 
   private parserResult(response: TResponse | undefined) {

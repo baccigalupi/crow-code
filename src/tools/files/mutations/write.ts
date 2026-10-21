@@ -29,19 +29,23 @@ export class WriteFile extends FileOperation<TaskArguments, WriteResult> {
   }
 
   private async ensureParentDirectory() {
-    await this.runSubOperation(makeDirectory({
+    await this.runSubOperation(makeDirectory(this.parentArguments()))
+  }
+
+  private parentArguments() {
+    return {
       applicationData: this.applicationData,
-      operationArguments: {
-        path: dirname(this.operationArguments.path),
-      },
-    }))
+      operationArguments: { path: dirname(this.operationArguments.path) },
+    }
   }
 
   private existing() {
-    return this.runSubOperation(pathExists({
-      applicationData: this.applicationData,
-      operationArguments: { path: this.operationArguments.path },
-    }))
+    return this.runSubOperation(
+      pathExists({
+        applicationData: this.applicationData,
+        operationArguments: { path: this.operationArguments.path },
+      }),
+    )
   }
 
   private async save(existing: PathExists) {

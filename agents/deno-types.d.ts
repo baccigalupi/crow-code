@@ -85,7 +85,7 @@ declare namespace Deno {
     type Node = {
       type: string
       range: [number, number]
-      // deno-lint-ignore no-explicit-any
+      // oxlint-disable-next-line typescript/no-explicit-any
       [key: string]: any
     }
     type Statement = Node
@@ -106,15 +106,13 @@ declare namespace Deno {
         getAncestors: (node: Node) => Node[]
         getText: (node?: Node) => string
       }
-      report: (
-        data: {
-          node?: Node
-          range?: [number, number]
-          message: string
-          hint?: string
-          fix?: (fixer: Record<string, unknown>) => Fix | Fix[]
-        },
-      ) => void
+      report: (data: {
+        node?: Node
+        range?: [number, number]
+        message: string
+        hint?: string
+        fix?: (fixer: Record<string, unknown>) => Fix | Fix[]
+      }) => void
     }
     type Visitor = Record<string, ((node: Node) => void) | undefined>
     interface Rule {

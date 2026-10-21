@@ -15,10 +15,7 @@ export class ModelFindAllByFilters {
   private options: ModelFilterOptions
   private database!: Knex
 
-  constructor(
-    applicationData: ApplicationData,
-    options: ModelFilterOptions,
-  ) {
+  constructor(applicationData: ApplicationData, options: ModelFilterOptions) {
     this.applicationData = applicationData
     this.options = options
   }
@@ -29,12 +26,15 @@ export class ModelFindAllByFilters {
   }
 
   private query() {
-    const query = this.modelProviderJoin()
-      .whereNot('models.modality', 'like', '%->embeddings')
-
-    return modelFilters(query, this.options).apply()
+    const query = this.withoutEmbeddings(this.modelProviderJoin())
+    return modelFilters(query, this.options)
+      .apply()
       .orderBy('models.id')
       .limit(this.limit())
+  }
+
+  private withoutEmbeddings(join: ModelQuery) {
+    return join.whereNot('models.modality', 'like', '%->embeddings')
   }
 
   private modelProviderJoin() {

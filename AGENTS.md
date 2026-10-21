@@ -16,7 +16,7 @@ Never create scripts there to try to circumvent permissions.
 - Tests: `dev/test`
 - Lint: `dev/lint`
 - Coverage: `agents/coverage-report`
-- Deno formatting: `agents/format-check`
+- Prettier formatting: `agents/format-check`
 - TS check: `agents/typecheck`
 - Full gate (format, lint, typecheck, tests, coverage): `agents/pre-commit`
 
@@ -189,7 +189,7 @@ curl URLs above.
 
 - On a `deno.json`/`deno.lock` dep bump:
   `git -C .deps/terminal-ui fetch --depth 1
-  origin tag vX.Y.Z`,
+origin tag vX.Y.Z`,
   `git -C .deps/terminal-ui checkout vX.Y.Z` — the daemon watcher re-indexes git
   checkouts automatically, or run
   `index_repository(repo_path, name="terminal-ui", mode="full", persistence=true)`.

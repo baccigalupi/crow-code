@@ -13,7 +13,7 @@ const readPayload = async () => {
   }
 }
 
-// deno-lint-ignore no-explicit-any
+// oxlint-disable-next-line typescript/no-explicit-any
 const normalize = (payload: any) => ({
   ...recoveryIds(payload),
   stopHookActive: payload !== null && payload.stop_hook_active === true,

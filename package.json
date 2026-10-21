@@ -23,6 +23,8 @@
     "@types/bun": "^1.4.3",
     "@types/istanbul-lib-coverage": "2.0.6",
     "@types/istanbul-lib-instrument": "1.7.7",
+    "oxlint": "1.89.0",
+    "prettier": "3.9.10",
     "typescript": "5.8.2"
   }
 }

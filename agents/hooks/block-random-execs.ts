@@ -23,7 +23,7 @@ const readPayload = async () => {
   }
 }
 
-// deno-lint-ignore no-explicit-any
+// oxlint-disable-next-line typescript/no-explicit-any
 const extractCommand = (payload: any) => {
   if (payload === null || payload.tool_name !== 'exec') {
     return null

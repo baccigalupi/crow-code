@@ -1,0 +1,7 @@
+deno.lock
+bun.lock
+.beads
+.deps
+.devin
+coverage
+tests/support/fixtures/format-check/violating

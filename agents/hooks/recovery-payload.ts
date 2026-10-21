@@ -2,14 +2,14 @@ import { pruneRecovery, recordRecovery } from './recovery-state.ts'
 
 export type RecoveryIds = { sessionId: string; promptId: string }
 
-// deno-lint-ignore no-explicit-any
+// oxlint-disable-next-line typescript/no-explicit-any
 const payloadId = (payload: any, key: string) => {
   if (typeof payload !== 'object' || payload === null) return ''
   if (typeof payload[key] !== 'string') return ''
   return payload[key]
 }
 
-// deno-lint-ignore no-explicit-any
+// oxlint-disable-next-line typescript/no-explicit-any
 export const recoveryIds = (payload: any) => ({
   sessionId: payloadId(payload, 'session_id'),
   promptId: payloadId(payload, 'prompt_id'),

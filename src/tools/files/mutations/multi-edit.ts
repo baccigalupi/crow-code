@@ -15,8 +15,10 @@ type TaskArguments = {
 
 type MultiEditArguments = ApplicationOperationArguments<TaskArguments>
 
-export class MultiEdit
-  extends OperationWithResult<TaskArguments, MultiEditResult> {
+export class MultiEdit extends OperationWithResult<
+  TaskArguments,
+  MultiEditResult
+> {
   protected override logPrefix = 'Multi edit: '
   private entries: SnapshotEntry[] = []
   private edits: EditFile[] = []
@@ -49,10 +51,12 @@ export class MultiEdit
   }
 
   private async snapshot() {
-    const taken = await this.runSubOperation(takeSnapshot({
-      applicationData: this.applicationData,
-      operationArguments: { paths: this.paths() },
-    }))
+    const taken = await this.runSubOperation(
+      takeSnapshot({
+        applicationData: this.applicationData,
+        operationArguments: { paths: this.paths() },
+      }),
+    )
     this.entries = taken.result()
   }
 
@@ -64,22 +68,29 @@ export class MultiEdit
   }
 
   private async applyEdit(edit: EditInstruction) {
-    this.edits.push(
-      await this.runSubOperation(editFile({
-        applicationData: this.applicationData,
-        operationArguments: edit,
-      })),
-    )
+    const edited = await this.runSubOperation(this.editOperation(edit))
+    this.edits.push(edited)
+  }
+
+  private editOperation(edit: EditInstruction) {
+    return editFile({
+      applicationData: this.applicationData,
+      operationArguments: edit,
+    })
   }
 
   private async restoreIfFailed() {
     if (this.succeeded) return
 
-    const restore = await this.runNonBlockingOperation(restoreSnapshot({
+    const restore = await this.runNonBlockingOperation(this.restoreOperation())
+    if (!restore.success()) this.fail(`${this.reason}; ${restore.reason}`)
+  }
+
+  private restoreOperation() {
+    return restoreSnapshot({
       applicationData: this.applicationData,
       operationArguments: { entries: this.entries },
-    }))
-    if (!restore.success()) this.fail(`${this.reason}; ${restore.reason}`)
+    })
   }
 }
 

@@ -15,8 +15,10 @@ type TaskArguments = {
 
 type SortedMatchesArguments = ApplicationOperationArguments<TaskArguments>
 
-export class SortedMatches
-  extends OperationWithResult<TaskArguments, SearchMatch[]> {
+export class SortedMatches extends OperationWithResult<
+  TaskArguments,
+  SearchMatch[]
+> {
   protected override logPrefix = 'Sorted matches: '
   private matches: SearchMatch[] = []
 
@@ -54,7 +56,8 @@ export class SortedMatches
   private paths() {
     return filePaths({
       directory: this.directory(),
-      ignoredDirectories: this.applicationData.readPathPermissions()
+      ignoredDirectories: this.applicationData
+        .readPathPermissions()
         .ignoredPaths(),
       filePattern: this.operationArguments.filePattern,
     }).all()
@@ -66,7 +69,7 @@ export class SortedMatches
     pattern: RegExp,
   ) {
     const matches = await previous
-    return [...matches, ...await this.fileMatches(path, pattern)]
+    return [...matches, ...(await this.fileMatches(path, pattern))]
   }
 
   private fileMatches(path: string, pattern: RegExp) {
@@ -91,8 +94,6 @@ export class SortedMatches
   }
 }
 
-export const sortedMatches = (
-  sortedMatchesArguments: SortedMatchesArguments,
-) => {
-  return new SortedMatches(sortedMatchesArguments)
+export const sortedMatches = (args: SortedMatchesArguments) => {
+  return new SortedMatches(args)
 }

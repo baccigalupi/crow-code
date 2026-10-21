@@ -22,7 +22,7 @@ export class JsonHighlighter {
 
   private keyIndex() {
     return this.lines.findIndex((line) =>
-      line.trimStart().startsWith(`"${this.key}":`)
+      line.trimStart().startsWith(`"${this.key}":`),
     )
   }
 
@@ -44,9 +44,23 @@ export class JsonHighlighter {
     const end = this.blockEnd(index)
     return {
       before: this.beforeText(index),
-      highlighted: this.lines.slice(index, end + 1).join('\n').trimStart(),
-      after: this.lines.slice(end + 1).map((line) => `\n${line}`).join(''),
+      highlighted: this.highlightedText(index, end),
+      after: this.afterText(end),
     }
+  }
+
+  private highlightedText(index: number, end: number) {
+    return this.lines
+      .slice(index, end + 1)
+      .join('\n')
+      .trimStart()
+  }
+
+  private afterText(end: number) {
+    return this.lines
+      .slice(end + 1)
+      .map((line) => `\n${line}`)
+      .join('')
   }
 
   private beforeText(index: number) {
@@ -65,10 +79,14 @@ export class JsonHighlighter {
 
   private closingIndex(index: number) {
     const indent = this.indentation(index)
-    const closing = this.lines.slice(index + 1).findIndex((line) =>
-      line.startsWith(`${indent}}`) || line.startsWith(`${indent}]`)
-    )
+    const closing = this.lines
+      .slice(index + 1)
+      .findIndex((line) => this.closesAt(line, indent))
     return index + 1 + closing
+  }
+
+  private closesAt(line: string, indent: string) {
+    return line.startsWith(`${indent}}`) || line.startsWith(`${indent}]`)
   }
 }
 
