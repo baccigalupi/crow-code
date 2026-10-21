@@ -8,8 +8,10 @@ type TaskArguments = {
 
 type TakeSnapshotArguments = ApplicationOperationArguments<TaskArguments>
 
-export class TakeSnapshot
-  extends OperationWithResult<TaskArguments, SnapshotEntry[]> {
+export class TakeSnapshot extends OperationWithResult<
+  TaskArguments,
+  SnapshotEntry[]
+> {
   protected override logPrefix = 'Take snapshot: '
   private entries: SnapshotEntry[] = []
 

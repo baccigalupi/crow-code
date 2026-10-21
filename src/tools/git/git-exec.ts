@@ -1,8 +1,10 @@
 import { ExecCli } from '../exec-cli.ts'
 import { gitPathsGuard } from './paths-guard.ts'
 
-export abstract class GitExec<T extends Record<string, unknown>, U>
-  extends ExecCli<T, U> {
+export abstract class GitExec<
+  T extends Record<string, unknown>,
+  U,
+> extends ExecCli<T, U> {
   executable = 'git'
 
   protected override async allowedToRun() {

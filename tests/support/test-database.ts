@@ -32,15 +32,16 @@ export const createTestDatabase = async (logger: Logger) => {
 }
 
 const isVirtual = (row: TableRow) => {
-  return typeof row.sql === 'string' &&
-    row.sql.startsWith('CREATE VIRTUAL TABLE')
+  return (
+    typeof row.sql === 'string' && row.sql.startsWith('CREATE VIRTUAL TABLE')
+  )
 }
 
 const tableRows = async (database: Knex) => {
-  return await database.raw(`
+  return (await database.raw(`
     SELECT name, sql FROM sqlite_master
     WHERE type = 'table' AND name NOT LIKE 'sqlite_%'
-  `) as TableRow[]
+  `)) as TableRow[]
 }
 
 const tableNames = async (database: Knex) => {
@@ -51,16 +52,16 @@ const tableNames = async (database: Knex) => {
 }
 
 export const cleanDatabase = async (database: Knex) => {
-  const names = (await tableNames(database)).filter((name) =>
-    !internalTables.has(name)
+  const names = (await tableNames(database)).filter(
+    (name) => !internalTables.has(name),
   )
   for (const name of names) {
     await database.raw(`DELETE FROM "${name}"`)
   }
-  const hasSequence = await database.raw(`
+  const hasSequence = (await database.raw(`
     SELECT name FROM sqlite_master
     WHERE type = 'table' AND name = 'sqlite_sequence'
-  `) as TableRow[]
+  `)) as TableRow[]
   if (hasSequence.length > 0) {
     await database.raw('DELETE FROM sqlite_sequence')
   }

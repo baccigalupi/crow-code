@@ -5,7 +5,7 @@ import { ConfirmPrompt } from '../../../../../src/tui/install/views/steps/confir
 describe('confirm-prompt', () => {
   it('when rendered, asks whether to write the config path', () => {
     const prompt = (
-      <ConfirmPrompt crowConfigPath='.crow/config.json' confirmation />
+      <ConfirmPrompt crowConfigPath=".crow/config.json" confirmation />
     )
 
     const { lastFrame } = render(prompt)

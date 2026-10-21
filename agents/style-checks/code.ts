@@ -9,8 +9,11 @@ const isTestSupportFile = (fileName: string): boolean =>
   /(^|\/)tests\/.*\.tsx?$/.test(fileName) && !isTestFile(fileName)
 
 const isAnySourceFile = (fileName: string): boolean => {
-  return /(^|\/)src\/.*\.tsx?$/.test(fileName) &&
-    !fileName.endsWith('.test.ts') && !fileName.endsWith('.test.tsx')
+  return (
+    /(^|\/)src\/.*\.tsx?$/.test(fileName) &&
+    !fileName.endsWith('.test.ts') &&
+    !fileName.endsWith('.test.tsx')
+  )
 }
 
 const functionLikeAncestorTypes = new Set([
@@ -24,9 +27,9 @@ const isInsideFunctionLike = (
   context: Deno.lint.RuleContext,
   node: Deno.lint.Node,
 ): boolean => {
-  return context.sourceCode.getAncestors(node).some((ancestor) =>
-    functionLikeAncestorTypes.has(ancestor.type)
-  )
+  return context.sourceCode
+    .getAncestors(node)
+    .some((ancestor) => functionLikeAncestorTypes.has(ancestor.type))
 }
 
 const topLevelParents = new Set([
@@ -41,8 +44,11 @@ const isTopLevel = (
   const ancestors = context.sourceCode.getAncestors(node)
   if (ancestors.length === 0) return false
   if (ancestors.length === 1) return ancestors[0].type === 'Program'
-  return ancestors.length === 2 && ancestors[0].type === 'Program' &&
+  return (
+    ancestors.length === 2 &&
+    ancestors[0].type === 'Program' &&
     topLevelParents.has(ancestors[1].type)
+  )
 }
 
 const bodyLineCount = (text: string): number => {
@@ -75,7 +81,7 @@ const containsReturn = (node: Deno.lint.Statement): boolean => {
   if (node.type === 'ReturnStatement') return true
   if (node.type === 'BlockStatement') {
     return node.body.some((statement: Deno.lint.Statement) =>
-      containsReturn(statement)
+      containsReturn(statement),
     )
   }
   return false
@@ -89,21 +95,19 @@ const singleReturn = (
     node.type === 'BlockStatement' &&
     node.body.length === 1 &&
     node.body[0].type === 'ReturnStatement'
-  ) return node.body[0]
+  )
+    return node.body[0]
   return null
 }
 
-const isConstructorAssignment = (
-  statement: Deno.lint.Statement,
-): boolean => {
+const isConstructorAssignment = (statement: Deno.lint.Statement): boolean => {
   if (statement.type === 'VariableDeclaration') {
     return statement.kind === 'const' && statement.declarations.length === 1
   }
   if (statement.type !== 'ExpressionStatement') return false
   const expression = statement.expression
-  if (
-    expression.type !== 'AssignmentExpression' || expression.operator !== '='
-  ) return false
+  if (expression.type !== 'AssignmentExpression' || expression.operator !== '=')
+    return false
   let target = expression.left
   while (target.type === 'MemberExpression') target = target.object
   return target.type === 'ThisExpression'
@@ -113,27 +117,33 @@ const insideConstructor = (
   context: Deno.lint.RuleContext,
   node: Deno.lint.Node,
 ): boolean => {
-  return context.sourceCode.getAncestors(node).some((ancestor) =>
-    ancestor.type === 'MethodDefinition' &&
-    (ancestor as { kind?: string }).kind === 'constructor'
-  )
+  return context.sourceCode
+    .getAncestors(node)
+    .some(
+      (ancestor) =>
+        ancestor.type === 'MethodDefinition' &&
+        (ancestor as { kind?: string }).kind === 'constructor',
+    )
 }
 
 const isDelegateDecorator = (decorator: unknown): boolean => {
   const expression = (decorator as { expression: Deno.lint.Node }).expression
   if (expression.type === 'Identifier') return expression.name === 'delegate'
   if (expression.type !== 'CallExpression') return false
-  return expression.callee.type === 'Identifier' &&
+  return (
+    expression.callee.type === 'Identifier' &&
     expression.callee.name === 'delegate'
+  )
 }
 
 const isDelegateDecoratedClass = (
   statement: Deno.lint.Statement,
   name: string,
 ): boolean => {
-  const declaration = statement.type === 'ExportNamedDeclaration'
-    ? statement.declaration
-    : statement
+  const declaration =
+    statement.type === 'ExportNamedDeclaration'
+      ? statement.declaration
+      : statement
   if (declaration?.type !== 'ClassDeclaration') return false
   const klass = declaration as unknown as {
     id: { name: string } | null
@@ -155,12 +165,14 @@ const delegateDecoratorLines = (
   context: Deno.lint.RuleContext,
   klass: Deno.lint.Node,
 ): number => {
-  const decorators = (klass as unknown as { decorators?: unknown[] })
-    .decorators ?? []
-  return decorators.filter(isDelegateDecorator).reduce<number>(
-    (lines, decorator) => lines + decoratorLineSpan(context, decorator),
-    0,
-  )
+  const decorators =
+    (klass as unknown as { decorators?: unknown[] }).decorators ?? []
+  return decorators
+    .filter(isDelegateDecorator)
+    .reduce<number>(
+      (lines, decorator) => lines + decoratorLineSpan(context, decorator),
+      0,
+    )
 }
 
 const delegatedInterface = (
@@ -171,9 +183,10 @@ const delegatedInterface = (
   if (declaration.type !== 'TSInterfaceDeclaration') return false
   const name = (declaration as unknown as { id: { name: string } }).id.name
   const program = context.sourceCode.getAncestors(node)[0]
-  return (program as Deno.lint.Program).body.some((
-    statement: Deno.lint.Statement,
-  ) => isDelegateDecoratedClass(statement, name))
+  return (program as Deno.lint.Program).body.some(
+    (statement: Deno.lint.Statement) =>
+      isDelegateDecoratedClass(statement, name),
+  )
 }
 
 const plugin: Deno.lint.Plugin = {
@@ -306,7 +319,8 @@ const plugin: Deno.lint.Plugin = {
           !isProductionFile(context.filename) &&
           !isTestFile(context.filename) &&
           !isTestSupportFile(context.filename)
-        ) return {}
+        )
+          return {}
         return {
           LogicalExpression(node) {
             if (node.operator === '??') {
@@ -322,8 +336,10 @@ const plugin: Deno.lint.Plugin = {
     'no-optional-chaining': {
       create(context) {
         if (
-          !isProductionFile(context.filename) && !isTestFile(context.filename)
-        ) return {}
+          !isProductionFile(context.filename) &&
+          !isTestFile(context.filename)
+        )
+          return {}
         return {
           MemberExpression(node) {
             if (node.optional) {
@@ -447,10 +463,8 @@ const plugin: Deno.lint.Plugin = {
           ExportNamedDeclaration(node) {
             if (node.exportKind === 'type') {
               const declaration = node.declaration
-              if (
-                declaration &&
-                delegatedInterface(context, node, declaration)
-              ) return
+              if (declaration && delegatedInterface(context, node, declaration))
+                return
               context.report({
                 node,
                 message: 'type exports are only allowed in types.ts files',
@@ -506,13 +520,15 @@ const plugin: Deno.lint.Plugin = {
           ) {
             const bodyNode =
               (node as unknown as Record<string, unknown>).body ??
-                ((node as unknown as Record<string, unknown>).value as
-                  | Record<string, unknown>
-                  | undefined)?.body
+              (
+                (node as unknown as Record<string, unknown>).value as
+                  Record<string, unknown> | undefined
+              )?.body
             if (
               !bodyNode ||
               (bodyNode as Deno.lint.Node).type !== 'BlockStatement'
-            ) return
+            )
+              return
             const bodyText = context.sourceCode.getText(
               bodyNode as Deno.lint.Node,
             )
@@ -552,9 +568,7 @@ const plugin: Deno.lint.Plugin = {
             let runDiscriminant: string | null = null
             for (let i = 0; i < node.body.length; i++) {
               const statement = node.body[i]
-              if (
-                statement.type === 'IfStatement' && !statement.alternate
-              ) {
+              if (statement.type === 'IfStatement' && !statement.alternate) {
                 const discriminant = discriminantText(context, statement)
                 if (discriminant === null) {
                   runStart = -1
@@ -598,13 +612,15 @@ const plugin: Deno.lint.Plugin = {
             }
             const bodyNode =
               (node as unknown as Record<string, unknown>).body ??
-                ((node as unknown as Record<string, unknown>).value as
-                  | Record<string, unknown>
-                  | undefined)?.body
+              (
+                (node as unknown as Record<string, unknown>).value as
+                  Record<string, unknown> | undefined
+              )?.body
             if (
               !bodyNode ||
               (bodyNode as Deno.lint.Node).type !== 'BlockStatement'
-            ) return
+            )
+              return
             const body = (bodyNode as Deno.lint.BlockStatement).body
             for (let i = 0; i < body.length; i++) {
               const statement = body[i]
@@ -645,8 +661,8 @@ const plugin: Deno.lint.Plugin = {
           ClassDeclaration: addDelegateLines,
           ClassExpression: addDelegateLines,
           'Program:exit'(node) {
-            const lines = fileLineCount(context.sourceCode.getText()) -
-              delegateLines
+            const lines =
+              fileLineCount(context.sourceCode.getText()) - delegateLines
             if (lines > 100) {
               context.report({
                 node,

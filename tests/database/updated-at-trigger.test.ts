@@ -14,9 +14,10 @@ describe('updated-at-trigger', () => {
     await database.schema.createTable('things', (table) => {
       table.increments('id')
       table.text('label')
-      table.text('updated_at').notNullable().defaultTo(
-        updatedAtDefault(database),
-      )
+      table
+        .text('updated_at')
+        .notNullable()
+        .defaultTo(updatedAtDefault(database))
     })
     await createUpdatedAtTrigger(database, 'things')
 
@@ -33,9 +34,10 @@ describe('updated-at-trigger', () => {
     await database.schema.createTable('things', (table) => {
       table.increments('id')
       table.text('label')
-      table.text('updated_at').notNullable().defaultTo(
-        updatedAtDefault(database),
-      )
+      table
+        .text('updated_at')
+        .notNullable()
+        .defaultTo(updatedAtDefault(database))
     })
     await createUpdatedAtTrigger(database, 'things')
 

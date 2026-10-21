@@ -6,16 +6,21 @@ const isInsideItCallback = (
   context: Deno.lint.RuleContext,
   node: Deno.lint.Node,
 ): boolean => {
-  return context.sourceCode.getAncestors(node).some((ancestor) =>
-    ancestor.type === 'CallExpression' &&
-    ancestor.callee.type === 'Identifier' &&
-    ancestor.callee.name === 'it'
-  )
+  return context.sourceCode
+    .getAncestors(node)
+    .some(
+      (ancestor) =>
+        ancestor.type === 'CallExpression' &&
+        ancestor.callee.type === 'Identifier' &&
+        ancestor.callee.name === 'it',
+    )
 }
 
 const countBlankLines = (text: string): number => {
-  return text.split('\n').slice(1, -1).filter((line) => line.trim() === '')
-    .length
+  return text
+    .split('\n')
+    .slice(1, -1)
+    .filter((line) => line.trim() === '').length
 }
 
 const countBlankLinesBetweenStatements = (
@@ -30,34 +35,42 @@ const countBlankLinesBetweenStatements = (
 }
 
 const isExpectCall = (node: Deno.lint.Node): boolean => {
-  return node.type === 'CallExpression' &&
+  return (
+    node.type === 'CallExpression' &&
     node.callee.type === 'Identifier' &&
     node.callee.name === 'expect'
+  )
 }
 
 const isLoopStatement = (node: Deno.lint.Node): boolean => {
-  return node.type === 'ForStatement' ||
+  return (
+    node.type === 'ForStatement' ||
     node.type === 'ForInStatement' ||
     node.type === 'ForOfStatement' ||
     node.type === 'WhileStatement' ||
     node.type === 'DoWhileStatement'
+  )
 }
 
 const isNamedCall = (node: Deno.lint.Node, name: string): boolean => {
-  return node.type === 'CallExpression' &&
+  return (
+    node.type === 'CallExpression' &&
     node.callee.type === 'Identifier' &&
     node.callee.name === name
+  )
 }
 
 const countDirectTests = (callback: Deno.lint.Node): number => {
   if (
     callback.type !== 'ArrowFunctionExpression' &&
     callback.type !== 'FunctionExpression'
-  ) return 0
+  )
+    return 0
   if (callback.body.type !== 'BlockStatement') return 0
-  return callback.body.body.filter((statement: Deno.lint.Statement) =>
-    statement.type === 'ExpressionStatement' &&
-    isNamedCall(statement.expression, 'it')
+  return callback.body.body.filter(
+    (statement: Deno.lint.Statement) =>
+      statement.type === 'ExpressionStatement' &&
+      isNamedCall(statement.expression, 'it'),
   ).length
 }
 
@@ -81,8 +94,10 @@ const isCollectionMethodCall = (node: Deno.lint.Node): boolean => {
   const callee = node.callee
   if (callee.type !== 'MemberExpression') return false
   if (callee.computed) return false
-  return callee.property.type === 'Identifier' &&
+  return (
+    callee.property.type === 'Identifier' &&
     collectionMethods.has(callee.property.name)
+  )
 }
 
 const plugin: Deno.lint.Plugin = {
@@ -107,8 +122,7 @@ const plugin: Deno.lint.Plugin = {
             if (describes !== 1) {
               context.report({
                 node,
-                message:
-                  `tests must have exactly one top-level describe (found ${describes})`,
+                message: `tests must have exactly one top-level describe (found ${describes})`,
               })
             }
           },
@@ -137,16 +151,15 @@ const plugin: Deno.lint.Plugin = {
         if (!isTestFile(context.filename)) return {}
         return {
           CallExpression(node) {
-            if (
-              node.callee.type !== 'Identifier' ||
-              node.callee.name !== 'it'
-            ) return
+            if (node.callee.type !== 'Identifier' || node.callee.name !== 'it')
+              return
             const callback = node.arguments[1]
             if (
               !callback ||
               (callback.type !== 'ArrowFunctionExpression' &&
                 callback.type !== 'FunctionExpression')
-            ) return
+            )
+              return
             if (callback.body.type !== 'BlockStatement') return
             if (callback.body.body.length === 0) return
             const blanks = countBlankLinesBetweenStatements(
@@ -156,8 +169,7 @@ const plugin: Deno.lint.Plugin = {
             if (blanks !== 2) {
               context.report({
                 node,
-                message:
-                  `it block must have exactly three AAA sections (found ${blanks} blank lines)`,
+                message: `it block must have exactly three AAA sections (found ${blanks} blank lines)`,
               })
             }
           },
@@ -170,16 +182,15 @@ const plugin: Deno.lint.Plugin = {
         return {
           CallExpression(node) {
             if (!isNamedCall(node, 'describe')) return
-            const nested = context.sourceCode.getAncestors(node).some(
-              (ancestor) => isNamedCall(ancestor, 'describe'),
-            )
+            const nested = context.sourceCode
+              .getAncestors(node)
+              .some((ancestor) => isNamedCall(ancestor, 'describe'))
             if (!nested) return
             const tests = countDirectTests(node.arguments[1])
             if (tests >= minimumNestedTests) return
             context.report({
               node,
-              message:
-                `nested describe needs at least three tests (found ${tests})`,
+              message: `nested describe needs at least three tests (found ${tests})`,
             })
           },
         }
@@ -223,9 +234,9 @@ const plugin: Deno.lint.Plugin = {
               return
             }
             if (!isExpectCall(node)) return
-            const insideLoop = context.sourceCode.getAncestors(node).some(
-              (ancestor) => isLoopStatement(ancestor),
-            )
+            const insideLoop = context.sourceCode
+              .getAncestors(node)
+              .some((ancestor) => isLoopStatement(ancestor))
             if (!insideLoop) return
             context.report({
               node,

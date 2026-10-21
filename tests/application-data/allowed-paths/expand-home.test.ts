@@ -21,8 +21,10 @@ describe('expandHome', () => {
       filesystem: defaultFilesystem(),
     })
 
-    const expanded = expandHome({ directories: ['~/docs'], envars })
-      .directories()
+    const expanded = expandHome({
+      directories: ['~/docs'],
+      envars,
+    }).directories()
 
     expect(expanded).toEqual(['/home/crow/docs'])
   })
@@ -33,8 +35,10 @@ describe('expandHome', () => {
       filesystem: defaultFilesystem(),
     })
 
-    const expanded = expandHome({ directories: ['/abs', 'rel/dir'], envars })
-      .directories()
+    const expanded = expandHome({
+      directories: ['/abs', 'rel/dir'],
+      envars,
+    }).directories()
 
     expect(expanded).toEqual(['/abs', 'rel/dir'])
   })
@@ -45,8 +49,10 @@ describe('expandHome', () => {
       filesystem: defaultFilesystem(),
     })
 
-    const expanded = expandHome({ directories: ['~other/x', '/abs'], envars })
-      .directories()
+    const expanded = expandHome({
+      directories: ['~other/x', '/abs'],
+      envars,
+    }).directories()
 
     expect(expanded).toEqual(['/abs'])
   })

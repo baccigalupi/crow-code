@@ -25,7 +25,7 @@ export const Input = (props: InputViewModelArguments) => {
   const { rowHeight, buffer, isEmpty } = inputViewModel(props)
   return (
     <Box height={rowHeight}>
-      <Text wrap='wrap'>
+      <Text wrap="wrap">
         <Placeholder isEmpty={isEmpty} />
         <Buffer buffer={buffer} />
       </Text>

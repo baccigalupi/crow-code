@@ -7,11 +7,13 @@ import { OperationWithResult } from '../operation.ts'
 
 const defaultSerializer = <T>(value: T): T => value // passes values through unchanged
 
-export class DatabaseQuery<Result, Serialized = Result[]>
-  extends OperationWithResult<
-    DatabaseQueryArguments<Result, Serialized>,
-    Serialized
-  > {
+export class DatabaseQuery<
+  Result,
+  Serialized = Result[],
+> extends OperationWithResult<
+  DatabaseQueryArguments<Result, Serialized>,
+  Serialized
+> {
   protected override logPrefix = 'Database query: '
   private queryResult: Result[] = []
 

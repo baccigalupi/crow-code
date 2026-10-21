@@ -15,10 +15,12 @@ export class CrowConfigBuilder {
   private envFileInput: InputBuffer
   private permissionInputs: PermissionInputs
 
-  constructor(
-    { globalDirectory, repoDirectory, envFile, ...permissionInputs }:
-      BuildCrowConfigArguments,
-  ) {
+  constructor({
+    globalDirectory,
+    repoDirectory,
+    envFile,
+    ...permissionInputs
+  }: BuildCrowConfigArguments) {
     this.globalDirectoryInput = globalDirectory
     this.repoDirectoryInput = repoDirectory
     this.envFileInput = envFile

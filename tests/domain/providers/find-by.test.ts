@@ -26,8 +26,8 @@ describe('providerFindBy', () => {
         api_key_env_var: 'PROVIDER_API_KEY',
       })
 
-      const provider = await providerFindBy(applicationData)
-        .getByName('provider-name')
+      const provider =
+        await providerFindBy(applicationData).getByName('provider-name')
 
       expect(provider).toBeInstanceOf(ProviderEntity)
       const foundProvider = provider as ProviderEntity
@@ -48,8 +48,8 @@ describe('providerFindBy', () => {
         logger,
       })
 
-      const provider = await providerFindBy(applicationData)
-        .getByName('missing')
+      const provider =
+        await providerFindBy(applicationData).getByName('missing')
 
       expect(provider).toBeUndefined()
     })
@@ -80,8 +80,8 @@ describe('providerFindBy', () => {
         },
       ])
 
-      const provider = await providerFindBy(applicationData)
-        .getByName('provider-two')
+      const provider =
+        await providerFindBy(applicationData).getByName('provider-two')
 
       expect(provider).toBeInstanceOf(ProviderEntity)
       const foundProvider = provider as ProviderEntity
@@ -101,15 +101,16 @@ describe('providerFindBy', () => {
         logger,
       })
       const database = await applicationData.database()
-      const [{ id }] = await database('providers').insert({
-        name: 'provider-name',
-        base_url: 'https://www.example.com',
-        models_path: '/models',
-        api_key_env_var: 'PROVIDER_API_KEY',
-      }).returning('id')
+      const [{ id }] = await database('providers')
+        .insert({
+          name: 'provider-name',
+          base_url: 'https://www.example.com',
+          models_path: '/models',
+          api_key_env_var: 'PROVIDER_API_KEY',
+        })
+        .returning('id')
 
-      const provider = await providerFindBy(applicationData)
-        .getById(id)
+      const provider = await providerFindBy(applicationData).getById(id)
 
       expect(provider).toBeInstanceOf(ProviderEntity)
       const foundProvider = provider as ProviderEntity
@@ -127,8 +128,7 @@ describe('providerFindBy', () => {
         logger,
       })
 
-      const provider = await providerFindBy(applicationData)
-        .getById(999)
+      const provider = await providerFindBy(applicationData).getById(999)
 
       expect(provider).toBeUndefined()
     })
@@ -150,15 +150,16 @@ describe('providerFindBy', () => {
         models_path: '/models',
         api_key_env_var: null,
       })
-      const [{ id }] = await database('providers').insert({
-        name: 'provider-two',
-        base_url: 'https://www.example.com/two',
-        models_path: '/models',
-        api_key_env_var: null,
-      }).returning('id')
+      const [{ id }] = await database('providers')
+        .insert({
+          name: 'provider-two',
+          base_url: 'https://www.example.com/two',
+          models_path: '/models',
+          api_key_env_var: null,
+        })
+        .returning('id')
 
-      const provider = await providerFindBy(applicationData)
-        .getById(id)
+      const provider = await providerFindBy(applicationData).getById(id)
 
       expect(provider).toBeInstanceOf(ProviderEntity)
       const foundProvider = provider as ProviderEntity

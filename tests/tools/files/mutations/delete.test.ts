@@ -31,8 +31,7 @@ describe('deleteFile', () => {
       path: `${fixturesDirectory}/delete/alpha.txt`,
       deleted: true,
     })
-    expect(() => statSync(`${fixturesDirectory}/delete/alpha.txt`))
-      .toThrow()
+    expect(() => statSync(`${fixturesDirectory}/delete/alpha.txt`)).toThrow()
   })
 
   it('deletes an empty directory', async () => {
@@ -55,10 +54,7 @@ describe('deleteFile', () => {
 
   it('when the directory is not empty, fails and leaves it untouched', async () => {
     mkdirSync(`${fixturesDirectory}/delete/full`, { recursive: true })
-    writeFileSync(
-      `${fixturesDirectory}/delete/full/alpha.txt`,
-      'one\n',
-    )
+    writeFileSync(`${fixturesDirectory}/delete/full/alpha.txt`, 'one\n')
     const applicationData = mockApplicationData()
     const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 

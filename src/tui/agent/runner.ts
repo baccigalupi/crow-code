@@ -14,9 +14,7 @@ export const runAgentTui = (
   io: ReplIo = {},
   state: ChatSession = chatSession,
 ) => {
-  return createTuiRunner(
-    applicationData,
-    io,
-    () => createElement(Agent, { session: state }),
+  return createTuiRunner(applicationData, io, () =>
+    createElement(Agent, { session: state }),
   )
 }

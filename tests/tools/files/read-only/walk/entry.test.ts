@@ -101,13 +101,15 @@ describe('Entry', () => {
 
       const own = entry.own()
 
-      expect(own).toEqual([{
-        path: '/root/alpha.txt',
-        name: 'alpha.txt',
-        isFile: true,
-        isDirectory: false,
-        isSymlink: false,
-      }])
+      expect(own).toEqual([
+        {
+          path: '/root/alpha.txt',
+          name: 'alpha.txt',
+          isFile: true,
+          isDirectory: false,
+          isSymlink: false,
+        },
+      ])
     })
 
     it('when files are excluded, returns nothing for a file', () => {
@@ -187,13 +189,15 @@ describe('Entry', () => {
 
       const own = entry.own()
 
-      expect(own).toEqual([{
-        path: '/root/escape',
-        name: 'escape',
-        isFile: false,
-        isDirectory: false,
-        isSymlink: true,
-      }])
+      expect(own).toEqual([
+        {
+          path: '/root/escape',
+          name: 'escape',
+          isFile: false,
+          isDirectory: false,
+          isSymlink: true,
+        },
+      ])
     })
   })
 })

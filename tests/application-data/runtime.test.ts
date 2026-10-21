@@ -33,8 +33,8 @@ describe('runtime', () => {
   })
 
   it('exits through the process', () => {
-    const exit = spyOn(process, 'exit').mockImplementation(() =>
-      undefined as never
+    const exit = spyOn(process, 'exit').mockImplementation(
+      () => undefined as never,
     )
     const runtime = new Runtime(process)
 

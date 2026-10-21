@@ -12,8 +12,10 @@ type TaskArguments = {
 
 type MessageArguments = ApplicationOperationArguments<TaskArguments>
 
-export class CommitMessage
-  extends OperationWithResult<TaskArguments, CommitMessageResult | undefined> {
+export class CommitMessage extends OperationWithResult<
+  TaskArguments,
+  CommitMessageResult | undefined
+> {
   protected override logPrefix = 'Commit message: '
   private message?: CommitMessageResult
 

@@ -93,8 +93,11 @@ const hasLiveShellOperator = (command: string) => {
 
 const isSafeReadOnlyInspector = (command: string) => {
   const head = commandHead(command)
-  return head !== undefined && READ_ONLY_INSPECTORS.has(head) &&
+  return (
+    head !== undefined &&
+    READ_ONLY_INSPECTORS.has(head) &&
     !hasLiveShellOperator(command)
+  )
 }
 
 const workdirPhrase = "Use the exec tool's `workdir` parameter instead."

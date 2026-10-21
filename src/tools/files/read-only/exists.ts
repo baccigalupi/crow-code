@@ -8,8 +8,10 @@ type TaskArguments = {
 
 type PathExistsArguments = ApplicationOperationArguments<TaskArguments>
 
-export class PathExists
-  extends ReadOnlyFileOperation<TaskArguments, PathExistsResult> {
+export class PathExists extends ReadOnlyFileOperation<
+  TaskArguments,
+  PathExistsResult
+> {
   protected override logPrefix = 'Path exists: '
   private found = false
 
@@ -23,8 +25,10 @@ export class PathExists
 
   private exists() {
     const { path } = this.operationArguments
-    return this.applicationData.filesystem.assertExists(path)
-      .then(() => true, () => false)
+    return this.applicationData.filesystem.assertExists(path).then(
+      () => true,
+      () => false,
+    )
   }
 }
 

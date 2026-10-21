@@ -27,9 +27,7 @@ describe('Help', () => {
 
     await help.run()
 
-    expect(consoleLog.mock.calls[0][0]).toContain(
-      'Usage: crow <command>',
-    )
+    expect(consoleLog.mock.calls[0][0]).toContain('Usage: crow <command>')
     expect(consoleLog.mock.calls[0][0]).toContain('add-provider')
     expect(consoleLog.mock.calls[0][0]).toContain('install')
   })

@@ -133,10 +133,6 @@ describe('GitCommit', () => {
     expect(gitCommit.success()).toBe(true)
     expect(consoleLog.mock.calls[0][0]).toBe('Add login')
     expect(consoleError.mock.calls).toHaveLength(0)
-    expect(commandSpy.mock.calls[3][1].args).toEqual([
-      'add',
-      '--',
-      'src/a.ts',
-    ])
+    expect(commandSpy.mock.calls[3][1].args).toEqual(['add', '--', 'src/a.ts'])
   })
 })

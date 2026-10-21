@@ -83,7 +83,7 @@ files in a worktree" is the **`EnterWorktree`** tool, not `cd`:
    worktree now, not a flag pointed at it from outside.
 4. To return to the main checkout for the landing sequence (rebase,
    `git
-   merge --ff-only`), call **`ExitWorktree({ action: "keep" })`** — this
+merge --ff-only`), call **`ExitWorktree({ action: "keep" })`** — this
    leaves the worktree and branch on disk and restores the original cwd. Use
    `action: "remove"` only once the branch is fully merged or the work is
    abandoned.

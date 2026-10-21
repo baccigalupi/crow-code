@@ -432,10 +432,6 @@ describe('path-permissions', () => {
 
     const ignored = permissions.ignoredPaths()
 
-    expect(ignored).toEqual([
-      '/abs/dir',
-      '/other',
-      join(process.cwd(), '.git'),
-    ])
+    expect(ignored).toEqual(['/abs/dir', '/other', join(process.cwd(), '.git')])
   })
 })

@@ -19,8 +19,12 @@ describe('RequestLogger', () => {
       timespan: { startTime: 0, endTime: 5 },
     }
 
-    requestLogger(logger, 'https://example.com/api/v1', error, context)
-      .networkError()
+    requestLogger(
+      logger,
+      'https://example.com/api/v1',
+      error,
+      context,
+    ).networkError()
 
     const logged = loggerErrorSpy.mock.calls[0][0] as string
     expect(logged).toContain('Error: POST https://example.com/api/v1')
@@ -47,8 +51,12 @@ describe('RequestLogger', () => {
       timespan: { startTime: 0, endTime: 5 },
     }
 
-    requestLogger(logger, 'https://example.com/api/v1', error, context)
-      .networkError()
+    requestLogger(
+      logger,
+      'https://example.com/api/v1',
+      error,
+      context,
+    ).networkError()
 
     const logged = loggerErrorSpy.mock.calls[0][0] as string
     expect(logged).toContain('Error: POST https://example.com/api/v1')

@@ -10,8 +10,10 @@ type TaskArguments = {
 
 type ReadFileArguments = ApplicationOperationArguments<TaskArguments>
 
-export class ReadFile
-  extends ReadOnlyFileOperation<TaskArguments, FileContent> {
+export class ReadFile extends ReadOnlyFileOperation<
+  TaskArguments,
+  FileContent
+> {
   protected override logPrefix = 'Read file: '
   private text = ''
 
@@ -28,9 +30,9 @@ export class ReadFile
 
   private select(contents: string) {
     const lines = contents.split('\n')
-    return lines.slice(this.firstLineIndex(), this.lastLineIndex(lines)).join(
-      '\n',
-    )
+    return lines
+      .slice(this.firstLineIndex(), this.lastLineIndex(lines))
+      .join('\n')
   }
 
   private firstLineIndex() {

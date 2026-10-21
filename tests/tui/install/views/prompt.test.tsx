@@ -8,7 +8,7 @@ describe('prompt', () => {
     const input = emptyBuffer()
 
     const { lastFrame } = render(
-      <Prompt label='Where' input={input} defaultValue='.crow' />,
+      <Prompt label="Where" input={input} defaultValue=".crow" />,
     )
 
     expect(lastFrame()).toContain('Where: (.crow)')
@@ -18,7 +18,7 @@ describe('prompt', () => {
     const input = insertText(emptyBuffer(), './lib')
 
     const { lastFrame } = render(
-      <Prompt label='Where' input={input} defaultValue='.crow' />,
+      <Prompt label="Where" input={input} defaultValue=".crow" />,
     )
 
     expect(lastFrame()).not.toContain('(.crow)')

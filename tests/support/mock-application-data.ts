@@ -46,7 +46,8 @@ export const mockApplicationData = (
   data.parsedArguments = parseArguments(args)
   data.repositoryRoot = data.runtime.cwd
   data.config = overrides.config || new CrowConfig('.', defaultCrowConfig())
-  data.envars = overrides.envars ||
+  data.envars =
+    overrides.envars ||
     new Environment({ runtimeEnvironment: {}, filesystem: defaultFilesystem() })
 
   const logger = overrides.logger || pino({ enabled: false })

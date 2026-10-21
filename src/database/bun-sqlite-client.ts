@@ -30,7 +30,8 @@ export class BunSqliteClient extends Client_SQLite3 {
     try {
       return Promise.resolve(this.execute(connection, obj))
     } catch (error) {
-      if (error instanceof Error) error.message = `${obj.sql} - ${error.message}`
+      if (error instanceof Error)
+        error.message = `${obj.sql} - ${error.message}`
       return Promise.reject(error)
     }
   }
@@ -46,7 +47,8 @@ export class BunSqliteClient extends Client_SQLite3 {
     bindings: unknown[],
     obj: KnexQuery,
   ) {
-    if (statement.columnNames.length > 0) return this.readRows(statement, bindings, obj)
+    if (statement.columnNames.length > 0)
+      return this.readRows(statement, bindings, obj)
     return this.runWrite(statement, bindings, obj)
   }
 

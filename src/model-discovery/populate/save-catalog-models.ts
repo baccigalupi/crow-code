@@ -37,9 +37,9 @@ export class SaveCatalogModels extends Operation<SaveCatalogModelsArguments> {
   }
 
   private async refreshCatalog() {
-    await (await this.applicationData.database()).transaction((transaction) =>
-      this.refresh(transaction)
-    )
+    await (
+      await this.applicationData.database()
+    ).transaction((transaction) => this.refresh(transaction))
   }
 
   private async refresh(transaction: Knex.Transaction) {
@@ -55,9 +55,11 @@ export class SaveCatalogModels extends Operation<SaveCatalogModelsArguments> {
     saveResults: boolean[],
   ) {
     if (saveResults.includes(true)) return
-    this.applicationData.logger().error(
-      `No models could be saved for provider ${this.providerId()}; catalog refresh rolled back`,
-    )
+    this.applicationData
+      .logger()
+      .error(
+        `No models could be saved for provider ${this.providerId()}; catalog refresh rolled back`,
+      )
     await transaction.rollback()
   }
 

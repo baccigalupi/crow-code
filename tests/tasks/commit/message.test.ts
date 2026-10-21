@@ -46,10 +46,12 @@ describe('commitMessage', () => {
       applicationData,
       operationArguments: {
         goal: 'add login',
-        changes: [{
-          path: 'src/a.ts',
-          diff: 'diff --git a/src/a.ts b/src/a.ts',
-        }],
+        changes: [
+          {
+            path: 'src/a.ts',
+            diff: 'diff --git a/src/a.ts b/src/a.ts',
+          },
+        ],
       },
     }).run()
 
@@ -98,10 +100,12 @@ describe('commitMessage', () => {
       applicationData,
       operationArguments: {
         goal: 'add login',
-        changes: [{
-          path: 'src/a.ts',
-          diff: 'diff --git a/src/a.ts b/src/a.ts',
-        }],
+        changes: [
+          {
+            path: 'src/a.ts',
+            diff: 'diff --git a/src/a.ts b/src/a.ts',
+          },
+        ],
       },
     }).run()
 
@@ -141,10 +145,12 @@ describe('commitMessage', () => {
       applicationData,
       operationArguments: {
         goal: 'add login',
-        changes: [{
-          path: 'src/a.ts',
-          diff: 'diff --git a/src/a.ts b/src/a.ts',
-        }],
+        changes: [
+          {
+            path: 'src/a.ts',
+            diff: 'diff --git a/src/a.ts b/src/a.ts',
+          },
+        ],
       },
     }).run()
 
@@ -162,10 +168,12 @@ describe('commitMessage', () => {
       applicationData,
       operationArguments: {
         goal: 'add login',
-        changes: [{
-          path: 'src/a.ts',
-          diff: 'diff --git a/src/a.ts b/src/a.ts',
-        }],
+        changes: [
+          {
+            path: 'src/a.ts',
+            diff: 'diff --git a/src/a.ts b/src/a.ts',
+          },
+        ],
       },
     }).run()
 

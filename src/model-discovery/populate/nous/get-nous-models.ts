@@ -21,8 +21,9 @@ export const getNousModels = async (
   provider: ProviderEntity,
   applicationData: ApplicationData,
 ) => {
-  const models = (await fetchNousModels(provider, applicationData)
-    .run()).result()
+  const models = (
+    await fetchNousModels(provider, applicationData).run()
+  ).result()
   await saveCatalogModels(applicationData, provider.id(), models).run()
   return models
 }

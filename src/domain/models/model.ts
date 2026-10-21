@@ -92,7 +92,5 @@ export const modelEntity = (
   environment: Environment,
 ) => new ModelEntity(row || emptyModelRow, environment)
 
-export const modelEntities = (
-  rows: ModelRow[],
-  environment: Environment,
-) => rows.map((row) => modelEntity(row, environment))
+export const modelEntities = (rows: ModelRow[], environment: Environment) =>
+  rows.map((row) => modelEntity(row, environment))

@@ -17,8 +17,7 @@ const isHookOrViewModel = (name: string): boolean =>
 const isAllowedViewCall = (callee: Deno.lint.Node): boolean => {
   if (callee.type === 'Identifier') return isHookOrViewModel(callee.name)
   if (callee.type !== 'MemberExpression') return false
-  return callee.property.type === 'Identifier' &&
-    callee.property.name === 'map'
+  return callee.property.type === 'Identifier' && callee.property.name === 'map'
 }
 
 const hasInlineTypeLiteral = (

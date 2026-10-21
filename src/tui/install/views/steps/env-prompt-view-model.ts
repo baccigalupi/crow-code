@@ -15,9 +15,9 @@ const blankInputs = {
   allowedLocalScripts: emptyBuffer(),
 }
 
-export const envPromptViewModel = (
-  { globalDirectory }: EnvPromptViewModelArguments,
-) => {
+export const envPromptViewModel = ({
+  globalDirectory,
+}: EnvPromptViewModelArguments) => {
   const { config } = buildCrowConfig({ ...blankInputs, globalDirectory }).all()
   return { defaultValue: config.envFile }
 }

@@ -21,7 +21,7 @@ export const Agent = ({ session = chatSession }: AgentProps) => {
   useResize(stdout, session)
   useReplKeys(session)
   return (
-    <Box flexDirection='column' height={rowHeight} width={columnWidth}>
+    <Box flexDirection="column" height={rowHeight} width={columnWidth}>
       <Header />
       <Chat history={history} height={chatRowHeight} width={columnWidth} />
       <Input buffer={buffer} height={inputRows} />

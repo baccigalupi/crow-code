@@ -5,8 +5,11 @@ import type { ModelRow } from '../types.ts'
 import { type ModelEntity, modelEntity } from './model.ts'
 import { parseModelParams } from './parse-params.ts'
 
-export class CreateModel
-  extends CreateRecord<RecordParams, ModelRow, ModelEntity> {
+export class CreateModel extends CreateRecord<
+  RecordParams,
+  ModelRow,
+  ModelEntity
+> {
   protected readonly tableName = 'models'
   protected override logPrefix = 'Create model: '
 

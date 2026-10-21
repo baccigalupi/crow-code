@@ -13,8 +13,10 @@ type TaskArguments = {
 
 type SearchFilesArguments = ApplicationOperationArguments<TaskArguments>
 
-export class SearchFiles
-  extends ReadOnlyFileOperation<TaskArguments, SearchListing> {
+export class SearchFiles extends ReadOnlyFileOperation<
+  TaskArguments,
+  SearchListing
+> {
   protected override logPrefix = 'Search files: '
   private matches: SearchListing['matches'] = []
 
@@ -23,10 +25,12 @@ export class SearchFiles
   }
 
   protected override async perform() {
-    const operation = await this.runSubOperation(sortedMatches({
-      applicationData: this.applicationData,
-      operationArguments: this.operationArguments,
-    }))
+    const operation = await this.runSubOperation(
+      sortedMatches({
+        applicationData: this.applicationData,
+        operationArguments: this.operationArguments,
+      }),
+    )
     this.matches = operation.result()
   }
 }

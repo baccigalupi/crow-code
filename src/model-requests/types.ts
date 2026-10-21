@@ -48,10 +48,7 @@ export type CommitMessage = {
 }
 
 export type ModelRequestFailureReason =
-  | ''
-  | 'api-error'
-  | 'invalid-json'
-  | 'invalid-schema'
+  '' | 'api-error' | 'invalid-json' | 'invalid-schema'
 
 export type Timespan = {
   startTime: number
@@ -78,12 +75,7 @@ type ChatChoices = {
 }[]
 
 export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | Json[]
-  | { [key: string]: Json }
+  string | number | boolean | null | Json[] | { [key: string]: Json }
 
 export type ChatCompletionJson = {
   choices: ChatChoices

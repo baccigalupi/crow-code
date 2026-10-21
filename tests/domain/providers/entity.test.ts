@@ -12,13 +12,16 @@ describe('provider', () => {
       runtimeEnvironment: {},
       filesystem: defaultFilesystem(),
     })
-    const provider = new ProviderEntity({
-      id: 1,
-      name: 'provider-name',
-      baseUrl: 'https://www.example.com',
-      modelsPath: '/v1/models',
-      apiKeyEnvVar: null,
-    }, environment)
+    const provider = new ProviderEntity(
+      {
+        id: 1,
+        name: 'provider-name',
+        baseUrl: 'https://www.example.com',
+        modelsPath: '/v1/models',
+        apiKeyEnvVar: null,
+      },
+      environment,
+    )
 
     const id = provider.id()
     const name = provider.name()
@@ -35,13 +38,16 @@ describe('provider', () => {
         runtimeEnvironment: {},
         filesystem: defaultFilesystem(),
       })
-      const provider = new ProviderEntity({
-        id: 1,
-        name: 'provider-name',
-        baseUrl: 'https://www.example.com',
-        modelsPath: '/v1/models',
-        apiKeyEnvVar: null,
-      }, environment)
+      const provider = new ProviderEntity(
+        {
+          id: 1,
+          name: 'provider-name',
+          baseUrl: 'https://www.example.com',
+          modelsPath: '/v1/models',
+          apiKeyEnvVar: null,
+        },
+        environment,
+      )
 
       const url = provider.modelsUrl()
 
@@ -53,13 +59,16 @@ describe('provider', () => {
         runtimeEnvironment: {},
         filesystem: defaultFilesystem(),
       })
-      const provider = new ProviderEntity({
-        id: 1,
-        name: 'provider-name',
-        baseUrl: 'https://www.example.com/',
-        modelsPath: 'v1/models',
-        apiKeyEnvVar: null,
-      }, environment)
+      const provider = new ProviderEntity(
+        {
+          id: 1,
+          name: 'provider-name',
+          baseUrl: 'https://www.example.com/',
+          modelsPath: 'v1/models',
+          apiKeyEnvVar: null,
+        },
+        environment,
+      )
 
       const url = provider.modelsUrl()
 
@@ -71,13 +80,16 @@ describe('provider', () => {
         runtimeEnvironment: {},
         filesystem: defaultFilesystem(),
       })
-      const provider = new ProviderEntity({
-        id: 1,
-        name: 'provider-name',
-        baseUrl: 'https://www.example.com/',
-        modelsPath: '/v1/models',
-        apiKeyEnvVar: null,
-      }, environment)
+      const provider = new ProviderEntity(
+        {
+          id: 1,
+          name: 'provider-name',
+          baseUrl: 'https://www.example.com/',
+          modelsPath: '/v1/models',
+          apiKeyEnvVar: null,
+        },
+        environment,
+      )
 
       const url = provider.modelsUrl()
 
@@ -89,13 +101,16 @@ describe('provider', () => {
         runtimeEnvironment: {},
         filesystem: defaultFilesystem(),
       })
-      const provider = new ProviderEntity({
-        id: 1,
-        name: 'provider-name',
-        baseUrl: 'https://www.example.com',
-        modelsPath: null,
-        apiKeyEnvVar: null,
-      }, environment)
+      const provider = new ProviderEntity(
+        {
+          id: 1,
+          name: 'provider-name',
+          baseUrl: 'https://www.example.com',
+          modelsPath: null,
+          apiKeyEnvVar: null,
+        },
+        environment,
+      )
 
       const url = provider.modelsUrl()
 
@@ -111,13 +126,16 @@ describe('provider', () => {
         },
         filesystem: defaultFilesystem(),
       })
-      const provider = new ProviderEntity({
-        id: 1,
-        name: 'provider-name',
-        baseUrl: 'https://www.example.com',
-        modelsPath: null,
-        apiKeyEnvVar: 'PROVIDER_API_KEY',
-      }, environment)
+      const provider = new ProviderEntity(
+        {
+          id: 1,
+          name: 'provider-name',
+          baseUrl: 'https://www.example.com',
+          modelsPath: null,
+          apiKeyEnvVar: 'PROVIDER_API_KEY',
+        },
+        environment,
+      )
 
       const key = provider.apiKey()
 
@@ -129,13 +147,16 @@ describe('provider', () => {
         runtimeEnvironment: {},
         filesystem: defaultFilesystem(),
       })
-      const provider = new ProviderEntity({
-        id: 1,
-        name: 'provider-name',
-        baseUrl: 'https://www.example.com',
-        modelsPath: null,
-        apiKeyEnvVar: null,
-      }, environment)
+      const provider = new ProviderEntity(
+        {
+          id: 1,
+          name: 'provider-name',
+          baseUrl: 'https://www.example.com',
+          modelsPath: null,
+          apiKeyEnvVar: null,
+        },
+        environment,
+      )
 
       const key = provider.apiKey()
 
@@ -147,13 +168,16 @@ describe('provider', () => {
         runtimeEnvironment: {},
         filesystem: defaultFilesystem(),
       })
-      const provider = new ProviderEntity({
-        id: 1,
-        name: 'provider-name',
-        baseUrl: 'https://www.example.com',
-        modelsPath: null,
-        apiKeyEnvVar: 'MISSING_KEY',
-      }, environment)
+      const provider = new ProviderEntity(
+        {
+          id: 1,
+          name: 'provider-name',
+          baseUrl: 'https://www.example.com',
+          modelsPath: null,
+          apiKeyEnvVar: 'MISSING_KEY',
+        },
+        environment,
+      )
 
       const key = provider.apiKey()
 
@@ -168,13 +192,16 @@ describe('provider', () => {
         filesystem: defaultFilesystem(),
       })
 
-      const provider = providerEntity({
-        id: 1,
-        name: 'provider-name',
-        base_url: 'https://www.example.com',
-        models_path: '/v1/models',
-        api_key_env_var: null,
-      }, environment)
+      const provider = providerEntity(
+        {
+          id: 1,
+          name: 'provider-name',
+          base_url: 'https://www.example.com',
+          models_path: '/v1/models',
+          api_key_env_var: null,
+        },
+        environment,
+      )
 
       expect(provider).toBeInstanceOf(ProviderEntity)
     })
@@ -196,13 +223,16 @@ describe('provider', () => {
         filesystem: defaultFilesystem(),
       })
 
-      const provider = providerEntity({
-        id: 2,
-        name: 'other-provider',
-        base_url: 'https://api.example.com/',
-        models_path: 'models',
-        api_key_env_var: null,
-      }, environment) as ProviderEntity
+      const provider = providerEntity(
+        {
+          id: 2,
+          name: 'other-provider',
+          base_url: 'https://api.example.com/',
+          models_path: 'models',
+          api_key_env_var: null,
+        },
+        environment,
+      ) as ProviderEntity
 
       expect(provider.name()).toBe('other-provider')
       expect(provider.modelsUrl()).toBe('https://api.example.com/models')

@@ -84,11 +84,12 @@ export class LoadConfig implements AsyncOperationWithResult<CrowConfig> {
   }
 }
 
-export const loadConfig = (
-  { path, parsedArguments = parseArguments([]), filesystem, logger }:
-    LoadConfigArguments,
-) => {
-  const configPath = path || parsedArguments.configPath() ||
-    defaultConfigPath()
+export const loadConfig = ({
+  path,
+  parsedArguments = parseArguments([]),
+  filesystem,
+  logger,
+}: LoadConfigArguments) => {
+  const configPath = path || parsedArguments.configPath() || defaultConfigPath()
   return new LoadConfig(configPath, filesystem, logger)
 }

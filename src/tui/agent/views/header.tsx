@@ -5,9 +5,9 @@ import { chrome } from '../../themes/chrome.ts'
 const Bar = ({ children }: PropsWithChildren) => (
   <Box
     height={1}
-    width='100%'
+    width="100%"
     paddingX={1}
-    justifyContent='space-between'
+    justifyContent="space-between"
     backgroundColor={chrome.background}
   >
     {children}
@@ -15,7 +15,7 @@ const Bar = ({ children }: PropsWithChildren) => (
 )
 
 export const Header = () => (
-  <Box flexDirection='column' width='100%'>
+  <Box flexDirection="column" width="100%">
     <Bar />
     <Bar>
       <Text color={chrome.textColor}>Crow Code - context is King</Text>

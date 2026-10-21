@@ -4,7 +4,7 @@ import { DoneMessage } from '../../../../../src/tui/install/views/steps/done-mes
 
 describe('done-message', () => {
   it('when rendered, reports the written config path', () => {
-    const message = <DoneMessage crowConfigPath='.crow/config.json' />
+    const message = <DoneMessage crowConfigPath=".crow/config.json" />
 
     const { lastFrame } = render(message)
 

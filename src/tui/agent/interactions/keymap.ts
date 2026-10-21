@@ -68,7 +68,8 @@ export class Keymap {
   }
 
   private isTerminalReply() {
-    return this.terminalReplyPattern.test(this.input) ||
-      this.input.includes('\x1b')
+    return (
+      this.terminalReplyPattern.test(this.input) || this.input.includes('\x1b')
+    )
   }
 }

@@ -12,8 +12,9 @@ const installState = (installStore: InstallStore) => {
 }
 
 export const useInstallState = (installStore: InstallStore) => {
-  const state = useMemo(() => computed(() => installState(installStore)), [
-    installStore,
-  ])
+  const state = useMemo(
+    () => computed(() => installState(installStore)),
+    [installStore],
+  )
   return useSignalValue(state)
 }

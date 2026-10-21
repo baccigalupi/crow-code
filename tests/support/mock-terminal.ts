@@ -64,8 +64,8 @@ const mockStdout = (columns: number, rows: number) => {
   const write = spyOn(stdout, 'write')
   // Ink's waitUntilRenderFlush writes an empty barrier chunk; it is not a frame.
   const lastFrame = () => {
-    const frames = write.mock.calls.filter((call: unknown[]) =>
-      String(call[0]) !== ''
+    const frames = write.mock.calls.filter(
+      (call: unknown[]) => String(call[0]) !== '',
     )
     if (frames.length === 0) return ''
     return String(frames[frames.length - 1][0])
@@ -73,10 +73,12 @@ const mockStdout = (columns: number, rows: number) => {
   return { stdout, write, lastFrame }
 }
 
-export const mockTerminal = (
-  { columns = 80, rows = 24, tty = true, rawMode = true }: MockTerminalOptions =
-    {},
-) => {
+export const mockTerminal = ({
+  columns = 80,
+  rows = 24,
+  tty = true,
+  rawMode = true,
+}: MockTerminalOptions = {}) => {
   const stdin = mockStdin(tty, rawMode)
   const screen = mockStdout(columns, rows)
   const stderr = new Writable({ write: voidWrite })

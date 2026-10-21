@@ -9,8 +9,10 @@ type TaskArguments = {
 
 type MakeDirectoryArguments = ApplicationOperationArguments<TaskArguments>
 
-export class MakeDirectory
-  extends FileOperation<TaskArguments, MakeDirectoryResult> {
+export class MakeDirectory extends FileOperation<
+  TaskArguments,
+  MakeDirectoryResult
+> {
   protected override logPrefix = 'Make directory: '
   private created = false
 
@@ -22,10 +24,12 @@ export class MakeDirectory
   }
 
   protected override async perform() {
-    const existing = await this.runSubOperation(pathExists({
-      applicationData: this.applicationData,
-      operationArguments: { path: this.operationArguments.path },
-    }))
+    const existing = await this.runSubOperation(
+      pathExists({
+        applicationData: this.applicationData,
+        operationArguments: { path: this.operationArguments.path },
+      }),
+    )
     await this.create(existing)
   }
 

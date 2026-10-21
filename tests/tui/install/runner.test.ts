@@ -35,7 +35,7 @@ describe('runInstalltTui', () => {
     const finished = new Promise((resolve) =>
       effect(() => {
         if (step.value === 'done') resolve(true)
-      })
+      }),
     )
 
     step.value = 'write'

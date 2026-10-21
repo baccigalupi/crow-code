@@ -10,13 +10,12 @@ type TaskArguments = {
 
 type GitChangesArguments = ApplicationOperationArguments<TaskArguments>
 
-type OptionalGitChangesArguments = Pick<
-  GitChangesArguments,
-  'applicationData'
->
+type OptionalGitChangesArguments = Pick<GitChangesArguments, 'applicationData'>
 
-export class GitChanges
-  extends OperationWithResult<TaskArguments, GitFileDiff[]> {
+export class GitChanges extends OperationWithResult<
+  TaskArguments,
+  GitFileDiff[]
+> {
   protected override logPrefix = 'Git changes: '
 
   async run() {

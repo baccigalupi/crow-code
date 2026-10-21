@@ -53,8 +53,10 @@ class OpenRouterParser {
     }
   }
   private isDynamicDelegation() {
-    return parseFloat(this.model.pricing.prompt) < 0 ||
+    return (
+      parseFloat(this.model.pricing.prompt) < 0 ||
       parseFloat(this.model.pricing.completion) < 0
+    )
   }
   private costInput() {
     if (this.isDynamicDelegation()) {

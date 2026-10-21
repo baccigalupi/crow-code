@@ -40,8 +40,6 @@ export class GitUntrackedChange extends GitExec<TaskArguments, GitFileDiff> {
   }
 }
 
-export const gitUntrackedChange = (
-  args: GitUntrackedChangeArguments,
-) => {
+export const gitUntrackedChange = (args: GitUntrackedChangeArguments) => {
   return new GitUntrackedChange(args)
 }

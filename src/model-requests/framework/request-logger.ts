@@ -43,8 +43,10 @@ export class RequestLogger {
 
   private contextPrefix() {
     const endpoint = this.context.modelEndpoint
-    return `model=${endpoint.model} provider=${endpoint.providerId} ` +
+    return (
+      `model=${endpoint.model} provider=${endpoint.providerId} ` +
       `duration=${this.durationMs()}ms`
+    )
   }
 
   private durationMs() {
@@ -64,8 +66,10 @@ export class RequestLogger {
     if (!('cause' in this.error)) {
       return `${this.error.name}: ${this.error.message}`
     }
-    return `${this.error.name}: ${this.error.message} ` +
+    return (
+      `${this.error.name}: ${this.error.message} ` +
       `(cause: ${String(this.error.cause)})`
+    )
   }
 }
 

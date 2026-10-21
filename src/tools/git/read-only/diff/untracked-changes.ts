@@ -18,8 +18,10 @@ type OptionalGitUntrackedChangesArguments = Pick<
   'applicationData'
 >
 
-export class GitUntrackedChanges
-  extends OperationWithResult<TaskArguments, GitFileDiff[]> {
+export class GitUntrackedChanges extends OperationWithResult<
+  TaskArguments,
+  GitFileDiff[]
+> {
   protected override logPrefix = 'Git untracked changes: '
   private untrackedFiles: ChangedFile[] = []
   private untrackedChanges: GitUntrackedChange[] = []
@@ -58,7 +60,7 @@ export class GitUntrackedChanges
 
     this.untrackedChanges = await Promise.all(
       this.untrackedFiles.map((file) =>
-        this.runSubOperation(this.untrackedChange(file.path))
+        this.runSubOperation(this.untrackedChange(file.path)),
       ),
     )
   }

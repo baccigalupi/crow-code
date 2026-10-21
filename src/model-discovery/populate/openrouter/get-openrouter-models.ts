@@ -21,8 +21,9 @@ export const getOpenRouterModels = async (
   provider: ProviderEntity,
   applicationData: ApplicationData,
 ) => {
-  const models = (await fetchOpenRouterModels(provider, applicationData)
-    .run()).result()
+  const models = (
+    await fetchOpenRouterModels(provider, applicationData).run()
+  ).result()
   await saveCatalogModels(applicationData, provider.id(), models).run()
   return models
 }

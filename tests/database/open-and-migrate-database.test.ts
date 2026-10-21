@@ -12,21 +12,17 @@ import pino from 'pino'
 
 describe('openAndMigrateDatabase', () => {
   beforeEach(() =>
-    clearDirectory(join(fixturesDirectory, 'open-database', '.crow'))
+    clearDirectory(join(fixturesDirectory, 'open-database', '.crow')),
   )
   afterEach(() =>
-    clearDirectory(join(fixturesDirectory, 'open-database', '.crow'))
+    clearDirectory(join(fixturesDirectory, 'open-database', '.crow')),
   )
 
   it('when opened, creates the crow directory and database file', async () => {
     const crowDirectory = join(fixturesDirectory, 'open-database', '.crow')
     const logger = pino({ enabled: false })
 
-    await openAndMigrateDatabase(
-      crowDirectory,
-      logger,
-      defaultFilesystem(),
-    )
+    await openAndMigrateDatabase(crowDirectory, logger, defaultFilesystem())
 
     expect(statSync(defaultDatabasePath(crowDirectory)).isFile()).toBe(true)
   })

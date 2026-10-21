@@ -34,9 +34,8 @@ export class LanguageServer {
   ready = false
 
   constructor(child: Deno.ChildProcess) {
-    this.stream = new JsonRpcStream(
-      child,
-      (message) => this.consume(message as IncomingMessage),
+    this.stream = new JsonRpcStream(child, (message) =>
+      this.consume(message as IncomingMessage),
     )
   }
 

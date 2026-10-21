@@ -12,8 +12,10 @@ type TaskArguments = {
 
 type ListDirectoryArguments = ApplicationOperationArguments<TaskArguments>
 
-export class ListDirectory
-  extends ReadOnlyFileOperation<TaskArguments, DirectoryListing> {
+export class ListDirectory extends ReadOnlyFileOperation<
+  TaskArguments,
+  DirectoryListing
+> {
   protected override logPrefix = 'List directory: '
   private entries: DirectoryEntry[] = []
 

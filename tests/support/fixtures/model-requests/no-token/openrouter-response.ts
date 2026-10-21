@@ -7,7 +7,7 @@ export const openrouterNoTokenResponse = () =>
       status: 401,
       statusText: '',
       headers: {
-        'date': 'Thu, 01 Oct 2026 23:39:34 GMT',
+        date: 'Thu, 01 Oct 2026 23:39:34 GMT',
         'content-type': 'application/json',
         'access-control-allow-origin': '*',
         'access-control-expose-headers':
@@ -18,7 +18,7 @@ export const openrouterNoTokenResponse = () =>
           'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")',
         'referrer-policy': 'no-referrer, strict-origin-when-cross-origin',
         'x-content-type-options': 'nosniff',
-        'server': 'cloudflare',
+        server: 'cloudflare',
         'cf-ray': 'a43f4eb54f492832-SJC',
       },
     },

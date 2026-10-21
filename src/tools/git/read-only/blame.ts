@@ -36,8 +36,10 @@ export class GitBlame extends GitExec<TaskArguments, GitBlameLine[]> {
   }
 
   private noRange() {
-    return this.operationArguments.start === undefined &&
+    return (
+      this.operationArguments.start === undefined &&
       this.operationArguments.end === undefined
+    )
   }
 
   private bound(key: 'start' | 'end') {

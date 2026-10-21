@@ -1,12 +1,14 @@
 import { OperationWithResult } from '../operation.ts'
 import type { CommandOptions, CommandOutput } from '../types.ts'
 
-export abstract class ExecCli<T extends Record<string, unknown>, U>
-  extends OperationWithResult<T, U> {
+export abstract class ExecCli<
+  T extends Record<string, unknown>,
+  U,
+> extends OperationWithResult<T, U> {
   protected responseText!: string
 
   async run() {
-    if (!await this.allowedToRun()) return this
+    if (!(await this.allowedToRun())) return this
 
     try {
       await this.runCommand()

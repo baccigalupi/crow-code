@@ -166,9 +166,7 @@ describe('InstallApp', () => {
     expect(stripAnsi(terminal.lastFrame())).toContain(
       'Credentials .env file: (~/.crow/.env)',
     )
-    expect(stripAnsi(terminal.lastFrame())).not.toContain(
-      'User crow directory',
-    )
+    expect(stripAnsi(terminal.lastFrame())).not.toContain('User crow directory')
     instance.unmount()
   })
 
@@ -446,10 +444,11 @@ describe('InstallApp', () => {
   it('when stdin is not a tty, mounts without input handling', () => {
     const terminal = mockTerminal({ tty: false })
 
-    const instance = inkRender(
-      <InstallApp />,
-      { ...terminal.io, debug: true, exitOnCtrlC: false },
-    )
+    const instance = inkRender(<InstallApp />, {
+      ...terminal.io,
+      debug: true,
+      exitOnCtrlC: false,
+    })
 
     expect(stripAnsi(terminal.lastFrame())).toContain('Installing Crow Code')
     instance.unmount()
@@ -467,10 +466,11 @@ describe('InstallApp', () => {
   it('when stdout reports no columns, falls back to 80', () => {
     const terminal = mockTerminal({ columns: 0 })
 
-    const instance = inkRender(
-      <InstallApp />,
-      { ...terminal.io, debug: true, exitOnCtrlC: false },
-    )
+    const instance = inkRender(<InstallApp />, {
+      ...terminal.io,
+      debug: true,
+      exitOnCtrlC: false,
+    })
 
     expect(stripAnsi(terminal.lastFrame())).toContain('Installing Crow Code')
     instance.unmount()

@@ -32,10 +32,7 @@ describe('getOpenRouterModels', () => {
     const mockFetch = mockFetchSuccess(fixture)
     const applicationData = mockApplicationData({ logger, fetch: mockFetch })
 
-    const result = await getOpenRouterModels(
-      provider,
-      applicationData,
-    )
+    const result = await getOpenRouterModels(provider, applicationData)
 
     expect(result).toHaveLength(458)
     expect(result[0].id).toBe('fireworks/ember-1')
@@ -69,10 +66,7 @@ describe('getOpenRouterModels', () => {
     const applicationData = mockApplicationData({ logger, fetch: mockFetch })
     const database = await applicationData.database()
 
-    await getOpenRouterModels(
-      provider,
-      applicationData,
-    )
+    await getOpenRouterModels(provider, applicationData)
 
     const rows = await database('models')
     expect(rows).toHaveLength(1)
@@ -100,10 +94,7 @@ describe('getOpenRouterModels', () => {
     const mockFetch = mockFetchSuccess({ data: [] })
     const applicationData = mockApplicationData({ logger, fetch: mockFetch })
 
-    await getOpenRouterModels(
-      provider,
-      applicationData,
-    )
+    await getOpenRouterModels(provider, applicationData)
 
     expect(mockFetch.calls).toHaveLength(1)
     expect(mockFetch.calls[0]).toBe('https://example.com/api/v1/models')
@@ -128,10 +119,7 @@ describe('getOpenRouterModels', () => {
     const applicationData = mockApplicationData({ logger, fetch: mockFetch })
     const database = await applicationData.database()
 
-    const result = await getOpenRouterModels(
-      provider,
-      applicationData,
-    )
+    const result = await getOpenRouterModels(provider, applicationData)
 
     expect(result).toEqual([])
     expect(await database('models')).toEqual([])
@@ -156,10 +144,7 @@ describe('getOpenRouterModels', () => {
     const applicationData = mockApplicationData({ logger, fetch: mockFetch })
     const database = await applicationData.database()
 
-    const result = await getOpenRouterModels(
-      provider,
-      applicationData,
-    )
+    const result = await getOpenRouterModels(provider, applicationData)
 
     expect(result).toEqual([])
     expect(await database('models')).toEqual([])

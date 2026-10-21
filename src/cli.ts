@@ -59,11 +59,12 @@ class Cli {
 
   @memoize
   private commands(): Command[] {
-    return commandClasses.map((CommandClass) =>
-      new CommandClass({
-        applicationData: this.applicationData,
-        operationArguments: this.applicationData.parsedArguments,
-      })
+    return commandClasses.map(
+      (CommandClass) =>
+        new CommandClass({
+          applicationData: this.applicationData,
+          operationArguments: this.applicationData.parsedArguments,
+        }),
     )
   }
 

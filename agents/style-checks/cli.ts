@@ -10,12 +10,7 @@
 
 export const usage = 'Usage: agents/style-check [--changed] [--all] [FILE ...]'
 
-const codeGlobs = [
-  'src/*.ts',
-  'src/*.tsx',
-  'src/**/*.ts',
-  'src/**/*.tsx',
-]
+const codeGlobs = ['src/*.ts', 'src/*.tsx', 'src/**/*.ts', 'src/**/*.tsx']
 const testGlobs = [
   'tests/*.test.ts',
   'tests/*.test.tsx',
@@ -40,9 +35,11 @@ export const classify = (file: string): Kind => {
   if (file.startsWith('src/') && /\.tsx?$/.test(file)) return 'code'
   if (file.startsWith('tests/') && /\.test\.tsx?$/.test(file)) return 'test'
   if (
-    file.startsWith('tests/') && !file.includes('/fixtures/') &&
+    file.startsWith('tests/') &&
+    !file.includes('/fixtures/') &&
     /\.tsx?$/.test(file)
-  ) return 'support'
+  )
+    return 'support'
   return 'other'
 }
 
@@ -88,20 +85,20 @@ const gitFiles = async (args: string[]): Promise<string[]> => {
 const trackedFiles = async (): Promise<string[]> => {
   const files = [
     ...new Set([
-      ...await gitFiles([
+      ...(await gitFiles([
         'ls-files',
         ...codeGlobs,
         ...testGlobs,
         ...supportGlobs,
-      ]),
-      ...await gitFiles([
+      ])),
+      ...(await gitFiles([
         'ls-files',
         '--others',
         '--exclude-standard',
         ...codeGlobs,
         ...testGlobs,
         ...supportGlobs,
-      ]),
+      ])),
     ]),
   ]
   const deleted = await gitFiles(['ls-files', '--deleted'])
@@ -110,14 +107,14 @@ const trackedFiles = async (): Promise<string[]> => {
 
 const changedFiles = async (): Promise<string[]> => {
   const files = [
-    ...await gitFiles(['diff', '--name-only', '--diff-filter=ACMR']),
-    ...await gitFiles([
+    ...(await gitFiles(['diff', '--name-only', '--diff-filter=ACMR'])),
+    ...(await gitFiles([
       'diff',
       '--staged',
       '--name-only',
       '--diff-filter=ACMR',
-    ]),
-    ...await gitFiles(['ls-files', '--others', '--exclude-standard']),
+    ])),
+    ...(await gitFiles(['ls-files', '--others', '--exclude-standard'])),
   ]
   return [...new Set(files)]
 }
@@ -225,9 +222,9 @@ const checkFiles = async (files: string[]): Promise<boolean> => {
   const support = files.filter((file) => classify(file) === 'support')
   const others = files.filter((file) => classify(file) === 'other')
   let ok = true
-  if (code.length > 0) ok = await checkCode(code) && ok
-  for (const test of tests) ok = await checkTest(test) && ok
-  if (support.length > 0) ok = await checkSupport(support) && ok
+  if (code.length > 0) ok = (await checkCode(code)) && ok
+  for (const test of tests) ok = (await checkTest(test)) && ok
+  if (support.length > 0) ok = (await checkSupport(support)) && ok
   for (const other of others) await advise(other)
   return ok
 }
@@ -241,7 +238,7 @@ const main = async () => {
   const files = await resolveFiles(parsed.scope, parsed.files)
   if (files === null) Deno.exit(1)
   if (files.length === 0) console.log('No violations')
-  Deno.exit(await checkFiles(files) ? 0 : 1)
+  Deno.exit((await checkFiles(files)) ? 0 : 1)
 }
 
 if (import.meta.main) await main()

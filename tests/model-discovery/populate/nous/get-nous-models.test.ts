@@ -32,10 +32,7 @@ describe('getNousModels', () => {
     const mockFetch = mockFetchSuccess(fixture)
     const applicationData = mockApplicationData({ logger, fetch: mockFetch })
 
-    const result = await getNousModels(
-      provider,
-      applicationData,
-    )
+    const result = await getNousModels(provider, applicationData)
 
     expect(result).toHaveLength(400)
     expect(result[0].id).toBe('xiaomi/mimo-v2.6-pro-ultraspeed')
@@ -69,10 +66,7 @@ describe('getNousModels', () => {
     const applicationData = mockApplicationData({ logger, fetch: mockFetch })
     const database = await applicationData.database()
 
-    await getNousModels(
-      provider,
-      applicationData,
-    )
+    await getNousModels(provider, applicationData)
 
     const rows = await database('models')
     expect(rows).toHaveLength(1)
@@ -100,10 +94,7 @@ describe('getNousModels', () => {
     const mockFetch = mockFetchSuccess({ data: [] })
     const applicationData = mockApplicationData({ logger, fetch: mockFetch })
 
-    await getNousModels(
-      provider,
-      applicationData,
-    )
+    await getNousModels(provider, applicationData)
 
     expect(mockFetch.calls).toHaveLength(1)
     expect(mockFetch.calls[0]).toBe('https://example.com/v1/models')
@@ -128,10 +119,7 @@ describe('getNousModels', () => {
     const applicationData = mockApplicationData({ logger, fetch: mockFetch })
     const database = await applicationData.database()
 
-    const result = await getNousModels(
-      provider,
-      applicationData,
-    )
+    const result = await getNousModels(provider, applicationData)
 
     expect(result).toEqual([])
     expect(await database('models')).toEqual([])
@@ -156,10 +144,7 @@ describe('getNousModels', () => {
     const applicationData = mockApplicationData({ logger, fetch: mockFetch })
     const database = await applicationData.database()
 
-    const result = await getNousModels(
-      provider,
-      applicationData,
-    )
+    const result = await getNousModels(provider, applicationData)
 
     expect(result).toEqual([])
     expect(await database('models')).toEqual([])

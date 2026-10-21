@@ -104,9 +104,10 @@ class ReviewGenerator {
   private async collectStatusChanges(): Promise<Change[]> {
     const output = await this.runGit('status', '--porcelain=v1', '-u')
     const changes = await Promise.all(
-      output.split('\n').filter((line) => line !== '').map((line) =>
-        this.changeFromStatusLine(line)
-      ),
+      output
+        .split('\n')
+        .filter((line) => line !== '')
+        .map((line) => this.changeFromStatusLine(line)),
     )
     return changes.filter((change): change is Change => change !== null)
   }
@@ -115,9 +116,10 @@ class ReviewGenerator {
     const range = await this.diffRange()
     const output = await this.runGit('diff', '--name-status', ...range)
     const changes = await Promise.all(
-      output.split('\n').filter((line) => line !== '').map((line) =>
-        this.changeFromDiffLine(line)
-      ),
+      output
+        .split('\n')
+        .filter((line) => line !== '')
+        .map((line) => this.changeFromDiffLine(line)),
     )
     return changes.filter((change): change is Change => change !== null)
   }
@@ -154,20 +156,22 @@ class ReviewGenerator {
   }
 
   private isRelevant(change: Change) {
-    return change.path.startsWith('bin/') ||
+    return (
+      change.path.startsWith('bin/') ||
       change.path.startsWith('src/') ||
       change.path.startsWith('tests/')
+    )
   }
 
   async generate() {
     const changes = (await this.collectChanges()).filter((change) =>
-      this.isRelevant(change)
+      this.isRelevant(change),
     )
-    const sourceChanges = changes.filter((change) =>
-      !change.path.startsWith('tests/')
+    const sourceChanges = changes.filter(
+      (change) => !change.path.startsWith('tests/'),
     )
     const testChanges = changes.filter((change) =>
-      change.path.startsWith('tests/')
+      change.path.startsWith('tests/'),
     )
     const sections: string[] = []
     if (sourceChanges.length > 0) {

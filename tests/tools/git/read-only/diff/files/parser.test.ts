@@ -25,10 +25,10 @@ describe('FileDiffParser', () => {
   })
 
   it('when a filter is provided, returns only paths in the filter', () => {
-    const parser = new FileDiffParser(
-      ` M src/a.ts\n?? src/b.ts\n M src/c.ts`,
-      ['src/a.ts', 'src/c.ts'],
-    )
+    const parser = new FileDiffParser(` M src/a.ts\n?? src/b.ts\n M src/c.ts`, [
+      'src/a.ts',
+      'src/c.ts',
+    ])
 
     const result = parser.parse()
 
@@ -39,10 +39,7 @@ describe('FileDiffParser', () => {
   })
 
   it('when a filter is provided and no paths match, returns an empty array', () => {
-    const parser = new FileDiffParser(
-      ` M src/a.ts\n?? src/b.ts`,
-      ['src/d.ts'],
-    )
+    const parser = new FileDiffParser(` M src/a.ts\n?? src/b.ts`, ['src/d.ts'])
 
     const result = parser.parse()
 

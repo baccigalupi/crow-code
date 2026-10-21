@@ -11,9 +11,7 @@ export class BlameParser {
   }
 
   parse() {
-    this.output
-      .split('\n')
-      .forEach((line) => this.parseLine(line))
+    this.output.split('\n').forEach((line) => this.parseLine(line))
 
     return this.lines
   }

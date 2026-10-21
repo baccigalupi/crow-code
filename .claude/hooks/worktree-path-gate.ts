@@ -35,10 +35,9 @@ try {
     hookSpecificOutput: {
       hookEventName: 'PreToolUse',
       permissionDecision: 'deny',
-      permissionDecisionReason:
-        `worktree-path-gate failed to classify this path: ${
-          (error as Error).message
-        }. Report this to the maintainer — it is a gate bug, not a bad path.`,
+      permissionDecisionReason: `worktree-path-gate failed to classify this path: ${
+        (error as Error).message
+      }. Report this to the maintainer — it is a gate bug, not a bad path.`,
     },
   })
   Deno.stdout.writeSync(new TextEncoder().encode(text))

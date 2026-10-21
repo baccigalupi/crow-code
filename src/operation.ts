@@ -20,11 +20,10 @@ export abstract class Operation<OperationArguments> implements AsyncOperation {
   protected abstract logPrefix: string
   protected subOperations: AsyncOperation[]
 
-  constructor(
-    { applicationData, operationArguments }: ApplicationOperationArguments<
-      OperationArguments
-    >,
-  ) {
+  constructor({
+    applicationData,
+    operationArguments,
+  }: ApplicationOperationArguments<OperationArguments>) {
     this.applicationData = applicationData
     this.operationArguments = operationArguments
     this.subOperations = []
@@ -41,14 +40,12 @@ export abstract class Operation<OperationArguments> implements AsyncOperation {
   abstract run(): Promise<AsyncOperation>
 
   protected subResults<Result>() {
-    return this.subOperations.map(
-      (operation) => (operation as AsyncOperationWithResult<Result>).result(),
+    return this.subOperations.map((operation) =>
+      (operation as AsyncOperationWithResult<Result>).result(),
     )
   }
 
-  protected async runSubOperation<T extends AsyncOperation>(
-    operation: T,
-  ) {
+  protected async runSubOperation<T extends AsyncOperation>(operation: T) {
     if (!this.succeeded) return operation
 
     await this.runNonBlockingOperation(operation)
@@ -82,6 +79,7 @@ export abstract class Operation<OperationArguments> implements AsyncOperation {
 
 export abstract class OperationWithResult<OperationArguments, Result>
   extends Operation<OperationArguments>
-  implements AsyncOperationWithResult<Result> {
+  implements AsyncOperationWithResult<Result>
+{
   abstract result(): Result
 }

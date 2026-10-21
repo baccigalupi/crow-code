@@ -3,9 +3,10 @@ import type { InputBuffer } from '../../types.ts'
 import type { PermissionInputs } from '../types.ts'
 
 const entries = (text: string) => {
-  return text.split(',').map((entry) => entry.trim()).filter((entry) =>
-    entry.length > 0
-  )
+  return text
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter((entry) => entry.length > 0)
 }
 
 const orDefault = (list: string[], defaultValue: string[]) => {
@@ -27,9 +28,10 @@ const readLists = ({ additionalRead, escalateRead }: PermissionInputs) => {
   }
 }
 
-const writeLists = (
-  { escalateWrite, allowedLocalScripts: scripts }: PermissionInputs,
-) => {
+const writeLists = ({
+  escalateWrite,
+  allowedLocalScripts: scripts,
+}: PermissionInputs) => {
   const defaults = defaultPermissions()
   return {
     escalateWrite: directoryList(escalateWrite, defaults.escalateWrite),

@@ -7,7 +7,7 @@ type RepoPathPromptProps = Pick<StepValues, 'repoDirectory'>
 export const RepoPathPrompt = ({ repoDirectory }: RepoPathPromptProps) => {
   return (
     <Prompt
-      label='What directory for the local repo crow setup'
+      label="What directory for the local repo crow setup"
       input={repoDirectory}
       defaultValue={defaultCrowRepoDirectory}
     />

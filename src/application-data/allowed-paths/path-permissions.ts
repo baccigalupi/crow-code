@@ -13,9 +13,10 @@ export class PathPermissions {
   private allowedDirectories: readonly string[]
   private cache: Map<string, boolean>
 
-  constructor(
-    { applicationData, allowedDirectories }: PathPermissionsArguments,
-  ) {
+  constructor({
+    applicationData,
+    allowedDirectories,
+  }: PathPermissionsArguments) {
     this.applicationData = applicationData
     this.allowedDirectories = allowedDirectories
     this.cache = new Map()
@@ -57,7 +58,8 @@ export class PathPermissions {
 
   private absolute(directories: string[]) {
     const envars = this.applicationData.envars
-    return expandHome({ directories, envars }).directories()
+    return expandHome({ directories, envars })
+      .directories()
       .map((directory) => resolve(this.runtime().cwd, directory))
   }
 

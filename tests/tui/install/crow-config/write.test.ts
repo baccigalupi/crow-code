@@ -33,7 +33,7 @@ describe('write', () => {
     const finished = new Promise((resolve) =>
       effect(() => {
         if (installData.step.value === 'done') resolve(true)
-      })
+      }),
     )
 
     installData.step.value = 'write'
@@ -72,7 +72,7 @@ describe('write', () => {
     const finished = new Promise((resolve) =>
       effect(() => {
         if (installData.step.value === 'done') resolve(true)
-      })
+      }),
     )
 
     installData.step.value = 'write'

@@ -59,20 +59,23 @@ export class CommitMessageMessages {
   private formatSubjects() {
     if (!this.includesSubjects()) return ''
 
-    const lines = this.request.recentSubjects.map((subject) => `- ${subject}`)
+    const lines = this.request.recentSubjects
+      .map((subject) => `- ${subject}`)
       .join('\n')
     return `Recent commit subjects:\n${lines}\n\n`
   }
 
   private includesSubjects() {
-    return this.request.includeRecentSubjects !== false &&
+    return (
+      this.request.includeRecentSubjects !== false &&
       this.request.recentSubjects.length > 0
+    )
   }
 
   private formatChanges() {
-    return this.request.changes.map((change) => this.formatChange(change)).join(
-      '\n\n',
-    )
+    return this.request.changes
+      .map((change) => this.formatChange(change))
+      .join('\n\n')
   }
 
   private formatChange(change: GitFileDiff) {

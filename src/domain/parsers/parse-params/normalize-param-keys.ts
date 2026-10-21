@@ -11,9 +11,7 @@ const addNormalizedKey = (
   return result
 }
 
-export const normalizeParamKeys = (
-  options: RecordParams,
-) => {
+export const normalizeParamKeys = (options: RecordParams) => {
   return Object.entries(options).reduce(
     (result, [key, value]) => addNormalizedKey(result, key, value),
     {},

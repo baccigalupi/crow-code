@@ -8,8 +8,10 @@ export class ReasoningParser {
   }
 
   supportsReasoning() {
-    return !this.isEmbedding() &&
+    return (
+      !this.isEmbedding() &&
       (this.hasReasoning() || this.hasReasoningParameter())
+    )
   }
 
   canDisableReasoning() {
@@ -45,7 +47,7 @@ export class ReasoningParser {
   private hasReasoningParameter() {
     const parameters = ['reasoning', 'include_reasoning', 'reasoning_effort']
     return this.model.supported_parameters.some((parameter) =>
-      parameters.includes(parameter)
+      parameters.includes(parameter),
     )
   }
 }

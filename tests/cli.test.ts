@@ -62,13 +62,15 @@ describe('run', () => {
     await run(applicationData)
 
     const rows = await database('providers').select('*')
-    expect(rows).toEqual([{
-      id: expect.any(Number),
-      name: 'ollama',
-      base_url: 'http://x',
-      models_path: null,
-      api_key_env_var: 'OLLAMA_KEY',
-    }])
+    expect(rows).toEqual([
+      {
+        id: expect.any(Number),
+        name: 'ollama',
+        base_url: 'http://x',
+        models_path: null,
+        api_key_env_var: 'OLLAMA_KEY',
+      },
+    ])
   })
 
   it('when git-commit is requested without a goal, reports the error on stderr and exits with code 1', async () => {
@@ -138,9 +140,7 @@ describe('run', () => {
     await run(applicationData)
 
     expect(consoleLog.mock.calls).toHaveLength(0)
-    expect(consoleError.mock.calls[0][0]).not.toContain(
-      'Usage: crow <command>',
-    )
+    expect(consoleError.mock.calls[0][0]).not.toContain('Usage: crow <command>')
   })
 
   it('when the command is unknown, prints out a help message', async () => {
@@ -152,9 +152,7 @@ describe('run', () => {
 
     await run(applicationData)
 
-    expect(consoleLog.mock.calls[0][0]).toContain(
-      'Usage: crow <command>',
-    )
+    expect(consoleLog.mock.calls[0][0]).toContain('Usage: crow <command>')
   })
 
   it('when -h is passed, writes help text without invoking command dependencies', async () => {
@@ -229,7 +227,7 @@ describe('run', () => {
       consoleLog: () => {},
     })
     const close = spyOn(applicationData, 'close').mockImplementation(() =>
-      Promise.resolve()
+      Promise.resolve(),
     )
 
     await run(applicationData)
@@ -249,52 +247,48 @@ describe('run', () => {
 
     await run(applicationData)
 
-    expect(consoleLog.mock.calls[0][0]).toContain(
-      'Usage: crow <command>',
-    )
+    expect(consoleLog.mock.calls[0][0]).toContain('Usage: crow <command>')
   })
 
-  it(
-    'when no arguments are given, launches the repl and exits on interrupt',
-    async () => {
-      const cwd = join(fixturesDirectory, 'cli')
-      await mkdir(join(cwd, '.crow'), { recursive: true })
-      await writeFile(
-        join(cwd, '.crow', 'config.json'),
-        JSON.stringify({
-          crowGlobalDirectory: 'crow-global',
-          envFile: 'crow-global/.env',
-          permissions: {
-            ignore: [],
-            additionalRead: [],
-            additionalWrite: [],
-            escalateRead: [],
-            escalateWrite: [],
-            allowedLocalScripts: [],
-          },
-        }),
-      )
+  it('when no arguments are given, launches the repl and exits on interrupt', async () => {
+    const cwd = join(fixturesDirectory, 'cli')
+    await mkdir(join(cwd, '.crow'), { recursive: true })
+    await writeFile(
+      join(cwd, '.crow', 'config.json'),
+      JSON.stringify({
+        crowGlobalDirectory: 'crow-global',
+        envFile: 'crow-global/.env',
+        permissions: {
+          ignore: [],
+          additionalRead: [],
+          additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
+          allowedLocalScripts: [],
+        },
+      }),
+    )
 
-      const child = spawn(process.execPath, [
-        join(process.cwd(), 'bin', 'crow'),
-      ], {
+    const child = spawn(
+      process.execPath,
+      [join(process.cwd(), 'bin', 'crow')],
+      {
         cwd,
         stdio: 'ignore',
         signal: AbortSignal.timeout(60_000),
-      })
-      const exitCode = new Promise<number | null>((resolve) => {
-        child.once('exit', (code) => resolve(code))
-      })
-      // The sqlite file proves the real builder opened and migrated the database;
-      // the buffer covers the remaining gap to Runner.listen() registering SIGINT.
-      while (!existsSync(join(cwd, 'crow-global', 'crow.db'))) {
-        await new Promise((resolve) => setTimeout(resolve, 100))
-      }
-      await new Promise((resolve) => setTimeout(resolve, 1_000))
+      },
+    )
+    const exitCode = new Promise<number | null>((resolve) => {
+      child.once('exit', (code) => resolve(code))
+    })
+    // The sqlite file proves the real builder opened and migrated the database;
+    // the buffer covers the remaining gap to Runner.listen() registering SIGINT.
+    while (!existsSync(join(cwd, 'crow-global', 'crow.db'))) {
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1_000))
 
-      child.kill('SIGINT')
-      expect(await exitCode).toBe(1)
-    },
-    60_000,
-  )
+    child.kill('SIGINT')
+    expect(await exitCode).toBe(1)
+  }, 60_000)
 })

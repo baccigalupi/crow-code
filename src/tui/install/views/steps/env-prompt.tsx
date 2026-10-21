@@ -9,7 +9,7 @@ export const EnvPrompt = ({ globalDirectory, envFile }: EnvPromptProps) => {
 
   return (
     <Prompt
-      label='Credentials .env file'
+      label="Credentials .env file"
       input={envFile}
       defaultValue={defaultValue}
     />

@@ -32,10 +32,7 @@ describe('getOllamaModels', () => {
     const mockFetch = mockFetchSuccess(fixture)
     const applicationData = mockApplicationData({ logger, fetch: mockFetch })
 
-    const result = await getOllamaModels(
-      provider,
-      applicationData,
-    )
+    const result = await getOllamaModels(provider, applicationData)
 
     expect(result).toHaveLength(3)
     expect(result[0].id).toBe('qwen3-coder:30b')
@@ -63,10 +60,7 @@ describe('getOllamaModels', () => {
     const applicationData = mockApplicationData({ logger, fetch: mockFetch })
     const database = await applicationData.database()
 
-    await getOllamaModels(
-      provider,
-      applicationData,
-    )
+    await getOllamaModels(provider, applicationData)
 
     const rows = await database('models')
     expect(rows).toHaveLength(1)
@@ -94,10 +88,7 @@ describe('getOllamaModels', () => {
     const mockFetch = mockFetchSuccess({ models: [] })
     const applicationData = mockApplicationData({ logger, fetch: mockFetch })
 
-    await getOllamaModels(
-      provider,
-      applicationData,
-    )
+    await getOllamaModels(provider, applicationData)
 
     expect(mockFetch.calls).toHaveLength(1)
     expect(mockFetch.calls[0]).toBe('http://other.local:11434/api/tags')
@@ -122,10 +113,7 @@ describe('getOllamaModels', () => {
     const applicationData = mockApplicationData({ logger, fetch: mockFetch })
     const database = await applicationData.database()
 
-    const result = await getOllamaModels(
-      provider,
-      applicationData,
-    )
+    const result = await getOllamaModels(provider, applicationData)
 
     expect(result).toEqual([])
     expect(await database('models')).toEqual([])
@@ -150,10 +138,7 @@ describe('getOllamaModels', () => {
     const applicationData = mockApplicationData({ logger, fetch: mockFetch })
     const database = await applicationData.database()
 
-    const result = await getOllamaModels(
-      provider,
-      applicationData,
-    )
+    const result = await getOllamaModels(provider, applicationData)
 
     expect(result).toEqual([])
     expect(await database('models')).toEqual([])

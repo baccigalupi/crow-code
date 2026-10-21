@@ -11,8 +11,10 @@ type TaskArguments = {
 
 type FindFilesArguments = ApplicationOperationArguments<TaskArguments>
 
-export class FindFiles
-  extends ReadOnlyFileOperation<TaskArguments, PathListing> {
+export class FindFiles extends ReadOnlyFileOperation<
+  TaskArguments,
+  PathListing
+> {
   protected override logPrefix = 'Find files: '
   private paths: string[] = []
 

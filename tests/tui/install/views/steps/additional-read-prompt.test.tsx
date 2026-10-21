@@ -21,9 +21,7 @@ describe('additional-read-prompt', () => {
       <AdditionalReadPrompt additionalRead={additionalRead} />,
     )
 
-    expect(lastFrame()).toContain(
-      'Additional read directories: /docs, ~/notes',
-    )
+    expect(lastFrame()).toContain('Additional read directories: /docs, ~/notes')
     expect(lastFrame()).not.toContain('(none)')
   })
 })

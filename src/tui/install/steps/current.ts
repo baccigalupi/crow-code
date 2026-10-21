@@ -34,8 +34,10 @@ export class CurrentStep {
   }
 
   current() {
-    return this.all().find((step) => step.name === this.step()) ||
+    return (
+      this.all().find((step) => step.name === this.step()) ||
       new DefaultStep(this.installStore)
+    )
   }
 
   all() {

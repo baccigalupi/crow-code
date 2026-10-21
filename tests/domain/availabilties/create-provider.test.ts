@@ -6,13 +6,10 @@ describe('create provider availability', () => {
   it('saves a provider availability record', async () => {
     const applicationData = mockApplicationData()
 
-    const creator = await createProviderAvailability(
-      applicationData,
-      {
-        providerId: 1,
-        reason: 'no-api-key',
-      },
-    ).run()
+    const creator = await createProviderAvailability(applicationData, {
+      providerId: 1,
+      reason: 'no-api-key',
+    }).run()
 
     expect(creator.success()).toBe(true)
     expect(creator.result()).toEqual({

@@ -57,17 +57,21 @@ export class MoveFile extends OperationWithResult<TaskArguments, MoveResult> {
   }
 
   private exists(path: string) {
-    return this.runSubOperation(pathExists({
-      applicationData: this.applicationData,
-      operationArguments: { path },
-    }))
+    return this.runSubOperation(
+      pathExists({
+        applicationData: this.applicationData,
+        operationArguments: { path },
+      }),
+    )
   }
 
   private async ensureParentDirectory() {
-    await this.runSubOperation(makeDirectory({
-      applicationData: this.applicationData,
-      operationArguments: { path: dirname(this.operationArguments.to) },
-    }))
+    await this.runSubOperation(
+      makeDirectory({
+        applicationData: this.applicationData,
+        operationArguments: { path: dirname(this.operationArguments.to) },
+      }),
+    )
   }
 
   private async rename() {

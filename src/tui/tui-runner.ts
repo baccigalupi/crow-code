@@ -67,14 +67,14 @@ export class TuiRunner {
   private listen() {
     const { runtime } = this.applicationData
     this.signals.forEach((signal) =>
-      runtime.addSignalListener(signal, this.interrupt)
+      runtime.addSignalListener(signal, this.interrupt),
     )
   }
 
   private unlisten() {
     const { runtime } = this.applicationData
     this.signals.forEach((signal) =>
-      runtime.removeSignalListener(signal, this.interrupt)
+      runtime.removeSignalListener(signal, this.interrupt),
     )
   }
 

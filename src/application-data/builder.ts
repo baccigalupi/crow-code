@@ -67,10 +67,12 @@ export class ApplicationDataBuilder extends OperationWithResult<
   }
 
   private async openDatabase() {
-    await this.runNonBlockingOperation(verifyDatabase({
-      database: () => this.applicationData.database(),
-      logger: this.logger,
-    }))
+    await this.runNonBlockingOperation(
+      verifyDatabase({
+        database: () => this.applicationData.database(),
+        logger: this.logger,
+      }),
+    )
   }
 
   private async repositoryRoot() {
@@ -83,10 +85,10 @@ export class ApplicationDataBuilder extends OperationWithResult<
   }
 }
 
-export const buildApplicationData = (
-  { path = '', runtime = defaultRuntime() }: ApplicationDataBuilderArguments =
-    {},
-) => {
+export const buildApplicationData = ({
+  path = '',
+  runtime = defaultRuntime(),
+}: ApplicationDataBuilderArguments = {}) => {
   return new ApplicationDataBuilder({
     applicationData: new ApplicationData(),
     operationArguments: { path, runtime },

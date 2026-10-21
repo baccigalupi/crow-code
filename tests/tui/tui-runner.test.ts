@@ -68,10 +68,14 @@ describe('tui-runner', () => {
     const terminal = mockTerminal({ rawMode: false })
     const consoleError = mock()
     const applicationData = mockApplicationData({ consoleError })
-    const runner = createTuiRunner(applicationData, {
-      stdin: terminal.io.stdin,
-      stdout: terminal.io.stdout,
-    }, Agent)
+    const runner = createTuiRunner(
+      applicationData,
+      {
+        stdin: terminal.io.stdin,
+        stdout: terminal.io.stdout,
+      },
+      Agent,
+    )
 
     const status = await runner.status()
 

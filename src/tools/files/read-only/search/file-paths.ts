@@ -14,9 +14,11 @@ export class FilePaths {
   private filePattern?: string
   private include?: RegExp
 
-  constructor(
-    { directory, ignoredDirectories = [], filePattern }: FilePathsArguments,
-  ) {
+  constructor({
+    directory,
+    ignoredDirectories = [],
+    filePattern,
+  }: FilePathsArguments) {
     this.directory = directory
     this.ignoredDirectories = ignoredDirectories
     this.filePattern = filePattern

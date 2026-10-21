@@ -26,10 +26,7 @@ describe('saveCatalogModels', () => {
     }
     const other = { ...model, id: 'author/other' }
 
-    await saveCatalogModels(applicationData, 7, [
-      model,
-      other,
-    ]).run()
+    await saveCatalogModels(applicationData, 7, [model, other]).run()
 
     const rows = await database('models').orderBy('identifier')
     expect(rows).toHaveLength(2)
@@ -58,9 +55,7 @@ describe('saveCatalogModels', () => {
       reasoningOptions: { mandatory: false },
     }
 
-    await saveCatalogModels(applicationData, 1, [
-      model,
-    ]).run()
+    await saveCatalogModels(applicationData, 1, [model]).run()
 
     const row = await database('models').first()
     expect(row.identifier).toBe('author/model')
@@ -116,9 +111,7 @@ describe('saveCatalogModels', () => {
       identifier: 'author/kept',
     })
 
-    await saveCatalogModels(applicationData, 1, [
-      model,
-    ]).run()
+    await saveCatalogModels(applicationData, 1, [model]).run()
 
     const rows = await database('models').orderBy('identifier')
     expect(rows).toHaveLength(2)
@@ -186,8 +179,7 @@ describe('saveCatalogModels', () => {
     }
     await database('models').insert(storedModel)
 
-    await saveCatalogModels(applicationData, 1, [])
-      .run()
+    await saveCatalogModels(applicationData, 1, []).run()
 
     const rows = await database('models')
     expect(rows).toHaveLength(1)
@@ -260,9 +252,7 @@ describe('saveCatalogModels', () => {
       reasoningOptions: { mandatory: false },
     }
 
-    await saveCatalogModels(applicationData, 9, [
-      model,
-    ]).run()
+    await saveCatalogModels(applicationData, 9, [model]).run()
 
     const logged = loggerErrorSpy.mock.calls[0][0] as string
     expect(logged).toContain('Model catalog refresh rolled back:')

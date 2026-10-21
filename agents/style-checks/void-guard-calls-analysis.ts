@@ -27,7 +27,8 @@ const singleReturn = (
     node.type === 'BlockStatement' &&
     node.body.length === 1 &&
     node.body[0].type === 'ReturnStatement'
-  ) return node.body[0]
+  )
+    return node.body[0]
   return null
 }
 
@@ -51,8 +52,11 @@ const isElseIfBranch = (
 ): boolean => {
   const ancestors = context.sourceCode.getAncestors(node)
   const parent = ancestors[ancestors.length - 1]
-  return parent !== undefined && parent.type === 'IfStatement' &&
+  return (
+    parent !== undefined &&
+    parent.type === 'IfStatement' &&
     (parent as Deno.lint.IfStatement).alternate === node
+  )
 }
 
 const calleeTarget = (call: Deno.lint.CallExpression): LintNode => {
@@ -90,8 +94,7 @@ const plugin: Deno.lint.Plugin = {
             )
             context.report({
               node: target,
-              message:
-                `void-guard-candidate:${position.line}:${position.character}`,
+              message: `void-guard-candidate:${position.line}:${position.character}`,
             })
           },
         }
@@ -165,7 +168,9 @@ const returnTypeTail = (signature: string): string => {
     else if (character === '(') parens += 1
     else if (character === ')') parens -= 1
     else if (
-      character === ':' && parens === 0 && angles === 0 &&
+      character === ':' &&
+      parens === 0 &&
+      angles === 0 &&
       signature[i - 1] === ')'
     ) {
       return signature.slice(i + 1).trim()

@@ -120,10 +120,12 @@ describe('AllowedPaths', () => {
 
     const permissions = new AllowedPaths(appData).write()
 
-    expect(await permissions.allows(join(fixturesDirectory, 'tools', 'git')))
-      .toBe(true)
-    expect(await permissions.allows(join(fixturesDirectory, 'config.json')))
-      .toBe(false)
+    expect(
+      await permissions.allows(join(fixturesDirectory, 'tools', 'git')),
+    ).toBe(true)
+    expect(
+      await permissions.allows(join(fixturesDirectory, 'config.json')),
+    ).toBe(false)
   })
 
   it('when the runtime has its own working directory, bounds read permissions to it', async () => {
@@ -132,10 +134,12 @@ describe('AllowedPaths', () => {
 
     const permissions = new AllowedPaths(appData).read()
 
-    expect(await permissions.allows(join(fixturesDirectory, 'tools', 'git')))
-      .toBe(true)
-    expect(await permissions.allows(join(fixturesDirectory, 'config.json')))
-      .toBe(false)
+    expect(
+      await permissions.allows(join(fixturesDirectory, 'tools', 'git')),
+    ).toBe(true)
+    expect(
+      await permissions.allows(join(fixturesDirectory, 'config.json')),
+    ).toBe(false)
   })
 
   it('bounds git permissions to the repository root', async () => {
@@ -144,8 +148,9 @@ describe('AllowedPaths', () => {
 
     const permissions = new AllowedPaths(appData).git()
 
-    expect(await permissions.allows(join(fixturesDirectory, 'config.json')))
-      .toBe(true)
+    expect(
+      await permissions.allows(join(fixturesDirectory, 'config.json')),
+    ).toBe(true)
     expect(await permissions.allows(join('..', 'outside.txt'))).toBe(false)
   })
 
@@ -212,12 +217,15 @@ describe('AllowedPaths', () => {
 
     const permissions = new AllowedPaths(appData).git()
 
-    expect(await permissions.allows(join(fixturesDirectory, 'vendor', 'a')))
-      .toBe(false)
-    expect(await permissions.allows(join(fixturesDirectory, '.git', 'config')))
-      .toBe(false)
-    expect(await permissions.allows(join(fixturesDirectory, 'config.json')))
-      .toBe(true)
+    expect(
+      await permissions.allows(join(fixturesDirectory, 'vendor', 'a')),
+    ).toBe(false)
+    expect(
+      await permissions.allows(join(fixturesDirectory, '.git', 'config')),
+    ).toBe(false)
+    expect(
+      await permissions.allows(join(fixturesDirectory, 'config.json')),
+    ).toBe(true)
   })
 
   it('when asked twice, returns the same permissions', () => {

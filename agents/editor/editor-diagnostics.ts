@@ -89,9 +89,9 @@ const report = (server: LanguageServer, files: string[]) => {
   for (const file of files) {
     for (const diagnostic of server.diagnosticsFor(file)) {
       console.log(
-        `${relative(Deno.cwd(), file)}: ${
-          describe(diagnostic)
-        }: ${diagnostic.message}`,
+        `${relative(Deno.cwd(), file)}: ${describe(
+          diagnostic,
+        )}: ${diagnostic.message}`,
       )
       total += 1
       if (isBlocking(diagnostic)) {

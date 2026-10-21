@@ -9,9 +9,9 @@ import { Header } from './header.tsx'
 import { configPathViewModel } from './config-path-view-model.ts'
 import type { InstallAppProps } from '../types.ts'
 
-export const InstallApp = (
-  { installStore = sharedInstallStore }: InstallAppProps,
-) => {
+export const InstallApp = ({
+  installStore = sharedInstallStore,
+}: InstallAppProps) => {
   const { stdout } = useStdout()
   const installState = useInstallState(installStore)
   const { rowHeight, columnWidth } = installAppViewModel({ stdout })
@@ -19,7 +19,7 @@ export const InstallApp = (
   useKeypress(installStore)
 
   return (
-    <Box flexDirection='column' height={rowHeight} width={columnWidth}>
+    <Box flexDirection="column" height={rowHeight} width={columnWidth}>
       <Header />
       <ConfigPanel {...installState} />
       <StepPrompts

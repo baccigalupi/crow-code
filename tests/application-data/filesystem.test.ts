@@ -65,8 +65,9 @@ describe('filesystem', () => {
     expect(
       readFileSync(`${fixturesDirectory}/filesystem/beta.txt`, 'utf8'),
     ).toBe('one\n')
-    expect(() => statSync(`${fixturesDirectory}/filesystem/alpha.txt`))
-      .toThrow()
+    expect(() =>
+      statSync(`${fixturesDirectory}/filesystem/alpha.txt`),
+    ).toThrow()
   })
 
   it('removes a file', async () => {
@@ -76,8 +77,9 @@ describe('filesystem', () => {
 
     await filesystem.remove(`${fixturesDirectory}/filesystem/alpha.txt`)
 
-    expect(() => statSync(`${fixturesDirectory}/filesystem/alpha.txt`))
-      .toThrow()
+    expect(() =>
+      statSync(`${fixturesDirectory}/filesystem/alpha.txt`),
+    ).toThrow()
   })
 
   it('when the path exists, assertExists resolves', async () => {

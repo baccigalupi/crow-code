@@ -13,7 +13,7 @@ export const ollamaMissingModelResponse = () =>
       statusText: 'Not Found',
       headers: {
         'content-type': 'application/json',
-        'date': 'Thu, 01 Oct 2026 23:21:23 GMT',
+        date: 'Thu, 01 Oct 2026 23:21:23 GMT',
         'content-length': '107',
       },
     },

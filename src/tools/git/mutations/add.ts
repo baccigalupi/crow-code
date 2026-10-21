@@ -32,9 +32,7 @@ export class GitAdd extends GitExec<TaskArguments, string> {
   }
 }
 
-export const gitAdd = (
-  args: GitAddArguments | OptionalGitAddArguments,
-) => {
+export const gitAdd = (args: GitAddArguments | OptionalGitAddArguments) => {
   const classArguments = { operationArguments: {}, ...args }
   return new GitAdd(classArguments)
 }

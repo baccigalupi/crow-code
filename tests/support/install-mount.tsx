@@ -22,9 +22,10 @@ export const mountInstallApp = (
     confirmation: signal(true),
     ...state,
   }
-  const instance = render(
-    <InstallApp installStore={installStore} />,
-    { ...terminal.io, debug: true, exitOnCtrlC: false },
-  )
+  const instance = render(<InstallApp installStore={installStore} />, {
+    ...terminal.io,
+    debug: true,
+    exitOnCtrlC: false,
+  })
   return { terminal, instance }
 }

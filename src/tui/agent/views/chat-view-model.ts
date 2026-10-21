@@ -11,9 +11,11 @@ const historyLine = (entry: HistoryEntry) => {
   return { id: entry.id, text: entryText(entry) }
 }
 
-export const chatViewModel = (
-  { history, height, width }: ChatViewModelArguments,
-) => {
+export const chatViewModel = ({
+  history,
+  height,
+  width,
+}: ChatViewModelArguments) => {
   return {
     histories: visibleHistory(history, height, width).map(historyLine),
   }

@@ -15,12 +15,14 @@ describe('fetchProvider', () => {
     const mockFetch = mockFetchSuccess<ApiRecord>({ items: ['a'] })
     const applicationData = mockApplicationData({ fetch: mockFetch })
 
-    const result = (await fetchProvider<ApiRecord, string>(
-      applicationData,
-      'http://example.com',
-      (raw: ApiRecord): string[] => raw.items,
-      1000,
-    ).run()).result()
+    const result = (
+      await fetchProvider<ApiRecord, string>(
+        applicationData,
+        'http://example.com',
+        (raw: ApiRecord): string[] => raw.items,
+        1000,
+      ).run()
+    ).result()
 
     expect(result).toEqual(['a'])
   })
@@ -30,12 +32,14 @@ describe('fetchProvider', () => {
     const mockFetch = mockFetchError(500)
     const applicationData = mockApplicationData({ fetch: mockFetch })
 
-    const result = (await fetchProvider<ApiRecord, string>(
-      applicationData,
-      'http://example.com',
-      (): string[] => [],
-      1000,
-    ).run()).result()
+    const result = (
+      await fetchProvider<ApiRecord, string>(
+        applicationData,
+        'http://example.com',
+        (): string[] => [],
+        1000,
+      ).run()
+    ).result()
 
     expect(result).toEqual([])
   })
@@ -67,12 +71,14 @@ describe('fetchProvider', () => {
     const mockFetch = mockFetchRejected('network down')
     const applicationData = mockApplicationData({ fetch: mockFetch })
 
-    const result = (await fetchProvider<ApiRecord, string>(
-      applicationData,
-      'http://example.com',
-      (): string[] => [],
-      1000,
-    ).run()).result()
+    const result = (
+      await fetchProvider<ApiRecord, string>(
+        applicationData,
+        'http://example.com',
+        (): string[] => [],
+        1000,
+      ).run()
+    ).result()
 
     expect(result).toEqual([])
   })

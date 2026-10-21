@@ -113,9 +113,9 @@ describe('goals', () => {
 
   it('when the api call succeeds, the runner returns the goals', async () => {
     const logger = pino({ enabled: false })
-    const fixture = await loadFixture(
+    const fixture = (await loadFixture(
       'model-requests/ollama-goals-response.json',
-    ) as ChatCompletionJson
+    )) as ChatCompletionJson
     const fetch = mockFetchSuccess(fixture)
     const applicationData = mockApplicationData({
       logger,

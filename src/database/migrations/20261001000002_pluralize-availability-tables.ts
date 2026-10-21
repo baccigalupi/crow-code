@@ -1,10 +1,7 @@
 import type { Knex } from 'knex'
 
-const renameTable = (
-  database: Knex,
-  from: string,
-  to: string,
-) => database.schema.renameTable(from, to)
+const renameTable = (database: Knex, from: string, to: string) =>
+  database.schema.renameTable(from, to)
 
 export const up = async (database: Knex) => {
   await renameTable(

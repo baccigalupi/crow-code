@@ -8,12 +8,7 @@ export type DatabaseQueryArguments<Result, Serialized> = {
 }
 
 export type RecordParamValue =
-  | string
-  | number
-  | boolean
-  | null
-  | string[]
-  | DefaultReasoning
+  string | number | boolean | null | string[] | DefaultReasoning
 
 export type RecordParams = Record<string, RecordParamValue>
 
@@ -46,9 +41,8 @@ export type ModelWithProviderRow = ModelRow & {
   provider_api_key_env_var: string | null
 }
 
-export type ModelEntityRow =
-  & Partial<ModelWithProviderRow>
-  & Pick<
+export type ModelEntityRow = Partial<ModelWithProviderRow> &
+  Pick<
     ModelRow,
     | 'dynamic_delegation'
     | 'supported_parameters'

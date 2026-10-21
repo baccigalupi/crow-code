@@ -9,8 +9,10 @@ type TaskArguments = {
 
 type ReadFilesArguments = ApplicationOperationArguments<TaskArguments>
 
-export class ReadFiles
-  extends OperationWithResult<TaskArguments, FileContent[]> {
+export class ReadFiles extends OperationWithResult<
+  TaskArguments,
+  FileContent[]
+> {
   protected override logPrefix = 'Read files: '
 
   async run() {
@@ -27,7 +29,7 @@ export class ReadFiles
 
   private async readAll() {
     const reads = this.operationArguments.paths.map((path) => this.read(path))
-    this.subOperations.push(...await Promise.all(reads))
+    this.subOperations.push(...(await Promise.all(reads)))
   }
 
   private async read(path: string) {
@@ -44,8 +46,10 @@ export class ReadFiles
   }
 
   private allReadsFailed() {
-    return this.subOperations.length > 0 &&
+    return (
+      this.subOperations.length > 0 &&
       this.subOperations.every((operation) => !operation.success())
+    )
   }
 
   private failIfAllReadsFailed() {

@@ -21,8 +21,10 @@ describe('ModelApiRequest', () => {
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClient('[]'),
     })
-    const modelApiRequest = new class
-      extends ModelApiRequest<string, string[]> {
+    const modelApiRequest = new (class extends ModelApiRequest<
+      string,
+      string[]
+    > {
       protected override logPrefix = 'Test request: '
 
       protected override errorResponse() {
@@ -32,7 +34,7 @@ describe('ModelApiRequest', () => {
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
-    }({
+    })({
       applicationData,
       operationArguments: { modelEndpoint, requestData: 'build a cli' },
     })
@@ -54,8 +56,10 @@ describe('ModelApiRequest', () => {
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClient('[]'),
     })
-    const modelApiRequest = new class
-      extends ModelApiRequest<string, string[]> {
+    const modelApiRequest = new (class extends ModelApiRequest<
+      string,
+      string[]
+    > {
       protected override logPrefix = 'Test request: '
 
       protected override errorResponse() {
@@ -65,7 +69,7 @@ describe('ModelApiRequest', () => {
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
-    }({
+    })({
       applicationData,
       operationArguments: { modelEndpoint, requestData: 'build a cli' },
     })
@@ -95,8 +99,10 @@ describe('ModelApiRequest', () => {
         }),
       ),
     })
-    const modelApiRequest = new class
-      extends ModelApiRequest<string, string[]> {
+    const modelApiRequest = new (class extends ModelApiRequest<
+      string,
+      string[]
+    > {
       protected override logPrefix = 'Test request: '
 
       protected override errorResponse() {
@@ -106,7 +112,7 @@ describe('ModelApiRequest', () => {
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
-    }({
+    })({
       applicationData,
       operationArguments: { modelEndpoint, requestData: 'build a cli' },
     })
@@ -133,8 +139,10 @@ describe('ModelApiRequest', () => {
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClient('not json'),
     })
-    const modelApiRequest = new class
-      extends ModelApiRequest<string, string[]> {
+    const modelApiRequest = new (class extends ModelApiRequest<
+      string,
+      string[]
+    > {
       protected override logPrefix = 'Test request: '
 
       protected override errorResponse() {
@@ -144,7 +152,7 @@ describe('ModelApiRequest', () => {
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
-    }({
+    })({
       applicationData,
       operationArguments: { modelEndpoint, requestData: 'build a cli' },
     })
@@ -167,8 +175,10 @@ describe('ModelApiRequest', () => {
       chatClient: mockOpenAiClient('not json'),
     })
     const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
-    const modelApiRequest = new class
-      extends ModelApiRequest<string, string[]> {
+    const modelApiRequest = new (class extends ModelApiRequest<
+      string,
+      string[]
+    > {
       protected override logPrefix = 'Test request: '
 
       protected override errorResponse() {
@@ -178,7 +188,7 @@ describe('ModelApiRequest', () => {
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
-    }({
+    })({
       applicationData,
       operationArguments: { modelEndpoint, requestData: 'build a cli' },
     })
@@ -201,8 +211,10 @@ describe('ModelApiRequest', () => {
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClient('["unexpected"]'),
     })
-    const modelApiRequest = new class
-      extends ModelApiRequest<string, string[]> {
+    const modelApiRequest = new (class extends ModelApiRequest<
+      string,
+      string[]
+    > {
       protected override logPrefix = 'Test request: '
 
       protected override errorResponse() {
@@ -216,7 +228,7 @@ describe('ModelApiRequest', () => {
       protected override validateResponse() {
         return false
       }
-    }({
+    })({
       applicationData,
       operationArguments: { modelEndpoint, requestData: 'build a cli' },
     })
@@ -238,8 +250,10 @@ describe('ModelApiRequest', () => {
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClientError(500),
     })
-    const modelApiRequest = new class
-      extends ModelApiRequest<string, string[]> {
+    const modelApiRequest = new (class extends ModelApiRequest<
+      string,
+      string[]
+    > {
       protected override logPrefix = 'Test request: '
 
       protected override errorResponse() {
@@ -249,7 +263,7 @@ describe('ModelApiRequest', () => {
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
-    }({
+    })({
       applicationData,
       operationArguments: { modelEndpoint, requestData: 'build a cli' },
     })
@@ -272,7 +286,7 @@ describe('ModelApiRequest', () => {
       chatClient: mockOpenAiClientError(401),
     })
     const database = await applicationData.database()
-    const modelApiRequest = new class extends ModelApiRequest<string, string> {
+    const modelApiRequest = new (class extends ModelApiRequest<string, string> {
       protected override logPrefix = 'Test request: '
 
       protected override errorResponse() {
@@ -282,7 +296,7 @@ describe('ModelApiRequest', () => {
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
-    }({
+    })({
       applicationData,
       operationArguments: { modelEndpoint, requestData: 'build a cli' },
     })
@@ -306,7 +320,7 @@ describe('ModelApiRequest', () => {
       chatClient: mockOpenAiClientError(500),
     })
     const database = await applicationData.database()
-    const modelApiRequest = new class extends ModelApiRequest<string, string> {
+    const modelApiRequest = new (class extends ModelApiRequest<string, string> {
       protected override logPrefix = 'Test request: '
 
       protected override errorResponse() {
@@ -316,7 +330,7 @@ describe('ModelApiRequest', () => {
       protected getMessages(): ModelMessages[] {
         return [{ role: 'user', content: this.requestData }]
       }
-    }({
+    })({
       applicationData,
       operationArguments: { modelEndpoint, requestData: 'build a cli' },
     })

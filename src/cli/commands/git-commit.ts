@@ -21,8 +21,9 @@ export class GitCommit extends Command {
   }
 
   private hasGoal() {
-    return typeof this.options.goal === 'string' &&
-      this.options.goal.trim() !== ''
+    return (
+      typeof this.options.goal === 'string' && this.options.goal.trim() !== ''
+    )
   }
 
   private goal() {

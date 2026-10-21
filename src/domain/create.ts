@@ -2,8 +2,11 @@ import type { Knex } from 'knex'
 import type { EmptyRecord } from './types.ts'
 import { OperationWithResult } from '../operation.ts'
 
-export abstract class CreateRecord<TParams, TRow, TRecord = unknown>
-  extends OperationWithResult<TParams, TRecord | EmptyRecord> {
+export abstract class CreateRecord<
+  TParams,
+  TRow,
+  TRecord = unknown,
+> extends OperationWithResult<TParams, TRecord | EmptyRecord> {
   protected abstract readonly tableName: string
   protected override succeeded = false
   private record?: TRecord
@@ -27,15 +30,17 @@ export abstract class CreateRecord<TParams, TRow, TRecord = unknown>
   }
 
   private failureMessage(error: Error) {
-    return `insert into ${this.tableName} failed: ${error.message}; ` +
+    return (
+      `insert into ${this.tableName} failed: ${error.message}; ` +
       `params: ${JSON.stringify(this.params())}`
+    )
   }
 
   private async save() {
     const database = await this.database()
-    const rows = await database(this.tableName)
+    const rows = (await database(this.tableName)
       .insert(this.params())
-      .returning('*') as TRow[]
+      .returning('*')) as TRow[]
     this.record = this.serialize(rows)
     this.succeeded = true
   }

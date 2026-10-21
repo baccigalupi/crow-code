@@ -15,16 +15,19 @@ export class Environment {
   private runtimeEnvironment: EnvironmentValues
   private fileValues: EnvironmentValues = {}
 
-  constructor(
-    { runtimeEnvironment, filesystem, path = '' }: EnvironmentArguments,
-  ) {
+  constructor({
+    runtimeEnvironment,
+    filesystem,
+    path = '',
+  }: EnvironmentArguments) {
     this.runtimeEnvironment = runtimeEnvironment
     this.filesystem = filesystem
     this.path = path
   }
 
   async run() {
-    const text = await this.filesystem.readTextFile(this.expandedPath())
+    const text = await this.filesystem
+      .readTextFile(this.expandedPath())
       .catch(() => '')
     this.fileValues = dotenv.parse(text)
     return this
@@ -47,8 +50,10 @@ export class Environment {
   }
 
   private expandedPath() {
-    return expandHome({ directories: [this.path], envars: this })
-      .directories()[0] || ''
+    return (
+      expandHome({ directories: [this.path], envars: this }).directories()[0] ||
+      ''
+    )
   }
 }
 

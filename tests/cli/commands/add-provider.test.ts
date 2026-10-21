@@ -48,13 +48,15 @@ describe('AddProvider', () => {
     }).run()
 
     const rows = await database('providers').select('*')
-    expect(rows).toEqual([{
-      id: expect.any(Number),
-      name: 'ollama',
-      base_url: 'http://x',
-      models_path: null,
-      api_key_env_var: 'OLLAMA_KEY',
-    }])
+    expect(rows).toEqual([
+      {
+        id: expect.any(Number),
+        name: 'ollama',
+        base_url: 'http://x',
+        models_path: null,
+        api_key_env_var: 'OLLAMA_KEY',
+      },
+    ])
   })
 
   it('when run succeeds, writes the .env key reminder with the default path', async () => {

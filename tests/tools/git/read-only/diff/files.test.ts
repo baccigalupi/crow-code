@@ -20,18 +20,15 @@ describe('gitDiffFiles', () => {
       { path: 'src/tools/git/diff/files.ts', changeType: ' M' },
       { path: 'tests/support/fixtures.ts', changeType: ' M' },
       {
-        path:
-          'tests/support/fixtures/model-discovery/populate/providers/nous-models.json',
+        path: 'tests/support/fixtures/model-discovery/populate/providers/nous-models.json',
         changeType: 'R ',
       },
       {
-        path:
-          'tests/support/fixtures/model-discovery/populate/providers/ollama-models.json',
+        path: 'tests/support/fixtures/model-discovery/populate/providers/ollama-models.json',
         changeType: 'R ',
       },
       {
-        path:
-          'tests/support/fixtures/model-discovery/populate/providers/openrouter-models.json',
+        path: 'tests/support/fixtures/model-discovery/populate/providers/openrouter-models.json',
         changeType: 'R ',
       },
       { path: 'tests/tools/git/diff/files.test.ts', changeType: ' M' },

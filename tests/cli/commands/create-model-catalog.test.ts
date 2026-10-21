@@ -7,10 +7,10 @@ import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('CreateModelCatalog', () => {
   beforeEach(() =>
-    clearDirectory(join(fixturesDirectory, 'create-model-catalog'))
+    clearDirectory(join(fixturesDirectory, 'create-model-catalog')),
   )
   afterEach(() =>
-    clearDirectory(join(fixturesDirectory, 'create-model-catalog'))
+    clearDirectory(join(fixturesDirectory, 'create-model-catalog')),
   )
 
   it('when the command is create-model-catalog, matches', () => {

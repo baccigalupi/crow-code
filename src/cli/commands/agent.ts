@@ -5,7 +5,6 @@ export class Agent extends CommandTui {
   protected runTui = runAgentTui
 
   isMatch() {
-    return this.commands.length === 0 &&
-      Object.keys(this.options).length === 0
+    return this.commands.length === 0 && Object.keys(this.options).length === 0
   }
 }

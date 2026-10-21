@@ -16,10 +16,13 @@ export class RequestedPath {
   private cwd: string
   private filesystem: Filesystem
 
-  constructor(
-    { path, allowedDirectories, ignoredPaths, cwd, filesystem }:
-      RequestedPathArguments,
-  ) {
+  constructor({
+    path,
+    allowedDirectories,
+    ignoredPaths,
+    cwd,
+    filesystem,
+  }: RequestedPathArguments) {
     this.path = path
     this.allowedDirectories = allowedDirectories
     this.ignoredPaths = ignoredPaths
@@ -39,7 +42,7 @@ export class RequestedPath {
 
   private inAllowedDirectory(path: string) {
     return this.allowedDirectories.some((directory) =>
-      this.within(directory, path)
+      this.within(directory, path),
     )
   }
 

@@ -348,9 +348,7 @@ describe('style-check code plugin', () => {
     const diagnostics = Deno.lint.runPlugin(plugin, 'src/example.ts', source)
 
     expect(diagnostics).toHaveLength(1)
-    expect(diagnostics[0].message).toContain(
-      'no nested function declarations',
-    )
+    expect(diagnostics[0].message).toContain('no nested function declarations')
   })
 
   it('when an arrow function is nested inside a function, does not report it', () => {

@@ -123,10 +123,7 @@ describe('env-vars', () => {
     const directory = join(fixturesDirectory, 'env-vars', 'quoted')
     mkdirSync(directory, { recursive: true })
     const path = join(directory, 'values.env')
-    writeFileSync(
-      path,
-      'export A=1\n# c\nB="x\\ny" # t\nC=\'z\'\n',
-    )
+    writeFileSync(path, 'export A=1\n# c\nB="x\\ny" # t\nC=\'z\'\n')
     const environment = new Environment({
       runtimeEnvironment: {},
       filesystem: defaultFilesystem(),

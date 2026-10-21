@@ -6,8 +6,7 @@ import { mockCommand } from '../../../../support/mock-command.ts'
 
 describe('gitUntrackedChange', () => {
   it('when git diff exits with code 1, returns the diff for the given path', async () => {
-    const stdout =
-      `diff --git a/src/new-file.ts b/src/new-file.ts\nnew file mode 100644\nindex 0000000..9daeafb\n--- /dev/null\n+++ b/src/new-file.ts\n@@ -0,0 +1 @@\n+hello\n`
+    const stdout = `diff --git a/src/new-file.ts b/src/new-file.ts\nnew file mode 100644\nindex 0000000..9daeafb\n--- /dev/null\n+++ b/src/new-file.ts\n@@ -0,0 +1 @@\n+hello\n`
     const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({

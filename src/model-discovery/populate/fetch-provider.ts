@@ -2,8 +2,10 @@ import type { ApplicationData } from '../../application-data/application-data.ts
 import type { FetchProviderArguments } from '../types.ts'
 import { OperationWithResult } from '../../operation.ts'
 
-export class FetchProvider<ApiRecord, T>
-  extends OperationWithResult<FetchProviderArguments<ApiRecord, T>, T[]> {
+export class FetchProvider<ApiRecord, T> extends OperationWithResult<
+  FetchProviderArguments<ApiRecord, T>,
+  T[]
+> {
   protected override logPrefix = 'Fetch provider: '
   private records: T[] = []
 

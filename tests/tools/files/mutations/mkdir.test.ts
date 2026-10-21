@@ -48,9 +48,9 @@ describe('makeDirectory', () => {
       path: `${fixturesDirectory}/mkdir/existing`,
       created: false,
     })
-    expect(
-      statSync(`${fixturesDirectory}/mkdir/existing`).isDirectory(),
-    ).toBe(true)
+    expect(statSync(`${fixturesDirectory}/mkdir/existing`).isDirectory()).toBe(
+      true,
+    )
   })
 
   it('when the path is outside the allowed directories, fails without creating', async () => {
@@ -141,9 +141,9 @@ describe('makeDirectory', () => {
       path: `${fixturesDirectory}/mkdir/alpha.txt`,
       created: false,
     })
-    expect(
-      readFileSync(`${fixturesDirectory}/mkdir/alpha.txt`, 'utf8'),
-    ).toBe('one\ntwo\n')
+    expect(readFileSync(`${fixturesDirectory}/mkdir/alpha.txt`, 'utf8')).toBe(
+      'one\ntwo\n',
+    )
     expect(loggerErrorSpy.mock.calls.length).toBeGreaterThan(0)
   })
 })

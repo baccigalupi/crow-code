@@ -35,7 +35,8 @@ export class GitCompareDiff extends ExecCli<TaskArguments, GitCompare> {
   // --no-index reads files, not repository state, so read permissions apply.
   protected override async allowedToRun() {
     const { from, to } = this.operationArguments
-    const allowed = await this.applicationData.readPathPermissions()
+    const allowed = await this.applicationData
+      .readPathPermissions()
       .allowsEvery([from, to])
     if (!allowed) this.fail(`path not allowed: ${from}, ${to}`)
     return allowed

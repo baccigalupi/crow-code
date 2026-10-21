@@ -15,8 +15,7 @@ describe('build', () => {
       additionalRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
       allowedLocalScripts: emptyBuffer(),
-    })
-      .all()
+    }).all()
 
     expect(config.crowRepoDirectory).toBe('.crow')
     expect(config.crowGlobalDirectory).toBe('~/.crow')
@@ -35,8 +34,7 @@ describe('build', () => {
       additionalRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
       allowedLocalScripts: emptyBuffer(),
-    })
-      .all()
+    }).all()
 
     expect(config.crowRepoDirectory).toBe('./lib')
     expect(config.crowGlobalDirectory).toBe('/opt/crow')

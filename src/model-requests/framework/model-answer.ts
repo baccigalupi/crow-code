@@ -43,7 +43,8 @@ export class ModelAnswer {
   }
 
   private strippedAnswer() {
-    return this.rawAnswer().trim()
+    return this.rawAnswer()
+      .trim()
       .replace(/^```[a-zA-Z]*\n?/, '')
       .replace(/```$/, '')
       .trim()
@@ -59,9 +60,6 @@ export class ModelAnswer {
   }
 }
 
-export const modelAnswer = (
-  json: ChatCompletionJson,
-  benchmark: Timespan,
-) => {
+export const modelAnswer = (json: ChatCompletionJson, benchmark: Timespan) => {
   return new ModelAnswer(json, benchmark)
 }

@@ -14,9 +14,7 @@ describe('model-answer', () => {
   })
 
   it('when the response has no usage cost, returns zero', async () => {
-    const json = await loadFixture(
-      'model-requests/ollama-goals-response.json',
-    )
+    const json = await loadFixture('model-requests/ollama-goals-response.json')
 
     const response = modelAnswer(json, { startTime: 10, endTime: 25 })
 
@@ -29,27 +27,27 @@ describe('model-answer', () => {
     )
     json.usage.completion_tokens_details.reasoning_tokens = 12
 
-    const score = modelAnswer(json, { startTime: 10, endTime: 25 })
-      .tokenEffort()
+    const score = modelAnswer(json, {
+      startTime: 10,
+      endTime: 25,
+    }).tokenEffort()
 
     expect(score).toBe(102)
   })
 
   it('when reasoning tokens are absent, returns the completion tokens', async () => {
-    const json = await loadFixture(
-      'model-requests/ollama-goals-response.json',
-    )
+    const json = await loadFixture('model-requests/ollama-goals-response.json')
 
-    const score = modelAnswer(json, { startTime: 10, endTime: 25 })
-      .tokenEffort()
+    const score = modelAnswer(json, {
+      startTime: 10,
+      endTime: 25,
+    }).tokenEffort()
 
     expect(score).toBe(77)
   })
 
   it('when benchmarked, returns the request duration', async () => {
-    const json = await loadFixture(
-      'model-requests/ollama-goals-response.json',
-    )
+    const json = await loadFixture('model-requests/ollama-goals-response.json')
     const answer = modelAnswer(json, { startTime: 10, endTime: 25 })
 
     const duration = answer.requestDuration()
@@ -84,9 +82,7 @@ describe('model-answer', () => {
   })
 
   it('when the answer is plain json, returns the parsed answer', async () => {
-    const json = await loadFixture(
-      'model-requests/ollama-goals-response.json',
-    )
+    const json = await loadFixture('model-requests/ollama-goals-response.json')
 
     const response = modelAnswer(json, { startTime: 10, endTime: 25 })
 
@@ -118,9 +114,7 @@ describe('model-answer', () => {
   })
 
   it('when the answer is not json, returns undefined', async () => {
-    const json = await loadFixture(
-      'model-requests/ollama-goals-response.json',
-    )
+    const json = await loadFixture('model-requests/ollama-goals-response.json')
     json.choices[0].message.content = 'not json'
 
     const response = modelAnswer(json, { startTime: 10, endTime: 25 })

@@ -61,7 +61,7 @@ export class JsonRpcStream {
   private headerBoundary() {
     const separator = [13, 10, 13, 10]
     return this.buffer.findIndex((_, index) =>
-      separator.every((byte, offset) => this.buffer[index + offset] === byte)
+      separator.every((byte, offset) => this.buffer[index + offset] === byte),
     )
   }
 

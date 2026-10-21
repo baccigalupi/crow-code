@@ -11,9 +11,7 @@ describe('allowed-local-scripts-prompt', () => {
       <AllowedLocalScriptsPrompt allowedLocalScripts={allowedLocalScripts} />,
     )
 
-    expect(lastFrame()).toContain(
-      'Allowed local scripts: (./dev/*, ./agent/*)',
-    )
+    expect(lastFrame()).toContain('Allowed local scripts: (./dev/*, ./agent/*)')
   })
 
   it('when scripts are typed, shows them instead of the default', () => {

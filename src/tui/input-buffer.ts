@@ -9,22 +9,24 @@ const normalizeNewlines = (text: string): string =>
 
 export const insertText = (buffer: InputBuffer, text: string): InputBuffer => {
   const inserted = normalizeNewlines(text)
-  const next = buffer.text.slice(0, buffer.cursor) + inserted +
+  const next =
+    buffer.text.slice(0, buffer.cursor) +
+    inserted +
     buffer.text.slice(buffer.cursor)
   return { text: next, cursor: buffer.cursor + inserted.length }
 }
 
 export const deleteBackward = (buffer: InputBuffer): InputBuffer => {
   if (buffer.cursor === 0) return buffer
-  const text = buffer.text.slice(0, buffer.cursor - 1) +
-    buffer.text.slice(buffer.cursor)
+  const text =
+    buffer.text.slice(0, buffer.cursor - 1) + buffer.text.slice(buffer.cursor)
   return { text, cursor: buffer.cursor - 1 }
 }
 
 export const deleteForward = (buffer: InputBuffer): InputBuffer => {
   if (buffer.cursor >= buffer.text.length) return buffer
-  const text = buffer.text.slice(0, buffer.cursor) +
-    buffer.text.slice(buffer.cursor + 1)
+  const text =
+    buffer.text.slice(0, buffer.cursor) + buffer.text.slice(buffer.cursor + 1)
   return { text, cursor: buffer.cursor }
 }
 

@@ -43,9 +43,9 @@ class PopulateModels {
   }
 
   private skipProvider(name: string) {
-    this.applicationData.logger().info(
-      `Skipping provider "${name}" (no model getter registered)`,
-    )
+    this.applicationData
+      .logger()
+      .info(`Skipping provider "${name}" (no model getter registered)`)
     return Promise.resolve([])
   }
 }

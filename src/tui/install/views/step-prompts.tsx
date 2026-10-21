@@ -11,7 +11,7 @@ export const StepPrompts = ({ installStore, values }: StepPromptsProps) => {
   const { View } = stepPromptsViewModel(installStore)
 
   return (
-    <Box flexDirection='column' flexGrow={1} justifyContent='flex-end'>
+    <Box flexDirection="column" flexGrow={1} justifyContent="flex-end">
       <View {...values} />
     </Box>
   )

@@ -12,10 +12,7 @@ const addAllowedKey = (
   return result
 }
 
-export const filterKeys = (
-  options: RecordParams,
-  allowedKeys: string[],
-) => {
+export const filterKeys = (options: RecordParams, allowedKeys: string[]) => {
   return Object.entries(options).reduce(
     (result, [key, value]) => addAllowedKey(result, allowedKeys, key, value),
     {},

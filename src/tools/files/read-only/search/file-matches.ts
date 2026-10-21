@@ -17,9 +17,13 @@ export class FileMatches {
   private context: number
   private filesystem: Filesystem
 
-  constructor(
-    { directory, path, pattern, context = 0, filesystem }: FileMatchesArguments,
-  ) {
+  constructor({
+    directory,
+    path,
+    pattern,
+    context = 0,
+    filesystem,
+  }: FileMatchesArguments) {
     this.directory = directory
     this.path = path
     this.pattern = pattern

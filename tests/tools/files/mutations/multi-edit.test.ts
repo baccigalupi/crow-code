@@ -104,12 +104,14 @@ describe('multiEdit', () => {
     const batch = multiEdit({
       applicationData,
       operationArguments: {
-        edits: [{
-          path: alpha,
-          oldString: 'two',
-          newString: 'TWO',
-          replaceAll: true,
-        }],
+        edits: [
+          {
+            path: alpha,
+            oldString: 'two',
+            newString: 'TWO',
+            replaceAll: true,
+          },
+        ],
       },
     })
     await batch.run()
@@ -250,9 +252,7 @@ describe('multiEdit', () => {
     await batch.run()
 
     expect(batch.success()).toBe(false)
-    expect(batch.reason).toBe(
-      `beta boom; failed to restore: ${alpha}`,
-    )
+    expect(batch.reason).toBe(`beta boom; failed to restore: ${alpha}`)
   })
 
   it('when no edits are given, succeeds with no results', async () => {

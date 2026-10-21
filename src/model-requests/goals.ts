@@ -23,8 +23,7 @@ export class GetGoals extends ModelApiRequest<string, string[]> {
   }
 
   protected override validateResponse(json: Json) {
-    return Array.isArray(json) &&
-      json.every((goal) => typeof goal === 'string')
+    return Array.isArray(json) && json.every((goal) => typeof goal === 'string')
   }
 
   protected getMessages() {

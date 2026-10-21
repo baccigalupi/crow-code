@@ -67,9 +67,7 @@ describe('Command', () => {
     await failing.run()
     failing.reportFailure()
 
-    expect(consoleError.mock.calls[0][0]).toBe(
-      'Error: no widgets for first',
-    )
+    expect(consoleError.mock.calls[0][0]).toBe('Error: no widgets for first')
   })
 
   it('when a command fails without a command word, names the command in words', async () => {

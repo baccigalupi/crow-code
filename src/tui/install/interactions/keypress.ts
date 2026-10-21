@@ -46,8 +46,11 @@ export class Keypress {
   }
 
   private activeEdit() {
-    textInput({ text: this.activeText(), input: this.input, key: this.key })
-      .edit()
+    textInput({
+      text: this.activeText(),
+      input: this.input,
+      key: this.key,
+    }).edit()
   }
 
   private activeText() {
@@ -55,9 +58,11 @@ export class Keypress {
   }
 
   private isQuit() {
-    return this.key.escape === true ||
+    return (
+      this.key.escape === true ||
       (this.key.ctrl === true && this.input === 'c') ||
       this.input === '\x1b'
+    )
   }
 }
 

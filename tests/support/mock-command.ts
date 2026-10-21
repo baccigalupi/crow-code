@@ -2,10 +2,7 @@ import { spyOn } from 'bun:test'
 import { Runtime } from '../../src/application-data/runtime.ts'
 import type { Command, CommandOptions } from '../../src/types.ts'
 
-type CommandSpy = (
-  command: string,
-  options: CommandOptions,
-) => void
+type CommandSpy = (command: string, options: CommandOptions) => void
 
 type MockCommandOptions = {
   stdout?: string | (string | Error)[]
@@ -27,16 +24,14 @@ const stdoutSequence = (stdout: string | (string | Error)[]) => {
   }
 }
 
-export const mockCommand = (
-  {
-    stdout = '',
-    stderr = '',
-    success = true,
-    code = 0,
-    outputError,
-    commandSpy,
-  }: MockCommandOptions = {},
-): Command => {
+export const mockCommand = ({
+  stdout = '',
+  stderr = '',
+  success = true,
+  code = 0,
+  outputError,
+  commandSpy,
+}: MockCommandOptions = {}): Command => {
   const nextStdout = stdoutSequence(stdout)
 
   return async (executable, options) => {
@@ -54,9 +49,10 @@ export const mockCommand = (
   }
 }
 
-export const mockRuntime = (
-  { args = [], ...command }: { args?: string[] } & MockCommandOptions = {},
-) => {
+export const mockRuntime = ({
+  args = [],
+  ...command
+}: { args?: string[] } & MockCommandOptions = {}) => {
   const runtime = new Runtime(process)
   spyOn(runtime, 'args').mockReturnValue(args)
   spyOn(runtime, 'runCommand').mockImplementation(mockCommand(command))

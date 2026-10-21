@@ -4,14 +4,14 @@ import type { StepValues } from '../../types.ts'
 
 type EscalateWritePromptProps = Pick<StepValues, 'escalateWrite'>
 
-export const EscalateWritePrompt = (
-  { escalateWrite }: EscalateWritePromptProps,
-) => {
+export const EscalateWritePrompt = ({
+  escalateWrite,
+}: EscalateWritePromptProps) => {
   const { defaultValue } = escalateWritePromptViewModel()
 
   return (
     <Prompt
-      label='Escalate write directories'
+      label="Escalate write directories"
       input={escalateWrite}
       defaultValue={defaultValue}
     />

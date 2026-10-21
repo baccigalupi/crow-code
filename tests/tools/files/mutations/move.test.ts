@@ -34,11 +34,10 @@ describe('moveFile', () => {
       from: `${fixturesDirectory}/move/alpha.txt`,
       to: `${fixturesDirectory}/move/beta.txt`,
     })
-    expect(
-      readFileSync(`${fixturesDirectory}/move/beta.txt`, 'utf8'),
-    ).toBe('one\ntwo\n')
-    expect(() => statSync(`${fixturesDirectory}/move/alpha.txt`))
-      .toThrow()
+    expect(readFileSync(`${fixturesDirectory}/move/beta.txt`, 'utf8')).toBe(
+      'one\ntwo\n',
+    )
+    expect(() => statSync(`${fixturesDirectory}/move/alpha.txt`)).toThrow()
   })
 
   it('creates missing parent directories of the destination', async () => {
@@ -96,9 +95,9 @@ describe('moveFile', () => {
     await move.run()
 
     expect(move.success()).toBe(false)
-    expect(
-      readFileSync(`${fixturesDirectory}/move/alpha.txt`, 'utf8'),
-    ).toBe('one\n')
+    expect(readFileSync(`${fixturesDirectory}/move/alpha.txt`, 'utf8')).toBe(
+      'one\n',
+    )
     expect(() => statSync(to)).toThrow()
     expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Move file: path not allowed: ${to}`,
@@ -122,12 +121,12 @@ describe('moveFile', () => {
     await move.run()
 
     expect(move.success()).toBe(false)
-    expect(
-      readFileSync(`${fixturesDirectory}/move/alpha.txt`, 'utf8'),
-    ).toBe('one\n')
-    expect(
-      readFileSync(`${fixturesDirectory}/move/beta.txt`, 'utf8'),
-    ).toBe('two\n')
+    expect(readFileSync(`${fixturesDirectory}/move/alpha.txt`, 'utf8')).toBe(
+      'one\n',
+    )
+    expect(readFileSync(`${fixturesDirectory}/move/beta.txt`, 'utf8')).toBe(
+      'two\n',
+    )
     expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Move file: destination already exists: ${fixturesDirectory}/move/beta.txt`,
     )
@@ -171,9 +170,7 @@ describe('moveFile', () => {
     await move.run()
 
     expect(move.success()).toBe(false)
-    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
-      'Move file: rename exploded',
-    )
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe('Move file: rename exploded')
   })
 
   it('moves a directory with its contents', async () => {
@@ -191,9 +188,9 @@ describe('moveFile', () => {
     await move.run()
 
     expect(move.success()).toBe(true)
-    expect(
-      readFileSync(`${fixturesDirectory}/move/beta/one.txt`, 'utf8'),
-    ).toBe('one\n')
+    expect(readFileSync(`${fixturesDirectory}/move/beta/one.txt`, 'utf8')).toBe(
+      'one\n',
+    )
     expect(() => statSync(`${fixturesDirectory}/move/alpha`)).toThrow()
   })
 })

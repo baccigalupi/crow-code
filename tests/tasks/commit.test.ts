@@ -155,9 +155,7 @@ describe('commit', () => {
     await task.run()
 
     expect(task.success()).toBe(false)
-    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
-      'Commit: no changes to commit',
-    )
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe('Commit: no changes to commit')
     expect(fetch.calls.length).toBe(0)
   })
 

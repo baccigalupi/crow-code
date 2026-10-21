@@ -6,10 +6,11 @@ import { mockCommand } from '../../../../support/mock-command.ts'
 
 describe('gitLogHistory', () => {
   it('when no arguments are given, returns the last twenty history entries', async () => {
-    const stdout = [
-      'abc123\x1fAda\x1f2026-10-01T10:00:00+00:00\x1fAdd login',
-      'def456\x1fGrace\x1f2026-10-02T11:00:00+00:00\x1fFix tests',
-    ].join('\n') + '\n'
+    const stdout =
+      [
+        'abc123\x1fAda\x1f2026-10-01T10:00:00+00:00\x1fAdd login',
+        'def456\x1fGrace\x1f2026-10-02T11:00:00+00:00\x1fFix tests',
+      ].join('\n') + '\n'
     const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ stdout, commandSpy }),

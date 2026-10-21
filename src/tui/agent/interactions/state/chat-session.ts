@@ -15,7 +15,7 @@ export class ChatSession {
   readonly columns = signal(80)
   readonly history = signal<readonly HistoryEntry[]>([])
   readonly inputRows = computed(() =>
-    measureRows(this.buffer.value.text, this.columns.value)
+    measureRows(this.buffer.value.text, this.columns.value),
   )
 
   constructor(columns: number) {

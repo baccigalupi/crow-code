@@ -27,7 +27,10 @@ describe('TakeSnapshot', () => {
     await operation.run()
 
     expect(operation.success()).toBe(true)
-    expect(operation.result()).toEqual([[alpha, 'one\n'], [beta, 'two\n']])
+    expect(operation.result()).toEqual([
+      [alpha, 'one\n'],
+      [beta, 'two\n'],
+    ])
   })
 
   it('when a file cannot be read, fails with the read error', async () => {

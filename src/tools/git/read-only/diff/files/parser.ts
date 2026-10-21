@@ -66,9 +66,7 @@ export class FileDiffParser {
   private unquote(path: string) {
     if (this.pathIsWrappedInQuotes(path)) return path
 
-    return path.slice(1, -1)
-      .replace(/\\\\/g, '\\')
-      .replace(/\\"/g, '"')
+    return path.slice(1, -1).replace(/\\\\/g, '\\').replace(/\\"/g, '"')
   }
 
   private pathIsWrappedInQuotes(path: string) {

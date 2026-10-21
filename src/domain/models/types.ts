@@ -7,23 +7,13 @@ export type ModelQuery = Knex.QueryBuilder<
 >
 
 export type CostTier =
-  | 'free'
-  | 'cheap'
-  | 'budget'
-  | 'standard'
-  | 'premium'
-  | 'ultra'
+  'free' | 'cheap' | 'budget' | 'standard' | 'premium' | 'ultra'
 
 export type CostOptions = {
   costTier: CostTier
 }
 
-export type ReasoningType =
-  | 'chat'
-  | 'dynamic'
-  | 'low'
-  | 'medium'
-  | 'high'
+export type ReasoningType = 'chat' | 'dynamic' | 'low' | 'medium' | 'high'
 
 export type ReasoningOptions = {
   type: ReasoningType

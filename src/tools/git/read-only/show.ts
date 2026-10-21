@@ -10,8 +10,10 @@ type TaskArguments = {
 
 type GitShowArguments = ApplicationOperationArguments<TaskArguments>
 
-export class GitShow
-  extends GitExec<TaskArguments, FileContent | GitFileDiff[]> {
+export class GitShow extends GitExec<
+  TaskArguments,
+  FileContent | GitFileDiff[]
+> {
   protected override logPrefix = 'Git show: '
 
   executableOptions() {

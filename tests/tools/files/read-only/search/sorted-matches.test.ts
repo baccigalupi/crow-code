@@ -54,11 +54,13 @@ describe('sorted-matches', () => {
     })
     await operation.run()
 
-    expect(operation.result()).toEqual([{
-      path: 'nested/beta.md',
-      line: 1,
-      text: '# Beta',
-    }])
+    expect(operation.result()).toEqual([
+      {
+        path: 'nested/beta.md',
+        line: 1,
+        text: '# Beta',
+      },
+    ])
   })
 
   it('when no directories are ignored, includes node_modules matches', async () => {
@@ -117,11 +119,13 @@ describe('sorted-matches', () => {
     })
     await operation.run()
 
-    expect(operation.result()).toEqual([{
-      path: 'nested/beta.md',
-      line: 1,
-      text: '# Beta',
-    }])
+    expect(operation.result()).toEqual([
+      {
+        path: 'nested/beta.md',
+        line: 1,
+        text: '# Beta',
+      },
+    ])
   })
 
   it('when the pattern is an invalid regex, fails with the regex error and no matches', async () => {
