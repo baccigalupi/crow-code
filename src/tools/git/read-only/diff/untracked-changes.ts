@@ -58,11 +58,12 @@ export class GitUntrackedChanges extends OperationWithResult<
   private async getUntrackedChanges() {
     if (!this.succeeded) return
 
-    this.untrackedChanges = await Promise.all(
-      this.untrackedFiles.map((file) =>
-        this.runSubOperation(this.untrackedChange(file.path)),
-      ),
-    )
+    await this.untrackedFiles.reduce(async (previous, file) => {
+      await previous
+      const change = this.untrackedChange(file.path)
+      this.untrackedChanges.push(await this.runNonBlockingOperation(change))
+    }, Promise.resolve())
+    this.failFromSubOperations()
   }
 
   private untrackedChange(path: string) {
