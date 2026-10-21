@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { render } from 'ink-testing-library'
 import { render as inkRender } from 'ink'
 import { signal } from '@preact/signals-core'

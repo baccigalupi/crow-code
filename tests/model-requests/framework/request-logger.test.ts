@@ -1,6 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { spy } from '@std/testing/mock'
+import { describe, expect, it, spyOn } from 'bun:test'
 import pino from 'pino'
 import { requestLogger } from '../../../src/model-requests/framework/request-logger.ts'
 import type { RequestContext } from '../../../src/model-requests/types.ts'
@@ -8,7 +6,7 @@ import type { RequestContext } from '../../../src/model-requests/types.ts'
 describe('RequestLogger', () => {
   it('when the network error has a cause, logs it', () => {
     const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
+    const loggerErrorSpy = spyOn(logger, 'error')
     const error = new Error('socket hangup', { cause: 'ECONNRESET' })
     const context: RequestContext = {
       modelEndpoint: {
@@ -24,7 +22,7 @@ describe('RequestLogger', () => {
     requestLogger(logger, 'https://example.com/api/v1', error, context)
       .networkError()
 
-    const logged = loggerErrorSpy.calls[0].args[0] as string
+    const logged = loggerErrorSpy.mock.calls[0][0] as string
     expect(logged).toContain('Error: POST https://example.com/api/v1')
     expect(logged).toContain('model=test-model provider=1 duration=5ms')
     expect(logged).toContain('failed to connect:')
@@ -36,7 +34,7 @@ describe('RequestLogger', () => {
 
   it('when the network error is a TypeError (what fetch throws), logs name and message only', () => {
     const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
+    const loggerErrorSpy = spyOn(logger, 'error')
     const error = new TypeError('fetch failed')
     const context: RequestContext = {
       modelEndpoint: {
@@ -52,7 +50,7 @@ describe('RequestLogger', () => {
     requestLogger(logger, 'https://example.com/api/v1', error, context)
       .networkError()
 
-    const logged = loggerErrorSpy.calls[0].args[0] as string
+    const logged = loggerErrorSpy.mock.calls[0][0] as string
     expect(logged).toContain('Error: POST https://example.com/api/v1')
     expect(logged).toContain('model=test-model provider=1 duration=5ms')
     expect(logged).toContain('error: TypeError: fetch failed')

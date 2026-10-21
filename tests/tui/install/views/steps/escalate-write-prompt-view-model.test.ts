@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { escalateWritePromptViewModel } from '../../../../../src/tui/install/views/steps/escalate-write-prompt-view-model.ts'
 
 describe('escalate-write-prompt-view-model', () => {

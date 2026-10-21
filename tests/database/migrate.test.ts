@@ -1,23 +1,22 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it, spyOn } from 'bun:test'
 import knex from 'knex'
 import pino from 'pino'
-import { spy } from '@std/testing/mock'
+import { BunSqliteClient } from '../../src/database/bun-sqlite-client.ts'
 import { migrateDatabase } from '../../src/database/migrate.ts'
 
 describe('migrate', () => {
   it('when a migration is applied, logs its name', async () => {
     const logger = pino({ enabled: false })
-    using infoSpy = spy(logger, 'info')
+    const infoSpy = spyOn(logger, 'info')
     const database = knex({
-      client: 'better-sqlite3',
+      client: BunSqliteClient,
       connection: { filename: ':memory:' },
       useNullAsDefault: true,
     })
 
     await migrateDatabase(database, logger)
 
-    expect(String(infoSpy.calls[0].args[0])).toMatch(
+    expect(String(infoSpy.mock.calls[0][0])).toMatch(
       /^Applied migration \d{14}_/,
     )
   })

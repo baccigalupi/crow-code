@@ -1,6 +1,5 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
+import { join } from 'node:path'
 import { CreateModelCatalog } from '../../../src/cli/commands/create-model-catalog.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
 import { mockFetchSuccess } from '../../support/mock-fetch.ts'

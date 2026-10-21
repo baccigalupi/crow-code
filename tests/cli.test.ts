@@ -1,8 +1,16 @@
-import { afterEach, beforeEach, describe, it, mock } from 'node:test'
-import { expect } from '@std/expect'
-import { exists } from '@std/fs'
-import { join } from '@std/path'
-import { assertSpyCall, assertSpyCalls, spy, stub } from '@std/testing/mock'
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  mock,
+  spyOn,
+} from 'bun:test'
+import { spawn } from 'node:child_process'
+import { existsSync } from 'node:fs'
+import { mkdir, writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
 import pino from 'pino'
 import { run } from '../src/cli.ts'
 import { clearDirectory, fixturesDirectory } from './support/fixtures.ts'
@@ -64,9 +72,9 @@ describe('run', () => {
   })
 
   it('when git-commit is requested without a goal, reports the error on stderr and exits with code 1', async () => {
-    const consoleLog = mock.fn()
-    const consoleError = mock.fn()
-    const exit = spy()
+    const consoleLog = mock()
+    const consoleError = mock()
+    const exit = mock()
     const applicationData = mockApplicationData({
       args: ['git-commit', 'src/a.ts'],
       consoleLog,
@@ -76,16 +84,16 @@ describe('run', () => {
 
     await run(applicationData)
 
-    assertSpyCalls(exit, 1)
-    assertSpyCall(exit, 0, { args: [1] })
-    expect(consoleError.mock.calls[0].arguments[0]).toBe(
+    expect(exit.mock.calls).toHaveLength(1)
+    expect(exit).toHaveBeenNthCalledWith(1, 1)
+    expect(consoleError.mock.calls[0][0]).toBe(
       'Error: missing --goal=<goal> for git-commit',
     )
     expect(consoleLog.mock.calls).toHaveLength(0)
   })
 
   it('when the command succeeds, exits with code 0', async () => {
-    const exit = spy()
+    const exit = mock()
     const applicationData = mockApplicationData({
       args: ['-V'],
       consoleLog: () => {},
@@ -94,14 +102,14 @@ describe('run', () => {
 
     await run(applicationData)
 
-    assertSpyCalls(exit, 1)
-    assertSpyCall(exit, 0, { args: [0] })
+    expect(exit.mock.calls).toHaveLength(1)
+    expect(exit).toHaveBeenNthCalledWith(1, 0)
   })
 
   it('when the command throws, logs the error and exits with code 1', async () => {
     const logger = pino({ enabled: false })
-    using error = spy(logger, 'error')
-    const exit = spy()
+    const error = spyOn(logger, 'error')
+    const exit = mock()
     const applicationData = mockApplicationData({
       args: ['-V'],
       logger,
@@ -113,13 +121,13 @@ describe('run', () => {
 
     await run(applicationData)
 
-    assertSpyCall(exit, 0, { args: [1] })
-    expect(error.calls).toHaveLength(1)
+    expect(exit).toHaveBeenNthCalledWith(1, 1)
+    expect(error.mock.calls).toHaveLength(1)
   })
 
   it('when git-commit is requested, does not write usage', async () => {
-    const consoleLog = mock.fn()
-    const consoleError = mock.fn()
+    const consoleLog = mock()
+    const consoleError = mock()
     const applicationData = mockApplicationData({
       args: ['git-commit', '--goal=add login'],
       consoleLog,
@@ -130,13 +138,13 @@ describe('run', () => {
     await run(applicationData)
 
     expect(consoleLog.mock.calls).toHaveLength(0)
-    expect(consoleError.mock.calls[0].arguments[0]).not.toContain(
+    expect(consoleError.mock.calls[0][0]).not.toContain(
       'Usage: crow <command>',
     )
   })
 
   it('when the command is unknown, prints out a help message', async () => {
-    const consoleLog = mock.fn()
+    const consoleLog = mock()
     const applicationData = mockApplicationData({
       args: ['unknown'],
       consoleLog,
@@ -144,7 +152,7 @@ describe('run', () => {
 
     await run(applicationData)
 
-    expect(consoleLog.mock.calls[0].arguments[0]).toContain(
+    expect(consoleLog.mock.calls[0][0]).toContain(
       'Usage: crow <command>',
     )
   })
@@ -220,15 +228,17 @@ describe('run', () => {
       args: ['-V'],
       consoleLog: () => {},
     })
-    using close = stub(applicationData, 'close', () => Promise.resolve())
+    const close = spyOn(applicationData, 'close').mockImplementation(() =>
+      Promise.resolve()
+    )
 
     await run(applicationData)
 
-    expect(close.calls).toHaveLength(1)
+    expect(close.mock.calls).toHaveLength(1)
   })
 
   it('when an unsupported option is passed, writes usage without invoking command dependencies', async () => {
-    const consoleLog = mock.fn()
+    const consoleLog = mock()
     const applicationData = mockApplicationData({
       args: ['--unknown'],
       consoleLog,
@@ -239,61 +249,52 @@ describe('run', () => {
 
     await run(applicationData)
 
-    expect(consoleLog.mock.calls[0].arguments[0]).toContain(
+    expect(consoleLog.mock.calls[0][0]).toContain(
       'Usage: crow <command>',
     )
   })
 
-  it('when no arguments are given, launches the repl and exits on interrupt', async () => {
-    const cwd = join(fixturesDirectory, 'cli')
-    await Deno.mkdir(join(cwd, '.crow'), { recursive: true })
-    await Deno.writeTextFile(
-      join(cwd, '.crow', 'config.json'),
-      JSON.stringify({
-        crowGlobalDirectory: 'crow-global',
-        envFile: 'crow-global/.env',
-        permissions: {
-          ignore: [],
-          additionalRead: [],
-          additionalWrite: [],
-          escalateRead: [],
-          escalateWrite: [],
-          allowedLocalScripts: [],
-        },
-      }),
-    )
+  it(
+    'when no arguments are given, launches the repl and exits on interrupt',
+    async () => {
+      const cwd = join(fixturesDirectory, 'cli')
+      await mkdir(join(cwd, '.crow'), { recursive: true })
+      await writeFile(
+        join(cwd, '.crow', 'config.json'),
+        JSON.stringify({
+          crowGlobalDirectory: 'crow-global',
+          envFile: 'crow-global/.env',
+          permissions: {
+            ignore: [],
+            additionalRead: [],
+            additionalWrite: [],
+            escalateRead: [],
+            escalateWrite: [],
+            allowedLocalScripts: [],
+          },
+        }),
+      )
 
-    const child = new Deno.Command(Deno.execPath(), {
-      args: [
-        'run',
-        '--allow-read',
-        '--allow-write',
-        '--allow-env',
-        '--allow-net',
-        '--allow-ffi',
-        '--allow-run=git',
-        '--allow-sys=hostname',
-        join(Deno.cwd(), 'bin', 'crow'),
-      ],
-      cwd,
-      env: {
-        DENO_COVERAGE_DIR: Deno.env.get('DENO_COVERAGE_DIR') ??
-          join(Deno.cwd(), 'coverage'),
-      },
-      stdin: 'null',
-      stdout: 'null',
-      stderr: 'null',
-      signal: AbortSignal.timeout(60_000),
-    }).spawn()
-    // The sqlite file proves the real builder opened and migrated the database;
-    // the buffer covers the remaining gap to Runner.listen() registering SIGINT.
-    while (!await exists(join(cwd, 'crow-global', 'crow.db'))) {
-      await new Promise((resolve) => setTimeout(resolve, 100))
-    }
-    await new Promise((resolve) => setTimeout(resolve, 1_000))
+      const child = spawn(process.execPath, [
+        join(process.cwd(), 'bin', 'crow'),
+      ], {
+        cwd,
+        stdio: 'ignore',
+        signal: AbortSignal.timeout(60_000),
+      })
+      const exitCode = new Promise<number | null>((resolve) => {
+        child.once('exit', (code) => resolve(code))
+      })
+      // The sqlite file proves the real builder opened and migrated the database;
+      // the buffer covers the remaining gap to Runner.listen() registering SIGINT.
+      while (!existsSync(join(cwd, 'crow-global', 'crow.db'))) {
+        await new Promise((resolve) => setTimeout(resolve, 100))
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1_000))
 
-    child.kill('SIGINT')
-    const status = await child.status
-    expect(status.code).toBe(1)
-  })
+      child.kill('SIGINT')
+      expect(await exitCode).toBe(1)
+    },
+    60_000,
+  )
 })

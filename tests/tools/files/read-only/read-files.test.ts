@@ -1,7 +1,5 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join, resolve } from '@std/path'
-import { spy } from '@std/testing/mock'
+import { describe, expect, it, spyOn } from 'bun:test'
+import { join, resolve } from 'node:path'
 import { readFiles } from '../../../../src/tools/files/read-only/read-files.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { fixturesDirectory } from '../../../support/fixtures.ts'
@@ -35,7 +33,7 @@ describe('readFiles', () => {
     const applicationData = mockApplicationData()
     const alphaPath = join(fixturesDirectory, 'tools', 'files', 'alpha.txt')
     const missingPath = join(fixturesDirectory, 'tools', 'files', 'missing.txt')
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const files = readFiles({
       applicationData,
@@ -47,8 +45,8 @@ describe('readFiles', () => {
     expect(files.result()).toEqual([
       { path: alphaPath, text: 'one\ntwo\nthree\n' },
     ])
-    expect(loggerErrorSpy.calls[0].args[0]).toContain(
-      'Read file: No such file or directory',
+    expect(loggerErrorSpy.mock.calls[0][0]).toContain(
+      'Read file: ENOENT: no such file or directory',
     )
   })
 
@@ -61,7 +59,7 @@ describe('readFiles', () => {
       'files',
       'also-missing.txt',
     )
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const files = readFiles({
       applicationData,
@@ -71,13 +69,13 @@ describe('readFiles', () => {
 
     expect(files.success()).toBe(false)
     expect(files.result()).toEqual([])
-    expect(loggerErrorSpy.calls[0].args[0]).toContain(
-      'Read file: No such file or directory',
+    expect(loggerErrorSpy.mock.calls[0][0]).toContain(
+      'Read file: ENOENT: no such file or directory',
     )
-    expect(loggerErrorSpy.calls[1].args[0]).toContain(
-      'Read file: No such file or directory',
+    expect(loggerErrorSpy.mock.calls[1][0]).toContain(
+      'Read file: ENOENT: no such file or directory',
     )
-    expect(loggerErrorSpy.calls[2].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[2][0]).toBe(
       'Read files: failed to read all 2 paths',
     )
   })
@@ -85,8 +83,8 @@ describe('readFiles', () => {
   it('when a path is not allowed, logs the failure and omits that path', async () => {
     const applicationData = mockApplicationData()
     const alphaPath = join(fixturesDirectory, 'tools', 'files', 'alpha.txt')
-    const outsidePath = resolve(Deno.cwd(), '..', 'outside.txt')
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const outsidePath = resolve(process.cwd(), '..', 'outside.txt')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const files = readFiles({
       applicationData,
@@ -98,7 +96,7 @@ describe('readFiles', () => {
     expect(files.result()).toEqual([
       { path: alphaPath, text: 'one\ntwo\nthree\n' },
     ])
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Read file: path not allowed: ${outsidePath}`,
     )
   })

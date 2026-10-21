@@ -1,9 +1,62 @@
 #!/usr/bin/env bash
-# Run the test suite with coverage. Any arguments are forwarded to deno test.
-# Use --coverage-raw-data-only so Deno does not emit an unfiltered summary/lcov
-# report; dev/coverage and agents/coverage-report generate the filtered reports.
+# Run the test suite. Tests run on bun:test, except the files below that
+# exercise Deno-only code (style-check lint plugins and hooks) until those move
+# to Bun; those run on deno test with coverage. Any arguments are forwarded:
+# paths in the Deno list go to deno test, everything else goes to bun test.
 set -euo pipefail
 
-# --clean empties the coverage directory before collecting profiles so stale
-# lcov/raw files do not accumulate across runs.
-exec deno test --clean --coverage --coverage-raw-data-only --allow-env --allow-read --allow-write --allow-ffi --allow-run --allow-sys=hostname "$@"
+deno_tests=(
+  tests/agents/style-checks/code.test.ts
+  tests/agents/style-checks/tsx.test.ts
+  tests/agents/style-checks/unit-tests.test.ts
+  tests/agents/style-checks/install-names.test.ts
+  tests/agents/style-checks/cli.test.ts
+  tests/agents/style-checks/void-guard-calls-analysis.test.ts
+  tests/agents/hooks/block-random-execs.test.ts
+  tests/agents/hooks/stop-after-blocked-tool.test.ts
+  tests/agents/hooks/dependency-lookup-context.test.ts
+  tests/agents/hooks/recovery-state.test.ts
+  tests/agents/hooks/stop-recovery.test.ts
+  tests/.claude/hooks/claude-command-gate.test.ts
+)
+
+is_deno_test() {
+  local arg="${1%/}"
+  local file
+  for file in "${deno_tests[@]}"; do
+    if [[ "$file" == "$arg" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+run_deno() {
+  # --clean empties the coverage directory before collecting profiles so stale
+  # lcov/raw files do not accumulate across runs.
+  # --no-check: Deno cannot type the Bun-native src these files reach; type
+  # checking moves to tsc in a later story.
+  deno test --no-check --clean --coverage --coverage-raw-data-only --allow-env --allow-read --allow-write --allow-ffi --allow-run --allow-sys=hostname "$@"
+}
+
+if [[ $# -eq 0 ]]; then
+  run_deno "${deno_tests[@]}"
+  exec bun test
+fi
+
+deno_args=()
+bun_args=()
+for arg in "$@"; do
+  if is_deno_test "$arg"; then
+    deno_args+=("$arg")
+  else
+    bun_args+=("$arg")
+  fi
+done
+
+if [[ ${#deno_args[@]} -gt 0 ]]; then
+  run_deno "${deno_args[@]}"
+fi
+if [[ ${#bun_args[@]} -gt 0 || ${#deno_args[@]} -eq 0 ]]; then
+  exec bun test "${bun_args[@]}"
+fi

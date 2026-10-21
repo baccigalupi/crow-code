@@ -1,6 +1,6 @@
 import { EventEmitter } from 'node:events'
 import { Writable } from 'node:stream'
-import { spy } from '@std/testing/mock'
+import { mock, spyOn } from 'bun:test'
 import type { ReplIo } from '../../src/tui/types.ts'
 
 export type MockTerminalOptions = {
@@ -51,7 +51,7 @@ class MockStdin extends EventEmitter {
 
 const mockStdin = (tty: boolean, rawMode: boolean) => {
   const stdin = new MockStdin(tty)
-  if (rawMode) Object.assign(stdin, { setRawMode: spy(() => {}) })
+  if (rawMode) Object.assign(stdin, { setRawMode: mock(() => {}) })
   return stdin
 }
 
@@ -61,12 +61,14 @@ const mockStdout = (columns: number, rows: number) => {
     columns,
     rows,
   })
-  const write = spy(stdout, 'write')
+  const write = spyOn(stdout, 'write')
   // Ink's waitUntilRenderFlush writes an empty barrier chunk; it is not a frame.
   const lastFrame = () => {
-    const frames = write.calls.filter((call) => String(call.args[0]) !== '')
+    const frames = write.mock.calls.filter((call: unknown[]) =>
+      String(call[0]) !== ''
+    )
     if (frames.length === 0) return ''
-    return String(frames[frames.length - 1].args[0])
+    return String(frames[frames.length - 1][0])
   }
   return { stdout, write, lastFrame }
 }

@@ -1,13 +1,11 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { assertSpyCall, spy } from '@std/testing/mock'
+import { describe, expect, it, mock } from 'bun:test'
 import { gitRepositoryRoot } from '../../../src/application-data/allowed-paths/repository-root.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { mockCommand } from '../../support/mock-command.ts'
 
 describe('gitRepositoryRoot', () => {
   it('returns the worktree root from git', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ commandSpy, stdout: '/some/repo\n' }),
       cwd: '/working/directory',
@@ -19,9 +17,11 @@ describe('gitRepositoryRoot', () => {
     })
     await root.run()
 
-    assertSpyCall(commandSpy, 0, {
-      args: ['git', { args: ['rev-parse', '--show-toplevel'] }],
-    })
+    expect(commandSpy).toHaveBeenNthCalledWith(
+      1,
+      'git',
+      expect.objectContaining({ args: ['rev-parse', '--show-toplevel'] }),
+    )
     expect(root.success()).toBe(true)
     expect(root.result()).toBe('/some/repo')
   })

@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
+import { mkdirSync, symlinkSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import {
   RequestedPath,
   requestedPath,
@@ -108,15 +108,15 @@ describe('requested-path', () => {
   })
 
   it('when the path points outside the allowed directory through a symlink, isAllowed is false', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/requested-path/inside`, {
+    mkdirSync(`${fixturesDirectory}/requested-path/inside`, {
       recursive: true,
     })
-    Deno.mkdirSync(`${fixturesDirectory}/requested-path/outside`)
-    Deno.writeTextFileSync(
+    mkdirSync(`${fixturesDirectory}/requested-path/outside`)
+    writeFileSync(
       `${fixturesDirectory}/requested-path/outside/secret.txt`,
       'one\n',
     )
-    Deno.symlinkSync(
+    symlinkSync(
       `${fixturesDirectory}/requested-path/outside`,
       `${fixturesDirectory}/requested-path/inside/escape`,
     )
@@ -167,10 +167,10 @@ describe('requested-path', () => {
   })
 
   it('when the real path is inside an ignored path, isAllowed is false', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/requested-path/ignored`, {
+    mkdirSync(`${fixturesDirectory}/requested-path/ignored`, {
       recursive: true,
     })
-    Deno.symlinkSync(
+    symlinkSync(
       `${fixturesDirectory}/requested-path/ignored`,
       `${fixturesDirectory}/requested-path/link`,
     )

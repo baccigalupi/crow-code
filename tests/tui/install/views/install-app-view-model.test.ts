@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { installAppViewModel } from '../../../../src/tui/install/views/install-app-view-model.ts'
 
 describe('install-app-view-model', () => {

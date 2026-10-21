@@ -1,5 +1,4 @@
-import { describe, it, mock } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it, mock } from 'bun:test'
 import { Help } from '../../../src/cli/commands/help.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
@@ -16,7 +15,7 @@ describe('Help', () => {
   })
 
   it('when run, writes the usage text', async () => {
-    const consoleLog = mock.fn()
+    const consoleLog = mock()
     const applicationData = mockApplicationData({
       args: ['--help'],
       consoleLog,
@@ -28,10 +27,10 @@ describe('Help', () => {
 
     await help.run()
 
-    expect(consoleLog.mock.calls[0].arguments[0]).toContain(
+    expect(consoleLog.mock.calls[0][0]).toContain(
       'Usage: crow <command>',
     )
-    expect(consoleLog.mock.calls[0].arguments[0]).toContain('add-provider')
-    expect(consoleLog.mock.calls[0].arguments[0]).toContain('install')
+    expect(consoleLog.mock.calls[0][0]).toContain('add-provider')
+    expect(consoleLog.mock.calls[0][0]).toContain('install')
   })
 })

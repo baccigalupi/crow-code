@@ -1,6 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { assertSpyCall, spy } from '@std/testing/mock'
+import { describe, expect, it, spyOn } from 'bun:test'
 import type { Knex } from 'knex'
 import pino from 'pino'
 import { saveCatalogModels } from '../../../src/model-discovery/populate/save-catalog-models.ts'
@@ -133,7 +131,7 @@ describe('saveCatalogModels', () => {
   it('when the payload lists the same model twice, logs the error and saves the rest', async () => {
     const logger = pino({ enabled: false })
     const applicationData = mockApplicationData({ logger })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
     const database = await applicationData.database()
     const model = {
       id: 'author/model',
@@ -160,17 +158,17 @@ describe('saveCatalogModels', () => {
     expect(rows).toHaveLength(2)
     expect(rows[0].identifier).toBe('author/model')
     expect(rows[1].identifier).toBe('author/other')
-    assertSpyCall(loggerErrorSpy, 0)
-    expect(loggerErrorSpy.calls[0].args[0]).toContain(
+    expect(loggerErrorSpy).toHaveBeenCalled()
+    expect(loggerErrorSpy.mock.calls[0][0]).toContain(
       'UNIQUE constraint failed',
     )
-    expect(loggerErrorSpy.calls).toHaveLength(1)
+    expect(loggerErrorSpy.mock.calls).toHaveLength(1)
   })
 
   it('when given no models, leaves existing rows unchanged', async () => {
     const logger = pino({ enabled: false })
     const applicationData = mockApplicationData({ logger })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
     const database = await applicationData.database()
     const storedModel = {
       provider_id: 1,
@@ -194,13 +192,13 @@ describe('saveCatalogModels', () => {
     const rows = await database('models')
     expect(rows).toHaveLength(1)
     expect(rows[0].identifier).toBe('author/old')
-    expect(loggerErrorSpy.calls).toHaveLength(0)
+    expect(loggerErrorSpy.mock.calls).toHaveLength(0)
   })
 
   it('when no model can be saved, rolls back the refresh and logs an error', async () => {
     const logger = pino({ enabled: false })
     const applicationData = mockApplicationData({ logger })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
     const database = await applicationData.database()
     await database('models').insert({
       provider_id: 1,
@@ -238,7 +236,7 @@ describe('saveCatalogModels', () => {
     const rows = await database('models')
     expect(rows).toHaveLength(1)
     expect(rows[0].identifier).toBe('author/kept')
-    expect(loggerErrorSpy.calls.length).toBeGreaterThan(0)
+    expect(loggerErrorSpy.mock.calls.length).toBeGreaterThan(0)
   })
 
   it('when the transaction fails, logs the rollback error', async () => {
@@ -246,7 +244,7 @@ describe('saveCatalogModels', () => {
       transaction: () => Promise.reject(new Error('disk gone')),
     } as unknown as Knex
     const applicationData = mockApplicationData().withDatabase(fakeDatabase)
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
     const model = {
       id: 'author/model',
       name: 'Model',
@@ -266,7 +264,7 @@ describe('saveCatalogModels', () => {
       model,
     ]).run()
 
-    const logged = loggerErrorSpy.calls[0].args[0] as string
+    const logged = loggerErrorSpy.mock.calls[0][0] as string
     expect(logged).toContain('Model catalog refresh rolled back:')
     expect(logged).toContain(
       'failed delete/insert on "models" for provider_id=9',

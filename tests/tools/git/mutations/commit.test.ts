@@ -1,14 +1,12 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { resolve } from '@std/path'
-import { assertSpyCall, spy } from '@std/testing/mock'
+import { describe, expect, it, mock, spyOn } from 'bun:test'
+import { resolve } from 'node:path'
 import { gitCommit } from '../../../../src/tools/git/mutations/commit.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { mockCommand } from '../../../support/mock-command.ts'
 
 describe('gitCommit', () => {
   it('commits with the requested message', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ stdout: 'committed', commandSpy }),
     })
@@ -19,15 +17,15 @@ describe('gitCommit', () => {
 
     await commit.run()
 
-    assertSpyCall(commandSpy, 0, {
-      args: ['git', { args: ['commit', '-m', 'Add login'] }],
+    expect(commandSpy).toHaveBeenNthCalledWith(1, 'git', {
+      args: ['commit', '-m', 'Add login'],
     })
     expect(commit.success()).toBe(true)
     expect(commit.result()).toBe('committed')
   })
 
   it('when paths are given, commits only those paths', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ stdout: 'committed', commandSpy }),
     })
@@ -38,11 +36,8 @@ describe('gitCommit', () => {
 
     await commit.run()
 
-    assertSpyCall(commandSpy, 0, {
-      args: [
-        'git',
-        { args: ['commit', '-m', 'msg', '--', 'src/a.ts', 'src/b.ts'] },
-      ],
+    expect(commandSpy).toHaveBeenNthCalledWith(1, 'git', {
+      args: ['commit', '-m', 'msg', '--', 'src/a.ts', 'src/b.ts'],
     })
     expect(commit.success()).toBe(true)
     expect(commit.result()).toBe('committed')
@@ -52,7 +47,7 @@ describe('gitCommit', () => {
     const applicationData = mockApplicationData({
       command: mockCommand({ success: false, stderr: 'commit failed' }),
     })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
     const commit = gitCommit({
       applicationData,
       operationArguments: { message: 'Add login' },
@@ -62,16 +57,16 @@ describe('gitCommit', () => {
 
     expect(commit.success()).toBe(false)
     expect(commit.result()).toBe('')
-    expect(loggerErrorSpy.calls[0].args[0]).toBe('Git commit: commit failed')
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe('Git commit: commit failed')
   })
 
   it('when a path is outside the repository, fails without running git', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ commandSpy }),
     })
-    const path = resolve(Deno.cwd(), '..', 'outside-git-commit.ts')
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const path = resolve(process.cwd(), '..', 'outside-git-commit.ts')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
     const commit = gitCommit({
       applicationData,
       operationArguments: { message: 'msg', paths: [path] },
@@ -79,20 +74,20 @@ describe('gitCommit', () => {
 
     await commit.run()
 
-    expect(commandSpy.calls.length).toBe(0)
+    expect(commandSpy.mock.calls.length).toBe(0)
     expect(commit.success()).toBe(false)
     expect(commit.result()).toBe('')
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Git commit: path not allowed: ${path}`,
     )
   })
 
   it('when a path uses git pathspec magic, fails without running git', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ commandSpy }),
     })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
     const commit = gitCommit({
       applicationData,
       operationArguments: { message: 'msg', paths: [':/'] },
@@ -100,10 +95,10 @@ describe('gitCommit', () => {
 
     await commit.run()
 
-    expect(commandSpy.calls.length).toBe(0)
+    expect(commandSpy.mock.calls.length).toBe(0)
     expect(commit.success()).toBe(false)
     expect(commit.result()).toBe('')
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       'Git commit: path not allowed: :/',
     )
   })

@@ -1,6 +1,5 @@
 import type { Dirent } from 'node:fs'
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { Entry } from '../../../../../src/tools/files/read-only/walk/entry.ts'
 
 describe('Entry', () => {

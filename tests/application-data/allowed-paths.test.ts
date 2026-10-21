@@ -1,7 +1,5 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join } from '@std/path/join'
-import { resolve } from '@std/path/resolve'
+import { describe, expect, it } from 'bun:test'
+import { join, resolve } from 'node:path'
 import { AllowedPaths } from '../../src/application-data/allowed-paths.ts'
 import { CrowConfig } from '../../src/application-data/config.ts'
 import { Runtime } from '../../src/application-data/runtime.ts'
@@ -34,7 +32,7 @@ describe('AllowedPaths', () => {
   })
 
   it('bounds write permissions to the working directory and configured write directories', async () => {
-    const home = resolve(Deno.cwd(), '..', 'outside-home')
+    const home = resolve(process.cwd(), '..', 'outside-home')
     const appData = mockApplicationData({
       envars: new Environment({
         runtimeEnvironment: { HOME: home },
@@ -62,7 +60,7 @@ describe('AllowedPaths', () => {
   })
 
   it('bounds read permissions to include configured write directories', async () => {
-    const home = resolve(Deno.cwd(), '..', 'outside-home')
+    const home = resolve(process.cwd(), '..', 'outside-home')
     const appData = mockApplicationData({
       envars: new Environment({
         runtimeEnvironment: { HOME: home },
@@ -89,7 +87,7 @@ describe('AllowedPaths', () => {
   })
 
   it('bounds read permissions to the working directory and configured read directories', async () => {
-    const home = resolve(Deno.cwd(), '..', 'outside-home')
+    const home = resolve(process.cwd(), '..', 'outside-home')
     const appData = mockApplicationData({
       envars: new Environment({
         runtimeEnvironment: { HOME: home },
@@ -118,7 +116,7 @@ describe('AllowedPaths', () => {
 
   it('when the runtime has its own working directory, bounds write permissions to it', async () => {
     const appData = mockApplicationData()
-    appData.runtime = new Runtime(Deno, join(fixturesDirectory, 'tools'))
+    appData.runtime = new Runtime(process, join(fixturesDirectory, 'tools'))
 
     const permissions = new AllowedPaths(appData).write()
 
@@ -130,7 +128,7 @@ describe('AllowedPaths', () => {
 
   it('when the runtime has its own working directory, bounds read permissions to it', async () => {
     const appData = mockApplicationData()
-    appData.runtime = new Runtime(Deno, join(fixturesDirectory, 'tools'))
+    appData.runtime = new Runtime(process, join(fixturesDirectory, 'tools'))
 
     const permissions = new AllowedPaths(appData).read()
 

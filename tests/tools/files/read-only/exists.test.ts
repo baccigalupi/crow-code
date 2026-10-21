@@ -1,7 +1,5 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join, resolve } from '@std/path'
-import { spy } from '@std/testing/mock'
+import { describe, expect, it, spyOn } from 'bun:test'
+import { join, resolve } from 'node:path'
 import { pathExists } from '../../../../src/tools/files/read-only/exists.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { fixturesDirectory } from '../../../support/fixtures.ts'
@@ -42,15 +40,15 @@ describe('pathExists', () => {
 
   it('when the path is outside the allowed directories, fails', async () => {
     const applicationData = mockApplicationData()
-    const path = resolve(Deno.cwd(), '..', 'outside-exists-check.txt')
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const path = resolve(process.cwd(), '..', 'outside-exists-check.txt')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const exists = pathExists({ applicationData, operationArguments: { path } })
     await exists.run()
 
     expect(exists.success()).toBe(false)
     expect(exists.result()).toEqual({ path, exists: false })
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Path exists: path not allowed: ${path}`,
     )
   })

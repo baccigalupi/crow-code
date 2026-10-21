@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { OpenAiRequest } from '../../../src/model-requests/framework/openai-request.ts'
 import { RequestParser } from '../../../src/model-requests/framework/request-parser.ts'
 import { ModelAnswer } from '../../../src/model-requests/framework/model-answer.ts'

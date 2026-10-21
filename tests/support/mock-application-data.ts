@@ -1,7 +1,7 @@
 import pino from 'pino'
 import type { Knex } from 'knex'
 import type OpenAI from 'openai'
-import { stub } from '@std/testing/mock'
+import { spyOn } from 'bun:test'
 import { ApplicationData } from '../../src/application-data/application-data.ts'
 import { Runtime } from '../../src/application-data/runtime.ts'
 import { defaultFilesystem } from '../../src/application-data/filesystem.ts'
@@ -40,7 +40,7 @@ export const mockApplicationData = (
 ): ApplicationData => {
   const data = new ApplicationData()
   const args = overrides.args || []
-  data.runtime = new Runtime(Deno, overrides.cwd)
+  data.runtime = new Runtime(process, overrides.cwd)
   data.filesystem = defaultFilesystem()
   data.io = new Io('')
   data.parsedArguments = parseArguments(args)
@@ -50,10 +50,9 @@ export const mockApplicationData = (
     new Environment({ runtimeEnvironment: {}, filesystem: defaultFilesystem() })
 
   const logger = overrides.logger || pino({ enabled: false })
-  // Lazy on purpose: createTestDatabase starts native better-sqlite3 work
+  // Lazy on purpose: createTestDatabase starts native sqlite work
   // (migrations and cleanup) the moment it is called. Tests that never call
-  // database() must not trigger it — leaked work crashed the Deno test runner
-  // (SIGSEGV) under coverage.
+  // database() must not trigger it.
   let database: Promise<Knex> | undefined
   const lazyDatabase = () => {
     if (!database) {
@@ -66,17 +65,19 @@ export const mockApplicationData = (
   const fetchClient = overrides.fetch || mockFetchSuccess({})
   const chatClient = overrides.chatClient || mockOpenAiClient('')
 
-  stub(data, 'args', () => args)
-  stub(data, 'logger', () => logger)
-  stub(data, 'database', lazyDatabase)
+  spyOn(data, 'args').mockImplementation(() => args)
+  spyOn(data, 'logger').mockImplementation(() => logger)
+  spyOn(data, 'database').mockImplementation(lazyDatabase)
   data.close = () => Promise.resolve()
-  stub(data, 'consoleLog', () => consoleLog)
-  stub(data, 'consoleError', () => consoleError)
-  stub(data, 'fetch', () => fetchClient)
-  if (overrides.command) stub(data.runtime, 'runCommand', overrides.command)
+  spyOn(data, 'consoleLog').mockImplementation(() => consoleLog)
+  spyOn(data, 'consoleError').mockImplementation(() => consoleError)
+  spyOn(data, 'fetch').mockImplementation(() => fetchClient)
+  if (overrides.command) {
+    spyOn(data.runtime, 'runCommand').mockImplementation(overrides.command)
+  }
   const exit = (overrides.exit || (() => {})) as Runtime['exit']
-  stub(data.runtime, 'exit', exit)
-  stub(data, 'chatClient', chatClient)
+  spyOn(data.runtime, 'exit').mockImplementation(exit)
+  spyOn(data, 'chatClient').mockImplementation(chatClient)
 
   return data
 }

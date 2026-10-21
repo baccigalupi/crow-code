@@ -1,4 +1,5 @@
-import { join } from '@std/path'
+import { rm } from 'node:fs/promises'
+import { join } from 'node:path'
 import { defaultRuntime } from '../../src/application-data/runtime.ts'
 import { defaultFilesystem } from '../../src/application-data/filesystem.ts'
 
@@ -29,7 +30,7 @@ export const loadOllamaFixture = async () =>
   await loadFixture('model-discovery/populate/providers/ollama-models.json')
 
 export const clearDirectory = async (path: string) => {
-  await Deno.remove(path, { recursive: true }).catch(() => {})
+  await rm(path, { recursive: true, force: true })
 }
 
 export const searchFixtureNodeModules = () =>

@@ -1,6 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { assertSpyCall, spy } from '@std/testing/mock'
+import { describe, expect, it, spyOn } from 'bun:test'
 import {
   DatabaseQuery,
   databaseQuery,
@@ -22,7 +20,7 @@ describe('databaseQuery', () => {
 
   it('when the query fails, logs the error and returns an empty array', async () => {
     const applicationData = mockApplicationData()
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const query = await databaseQuery<string>({
       applicationData,
@@ -31,14 +29,15 @@ describe('databaseQuery', () => {
 
     expect(query.success()).toBe(false)
     expect(query.result()).toEqual([])
-    assertSpyCall(loggerErrorSpy, 0, {
-      args: ['Database query: query failed'],
-    })
+    expect(loggerErrorSpy).toHaveBeenNthCalledWith(
+      1,
+      'Database query: query failed',
+    )
   })
 
   it('when a knex query fails, logs the rendered sql', async () => {
     const applicationData = mockApplicationData()
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
     const database = await applicationData.database()
     const query = database('missing_table').where({ name: 'x' }).select('*')
 
@@ -48,7 +47,7 @@ describe('databaseQuery', () => {
     }).run()
 
     expect(result.success()).toBe(false)
-    const logged = loggerErrorSpy.calls[0].args[0] as string
+    const logged = loggerErrorSpy.mock.calls[0][0] as string
     expect(logged).toContain('Database query:')
     expect(logged).toContain('select * from `missing_table`')
     expect(logged).toContain("`name` = 'x'")

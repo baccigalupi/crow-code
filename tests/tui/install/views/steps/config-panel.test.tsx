@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { render } from 'ink-testing-library'
 import { ConfigPanel } from '../../../../../src/tui/install/views/steps/config-panel.tsx'
 import { emptyBuffer, insertText } from '../../../../../src/tui/input-buffer.ts'

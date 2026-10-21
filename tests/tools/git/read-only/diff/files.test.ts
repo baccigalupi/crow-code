@@ -1,7 +1,5 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { resolve } from '@std/path'
-import { spy } from '@std/testing/mock'
+import { describe, expect, it, mock, spyOn } from 'bun:test'
+import { resolve } from 'node:path'
 import { gitDiffFiles } from '../../../../../src/tools/git/read-only/diff/files.ts'
 import { loadTextFixture } from '../../../../../tests/support/fixtures.ts'
 import { mockApplicationData } from '../../../../../tests/support/mock-application-data.ts'
@@ -92,14 +90,14 @@ describe('gitDiffFiles', () => {
         outputError: 'No such file or directory (os error 2): git',
       }),
     })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const gitDiff = gitDiffFiles({ applicationData })
     await gitDiff.run()
 
     expect(gitDiff.success()).toBe(false)
     expect(gitDiff.result()).toEqual([])
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       'Git diff files: No such file or directory (os error 2): git',
     )
   })
@@ -112,25 +110,25 @@ describe('gitDiffFiles', () => {
         code: 128,
       }),
     })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const gitDiff = gitDiffFiles({ applicationData })
     await gitDiff.run()
 
     expect(gitDiff.success()).toBe(false)
     expect(gitDiff.result()).toEqual([])
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       'Git diff files: fatal: not a git repository',
     )
   })
 
   it('when a filter path is outside the repository, fails without running git', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ commandSpy }),
     })
-    const path = resolve(Deno.cwd(), '..', 'outside-git-diff-files.ts')
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const path = resolve(process.cwd(), '..', 'outside-git-diff-files.ts')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const gitDiff = gitDiffFiles({
       applicationData,
@@ -138,10 +136,10 @@ describe('gitDiffFiles', () => {
     })
     await gitDiff.run()
 
-    expect(commandSpy.calls.length).toBe(0)
+    expect(commandSpy.mock.calls.length).toBe(0)
     expect(gitDiff.success()).toBe(false)
     expect(gitDiff.result()).toEqual([])
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Git diff files: path not allowed: ${path}`,
     )
   })

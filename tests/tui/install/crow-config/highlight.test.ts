@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { highlightJson } from '../../../../src/tui/install/crow-config/highlight.ts'
 
 describe('highlightJson', () => {

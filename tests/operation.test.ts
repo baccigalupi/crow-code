@@ -1,6 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { spy } from '@std/testing/mock'
+import { describe, expect, it, spyOn } from 'bun:test'
 import { Operation } from '../src/operation.ts'
 import { mockApplicationData } from './support/mock-application-data.ts'
 
@@ -67,13 +65,13 @@ describe('Operation', () => {
       }
     }
     const applicationData = mockApplicationData()
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
     const parent = new Parent({ applicationData, operationArguments: {} })
 
     await parent.run()
 
     expect(parent.success()).toBe(true)
-    expect(loggerErrorSpy.calls.length).toBe(1)
-    expect(loggerErrorSpy.calls[0].args[0]).toBe('Child: child broke')
+    expect(loggerErrorSpy.mock.calls.length).toBe(1)
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe('Child: child broke')
   })
 })

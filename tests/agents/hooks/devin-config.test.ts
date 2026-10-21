@@ -1,11 +1,11 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
+import { readFileSync } from 'node:fs'
 import { DevinConfig } from '../../../agents/hooks/devin-config.ts'
 
 describe('DevinConfig', () => {
   it('when an agents script is allowed, returns true', () => {
     const config = new DevinConfig(
-      Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+      readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
     )
 
     const result = config.allowsExec('agents/typecheck')
@@ -15,7 +15,7 @@ describe('DevinConfig', () => {
 
   it('when a dev command extends an allowed prefix, returns true', () => {
     const config = new DevinConfig(
-      Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+      readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
     )
 
     const result = config.allowsExec('dev/test tests/cli.test.ts')
@@ -25,7 +25,7 @@ describe('DevinConfig', () => {
 
   it('when an agents script is absent, returns false', () => {
     const config = new DevinConfig(
-      Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+      readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
     )
 
     const result = config.allowsExec('agents/random-script')
@@ -35,7 +35,7 @@ describe('DevinConfig', () => {
 
   it('when a dev script is absent, returns false', () => {
     const config = new DevinConfig(
-      Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+      readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
     )
 
     const result = config.allowsExec('dev/random-script')

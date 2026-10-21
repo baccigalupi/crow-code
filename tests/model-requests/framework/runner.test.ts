@@ -1,6 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { assertSpyCall, spy } from '@std/testing/mock'
+import { describe, expect, it, spyOn } from 'bun:test'
 import pino from 'pino'
 import { Runner } from '../../../src/model-requests/framework/runner.ts'
 import { GetGoals } from '../../../src/model-requests/goals.ts'
@@ -117,7 +115,7 @@ describe('Runner', () => {
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClientWithFetch(fetch),
     })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
     const database = await applicationData.database()
     await database('providers').insert({
       id: 1,
@@ -154,11 +152,13 @@ describe('Runner', () => {
     await runner.run()
 
     expect(runner.result()).toEqual(['done'])
-    assertSpyCall(loggerErrorSpy, 2, {
-      args: ['Runner: model `first`: api-error'],
-    })
-    assertSpyCall(loggerErrorSpy, 4, {
-      args: ['Runner: model `second`: invalid-json'],
-    })
+    expect(loggerErrorSpy).toHaveBeenNthCalledWith(
+      3,
+      'Runner: model `first`: api-error',
+    )
+    expect(loggerErrorSpy).toHaveBeenNthCalledWith(
+      5,
+      'Runner: model `second`: invalid-json',
+    )
   })
 })

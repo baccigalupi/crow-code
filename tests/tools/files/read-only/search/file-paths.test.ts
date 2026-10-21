@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
+import { mkdirSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { filePaths } from '../../../../../src/tools/files/read-only/search/file-paths.ts'
 import {
   clearDirectory,
@@ -62,7 +62,7 @@ describe('file-paths', () => {
 
   it('when a filePattern is a glob, matches dotfiles', async () => {
     const directory = join(fixturesDirectory, 'tools', 'search')
-    Deno.writeTextFileSync(join(directory, '.hidden.md'), 'hidden')
+    writeFileSync(join(directory, '.hidden.md'), 'hidden')
 
     const paths = await filePaths({ directory, filePattern: '*.md' }).all()
 
@@ -72,8 +72,8 @@ describe('file-paths', () => {
 
   it('when a filePattern is a glob, matches dot directories', async () => {
     const directory = join(fixturesDirectory, 'tools', 'search')
-    Deno.mkdirSync(join(directory, '.dir'), { recursive: true })
-    Deno.writeTextFileSync(join(directory, '.dir', 'inner.md'), 'inner')
+    mkdirSync(join(directory, '.dir'), { recursive: true })
+    writeFileSync(join(directory, '.dir', 'inner.md'), 'inner')
 
     const paths = await filePaths({ directory, filePattern: '**/*.md' }).all()
 

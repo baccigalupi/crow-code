@@ -1,7 +1,5 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join, resolve } from '@std/path'
-import { spy } from '@std/testing/mock'
+import { describe, expect, it, spyOn } from 'bun:test'
+import { join, resolve } from 'node:path'
 import {
   ListDirectory,
   listDirectory,
@@ -52,8 +50,8 @@ describe('list', () => {
 
   it('when the path is outside the allowed directories, returns no entries and logs', async () => {
     const applicationData = mockApplicationData()
-    const path = resolve(Deno.cwd(), '..', 'outside-directory')
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const path = resolve(process.cwd(), '..', 'outside-directory')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const listing = listDirectory({
       applicationData,
@@ -63,7 +61,7 @@ describe('list', () => {
 
     expect(listing.success()).toBe(false)
     expect(listing.result()).toEqual({ path, entries: [] })
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `List directory: path not allowed: ${path}`,
     )
   })
@@ -71,7 +69,7 @@ describe('list', () => {
   it('when the directory does not exist, returns no entries and logs', async () => {
     const applicationData = mockApplicationData()
     const path = join(fixturesDirectory, 'tools', 'files', 'missing')
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const listing = listDirectory({
       applicationData,
@@ -81,8 +79,8 @@ describe('list', () => {
 
     expect(listing.success()).toBe(false)
     expect(listing.result()).toEqual({ path, entries: [] })
-    expect(loggerErrorSpy.calls[0].args[0]).toContain('List directory: ')
-    expect(loggerErrorSpy.calls[0].args[0]).toContain(
+    expect(loggerErrorSpy.mock.calls[0][0]).toContain('List directory: ')
+    expect(loggerErrorSpy.mock.calls[0][0]).toContain(
       'no such file or directory',
     )
   })

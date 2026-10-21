@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 
 describe('preload', () => {
   it('when a src file is imported, records coverage for it', async () => {

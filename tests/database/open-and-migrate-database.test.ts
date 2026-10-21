@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
+import { statSync } from 'node:fs'
+import { join } from 'node:path'
 import {
   defaultDatabasePath,
   openAndMigrateDatabase,
@@ -28,7 +28,25 @@ describe('openAndMigrateDatabase', () => {
       defaultFilesystem(),
     )
 
-    expect(Deno.statSync(defaultDatabasePath(crowDirectory)).isFile).toBe(true)
+    expect(statSync(defaultDatabasePath(crowDirectory)).isFile()).toBe(true)
+  })
+
+  it('when opened, enables WAL and foreign keys', async () => {
+    const crowDirectory = join(fixturesDirectory, 'open-database', '.crow')
+    const logger = pino({ enabled: false })
+
+    const database = await openAndMigrateDatabase(
+      crowDirectory,
+      logger,
+      defaultFilesystem(),
+    )
+
+    expect(await database.raw('PRAGMA journal_mode')).toEqual([
+      { journal_mode: 'wal' },
+    ])
+    expect(await database.raw('PRAGMA foreign_keys')).toEqual([
+      { foreign_keys: 1 },
+    ])
   })
 
   it('when opened, returns a writable database', async () => {

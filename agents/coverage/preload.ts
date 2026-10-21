@@ -37,7 +37,11 @@ const coverageData = () => {
 }
 
 const flushCoverage = () => {
-  flush(coverageDir, `${process.pid}`, coverageData())
+  const coverage = coverageData()
+
+  if (coverage) {
+    flush(coverageDir, `${process.pid}`, coverage)
+  }
 }
 
 if (process.env.BUN_TEST_WORKER_ID === undefined) {

@@ -1,6 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { assertSpyCall, spy } from '@std/testing/mock'
+import { describe, expect, it, mock, spyOn } from 'bun:test'
 import { commit } from '../../src/tasks/commit.ts'
 import { mockApplicationData } from '../support/mock-application-data.ts'
 import { mockCommand } from '../support/mock-command.ts'
@@ -13,7 +11,7 @@ import {
 
 describe('commit', () => {
   it('when files changed, collects diffs, requests a message, stages and commits', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const fetch = mockFetchSuccess({
       choices: [
         {
@@ -68,39 +66,51 @@ describe('commit', () => {
 
     await task.run()
 
-    assertSpyCall(commandSpy, 0, {
-      args: [
-        'git',
-        { args: ['diff', 'HEAD', '--', 'src/a.ts', 'src/b.ts'] },
-      ],
-    })
-    assertSpyCall(commandSpy, 1, {
-      args: ['git', { args: ['status', '--porcelain', '-uall'] }],
-    })
-    assertSpyCall(commandSpy, 2, {
-      args: ['git', { args: ['diff', '--no-index', '/dev/null', 'src/b.ts'] }],
-    })
-    assertSpyCall(commandSpy, 3, {
-      args: ['git', { args: ['log', '--format=%s', '-n', '10'] }],
-    })
-    assertSpyCall(commandSpy, 4, {
-      args: ['git', { args: ['add', '--', 'src/a.ts', 'src/b.ts'] }],
-    })
-    assertSpyCall(commandSpy, 5, {
-      args: [
-        'git',
-        {
-          args: [
-            'commit',
-            '-m',
-            'Add login\n\nAdds the login form.',
-            '--',
-            'src/a.ts',
-            'src/b.ts',
-          ],
-        },
-      ],
-    })
+    expect(commandSpy).toHaveBeenNthCalledWith(
+      1,
+      'git',
+      expect.objectContaining({
+        args: ['diff', 'HEAD', '--', 'src/a.ts', 'src/b.ts'],
+      }),
+    )
+    expect(commandSpy).toHaveBeenNthCalledWith(
+      2,
+      'git',
+      expect.objectContaining({ args: ['status', '--porcelain', '-uall'] }),
+    )
+    expect(commandSpy).toHaveBeenNthCalledWith(
+      3,
+      'git',
+      expect.objectContaining({
+        args: ['diff', '--no-index', '/dev/null', 'src/b.ts'],
+      }),
+    )
+    expect(commandSpy).toHaveBeenNthCalledWith(
+      4,
+      'git',
+      expect.objectContaining({ args: ['log', '--format=%s', '-n', '10'] }),
+    )
+    expect(commandSpy).toHaveBeenNthCalledWith(
+      5,
+      'git',
+      expect.objectContaining({
+        args: ['add', '--', 'src/a.ts', 'src/b.ts'],
+      }),
+    )
+    expect(commandSpy).toHaveBeenNthCalledWith(
+      6,
+      'git',
+      expect.objectContaining({
+        args: [
+          'commit',
+          '-m',
+          'Add login\n\nAdds the login form.',
+          '--',
+          'src/a.ts',
+          'src/b.ts',
+        ],
+      }),
+    )
     expect(fetch.calls.length).toBe(1)
     expect(task.success()).toBe(true)
     expect(task.result()).toEqual({
@@ -110,7 +120,7 @@ describe('commit', () => {
   })
 
   it('when the diff collection fails, stops without the model or staging', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const fetch = mockFetchSuccess({})
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClientWithFetch(fetch),
@@ -123,20 +133,20 @@ describe('commit', () => {
 
     await task.run()
 
-    expect(commandSpy.calls.length).toBe(1)
+    expect(commandSpy.mock.calls.length).toBe(1)
     expect(fetch.calls.length).toBe(0)
     expect(task.success()).toBe(false)
     expect(task.result()).toEqual({ subject: '', body: '' })
   })
 
   it('when nothing changed, fails without the model and logs', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const fetch = mockFetchSuccess({})
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClientWithFetch(fetch),
       command: mockCommand({ commandSpy, stdout: ['', ''] }),
     })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
     const task = commit({
       applicationData,
       operationArguments: { goal: 'add login', files: ['src/a.ts'] },
@@ -145,14 +155,14 @@ describe('commit', () => {
     await task.run()
 
     expect(task.success()).toBe(false)
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       'Commit: no changes to commit',
     )
     expect(fetch.calls.length).toBe(0)
   })
 
   it('when no files are given, collects all changes, stages everything and commits', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const fetch = mockFetchSuccess({
       choices: [
         {
@@ -204,18 +214,28 @@ describe('commit', () => {
 
     await task.run()
 
-    assertSpyCall(commandSpy, 0, {
-      args: ['git', { args: ['diff', 'HEAD'] }],
-    })
-    assertSpyCall(commandSpy, 1, {
-      args: ['git', { args: ['status', '--porcelain', '-uall'] }],
-    })
-    assertSpyCall(commandSpy, 2, {
-      args: ['git', { args: ['diff', '--no-index', '/dev/null', 'src/b.ts'] }],
-    })
-    assertSpyCall(commandSpy, 4, {
-      args: ['git', { args: ['add', '--all'] }],
-    })
+    expect(commandSpy).toHaveBeenNthCalledWith(
+      1,
+      'git',
+      expect.objectContaining({ args: ['diff', 'HEAD'] }),
+    )
+    expect(commandSpy).toHaveBeenNthCalledWith(
+      2,
+      'git',
+      expect.objectContaining({ args: ['status', '--porcelain', '-uall'] }),
+    )
+    expect(commandSpy).toHaveBeenNthCalledWith(
+      3,
+      'git',
+      expect.objectContaining({
+        args: ['diff', '--no-index', '/dev/null', 'src/b.ts'],
+      }),
+    )
+    expect(commandSpy).toHaveBeenNthCalledWith(
+      5,
+      'git',
+      expect.objectContaining({ args: ['add', '--all'] }),
+    )
     expect(task.success()).toBe(true)
     expect(task.result()).toEqual({
       subject: 'Add login',
@@ -224,7 +244,7 @@ describe('commit', () => {
   })
 
   it('when the model request fails, does not stage or commit', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClientError(500),
       command: mockCommand({
@@ -263,12 +283,12 @@ describe('commit', () => {
 
     await task.run()
 
-    expect(commandSpy.calls.length).toBe(3)
+    expect(commandSpy.mock.calls.length).toBe(3)
     expect(task.success()).toBe(false)
   })
 
   it('when staging fails, reports failure', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClient(
         '{"subject":"Add login","body":"Adds the login form."}',
@@ -310,12 +330,12 @@ describe('commit', () => {
 
     await task.run()
 
-    expect(commandSpy.calls.length).toBe(4)
+    expect(commandSpy.mock.calls.length).toBe(4)
     expect(task.success()).toBe(false)
   })
 
   it('when the commit fails, reports failure', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClient(
         '{"subject":"Add login","body":"Adds the login form."}',
@@ -358,12 +378,12 @@ describe('commit', () => {
 
     await task.run()
 
-    expect(commandSpy.calls.length).toBe(5)
+    expect(commandSpy.mock.calls.length).toBe(5)
     expect(task.success()).toBe(false)
   })
 
   it('when git log fails, still stages and commits', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClient(
         '{"subject":"Add login","body":"Adds the login form."}',

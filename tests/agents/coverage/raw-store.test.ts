@@ -1,6 +1,5 @@
-import { beforeEach, describe, it } from 'node:test'
+import { beforeEach, describe, expect, it } from 'bun:test'
 import { rmSync } from 'node:fs'
-import { expect } from '@std/expect'
 import {
   clearRaw,
   readAllRaw,

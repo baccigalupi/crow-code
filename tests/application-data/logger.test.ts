@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
+import { readFileSync, statSync } from 'node:fs'
+import { join } from 'node:path'
 import { createLogger } from '../../src/application-data/logger.ts'
 import { clearDirectory, fixturesDirectory } from '../support/fixtures.ts'
 
@@ -14,7 +14,7 @@ describe('createLogger', () => {
 
     createLogger(crowDirectory, 'error')
 
-    expect(Deno.statSync(logPath).isFile).toBe(true)
+    expect(statSync(logPath).isFile()).toBe(true)
   })
 
   it('when an info message is logged, writes a JSON line', () => {
@@ -24,7 +24,7 @@ describe('createLogger', () => {
 
     logger.info('catalog built')
 
-    const entry = JSON.parse(Deno.readTextFileSync(logPath).trim())
+    const entry = JSON.parse(readFileSync(logPath, 'utf8').trim())
     expect(entry.msg).toBe('catalog built')
   })
 
@@ -35,6 +35,6 @@ describe('createLogger', () => {
 
     logger.info('catalog built')
 
-    expect(Deno.readTextFileSync(logPath)).toBe('')
+    expect(readFileSync(logPath, 'utf8')).toBe('')
   })
 })

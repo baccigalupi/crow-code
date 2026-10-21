@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { expandHome } from '../../../src/application-data/allowed-paths/expand-home.ts'
 import { Environment } from '../../../src/application-data/env-vars.ts'
 import { defaultFilesystem } from '../../../src/application-data/filesystem.ts'

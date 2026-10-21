@@ -1,5 +1,5 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
+import { readFileSync } from 'node:fs'
 import { commandAllowed } from '../../../agents/hooks/command-allowed.ts'
 import { DevinConfig } from '../../../agents/hooks/devin-config.ts'
 
@@ -10,7 +10,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -23,7 +23,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -36,7 +36,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -49,7 +49,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -62,7 +62,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -75,7 +75,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -88,7 +88,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -101,7 +101,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -114,7 +114,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -127,7 +127,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -140,7 +140,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -153,7 +153,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -166,7 +166,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -179,7 +179,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -192,7 +192,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -205,7 +205,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -218,7 +218,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -231,7 +231,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -244,7 +244,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -257,7 +257,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -270,7 +270,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -283,7 +283,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -296,7 +296,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -309,7 +309,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -322,7 +322,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -335,7 +335,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -348,7 +348,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -361,7 +361,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -374,7 +374,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -387,7 +387,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -400,7 +400,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -413,7 +413,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -426,7 +426,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -439,7 +439,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -452,7 +452,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -465,7 +465,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -478,7 +478,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -491,7 +491,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -504,7 +504,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 
@@ -517,7 +517,7 @@ describe('commandAllowed', () => {
     const result = commandAllowed(
       command,
       new DevinConfig(
-        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+        readFileSync('tests/support/fixtures/devin-config.json', 'utf8'),
       ),
     )
 

@@ -1,4 +1,5 @@
-import { returnsNext } from '@std/testing/mock'
+import { spyOn } from 'bun:test'
+import { Runtime } from '../../src/application-data/runtime.ts'
 import type { Command, CommandOptions } from '../../src/types.ts'
 
 type CommandSpy = (
@@ -18,7 +19,12 @@ type MockCommandOptions = {
 const stdoutSequence = (stdout: string | (string | Error)[]) => {
   if (typeof stdout === 'string') return () => stdout
 
-  return returnsNext(stdout)
+  const queue = [...stdout]
+  return () => {
+    const next = queue.shift()
+    if (next instanceof Error) throw next
+    return next as string
+  }
 }
 
 export const mockCommand = (
@@ -48,36 +54,11 @@ export const mockCommand = (
   }
 }
 
-const mockDenoCommand = (options: MockCommandOptions = {}) => {
-  const command = mockCommand(options)
-
-  return class MockDenoCommand {
-    private executable: string
-    private options: CommandOptions
-
-    constructor(executable: string, options: CommandOptions) {
-      this.executable = executable
-      this.options = options
-    }
-
-    async output() {
-      const output = await command(this.executable, this.options)
-      return {
-        success: output.success,
-        code: output.code,
-        signal: null,
-        stdout: new TextEncoder().encode(output.stdout),
-        stderr: new TextEncoder().encode(output.stderr),
-      }
-    }
-  } as unknown as typeof Deno.Command
-}
-
-export const mockDeno = (
+export const mockRuntime = (
   { args = [], ...command }: { args?: string[] } & MockCommandOptions = {},
-) =>
-  ({
-    ...Deno,
-    args,
-    Command: mockDenoCommand(command),
-  }) as unknown as typeof Deno
+) => {
+  const runtime = new Runtime(process)
+  spyOn(runtime, 'args').mockReturnValue(args)
+  spyOn(runtime, 'runCommand').mockImplementation(mockCommand(command))
+  return runtime
+}

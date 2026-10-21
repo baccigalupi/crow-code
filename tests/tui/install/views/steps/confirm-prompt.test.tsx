@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { render } from 'ink-testing-library'
 import { ConfirmPrompt } from '../../../../../src/tui/install/views/steps/confirm-prompt.tsx'
 

@@ -1,7 +1,5 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join, resolve } from '@std/path'
-import { spy } from '@std/testing/mock'
+import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
+import { join, resolve } from 'node:path'
 import {
   SearchFiles,
   searchFiles,
@@ -194,7 +192,7 @@ describe('search', () => {
   it('when the pattern is an invalid regex, returns no matches and logs', async () => {
     const applicationData = mockApplicationData()
     const path = join(fixturesDirectory, 'tools', 'search')
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const search = searchFiles({
       applicationData,
@@ -204,18 +202,18 @@ describe('search', () => {
 
     expect(search.success()).toBe(false)
     expect(search.result()).toEqual({ path, matches: [] })
-    expect(loggerErrorSpy.calls[0].args[0]).toContain(
+    expect(loggerErrorSpy.mock.calls[0][0]).toContain(
       'Sorted matches: Invalid regular expression',
     )
-    expect(loggerErrorSpy.calls[1].args[0]).toContain(
+    expect(loggerErrorSpy.mock.calls[1][0]).toContain(
       'Search files: Invalid regular expression',
     )
   })
 
   it('when the path is outside the allowed directories, returns no matches and logs', async () => {
     const applicationData = mockApplicationData()
-    const path = resolve(Deno.cwd(), '..', 'outside-directory')
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const path = resolve(process.cwd(), '..', 'outside-directory')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const search = searchFiles({
       applicationData,
@@ -225,7 +223,7 @@ describe('search', () => {
 
     expect(search.success()).toBe(false)
     expect(search.result()).toEqual({ path, matches: [] })
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Search files: path not allowed: ${path}`,
     )
   })
@@ -233,7 +231,7 @@ describe('search', () => {
   it('when the directory does not exist, returns no matches and logs', async () => {
     const applicationData = mockApplicationData()
     const path = join(fixturesDirectory, 'tools', 'search', 'missing')
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const search = searchFiles({
       applicationData,
@@ -243,9 +241,9 @@ describe('search', () => {
 
     expect(search.success()).toBe(false)
     expect(search.result()).toEqual({ path, matches: [] })
-    expect(loggerErrorSpy.calls[0].args[0]).toContain('Sorted matches: ')
-    expect(loggerErrorSpy.calls[1].args[0]).toContain('Search files: ')
-    expect(loggerErrorSpy.calls[1].args[0]).toContain(
+    expect(loggerErrorSpy.mock.calls[0][0]).toContain('Sorted matches: ')
+    expect(loggerErrorSpy.mock.calls[1][0]).toContain('Search files: ')
+    expect(loggerErrorSpy.mock.calls[1][0]).toContain(
       'no such file or directory',
     )
   })

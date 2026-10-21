@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { signal } from '@preact/signals-core'
 import { useInstallState } from '../../../../../src/tui/install/interactions/hooks/use-install-state.ts'
 import { emptyBuffer } from '../../../../../src/tui/input-buffer.ts'

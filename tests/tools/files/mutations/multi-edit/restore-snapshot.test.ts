@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { restoreSnapshot } from '../../../../../src/tools/files/mutations/multi-edit/restore-snapshot.ts'
 import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 import {
@@ -14,9 +14,9 @@ describe('RestoreSnapshot', () => {
 
   it('writes the captured text back to each path', async () => {
     const directory = join(fixturesDirectory, 'restore-snapshot')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const path = join(directory, 'alpha.txt')
-    Deno.writeTextFileSync(path, 'changed\n')
+    writeFileSync(path, 'changed\n')
 
     const operation = restoreSnapshot({
       applicationData: mockApplicationData(),
@@ -25,7 +25,7 @@ describe('RestoreSnapshot', () => {
     await operation.run()
 
     expect(operation.success()).toBe(true)
-    expect(Deno.readTextFileSync(path)).toBe('one\n')
+    expect(readFileSync(path, 'utf8')).toBe('one\n')
   })
 
   it('when a file cannot be rewritten, fails naming its path', async () => {

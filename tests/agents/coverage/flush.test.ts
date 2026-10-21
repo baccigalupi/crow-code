@@ -1,6 +1,5 @@
-import { beforeEach, describe, it } from 'node:test'
+import { beforeEach, describe, expect, it } from 'bun:test'
 import { readFileSync, rmSync } from 'node:fs'
-import { expect } from '@std/expect'
 import { flush } from '../../../agents/coverage/flush.ts'
 
 describe('flush', () => {

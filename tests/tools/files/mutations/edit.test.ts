@@ -1,7 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join, resolve } from '@std/path'
-import { spy } from '@std/testing/mock'
+import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { join, resolve } from 'node:path'
 import { editFile } from '../../../../src/tools/files/mutations/edit.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
@@ -12,9 +11,9 @@ describe('editFile', () => {
 
   it('replaces a unique occurrence and reports one replacement', async () => {
     const directory = join(fixturesDirectory, 'edit')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const path = join(directory, 'alpha.txt')
-    Deno.writeTextFileSync(path, 'one\ntwo\nthree\n')
+    writeFileSync(path, 'one\ntwo\nthree\n')
     const applicationData = mockApplicationData()
 
     const file = editFile({
@@ -25,16 +24,16 @@ describe('editFile', () => {
 
     expect(file.success()).toBe(true)
     expect(file.result()).toEqual({ path, replacements: 1 })
-    expect(Deno.readTextFileSync(path)).toBe('one\nTWO\nthree\n')
+    expect(readFileSync(path, 'utf8')).toBe('one\nTWO\nthree\n')
   })
 
   it('when the old string is absent, fails without writing', async () => {
     const directory = join(fixturesDirectory, 'edit')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const path = join(directory, 'alpha.txt')
-    Deno.writeTextFileSync(path, 'one\ntwo\nthree\n')
+    writeFileSync(path, 'one\ntwo\nthree\n')
     const applicationData = mockApplicationData()
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const file = editFile({
       applicationData,
@@ -44,19 +43,19 @@ describe('editFile', () => {
 
     expect(file.success()).toBe(false)
     expect(file.result()).toEqual({ path, replacements: 0 })
-    expect(Deno.readTextFileSync(path)).toBe('one\ntwo\nthree\n')
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(readFileSync(path, 'utf8')).toBe('one\ntwo\nthree\n')
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       'Edit file: oldString not found in file',
     )
   })
 
   it('when the old string is ambiguous without replaceAll, fails with the count', async () => {
     const directory = join(fixturesDirectory, 'edit')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const path = join(directory, 'alpha.txt')
-    Deno.writeTextFileSync(path, 'two\ntwo\n')
+    writeFileSync(path, 'two\ntwo\n')
     const applicationData = mockApplicationData()
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const file = editFile({
       applicationData,
@@ -65,17 +64,17 @@ describe('editFile', () => {
     await file.run()
 
     expect(file.success()).toBe(false)
-    expect(Deno.readTextFileSync(path)).toBe('two\ntwo\n')
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(readFileSync(path, 'utf8')).toBe('two\ntwo\n')
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       'Edit file: oldString is not unique: found 2 occurrences',
     )
   })
 
   it('with replaceAll, replaces every occurrence', async () => {
     const directory = join(fixturesDirectory, 'edit')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const path = join(directory, 'alpha.txt')
-    Deno.writeTextFileSync(path, 'two\ntwo\n')
+    writeFileSync(path, 'two\ntwo\n')
     const applicationData = mockApplicationData()
 
     const file = editFile({
@@ -91,14 +90,14 @@ describe('editFile', () => {
 
     expect(file.success()).toBe(true)
     expect(file.result()).toEqual({ path, replacements: 2 })
-    expect(Deno.readTextFileSync(path)).toBe('TWO\nTWO\n')
+    expect(readFileSync(path, 'utf8')).toBe('TWO\nTWO\n')
   })
 
   it('when the path is outside the allowed directories, fails without writing', async () => {
-    const path = resolve(Deno.cwd(), '..', 'outside-edit-denied.txt')
-    Deno.writeTextFileSync(path, 'one\ntwo\nthree\n')
+    const path = resolve(process.cwd(), '..', 'outside-edit-denied.txt')
+    writeFileSync(path, 'one\ntwo\nthree\n')
     const applicationData = mockApplicationData()
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const file = editFile({
       applicationData,
@@ -107,19 +106,19 @@ describe('editFile', () => {
     await file.run()
 
     expect(file.success()).toBe(false)
-    expect(Deno.readTextFileSync(path)).toBe('one\ntwo\nthree\n')
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(readFileSync(path, 'utf8')).toBe('one\ntwo\nthree\n')
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Edit file: path not allowed: ${path}`,
     )
-    Deno.removeSync(path)
+    rmSync(path)
   })
 
   it('when the file does not exist, fails and logs', async () => {
     const directory = join(fixturesDirectory, 'edit')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const path = join(directory, 'missing.txt')
     const applicationData = mockApplicationData()
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const file = editFile({
       applicationData,
@@ -129,16 +128,16 @@ describe('editFile', () => {
 
     expect(file.success()).toBe(false)
     expect(file.result()).toEqual({ path, replacements: 0 })
-    expect(loggerErrorSpy.calls[0].args[0]).toContain(
-      'Edit file: No such file or directory',
+    expect(loggerErrorSpy.mock.calls[0][0]).toContain(
+      'Edit file: ENOENT: no such file or directory',
     )
   })
 
   it('when oldString equals newString, fails without writing', async () => {
     const directory = join(fixturesDirectory, 'edit')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const path = join(directory, 'alpha.txt')
-    Deno.writeTextFileSync(path, 'one\ntwo\nthree\n')
+    writeFileSync(path, 'one\ntwo\nthree\n')
     const applicationData = mockApplicationData()
 
     const file = editFile({
@@ -149,14 +148,14 @@ describe('editFile', () => {
 
     expect(file.success()).toBe(false)
     expect(file.result()).toEqual({ path, replacements: 0 })
-    expect(Deno.readTextFileSync(path)).toBe('one\ntwo\nthree\n')
+    expect(readFileSync(path, 'utf8')).toBe('one\ntwo\nthree\n')
   })
 
   it('when oldString is empty, fails without writing', async () => {
     const directory = join(fixturesDirectory, 'edit')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const path = join(directory, 'alpha.txt')
-    Deno.writeTextFileSync(path, 'one\ntwo\nthree\n')
+    writeFileSync(path, 'one\ntwo\nthree\n')
     const applicationData = mockApplicationData()
 
     const file = editFile({
@@ -167,6 +166,6 @@ describe('editFile', () => {
 
     expect(file.success()).toBe(false)
     expect(file.result()).toEqual({ path, replacements: 0 })
-    expect(Deno.readTextFileSync(path)).toBe('one\ntwo\nthree\n')
+    expect(readFileSync(path, 'utf8')).toBe('one\ntwo\nthree\n')
   })
 })

@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { ReadOnlyFileOperation } from '../../../../src/tools/files/read-only/base-operation.ts'
 import { CrowConfig } from '../../../../src/application-data/config.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'

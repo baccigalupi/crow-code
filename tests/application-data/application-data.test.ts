@@ -1,13 +1,11 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { stub } from '@std/testing/mock'
+import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { OpenAI } from 'openai'
 import { ApplicationData } from '../../src/application-data/application-data.ts'
 import { CrowConfig } from '../../src/application-data/config.ts'
 import { Runtime } from '../../src/application-data/runtime.ts'
 import { defaultFilesystem } from '../../src/application-data/filesystem.ts'
 import { Io } from '../../src/application-data/io.ts'
-import { join } from '@std/path/join'
+import { join } from 'node:path'
 import { Environment } from '../../src/application-data/env-vars.ts'
 import { clearDirectory, fixturesDirectory } from '../support/fixtures.ts'
 import { createTestDatabase } from '../support/test-database.ts'
@@ -62,7 +60,7 @@ describe('ApplicationData', () => {
 
   it('delegates write path permissions to allowedPaths', () => {
     const appData = new ApplicationData()
-    appData.runtime = new Runtime(Deno)
+    appData.runtime = new Runtime(process)
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory: join(fixturesDirectory, 'database'),
       envFile: join(fixturesDirectory, 'database', '.env'),
@@ -83,7 +81,7 @@ describe('ApplicationData', () => {
 
   it('delegates read path permissions to allowedPaths', () => {
     const appData = new ApplicationData()
-    appData.runtime = new Runtime(Deno)
+    appData.runtime = new Runtime(process)
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory: join(fixturesDirectory, 'database'),
       envFile: join(fixturesDirectory, 'database', '.env'),
@@ -104,7 +102,7 @@ describe('ApplicationData', () => {
 
   it('delegates git path permissions to allowedPaths', () => {
     const appData = new ApplicationData()
-    appData.runtime = new Runtime(Deno)
+    appData.runtime = new Runtime(process)
     appData.repositoryRoot = fixturesDirectory
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory: join(fixturesDirectory, 'database'),
@@ -127,7 +125,7 @@ describe('ApplicationData', () => {
   it('opens the database in the crow global directory', async () => {
     const crowGlobalDirectory = join(fixturesDirectory, 'database')
     const appData = new ApplicationData()
-    appData.runtime = new Runtime(Deno)
+    appData.runtime = new Runtime(process)
     appData.filesystem = defaultFilesystem()
     appData.io = new Io(join(fixturesDirectory, 'logger'))
     appData.config = new CrowConfig('.', {
@@ -158,7 +156,7 @@ describe('ApplicationData', () => {
   it('when the global directory starts with ~, opens the database under HOME', async () => {
     const home = join(fixturesDirectory, 'database')
     const appData = new ApplicationData()
-    appData.runtime = new Runtime(Deno)
+    appData.runtime = new Runtime(process)
     appData.filesystem = defaultFilesystem()
     appData.io = new Io(join(fixturesDirectory, 'logger'))
     appData.config = new CrowConfig('.', {
@@ -198,7 +196,7 @@ describe('ApplicationData', () => {
 
   it('when closed, destroys the database connection', async () => {
     const appData = new ApplicationData()
-    appData.runtime = new Runtime(Deno)
+    appData.runtime = new Runtime(process)
     appData.filesystem = defaultFilesystem()
     appData.io = new Io(join(fixturesDirectory, 'logger'))
     appData.config = new CrowConfig('.', {
@@ -221,7 +219,7 @@ describe('ApplicationData', () => {
 
     await appData.close()
 
-    await expect(database.raw('select 1')).rejects.toThrow()
+    await expect(Promise.resolve(database.raw('select 1'))).rejects.toThrow()
   })
 
   it('when a chat client is built, applies the endpoint options and the defaults', async () => {
@@ -230,7 +228,7 @@ describe('ApplicationData', () => {
     })
     const appData = new ApplicationData()
     appData.io = new Io(join(fixturesDirectory, 'logger'))
-    using _fetch = stub(globalThis, 'fetch', fetchMock)
+    spyOn(globalThis, 'fetch').mockImplementation(fetchMock)
 
     const client = appData.chatClient({
       apiKey: 'test-key',

@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { loadOpenRouterFixture } from '../../../support/fixtures.ts'
 import { parseOpenRouterBody } from '../../../../src/model-discovery/populate/openrouter/parser.ts'
 

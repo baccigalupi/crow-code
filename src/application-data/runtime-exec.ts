@@ -1,17 +1,32 @@
-import type { CommandOptions, CommandOutput } from '../types.ts'
+import type { Command as CommandRunner, CommandOptions } from '../types.ts'
 
-const decode = (bytes: Uint8Array) => new TextDecoder().decode(bytes)
+export class Command {
+  private executable: string
+  private options: CommandOptions
 
-export const runtimeExec = async (
-  deno: typeof Deno,
-  executable: string,
-  options: CommandOptions,
-): Promise<CommandOutput> => {
-  const output = await new deno.Command(executable, options).output()
-  return {
-    success: output.success,
-    code: output.code,
-    stdout: decode(output.stdout),
-    stderr: decode(output.stderr),
+  constructor(executable: string, options: CommandOptions) {
+    this.executable = executable
+    this.options = options
   }
+
+  async output() {
+    const process = this.spawn()
+    const [stdout, stderr, code] = await Promise.all([
+      new Response(process.stdout).text(),
+      new Response(process.stderr).text(),
+      process.exited,
+    ])
+    return { success: code === 0, code, stdout, stderr }
+  }
+
+  private spawn() {
+    return Bun.spawn([this.executable, ...this.options.args], {
+      stdout: 'pipe',
+      stderr: 'pipe',
+    })
+  }
+}
+
+export const runtimeExec: CommandRunner = (executable, options) => {
+  return new Command(executable, options).output()
 }

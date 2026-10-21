@@ -1,43 +1,40 @@
 import { runtimeExec } from './runtime-exec.ts'
-import type { CommandOptions, CommandOutput, Signal } from '../types.ts'
+import type { CommandOptions, Signal } from '../types.ts'
 
 export class Runtime {
-  private deno: typeof Deno
+  private process: NodeJS.Process
   readonly cwd: string
 
-  constructor(deno: typeof Deno, cwd: string = deno.cwd()) {
-    this.deno = deno
+  constructor(process: NodeJS.Process, cwd: string = process.cwd()) {
+    this.process = process
     this.cwd = cwd
   }
 
   args() {
-    return this.deno.args
+    return this.process.argv.slice(2)
   }
 
   env() {
-    return this.deno.env.toObject()
+    return { ...this.process.env } as Record<string, string>
   }
 
-  runCommand(
-    executable: string,
-    options: CommandOptions,
-  ): Promise<CommandOutput> {
-    return runtimeExec(this.deno, executable, options)
+  runCommand(executable: string, options: CommandOptions) {
+    return runtimeExec(executable, options)
   }
 
   exit(code: number): never {
-    return this.deno.exit(code)
+    return this.process.exit(code)
   }
 
   addSignalListener(signal: Signal, handler: () => void) {
-    this.deno.addSignalListener(signal, handler)
+    this.process.on(signal, handler)
   }
 
   removeSignalListener(signal: Signal, handler: () => void) {
-    this.deno.removeSignalListener(signal, handler)
+    this.process.off(signal, handler)
   }
 }
 
 export const defaultRuntime = () => {
-  return new Runtime(globalThis.Deno)
+  return new Runtime(process)
 }

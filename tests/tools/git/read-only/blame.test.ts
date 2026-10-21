@@ -1,7 +1,5 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { resolve } from '@std/path'
-import { assertSpyCall, spy } from '@std/testing/mock'
+import { describe, expect, it, mock, spyOn } from 'bun:test'
+import { resolve } from 'node:path'
 import { gitBlame } from '../../../../src/tools/git/read-only/blame.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { mockCommand } from '../../../support/mock-command.ts'
@@ -35,7 +33,7 @@ describe('gitBlame', () => {
       '\tconst b = 2',
       '',
     ].join('\n')
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ stdout, commandSpy }),
     })
@@ -46,11 +44,8 @@ describe('gitBlame', () => {
     })
     await blame.run()
 
-    assertSpyCall(commandSpy, 0, {
-      args: [
-        'git',
-        { args: ['blame', '--line-porcelain', '--', 'src/a.ts'] },
-      ],
+    expect(commandSpy).toHaveBeenNthCalledWith(1, 'git', {
+      args: ['blame', '--line-porcelain', '--', 'src/a.ts'],
     })
     expect(blame.result()).toEqual([
       {
@@ -73,7 +68,7 @@ describe('gitBlame', () => {
   })
 
   it('when start and end are given, limits the blame to that line range', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ commandSpy }),
     })
@@ -84,18 +79,13 @@ describe('gitBlame', () => {
     })
     await blame.run()
 
-    assertSpyCall(commandSpy, 0, {
-      args: [
-        'git',
-        {
-          args: ['blame', '--line-porcelain', '-L', '10,20', '--', 'src/a.ts'],
-        },
-      ],
+    expect(commandSpy).toHaveBeenNthCalledWith(1, 'git', {
+      args: ['blame', '--line-porcelain', '-L', '10,20', '--', 'src/a.ts'],
     })
   })
 
   it('when only start is given, blames from that line to the end of file', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ commandSpy }),
     })
@@ -106,16 +96,13 @@ describe('gitBlame', () => {
     })
     await blame.run()
 
-    assertSpyCall(commandSpy, 0, {
-      args: [
-        'git',
-        { args: ['blame', '--line-porcelain', '-L', '10,', '--', 'src/a.ts'] },
-      ],
+    expect(commandSpy).toHaveBeenNthCalledWith(1, 'git', {
+      args: ['blame', '--line-porcelain', '-L', '10,', '--', 'src/a.ts'],
     })
   })
 
   it('when a rev is given, blames the file at that revision', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ commandSpy }),
     })
@@ -126,23 +113,18 @@ describe('gitBlame', () => {
     })
     await blame.run()
 
-    assertSpyCall(commandSpy, 0, {
-      args: [
-        'git',
-        {
-          args: ['blame', '--line-porcelain', 'abc123', '--', 'src/a.ts'],
-        },
-      ],
+    expect(commandSpy).toHaveBeenNthCalledWith(1, 'git', {
+      args: ['blame', '--line-porcelain', 'abc123', '--', 'src/a.ts'],
     })
   })
 
   it('when the path is outside the repository, fails without running git', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ commandSpy }),
     })
-    const path = resolve(Deno.cwd(), '..', 'outside-git-blame.ts')
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const path = resolve(process.cwd(), '..', 'outside-git-blame.ts')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const blame = gitBlame({
       applicationData,
@@ -150,10 +132,10 @@ describe('gitBlame', () => {
     })
     await blame.run()
 
-    expect(commandSpy.calls.length).toBe(0)
+    expect(commandSpy.mock.calls.length).toBe(0)
     expect(blame.success()).toBe(false)
     expect(blame.result()).toEqual([])
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Git blame: path not allowed: ${path}`,
     )
   })
@@ -164,7 +146,7 @@ describe('gitBlame', () => {
         outputError: 'No such file or directory (os error 2): git',
       }),
     })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const blame = gitBlame({
       applicationData,
@@ -174,7 +156,7 @@ describe('gitBlame', () => {
 
     expect(blame.success()).toBe(false)
     expect(blame.result()).toEqual([])
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       'Git blame: No such file or directory (os error 2): git',
     )
   })

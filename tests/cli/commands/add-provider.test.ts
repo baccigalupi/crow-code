@@ -1,6 +1,5 @@
-import { afterEach, beforeEach, describe, it, mock } from 'node:test'
-import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
+import { join } from 'node:path'
 import { AddProvider } from '../../../src/cli/commands/add-provider.ts'
 import { CrowConfig } from '../../../src/application-data/config.ts'
 import { clearDirectory, fixturesDirectory } from '../../support/fixtures.ts'
@@ -59,7 +58,7 @@ describe('AddProvider', () => {
   })
 
   it('when run succeeds, writes the .env key reminder with the default path', async () => {
-    const consoleLog = mock.fn()
+    const consoleLog = mock()
     const applicationData = mockApplicationData({
       args: [
         'add-provider',
@@ -75,13 +74,13 @@ describe('AddProvider', () => {
       operationArguments: applicationData.parsedArguments,
     }).run()
 
-    expect(consoleLog.mock.calls[0].arguments[0]).toBe(
+    expect(consoleLog.mock.calls[0][0]).toBe(
       'Provider added. Add your api key <api_key> to ~/.crow/.env',
     )
   })
 
   it('when the config sets an env file, the reminder names that path', async () => {
-    const consoleLog = mock.fn()
+    const consoleLog = mock()
     const applicationData = mockApplicationData({
       args: ['add-provider', '--name=ollama', '--base-url=http://x'],
       consoleLog,
@@ -104,13 +103,13 @@ describe('AddProvider', () => {
       operationArguments: applicationData.parsedArguments,
     }).run()
 
-    expect(consoleLog.mock.calls[0].arguments[0]).toBe(
+    expect(consoleLog.mock.calls[0][0]).toBe(
       'Provider added. Add your api key <api_key> to /secrets/crow.env',
     )
   })
 
   it('when the provider has no api key env var, writes the reminder with a placeholder key', async () => {
-    const consoleLog = mock.fn()
+    const consoleLog = mock()
     const applicationData = mockApplicationData({
       args: ['add-provider', '--name=ollama', '--base-url=http://x'],
       consoleLog,
@@ -121,14 +120,14 @@ describe('AddProvider', () => {
       operationArguments: applicationData.parsedArguments,
     }).run()
 
-    expect(consoleLog.mock.calls[0].arguments[0]).toBe(
+    expect(consoleLog.mock.calls[0][0]).toBe(
       'Provider added. Add your api key <api_key> to ~/.crow/.env',
     )
   })
 
   it('when creation fails, writes the failure message', async () => {
-    const consoleLog = mock.fn()
-    const consoleError = mock.fn()
+    const consoleLog = mock()
+    const consoleError = mock()
     const applicationData = mockApplicationData({
       args: ['add-provider', '--name=other', '--base-url=http://x'],
       consoleLog,
@@ -147,7 +146,7 @@ describe('AddProvider', () => {
     await addProvider.run()
     addProvider.reportFailure()
 
-    expect(consoleError.mock.calls[0].arguments[0]).toBe(
+    expect(consoleError.mock.calls[0][0]).toBe(
       'Error: unable to create a provider for add-provider',
     )
     expect(consoleLog.mock.calls).toHaveLength(0)

@@ -1,7 +1,5 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { resolve } from '@std/path'
-import { assertSpyCall, spy } from '@std/testing/mock'
+import { describe, expect, it, mock, spyOn } from 'bun:test'
+import { resolve } from 'node:path'
 import { gitCompare } from '../../../../../src/tools/git/read-only/diff/compare.ts'
 import { CrowConfig } from '../../../../../src/application-data/config.ts'
 import { defaultCrowConfig } from '../../../../../src/domain/config.ts'
@@ -10,7 +8,7 @@ import { mockCommand } from '../../../../support/mock-command.ts'
 
 describe('gitCompare', () => {
   it('when both paths are allowed, returns git stdout as the diff', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ commandSpy, stdout: 'unified text' }),
     })
@@ -21,20 +19,15 @@ describe('gitCompare', () => {
     })
     await compare.run()
 
-    assertSpyCall(commandSpy, 0, {
+    expect(commandSpy).toHaveBeenNthCalledWith(1, 'git', {
       args: [
-        'git',
-        {
-          args: [
-            'diff',
-            '--no-index',
-            '--no-color',
-            '--no-ext-diff',
-            '--',
-            'a.txt',
-            'b.txt',
-          ],
-        },
+        'diff',
+        '--no-index',
+        '--no-color',
+        '--no-ext-diff',
+        '--',
+        'a.txt',
+        'b.txt',
       ],
     })
     expect(compare.result()).toEqual({ diff: 'unified text' })
@@ -68,7 +61,7 @@ describe('gitCompare', () => {
         stderr: "error: Could not access 'x.md'",
       }),
     })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const compare = gitCompare({
       applicationData,
@@ -78,14 +71,14 @@ describe('gitCompare', () => {
 
     expect(compare.success()).toBe(false)
     expect(compare.result()).toEqual({ diff: '' })
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       "Git compare: error: Could not access 'x.md'",
     )
   })
 
   it('when a path is outside the repository but readable, runs git', async () => {
-    const commandSpy = spy()
-    const outside = resolve(Deno.cwd(), '..')
+    const commandSpy = mock()
+    const outside = resolve(process.cwd(), '..')
     const config = new CrowConfig('.', {
       ...defaultCrowConfig(),
       permissions: {
@@ -111,17 +104,17 @@ describe('gitCompare', () => {
     })
     await compare.run()
 
-    expect(commandSpy.calls.length).toBe(1)
+    expect(commandSpy.mock.calls.length).toBe(1)
     expect(compare.result()).toEqual({ diff: 'outside diff' })
   })
 
   it('when a path is not readable, fails without running git', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ commandSpy }),
     })
-    const to = resolve(Deno.cwd(), '..', 'outside-compare.ts')
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const to = resolve(process.cwd(), '..', 'outside-compare.ts')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const compare = gitCompare({
       applicationData,
@@ -129,10 +122,10 @@ describe('gitCompare', () => {
     })
     await compare.run()
 
-    expect(commandSpy.calls.length).toBe(0)
+    expect(commandSpy.mock.calls.length).toBe(0)
     expect(compare.success()).toBe(false)
     expect(compare.result()).toEqual({ diff: '' })
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Git compare: path not allowed: a.txt, ${to}`,
     )
   })

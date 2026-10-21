@@ -1,5 +1,6 @@
 import knex from 'knex'
 import { join } from 'node:path'
+import { BunSqliteClient } from './bun-sqlite-client.ts'
 import { migrateDatabase } from './migrate.ts'
 import type { Logger } from '../types.ts'
 import type { Filesystem } from '../application-data/filesystem.ts'
@@ -22,7 +23,7 @@ export const openAndMigrateDatabase = async (
 
 const openDatabase = (crowDirectory: string) => {
   return knex({
-    client: 'better-sqlite3',
+    client: BunSqliteClient,
     connection: { filename: defaultDatabasePath(crowDirectory) },
     useNullAsDefault: true,
   })

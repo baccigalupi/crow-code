@@ -1,7 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { join } from '@std/path'
-import { expect } from '@std/expect'
-import { spy } from '@std/testing/mock'
+import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { effect, signal } from '@preact/signals-core'
 import { writeCrowConfig } from '../../../../src/tui/install/crow-config/write.ts'
 import { defaultFilesystem } from '../../../../src/application-data/filesystem.ts'
@@ -41,8 +40,9 @@ describe('write', () => {
     await finished
 
     const written = JSON.parse(
-      Deno.readTextFileSync(
+      readFileSync(
         join(fixturesDirectory, 'write-crow-config', 'crow', 'config.json'),
+        'utf8',
       ),
     )
     expect(written.crowGlobalDirectory).toBe('~/.crow')
@@ -79,8 +79,9 @@ describe('write', () => {
     await finished
 
     const written = JSON.parse(
-      Deno.readTextFileSync(
+      readFileSync(
         join(fixturesDirectory, 'write-crow-config', 'crow', 'config.json'),
+        'utf8',
       ),
     )
     expect(written.permissions.additionalRead).toEqual(['/docs'])
@@ -89,7 +90,7 @@ describe('write', () => {
 
   it('when the step is not write, writes nothing', () => {
     const filesystem = defaultFilesystem()
-    using mkdir = spy(filesystem, 'mkdirWithParents')
+    const mkdir = spyOn(filesystem, 'mkdirWithParents')
     const installData = {
       repoDirectory: inputSignal(
         join(fixturesDirectory, 'write-crow-config', 'crow'),
@@ -107,7 +108,7 @@ describe('write', () => {
 
     installData.step.value = 'confirm'
 
-    expect(mkdir.calls).toHaveLength(0)
+    expect(mkdir.mock.calls).toHaveLength(0)
     expect(installData.step.peek()).toBe('confirm')
     dispose()
   })

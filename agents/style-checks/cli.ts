@@ -183,6 +183,7 @@ const checkMirror = async (testFile: string): Promise<boolean> => {
     `src/${base}.tsx`,
     `${base}.ts`,
     `${base}.tsx`,
+    `tests/${base}.ts`,
   ]
   for (const candidate of candidates) {
     if (await exists(candidate)) return true

@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { modelAnswer } from '../../../src/model-requests/framework/model-answer.ts'
 import { loadFixture } from '../../support/fixtures.ts'
 

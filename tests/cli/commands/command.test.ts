@@ -1,5 +1,4 @@
-import { describe, it, mock } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it, mock } from 'bun:test'
 import { Command } from '../../../src/cli/commands/command.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
@@ -45,7 +44,7 @@ describe('Command', () => {
   })
 
   it('when a command fails, reports the reason for the command word on stderr', async () => {
-    const consoleError = mock.fn()
+    const consoleError = mock()
     class FailingCommand extends Command {
       isMatch() {
         return this.commands[0] === 'first'
@@ -68,13 +67,13 @@ describe('Command', () => {
     await failing.run()
     failing.reportFailure()
 
-    expect(consoleError.mock.calls[0].arguments[0]).toBe(
+    expect(consoleError.mock.calls[0][0]).toBe(
       'Error: no widgets for first',
     )
   })
 
   it('when a command fails without a command word, names the command in words', async () => {
-    const consoleError = mock.fn()
+    const consoleError = mock()
     class SilentFailure extends Command {
       isMatch() {
         return true
@@ -94,7 +93,7 @@ describe('Command', () => {
     await failing.run()
     failing.reportFailure()
 
-    expect(consoleError.mock.calls[0].arguments[0]).toBe(
+    expect(consoleError.mock.calls[0][0]).toBe(
       'Error: no widgets for silent failure',
     )
   })
@@ -143,7 +142,7 @@ describe('Command', () => {
   })
 
   it('when constructed, exposes the application data to subclasses', async () => {
-    const consoleLog = mock.fn()
+    const consoleLog = mock()
     class Echo extends Command {
       isMatch() {
         return true
@@ -161,6 +160,6 @@ describe('Command', () => {
       operationArguments: applicationData.parsedArguments,
     }).run()
 
-    expect(consoleLog.mock.calls[0].arguments[0]).toBe('echo')
+    expect(consoleLog.mock.calls[0][0]).toBe('echo')
   })
 })

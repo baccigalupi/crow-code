@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join, resolve } from '@std/path'
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
+import { mkdirSync, rmSync, symlinkSync } from 'node:fs'
+import { join, resolve } from 'node:path'
 import {
   PathPermissions,
   pathPermissions,
@@ -39,7 +39,7 @@ describe('path-permissions', () => {
     })
 
     const allowed = await permissions.allows(
-      resolve(Deno.cwd(), '..', 'outside.txt'),
+      resolve(process.cwd(), '..', 'outside.txt'),
     )
 
     expect(allowed).toBe(false)
@@ -48,7 +48,7 @@ describe('path-permissions', () => {
   it('when an allowed directory is relative, resolves it against the runtime working directory', async () => {
     const applicationData = mockApplicationData()
     applicationData.runtime = new Runtime(
-      Deno,
+      process,
       join(fixturesDirectory, 'tools', 'git'),
     )
     const permissions = pathPermissions({
@@ -110,17 +110,17 @@ describe('path-permissions', () => {
   })
 
   it('when allows is called twice for the same path, keeps the first verdict', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/path-permissions/inside`, {
+    mkdirSync(`${fixturesDirectory}/path-permissions/inside`, {
       recursive: true,
     })
-    Deno.mkdirSync(`${fixturesDirectory}/path-permissions/outside`)
-    Deno.symlinkSync(
+    mkdirSync(`${fixturesDirectory}/path-permissions/outside`)
+    symlinkSync(
       `${fixturesDirectory}/path-permissions/outside`,
       `${fixturesDirectory}/path-permissions/inside/escape`,
     )
     const applicationData = mockApplicationData()
     applicationData.runtime = new Runtime(
-      Deno,
+      process,
       `${fixturesDirectory}/path-permissions/inside`,
     )
     const permissions = pathPermissions({
@@ -130,7 +130,7 @@ describe('path-permissions', () => {
     await permissions.allows(
       `${fixturesDirectory}/path-permissions/inside/escape`,
     )
-    Deno.removeSync(`${fixturesDirectory}/path-permissions/inside/escape`)
+    rmSync(`${fixturesDirectory}/path-permissions/inside/escape`)
 
     const allowed = await permissions.allows(
       `${fixturesDirectory}/path-permissions/inside/escape`,
@@ -165,7 +165,7 @@ describe('path-permissions', () => {
 
     const allowed = await permissions.allowsEvery([
       join(directory, 'git-diff.diff'),
-      resolve(Deno.cwd(), '..', 'outside.txt'),
+      resolve(process.cwd(), '..', 'outside.txt'),
     ])
 
     expect(allowed).toBe(false)
@@ -181,7 +181,7 @@ describe('path-permissions', () => {
 
     const filtered = await permissions.filterPaths([
       join(directory, 'git-diff.diff'),
-      resolve(Deno.cwd(), '..', 'outside.txt'),
+      resolve(process.cwd(), '..', 'outside.txt'),
       join(directory, 'git-diff-files.txt'),
     ])
 
@@ -200,7 +200,7 @@ describe('path-permissions', () => {
     })
 
     const filtered = await permissions.filterPaths([
-      resolve(Deno.cwd(), '..', 'outside.txt'),
+      resolve(process.cwd(), '..', 'outside.txt'),
     ])
 
     expect(filtered).toEqual([])
@@ -216,11 +216,11 @@ describe('path-permissions', () => {
 
     const forbidden = await permissions.forbiddenPaths([
       join(directory, 'git-diff.diff'),
-      resolve(Deno.cwd(), '..', 'outside.txt'),
+      resolve(process.cwd(), '..', 'outside.txt'),
       join(directory, 'git-diff-files.txt'),
     ])
 
-    expect(forbidden).toEqual([resolve(Deno.cwd(), '..', 'outside.txt')])
+    expect(forbidden).toEqual([resolve(process.cwd(), '..', 'outside.txt')])
   })
 
   it('when every path is allowed, forbiddenPaths returns an empty array', async () => {
@@ -266,7 +266,7 @@ describe('path-permissions', () => {
     })
     const permissions = pathPermissions({
       applicationData,
-      allowedDirectories: [Deno.cwd()],
+      allowedDirectories: [process.cwd()],
     })
 
     const allowed = await permissions.allows('vendor/x.js')
@@ -290,7 +290,7 @@ describe('path-permissions', () => {
     })
     const permissions = pathPermissions({
       applicationData,
-      allowedDirectories: [Deno.cwd()],
+      allowedDirectories: [process.cwd()],
     })
 
     const allowed = await permissions.allows('src/secret.txt')
@@ -314,7 +314,7 @@ describe('path-permissions', () => {
     })
     const permissions = pathPermissions({
       applicationData,
-      allowedDirectories: [Deno.cwd()],
+      allowedDirectories: [process.cwd()],
     })
 
     const allowed = await permissions.allows('src/vendor/x.js')
@@ -379,10 +379,10 @@ describe('path-permissions', () => {
   })
 
   it('when a symlink resolves into an ignored path, refuses it', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/path-permissions/ignored`, {
+    mkdirSync(`${fixturesDirectory}/path-permissions/ignored`, {
       recursive: true,
     })
-    Deno.symlinkSync(
+    symlinkSync(
       `${fixturesDirectory}/path-permissions/ignored`,
       `${fixturesDirectory}/path-permissions/link`,
     )
@@ -427,7 +427,7 @@ describe('path-permissions', () => {
     })
     const permissions = pathPermissions({
       applicationData,
-      allowedDirectories: [Deno.cwd()],
+      allowedDirectories: [process.cwd()],
     })
 
     const ignored = permissions.ignoredPaths()
@@ -435,7 +435,7 @@ describe('path-permissions', () => {
     expect(ignored).toEqual([
       '/abs/dir',
       '/other',
-      join(Deno.cwd(), '.git'),
+      join(process.cwd(), '.git'),
     ])
   })
 })

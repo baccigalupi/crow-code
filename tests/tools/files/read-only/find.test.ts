@@ -1,7 +1,5 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join } from '@std/path'
-import { spy } from '@std/testing/mock'
+import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
+import { join } from 'node:path'
 import { findFiles } from '../../../../src/tools/files/read-only/find.ts'
 import { CrowConfig } from '../../../../src/application-data/config.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
@@ -93,8 +91,8 @@ describe('find', () => {
 
   it('when the path is outside the allowed directories, returns no paths and logs', async () => {
     const applicationData = mockApplicationData()
-    const path = join(Deno.cwd(), '..')
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const path = join(process.cwd(), '..')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const find = findFiles({
       applicationData,
@@ -104,7 +102,7 @@ describe('find', () => {
 
     expect(find.success()).toBe(false)
     expect(find.result()).toEqual({ path, paths: [] })
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Find files: path not allowed: ${path}`,
     )
   })
@@ -112,7 +110,7 @@ describe('find', () => {
   it('when the directory does not exist, returns no paths and logs', async () => {
     const applicationData = mockApplicationData()
     const path = join(fixturesDirectory, 'tools', 'search', 'missing')
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const find = findFiles({
       applicationData,
@@ -122,8 +120,8 @@ describe('find', () => {
 
     expect(find.success()).toBe(false)
     expect(find.result()).toEqual({ path, paths: [] })
-    expect(loggerErrorSpy.calls[0].args[0]).toContain('Find files: ')
-    expect(loggerErrorSpy.calls[0].args[0]).toContain(
+    expect(loggerErrorSpy.mock.calls[0][0]).toContain('Find files: ')
+    expect(loggerErrorSpy.mock.calls[0][0]).toContain(
       'no such file or directory',
     )
   })

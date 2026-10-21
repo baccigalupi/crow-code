@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { runAgentTui } from '../../../src/tui/agent/runner.ts'
 import { ChatSession } from '../../../src/tui/agent/interactions/state/chat-session.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'

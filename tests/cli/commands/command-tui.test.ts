@@ -1,6 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { spy } from '@std/testing/mock'
+import { describe, expect, it, mock } from 'bun:test'
 import { CommandTui } from '../../../src/cli/commands/command-tui.ts'
 import type { RunTui } from '../../../src/cli/types.ts'
 import type { ReplStatus } from '../../../src/tui/types.ts'
@@ -8,8 +6,8 @@ import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('CommandTui', () => {
   it('when run, starts the tui with the application data and waits for its status', async () => {
-    const status = spy(() => Promise.resolve('completed' as ReplStatus))
-    const runTui = spy(() => ({ status }))
+    const status = mock(() => Promise.resolve('completed' as ReplStatus))
+    const runTui = mock(() => ({ status }))
     class FakeTui extends CommandTui {
       protected runTui: RunTui = runTui
 
@@ -25,8 +23,8 @@ describe('CommandTui', () => {
 
     await tui.run()
 
-    expect(runTui.calls[0].args).toEqual([applicationData])
-    expect(status.calls.length).toBe(1)
+    expect(runTui.mock.calls[0]).toEqual([applicationData])
+    expect(status.mock.calls.length).toBe(1)
   })
 
   it('when the tui completes, exits 0', async () => {

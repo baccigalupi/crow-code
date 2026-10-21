@@ -1,7 +1,5 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { spy } from '@std/testing/mock'
-import { join } from '@std/path'
+import { describe, expect, it, mock } from 'bun:test'
+import { join } from 'node:path'
 import { pino } from 'pino'
 import type { Logger } from '../../src/types.ts'
 import { loadConfig } from '../../src/application-data/load-config.ts'
@@ -52,7 +50,7 @@ describe('loadConfig', () => {
   })
 
   it('when the config is malformed, logs the failure naming the path', async () => {
-    const errorSpy = spy()
+    const errorSpy = mock()
     const path = join(fixturesDirectory, 'malformed-config.txt')
     const operation = loadConfig({
       path,
@@ -63,8 +61,8 @@ describe('loadConfig', () => {
     await operation.run()
     const config = operation.result()
 
-    expect(errorSpy.calls).toHaveLength(1)
-    expect(errorSpy.calls[0].args[0]).toBe(
+    expect(errorSpy.mock.calls).toHaveLength(1)
+    expect(errorSpy.mock.calls[0][0]).toBe(
       `Load config: '${path}': the file is not valid JSON`,
     )
     expect(config.crowGlobalDirectory).toBe('~/.crow')

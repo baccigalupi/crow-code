@@ -1,7 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join, resolve } from '@std/path'
-import { spy, stub } from '@std/testing/mock'
+import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
+import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import { join, resolve } from 'node:path'
 import { writeFile } from '../../../../src/tools/files/mutations/write.ts'
 import { denyAllPermissions } from '../../../support/deny-permissions.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
@@ -13,7 +12,7 @@ describe('writeFile', () => {
 
   it('creates a new file with the given content', async () => {
     const directory = join(fixturesDirectory, 'write')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const path = join(directory, 'alpha.txt')
     const applicationData = mockApplicationData()
 
@@ -25,14 +24,14 @@ describe('writeFile', () => {
 
     expect(file.success()).toBe(true)
     expect(file.result()).toEqual({ path, created: true })
-    expect(Deno.readTextFileSync(path)).toBe('one\ntwo\n')
+    expect(readFileSync(path, 'utf8')).toBe('one\ntwo\n')
   })
 
   it('overwrites an existing file entirely', async () => {
     const directory = join(fixturesDirectory, 'write')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const path = join(directory, 'alpha.txt')
-    Deno.writeTextFileSync(path, 'old content\n')
+    writeFileSync(path, 'old content\n')
     const applicationData = mockApplicationData()
 
     const file = writeFile({
@@ -43,20 +42,18 @@ describe('writeFile', () => {
 
     expect(file.success()).toBe(true)
     expect(file.result()).toEqual({ path, created: false })
-    expect(Deno.readTextFileSync(path)).toBe('new content\n')
+    expect(readFileSync(path, 'utf8')).toBe('new content\n')
   })
 
   it('when the existence check is not allowed, fails without writing', async () => {
     const directory = join(fixturesDirectory, 'write')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const path = join(directory, 'denied.txt')
     const applicationData = mockApplicationData()
-    using _permissionsStub = stub(
-      applicationData,
-      'readPathPermissions',
+    spyOn(applicationData, 'readPathPermissions').mockImplementation(
       denyAllPermissions,
     )
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const file = writeFile({
       applicationData,
@@ -65,16 +62,16 @@ describe('writeFile', () => {
     await file.run()
 
     expect(file.success()).toBe(false)
-    expect(() => Deno.statSync(path)).toThrow()
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(() => statSync(path)).toThrow()
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Path exists: path not allowed: ${directory}`,
     )
   })
 
   it('when the path is outside the allowed directories, fails without writing', async () => {
-    const path = resolve(Deno.cwd(), '..', 'outside-write-denied.txt')
+    const path = resolve(process.cwd(), '..', 'outside-write-denied.txt')
     const applicationData = mockApplicationData()
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const file = writeFile({
       applicationData,
@@ -84,8 +81,8 @@ describe('writeFile', () => {
 
     expect(file.success()).toBe(false)
     expect(file.result()).toEqual({ path, created: false })
-    expect(() => Deno.statSync(path)).toThrow()
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(() => statSync(path)).toThrow()
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Write file: path not allowed: ${path}`,
     )
   })
@@ -103,17 +100,17 @@ describe('writeFile', () => {
 
     expect(file.success()).toBe(true)
     expect(file.result()).toEqual({ path, created: true })
-    expect(Deno.readTextFileSync(path)).toBe('one\n')
+    expect(readFileSync(path, 'utf8')).toBe('one\n')
   })
 
   it('when the parent path is a file, fails without writing', async () => {
     const directory = join(fixturesDirectory, 'write')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const parent = join(directory, 'parent')
-    Deno.writeTextFileSync(parent, 'not a directory\n')
+    writeFileSync(parent, 'not a directory\n')
     const path = join(parent, 'alpha.txt')
     const applicationData = mockApplicationData()
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const file = writeFile({
       applicationData,
@@ -123,13 +120,13 @@ describe('writeFile', () => {
 
     expect(file.success()).toBe(false)
     expect(file.result()).toEqual({ path, created: false })
-    expect(Deno.readTextFileSync(parent)).toBe('not a directory\n')
-    expect(loggerErrorSpy.calls.length).toBeGreaterThan(0)
+    expect(readFileSync(parent, 'utf8')).toBe('not a directory\n')
+    expect(loggerErrorSpy.mock.calls.length).toBeGreaterThan(0)
   })
 
   it('writing empty content succeeds', async () => {
     const directory = join(fixturesDirectory, 'write')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const path = join(directory, 'alpha.txt')
     const applicationData = mockApplicationData()
 
@@ -141,15 +138,15 @@ describe('writeFile', () => {
 
     expect(file.success()).toBe(true)
     expect(file.result()).toEqual({ path, created: true })
-    expect(Deno.readTextFileSync(path)).toBe('')
+    expect(readFileSync(path, 'utf8')).toBe('')
   })
 
   it('when the path exists as a directory, fails and leaves it unchanged', async () => {
     const directory = join(fixturesDirectory, 'write')
     const path = join(directory, 'alpha')
-    Deno.mkdirSync(path, { recursive: true })
+    mkdirSync(path, { recursive: true })
     const applicationData = mockApplicationData()
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const file = writeFile({
       applicationData,
@@ -159,7 +156,7 @@ describe('writeFile', () => {
 
     expect(file.success()).toBe(false)
     expect(file.result()).toEqual({ path, created: false })
-    expect(Deno.statSync(path).isDirectory).toBe(true)
-    expect(loggerErrorSpy.calls.length).toBeGreaterThan(0)
+    expect(statSync(path).isDirectory()).toBe(true)
+    expect(loggerErrorSpy.mock.calls.length).toBeGreaterThan(0)
   })
 })

@@ -1,6 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { spy } from '@std/testing/mock'
+import { describe, expect, it, spyOn } from 'bun:test'
 import { OpenAiRequest } from '../../../src/model-requests/framework/openai-request.ts'
 import { ModelRequestErrorHandler } from '../../../src/model-requests/framework/model-request-error-handler.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
@@ -27,7 +25,7 @@ describe('ModelRequestErrorHandler', () => {
         ),
       ),
     })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
     const apiRequest = new OpenAiRequest({
       applicationData,
       operationArguments: {
@@ -38,7 +36,7 @@ describe('ModelRequestErrorHandler', () => {
 
     await apiRequest.run()
 
-    const logged = loggerErrorSpy.calls[0].args[0] as string
+    const logged = loggerErrorSpy.mock.calls[0][0] as string
     expect(logged).toContain(
       'Error: POST https://example.com/api/v1/chat/completions',
     )
@@ -62,7 +60,7 @@ describe('ModelRequestErrorHandler', () => {
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClientNetworkError('socket hangup'),
     })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
     const apiRequest = new OpenAiRequest({
       applicationData,
       operationArguments: {
@@ -73,7 +71,7 @@ describe('ModelRequestErrorHandler', () => {
 
     await apiRequest.run()
 
-    const logged = loggerErrorSpy.calls[0].args[0] as string
+    const logged = loggerErrorSpy.mock.calls[0][0] as string
     expect(logged).toContain('model=test-model provider=1')
     expect(logged).toContain('failed to connect:')
     expect(logged).toContain(

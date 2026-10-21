@@ -1,7 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join, resolve } from '@std/path'
-import { spy, stub } from '@std/testing/mock'
+import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { join, resolve } from 'node:path'
 import { multiEdit } from '../../../../src/tools/files/mutations/multi-edit.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
@@ -12,11 +11,11 @@ describe('multiEdit', () => {
 
   it('applies edits across two files', async () => {
     const directory = join(fixturesDirectory, 'multi-edit')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const alpha = join(directory, 'alpha.txt')
     const beta = join(directory, 'beta.txt')
-    Deno.writeTextFileSync(alpha, 'one\ntwo\n')
-    Deno.writeTextFileSync(beta, 'red\nblue\n')
+    writeFileSync(alpha, 'one\ntwo\n')
+    writeFileSync(beta, 'red\nblue\n')
     const applicationData = mockApplicationData()
 
     const batch = multiEdit({
@@ -35,19 +34,19 @@ describe('multiEdit', () => {
       { path: alpha, replacements: 1 },
       { path: beta, replacements: 1 },
     ])
-    expect(Deno.readTextFileSync(alpha)).toBe('one\nTWO\n')
-    expect(Deno.readTextFileSync(beta)).toBe('red\nBLUE\n')
+    expect(readFileSync(alpha, 'utf8')).toBe('one\nTWO\n')
+    expect(readFileSync(beta, 'utf8')).toBe('red\nBLUE\n')
   })
 
   it('when a later edit fails, restores earlier edits', async () => {
     const directory = join(fixturesDirectory, 'multi-edit')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const alpha = join(directory, 'alpha.txt')
     const beta = join(directory, 'beta.txt')
-    Deno.writeTextFileSync(alpha, 'one\ntwo\n')
-    Deno.writeTextFileSync(beta, 'red\nblue\n')
+    writeFileSync(alpha, 'one\ntwo\n')
+    writeFileSync(beta, 'red\nblue\n')
     const applicationData = mockApplicationData()
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const batch = multiEdit({
       applicationData,
@@ -62,23 +61,23 @@ describe('multiEdit', () => {
 
     expect(batch.success()).toBe(false)
     expect(batch.result()).toEqual([])
-    expect(Deno.readTextFileSync(alpha)).toBe('one\ntwo\n')
-    expect(Deno.readTextFileSync(beta)).toBe('red\nblue\n')
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(readFileSync(alpha, 'utf8')).toBe('one\ntwo\n')
+    expect(readFileSync(beta, 'utf8')).toBe('red\nblue\n')
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       'Edit file: oldString not found in file',
     )
-    expect(loggerErrorSpy.calls[1].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[1][0]).toBe(
       'Multi edit: oldString not found in file',
     )
   })
 
   it('when an old string is ambiguous without replaceAll, fails and leaves the file', async () => {
     const directory = join(fixturesDirectory, 'multi-edit')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const alpha = join(directory, 'alpha.txt')
-    Deno.writeTextFileSync(alpha, 'two\ntwo\n')
+    writeFileSync(alpha, 'two\ntwo\n')
     const applicationData = mockApplicationData()
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const batch = multiEdit({
       applicationData,
@@ -89,17 +88,17 @@ describe('multiEdit', () => {
     await batch.run()
 
     expect(batch.success()).toBe(false)
-    expect(Deno.readTextFileSync(alpha)).toBe('two\ntwo\n')
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(readFileSync(alpha, 'utf8')).toBe('two\ntwo\n')
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       'Edit file: oldString is not unique: found 2 occurrences',
     )
   })
 
   it('with replaceAll, replaces every occurrence', async () => {
     const directory = join(fixturesDirectory, 'multi-edit')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const alpha = join(directory, 'alpha.txt')
-    Deno.writeTextFileSync(alpha, 'two\ntwo\n')
+    writeFileSync(alpha, 'two\ntwo\n')
     const applicationData = mockApplicationData()
 
     const batch = multiEdit({
@@ -117,18 +116,18 @@ describe('multiEdit', () => {
 
     expect(batch.success()).toBe(true)
     expect(batch.result()).toEqual([{ path: alpha, replacements: 2 }])
-    expect(Deno.readTextFileSync(alpha)).toBe('TWO\nTWO\n')
+    expect(readFileSync(alpha, 'utf8')).toBe('TWO\nTWO\n')
   })
 
   it('when a path is not allowed, fails before writing anything', async () => {
     const allowedDirectory = join(fixturesDirectory, 'multi-edit', 'allowed')
-    Deno.mkdirSync(allowedDirectory, { recursive: true })
+    mkdirSync(allowedDirectory, { recursive: true })
     const alpha = join(allowedDirectory, 'alpha.txt')
-    const beta = resolve(Deno.cwd(), '..', 'outside-multi-edit-denied.txt')
-    Deno.writeTextFileSync(alpha, 'one\ntwo\n')
-    Deno.writeTextFileSync(beta, 'red\nblue\n')
+    const beta = resolve(process.cwd(), '..', 'outside-multi-edit-denied.txt')
+    writeFileSync(alpha, 'one\ntwo\n')
+    writeFileSync(beta, 'red\nblue\n')
     const applicationData = mockApplicationData()
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const batch = multiEdit({
       applicationData,
@@ -142,19 +141,19 @@ describe('multiEdit', () => {
     await batch.run()
 
     expect(batch.success()).toBe(false)
-    expect(Deno.readTextFileSync(alpha)).toBe('one\ntwo\n')
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(readFileSync(alpha, 'utf8')).toBe('one\ntwo\n')
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Multi edit: path not allowed: ${beta}`,
     )
-    Deno.removeSync(beta)
+    rmSync(beta)
   })
 
   it('when a file is missing, fails and leaves other files', async () => {
     const directory = join(fixturesDirectory, 'multi-edit')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const alpha = join(directory, 'alpha.txt')
     const missing = join(directory, 'missing.txt')
-    Deno.writeTextFileSync(alpha, 'one\ntwo\n')
+    writeFileSync(alpha, 'one\ntwo\n')
     const applicationData = mockApplicationData()
 
     const batch = multiEdit({
@@ -169,24 +168,24 @@ describe('multiEdit', () => {
     await batch.run()
 
     expect(batch.success()).toBe(false)
-    expect(Deno.readTextFileSync(alpha)).toBe('one\ntwo\n')
-    expect(batch.reason).toContain('No such file or directory')
+    expect(readFileSync(alpha, 'utf8')).toBe('one\ntwo\n')
+    expect(batch.reason).toContain('ENOENT: no such file or directory')
   })
 
   it('when a write fails mid-batch, restores earlier files', async () => {
     const directory = join(fixturesDirectory, 'multi-edit')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const alpha = join(directory, 'alpha.txt')
     const beta = join(directory, 'beta.txt')
-    Deno.writeTextFileSync(alpha, 'one\ntwo\n')
-    Deno.writeTextFileSync(beta, 'red\nblue\n')
+    writeFileSync(alpha, 'one\ntwo\n')
+    writeFileSync(beta, 'red\nblue\n')
     const applicationData = mockApplicationData()
-    const write = Deno.writeTextFile
+    const write = applicationData.filesystem.writeTextFile.bind(
+      applicationData.filesystem,
+    )
     let betaWrites = 0
-    using _writeStub = stub(
-      Deno,
-      'writeTextFile',
-      (path, data) => {
+    spyOn(applicationData.filesystem, 'writeTextFile').mockImplementation(
+      (path: string, data: string) => {
         if (String(path) === beta) betaWrites += 1
         if (String(path) === beta && betaWrites === 1) {
           return Promise.reject(new Error('beta boom'))
@@ -208,25 +207,25 @@ describe('multiEdit', () => {
 
     expect(batch.success()).toBe(false)
     expect(batch.reason).toBe('beta boom')
-    expect(Deno.readTextFileSync(alpha)).toBe('one\ntwo\n')
-    expect(Deno.readTextFileSync(beta)).toBe('red\nblue\n')
+    expect(readFileSync(alpha, 'utf8')).toBe('one\ntwo\n')
+    expect(readFileSync(beta, 'utf8')).toBe('red\nblue\n')
   })
 
   it('when restoring a file fails, reports the file in the reason', async () => {
     const directory = join(fixturesDirectory, 'multi-edit')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const alpha = join(directory, 'alpha.txt')
     const beta = join(directory, 'beta.txt')
-    Deno.writeTextFileSync(alpha, 'one\ntwo\n')
-    Deno.writeTextFileSync(beta, 'red\nblue\n')
+    writeFileSync(alpha, 'one\ntwo\n')
+    writeFileSync(beta, 'red\nblue\n')
     const applicationData = mockApplicationData()
-    const write = Deno.writeTextFile
+    const write = applicationData.filesystem.writeTextFile.bind(
+      applicationData.filesystem,
+    )
     let alphaWrites = 0
     let betaWrites = 0
-    using _writeStub = stub(
-      Deno,
-      'writeTextFile',
-      (path, data) => {
+    spyOn(applicationData.filesystem, 'writeTextFile').mockImplementation(
+      (path: string, data: string) => {
         if (String(path) === alpha) alphaWrites += 1
         if (String(path) === beta) betaWrites += 1
         if (String(path) === beta && betaWrites === 1) {
@@ -270,9 +269,9 @@ describe('multiEdit', () => {
 
   it('applies several edits to one file sequentially', async () => {
     const directory = join(fixturesDirectory, 'multi-edit')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const alpha = join(directory, 'alpha.txt')
-    Deno.writeTextFileSync(alpha, 'one\ntwo\n')
+    writeFileSync(alpha, 'one\ntwo\n')
     const applicationData = mockApplicationData()
 
     const batch = multiEdit({
@@ -291,6 +290,6 @@ describe('multiEdit', () => {
       { path: alpha, replacements: 1 },
       { path: alpha, replacements: 1 },
     ])
-    expect(Deno.readTextFileSync(alpha)).toBe('ONE\ntwo\n')
+    expect(readFileSync(alpha, 'utf8')).toBe('ONE\ntwo\n')
   })
 })

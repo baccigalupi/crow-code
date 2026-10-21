@@ -1,6 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { assertSpyCall, spy } from '@std/testing/mock'
+import { describe, expect, it, spyOn } from 'bun:test'
 import pino from 'pino'
 import {
   CreateProvider,
@@ -48,7 +46,7 @@ describe('create', () => {
   it('when the provider already exists, reports failure', async () => {
     const logger = pino({ enabled: false })
     const applicationData = mockApplicationData({ logger })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
     const database = await applicationData.database()
     await database('providers').insert({
       name: 'provider-name',
@@ -63,8 +61,8 @@ describe('create', () => {
 
     expect(creator.success()).toBe(false)
     expect(creator.result()).toEqual({})
-    assertSpyCall(loggerErrorSpy, 0)
-    const logged = loggerErrorSpy.calls[0].args[0] as string
+    expect(loggerErrorSpy).toHaveBeenCalled()
+    const logged = loggerErrorSpy.mock.calls[0][0] as string
     expect(logged).toContain('Create provider:')
   })
 })

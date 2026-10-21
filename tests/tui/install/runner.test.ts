@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { join } from '@std/path'
-import { expect } from '@std/expect'
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { runInstalltTui } from '../../../src/tui/install/runner.ts'
 import { emptyBuffer, insertText } from '../../../src/tui/input-buffer.ts'
 import { effect, signal } from '@preact/signals-core'
@@ -42,8 +42,9 @@ describe('runInstalltTui', () => {
     await finished
 
     const written = JSON.parse(
-      Deno.readTextFileSync(
+      readFileSync(
         join(fixturesDirectory, 'install-runner', 'crow', 'config.json'),
+        'utf8',
       ),
     )
     expect(written.crowGlobalDirectory).toBe('~/.crow')

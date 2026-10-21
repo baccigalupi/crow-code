@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
+import { mkdirSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { walk } from '../../../../src/tools/files/read-only/walk.ts'
 import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
 
@@ -81,10 +81,10 @@ describe('walk', () => {
 
   it('when a directory holds several entries, yields them sorted by name', async () => {
     const directory = join(fixturesDirectory, 'walk', 'sorted')
-    Deno.mkdirSync(directory, { recursive: true })
-    Deno.writeTextFileSync(join(directory, 'c.txt'), 'c')
-    Deno.writeTextFileSync(join(directory, 'b.txt'), 'b')
-    Deno.writeTextFileSync(join(directory, 'a.txt'), 'a')
+    mkdirSync(directory, { recursive: true })
+    writeFileSync(join(directory, 'c.txt'), 'c')
+    writeFileSync(join(directory, 'b.txt'), 'b')
+    writeFileSync(join(directory, 'a.txt'), 'a')
 
     const walked = await walk(directory)
 

@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { visibleHistory } from '../../../../src/tui/agent/interactions/visible-history.ts'
 import type { HistoryEntry } from '../../../../src/tui/agent/types.ts'
 

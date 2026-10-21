@@ -1,10 +1,8 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join } from '@std/path'
-import { exists } from '@std/fs'
+import { describe, expect, it } from 'bun:test'
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
 import { buildApplicationData } from '../../src/application-data/builder.ts'
-import { Runtime } from '../../src/application-data/runtime.ts'
-import { mockDeno } from '../support/mock-command.ts'
+import { mockRuntime } from '../support/mock-command.ts'
 import { clearDirectory, fixturesDirectory } from '../support/fixtures.ts'
 
 describe('buildApplicationData', () => {
@@ -12,10 +10,10 @@ describe('buildApplicationData', () => {
     const path = join(fixturesDirectory, 'config.json')
     const builder = buildApplicationData({
       path,
-      runtime: new Runtime(mockDeno({
+      runtime: mockRuntime({
         args: ['--config=./missing-config.json'],
         stdout: '/some/repo\n',
-      })),
+      }),
     })
 
     await builder.run()
@@ -34,9 +32,10 @@ describe('buildApplicationData', () => {
   it('when no path is provided, uses the command-line path', async () => {
     const path = join(fixturesDirectory, 'config.json')
     const builder = buildApplicationData({
-      runtime: new Runtime(
-        mockDeno({ args: [`--config=${path}`], stdout: '/some/repo\n' }),
-      ),
+      runtime: mockRuntime({
+        args: [`--config=${path}`],
+        stdout: '/some/repo\n',
+      }),
     })
 
     await builder.run()
@@ -57,7 +56,7 @@ describe('buildApplicationData', () => {
     await clearDirectory(crowGlobalDirectory)
     const builder = buildApplicationData({
       path: join(fixturesDirectory, 'crow-global-config.json'),
-      runtime: new Runtime(mockDeno({ stdout: '/some/repo\n' })),
+      runtime: mockRuntime({ stdout: '/some/repo\n' }),
     })
 
     await builder.run()
@@ -67,7 +66,7 @@ describe('buildApplicationData', () => {
     expect(applicationData.config.crowGlobalDirectory).toBe(
       'tests/support/fixtures/.crow',
     )
-    expect(await exists(join(crowGlobalDirectory, 'crow.db'))).toBe(true)
+    expect(existsSync(join(crowGlobalDirectory, 'crow.db'))).toBe(true)
     await applicationData.close()
     await clearDirectory(crowGlobalDirectory)
   })
@@ -75,7 +74,7 @@ describe('buildApplicationData', () => {
   it('when the config sets an environment file, its values are available', async () => {
     const builder = buildApplicationData({
       path: join(fixturesDirectory, 'env-file-builder-config.json'),
-      runtime: new Runtime(mockDeno({ stdout: '/some/repo\n' })),
+      runtime: mockRuntime({ stdout: '/some/repo\n' }),
     })
 
     await builder.run()
@@ -91,7 +90,7 @@ describe('buildApplicationData', () => {
   it('when the database cannot be opened, fails with the reason', async () => {
     const builder = buildApplicationData({
       path: join(fixturesDirectory, 'unwritable-global-config.json'),
-      runtime: new Runtime(mockDeno({ stdout: '/some/repo\n' })),
+      runtime: mockRuntime({ stdout: '/some/repo\n' }),
     })
 
     await builder.run()
@@ -112,7 +111,7 @@ describe('buildApplicationData', () => {
   it('when the config file is malformed, fails with the reason', async () => {
     const builder = buildApplicationData({
       path: join(fixturesDirectory, 'malformed-config.txt'),
-      runtime: new Runtime(mockDeno({ stdout: '/some/repo\n' })),
+      runtime: mockRuntime({ stdout: '/some/repo\n' }),
     })
 
     await builder.run()
@@ -124,11 +123,11 @@ describe('buildApplicationData', () => {
   it('when git cannot find the repository root, fails with the git error', async () => {
     const builder = buildApplicationData({
       path: join(fixturesDirectory, 'config.json'),
-      runtime: new Runtime(mockDeno({
+      runtime: mockRuntime({
         stdout: '',
         success: false,
         stderr: 'fatal: not a git repository',
-      })),
+      }),
     })
 
     await builder.run()

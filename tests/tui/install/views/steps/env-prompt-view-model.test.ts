@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { envPromptViewModel } from '../../../../../src/tui/install/views/steps/env-prompt-view-model.ts'
 import { emptyBuffer, insertText } from '../../../../../src/tui/input-buffer.ts'
 

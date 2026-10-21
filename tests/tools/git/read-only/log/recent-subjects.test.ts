@@ -1,6 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { assertSpyCall, spy } from '@std/testing/mock'
+import { describe, expect, it, mock, spyOn } from 'bun:test'
 import { gitRecentSubjects } from '../../../../../src/tools/git/read-only/log/recent-subjects.ts'
 import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 import { mockCommand } from '../../../../support/mock-command.ts'
@@ -8,7 +6,7 @@ import { mockCommand } from '../../../../support/mock-command.ts'
 describe('gitRecentSubjects', () => {
   it('when no count is given, returns the last ten commit subjects', async () => {
     const stdout = 'Add login\nFix tests\n'
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ stdout, commandSpy }),
     })
@@ -16,14 +14,14 @@ describe('gitRecentSubjects', () => {
     const subjects = gitRecentSubjects({ applicationData })
     await subjects.run()
 
-    assertSpyCall(commandSpy, 0, {
-      args: ['git', { args: ['log', '--format=%s', '-n', '10'] }],
+    expect(commandSpy).toHaveBeenNthCalledWith(1, 'git', {
+      args: ['log', '--format=%s', '-n', '10'],
     })
     expect(subjects.result()).toEqual(['Add login', 'Fix tests'])
   })
 
   it('when a count is given, limits the log to that many subjects', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ commandSpy }),
     })
@@ -34,8 +32,8 @@ describe('gitRecentSubjects', () => {
     })
     await subjects.run()
 
-    assertSpyCall(commandSpy, 0, {
-      args: ['git', { args: ['log', '--format=%s', '-n', '3'] }],
+    expect(commandSpy).toHaveBeenNthCalledWith(1, 'git', {
+      args: ['log', '--format=%s', '-n', '3'],
     })
   })
 
@@ -45,14 +43,14 @@ describe('gitRecentSubjects', () => {
         outputError: 'No such file or directory (os error 2): git',
       }),
     })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const subjects = gitRecentSubjects({ applicationData })
     await subjects.run()
 
     expect(subjects.success()).toBe(false)
     expect(subjects.result()).toEqual([])
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       'Git recent subjects: No such file or directory (os error 2): git',
     )
   })

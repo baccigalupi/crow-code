@@ -1,5 +1,4 @@
-import { describe, it, mock } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it, mock } from 'bun:test'
 import { Version } from '../../../src/cli/commands/version.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
@@ -38,7 +37,7 @@ describe('Version', () => {
   })
 
   it('when run, writes the project version', async () => {
-    const consoleLog = mock.fn()
+    const consoleLog = mock()
     const applicationData = mockApplicationData({
       args: ['--version'],
       consoleLog,
@@ -50,6 +49,6 @@ describe('Version', () => {
 
     await version.run()
 
-    expect(consoleLog.mock.calls[0].arguments[0]).toBe('crow 0.0.1')
+    expect(consoleLog.mock.calls[0][0]).toBe('crow 0.0.1')
   })
 })

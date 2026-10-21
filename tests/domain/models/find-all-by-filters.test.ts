@@ -1,6 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { assertSpyCall, spy } from '@std/testing/mock'
+import { describe, expect, it, spyOn } from 'bun:test'
 import pino from 'pino'
 import { ModelEntity } from '../../../src/domain/models/model.ts'
 import { Environment } from '../../../src/application-data/env-vars.ts'
@@ -133,7 +131,7 @@ describe('modelFindAllByFilters', () => {
   it('when the query fails, logs the error and returns an empty array', async () => {
     const logger = pino({ enabled: false })
     const applicationData = mockApplicationData({ logger })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
     const database = await applicationData.database()
     await dropAllTables(database)
 
@@ -142,7 +140,7 @@ describe('modelFindAllByFilters', () => {
     }).all()
 
     expect(models).toEqual([])
-    assertSpyCall(loggerErrorSpy, 0)
+    expect(loggerErrorSpy).toHaveBeenCalled()
   })
 
   it('when type is given, filters with reasoningFilter', async () => {

@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { decideWorktreePath } from '../../../.claude/hooks/worktree-path-decision.ts'
 
 describe('decideWorktreePath', () => {

@@ -1,4 +1,5 @@
 import knex, { type Knex } from 'knex'
+import { BunSqliteClient } from '../../src/database/bun-sqlite-client.ts'
 import { migrateDatabase } from '../../src/database/migrate.ts'
 import type { Logger } from '../../src/types.ts'
 
@@ -15,7 +16,7 @@ let shared: Promise<Knex> | undefined
 export const createTestDatabase = async (logger: Logger) => {
   if (!shared) {
     const database = knex({
-      client: 'better-sqlite3',
+      client: BunSqliteClient,
       connection: { filename: ':memory:' },
       useNullAsDefault: true,
     })

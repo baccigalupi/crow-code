@@ -1,6 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { assertSpyCall, spy } from '@std/testing/mock'
+import { describe, expect, it, spyOn } from 'bun:test'
 import { OpenAiRequest } from '../../../src/model-requests/framework/openai-request.ts'
 import { ModelApiRequest } from '../../../src/model-requests/framework/model-api-request.ts'
 import type { ModelMessages } from '../../../src/model-requests/types.ts'
@@ -168,7 +166,7 @@ describe('ModelApiRequest', () => {
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClient('not json'),
     })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
     const modelApiRequest = new class
       extends ModelApiRequest<string, string[]> {
       protected override logPrefix = 'Test request: '
@@ -187,9 +185,10 @@ describe('ModelApiRequest', () => {
 
     await modelApiRequest.run()
 
-    assertSpyCall(loggerErrorSpy, 0, {
-      args: ['Test request: invalid-json: `not json`'],
-    })
+    expect(loggerErrorSpy).toHaveBeenNthCalledWith(
+      1,
+      'Test request: invalid-json: `not json`',
+    )
   })
 
   it('when the subclass rejects the response shape, returns the error response and records invalid-schema', async () => {

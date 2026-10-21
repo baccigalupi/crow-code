@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import pino from 'pino'
 import { populateModels } from '../../../src/model-discovery/populate/populate-models.ts'
 import { mockFetchRoutes, mockFetchSuccess } from '../../support/mock-fetch.ts'

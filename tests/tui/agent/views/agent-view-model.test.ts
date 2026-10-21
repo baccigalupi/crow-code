@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { agentViewModel } from '../../../../src/tui/agent/views/agent-view-model.ts'
 import type { AgentViewModelArguments } from '../../../../src/tui/agent/types.ts'
 

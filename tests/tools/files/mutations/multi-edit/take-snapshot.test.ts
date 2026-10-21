@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
+import { mkdirSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { takeSnapshot } from '../../../../../src/tools/files/mutations/multi-edit/take-snapshot.ts'
 import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 import {
@@ -14,11 +14,11 @@ describe('TakeSnapshot', () => {
 
   it('captures the text of every path', async () => {
     const directory = join(fixturesDirectory, 'take-snapshot')
-    Deno.mkdirSync(directory, { recursive: true })
+    mkdirSync(directory, { recursive: true })
     const alpha = join(directory, 'alpha.txt')
     const beta = join(directory, 'beta.txt')
-    Deno.writeTextFileSync(alpha, 'one\n')
-    Deno.writeTextFileSync(beta, 'two\n')
+    writeFileSync(alpha, 'one\n')
+    writeFileSync(beta, 'two\n')
 
     const operation = takeSnapshot({
       applicationData: mockApplicationData(),
@@ -41,7 +41,7 @@ describe('TakeSnapshot', () => {
     await operation.run()
 
     expect(operation.success()).toBe(false)
-    expect(operation.reason).toContain('No such file or directory')
+    expect(operation.reason).toContain('ENOENT: no such file or directory')
     expect(operation.result()).toEqual([])
   })
 })

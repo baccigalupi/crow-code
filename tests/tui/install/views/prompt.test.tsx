@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { render } from 'ink-testing-library'
 import { Prompt } from '../../../../src/tui/install/views/prompt.tsx'
 import { emptyBuffer, insertText } from '../../../../src/tui/input-buffer.ts'

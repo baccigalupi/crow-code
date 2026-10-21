@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { buildPermissions } from '../../../../src/tui/install/crow-config/permissions.ts'
 import { emptyBuffer, insertText } from '../../../../src/tui/input-buffer.ts'
 

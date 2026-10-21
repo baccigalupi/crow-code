@@ -1,6 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { spy } from '@std/testing/mock'
+import { describe, expect, it, spyOn } from 'bun:test'
 import pino from 'pino'
 import {
   mockFetchError,
@@ -45,7 +43,7 @@ describe('fetchProvider', () => {
   it('when the response is an error, logs the status and response body', async () => {
     type ApiRecord = { items?: string[] }
     const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
+    const loggerErrorSpy = spyOn(logger, 'error')
     const mockFetch = mockFetchResponse(
       () => new Response('oops', { status: 500 }),
     )
@@ -58,7 +56,7 @@ describe('fetchProvider', () => {
       1000,
     ).run()
 
-    const logged = loggerErrorSpy.calls[0].args[0] as string
+    const logged = loggerErrorSpy.mock.calls[0][0] as string
     expect(logged).toContain('Catalog request failed with status 500:')
     expect(logged).toContain('http://example.com')
     expect(logged).toContain('oops')
@@ -82,7 +80,7 @@ describe('fetchProvider', () => {
   it('when the network request fails, logs the underlying error', async () => {
     type ApiRecord = { items?: string[] }
     const logger = pino({ enabled: false })
-    using loggerErrorSpy = spy(logger, 'error')
+    const loggerErrorSpy = spyOn(logger, 'error')
     const mockFetch = mockFetchRejected('network down')
     const applicationData = mockApplicationData({ fetch: mockFetch, logger })
 
@@ -93,7 +91,7 @@ describe('fetchProvider', () => {
       1000,
     ).run()
 
-    const logged = loggerErrorSpy.calls[0].args[0] as string
+    const logged = loggerErrorSpy.mock.calls[0][0] as string
     expect(logged).toContain('Catalog request failed: http://example.com')
     expect(logged).toContain('network down')
   })

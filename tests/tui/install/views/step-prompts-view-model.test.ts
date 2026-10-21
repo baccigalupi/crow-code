@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { signal } from '@preact/signals-core'
 import { emptyBuffer } from '../../../../src/tui/input-buffer.ts'
 import { stepPromptsViewModel } from '../../../../src/tui/install/views/step-prompts-view-model.ts'

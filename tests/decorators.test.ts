@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { delegate, memoize } from '../src/decorators.ts'
 
 describe('decorators', () => {

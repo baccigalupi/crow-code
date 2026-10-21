@@ -1,6 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { assertSpyCallArg, spy } from '@std/testing/mock'
+import { describe, expect, it, mock, spyOn } from 'bun:test'
 import { createTuiRunner } from '../../src/tui/tui-runner.ts'
 import { Agent } from '../../src/tui/agent/views/agent.tsx'
 import { mockApplicationData } from '../support/mock-application-data.ts'
@@ -31,15 +29,15 @@ describe('tui-runner', () => {
     const terminal = mockTerminal({})
     const applicationData = mockApplicationData()
     const runner = createTuiRunner(applicationData, terminal.io, Agent)
-    using remove = spy(applicationData.runtime, 'removeSignalListener')
+    const remove = spyOn(applicationData.runtime, 'removeSignalListener')
 
     const pending = runner.status()
     await new Promise((resolve) => setTimeout(resolve, 0))
     terminal.stdin.write('\x03')
     await pending
 
-    assertSpyCallArg(remove, 0, 0, 'SIGINT')
-    assertSpyCallArg(remove, 1, 0, 'SIGTERM')
+    expect(remove.mock.calls[0][0]).toEqual('SIGINT')
+    expect(remove.mock.calls[1][0]).toEqual('SIGTERM')
   })
 
   it('when interrupted, unmounts and resolves interrupted', async () => {
@@ -56,19 +54,19 @@ describe('tui-runner', () => {
   it('when the app fails, writes the error to stderr and resolves interrupted', async () => {
     const terminal = mockTerminal({ rawMode: false })
     const runner = createTuiRunner(mockApplicationData(), terminal.io, Agent)
-    using write = spy(terminal.stderr, 'write')
+    const write = spyOn(terminal.stderr, 'write')
 
     const status = await runner.status()
 
     expect(status).toBe('interrupted')
-    expect(String(write.calls[0].args[0])).toContain(
+    expect(String(write.mock.calls[0][0])).toContain(
       'setRawMode is not a function',
     )
   })
 
   it('when no stderr is provided, writes the error through the console error', async () => {
     const terminal = mockTerminal({ rawMode: false })
-    const consoleError = spy()
+    const consoleError = mock()
     const applicationData = mockApplicationData({ consoleError })
     const runner = createTuiRunner(applicationData, {
       stdin: terminal.io.stdin,
@@ -78,7 +76,7 @@ describe('tui-runner', () => {
     const status = await runner.status()
 
     expect(status).toBe('interrupted')
-    expect(String(consoleError.calls[0].args[0])).toContain(
+    expect(String(consoleError.mock.calls[0][0])).toContain(
       'setRawMode is not a function',
     )
   })

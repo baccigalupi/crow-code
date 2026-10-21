@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { Agent } from '../../../src/cli/commands/agent.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 

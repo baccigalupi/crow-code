@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { commitMessageMessages } from '../../../src/model-requests/commit-message/messages.ts'
 
 describe('commitMessageMessages', () => {

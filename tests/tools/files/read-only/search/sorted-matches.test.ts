@@ -1,6 +1,5 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
+import { join } from 'node:path'
 import { sortedMatches } from '../../../../../src/tools/files/read-only/search/sorted-matches.ts'
 import { CrowConfig } from '../../../../../src/application-data/config.ts'
 import { mockApplicationData } from '../../../../support/mock-application-data.ts'

@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { loadOllamaFixture } from '../../../support/fixtures.ts'
 import { parseOllamaBody } from '../../../../src/model-discovery/populate/ollama/parser.ts'
 

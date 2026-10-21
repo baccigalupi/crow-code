@@ -1,6 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { assertSpyCall, spy } from '@std/testing/mock'
+import { describe, expect, it, spyOn } from 'bun:test'
 import pino from 'pino'
 import { CreateRecord } from '../../src/domain/create.ts'
 import { mockApplicationData } from '../support/mock-application-data.ts'
@@ -89,7 +87,7 @@ describe('CreateRecord', () => {
     }
     const logger = pino({ enabled: false })
     const applicationData = mockApplicationData({ logger })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
     const database = await applicationData.database()
     const params = {
       name: 'provider-name',
@@ -105,8 +103,8 @@ describe('CreateRecord', () => {
 
     expect(creator.success()).toBe(false)
     expect(creator.result()).toEqual({})
-    assertSpyCall(loggerErrorSpy, 0)
-    const logged = loggerErrorSpy.calls[0].args[0] as string
+    expect(loggerErrorSpy).toHaveBeenCalled()
+    const logged = loggerErrorSpy.mock.calls[0][0] as string
     expect(logged).toContain('Create provider:')
     expect(logged).toContain('insert into providers failed:')
     expect(logged).toContain('UNIQUE constraint failed: providers.base_url')

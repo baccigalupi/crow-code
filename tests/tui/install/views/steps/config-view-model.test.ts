@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { configViewModel } from '../../../../../src/tui/install/views/steps/config-view-model.ts'
 import { emptyBuffer } from '../../../../../src/tui/input-buffer.ts'
 

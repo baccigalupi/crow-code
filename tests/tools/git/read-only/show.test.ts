@@ -1,14 +1,12 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { resolve } from '@std/path'
-import { assertSpyCall, spy } from '@std/testing/mock'
+import { describe, expect, it, mock, spyOn } from 'bun:test'
+import { resolve } from 'node:path'
 import { gitShow } from '../../../../src/tools/git/read-only/show.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { mockCommand } from '../../../support/mock-command.ts'
 
 describe('gitShow', () => {
   it('returns the contents of the file at the given revision', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({
         stdout: 'const a = 1\nconst b = 2\n',
@@ -22,8 +20,8 @@ describe('gitShow', () => {
     })
     await show.run()
 
-    assertSpyCall(commandSpy, 0, {
-      args: ['git', { args: ['show', 'abc123:src/a.ts'] }],
+    expect(commandSpy).toHaveBeenNthCalledWith(1, 'git', {
+      args: ['show', 'abc123:src/a.ts'],
     })
     expect(show.result()).toEqual({
       path: 'src/a.ts',
@@ -32,7 +30,7 @@ describe('gitShow', () => {
   })
 
   it('when no rev is given, shows the file at HEAD', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ commandSpy }),
     })
@@ -43,8 +41,8 @@ describe('gitShow', () => {
     })
     await show.run()
 
-    assertSpyCall(commandSpy, 0, {
-      args: ['git', { args: ['show', 'HEAD:src/a.ts'] }],
+    expect(commandSpy).toHaveBeenNthCalledWith(1, 'git', {
+      args: ['show', 'HEAD:src/a.ts'],
     })
   })
 
@@ -72,7 +70,7 @@ describe('gitShow', () => {
       '+const c = 4',
       '',
     ].join('\n')
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ stdout, commandSpy }),
     })
@@ -83,8 +81,8 @@ describe('gitShow', () => {
     })
     await show.run()
 
-    assertSpyCall(commandSpy, 0, {
-      args: ['git', { args: ['show', 'abc123'] }],
+    expect(commandSpy).toHaveBeenNthCalledWith(1, 'git', {
+      args: ['show', 'abc123'],
     })
     const diffs = show.result()
     expect(diffs).toEqual([
@@ -118,12 +116,12 @@ describe('gitShow', () => {
   })
 
   it('when the path is outside the allowed directories, fails without running git', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ commandSpy }),
     })
-    const path = resolve(Deno.cwd(), '..', 'outside-git-show.ts')
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const path = resolve(process.cwd(), '..', 'outside-git-show.ts')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const show = gitShow({
       applicationData,
@@ -131,20 +129,20 @@ describe('gitShow', () => {
     })
     await show.run()
 
-    expect(commandSpy.calls.length).toBe(0)
+    expect(commandSpy.mock.calls.length).toBe(0)
     expect(show.success()).toBe(false)
     expect(show.result()).toEqual({ path, text: '' })
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Git show: path not allowed: ${path}`,
     )
   })
 
   it('when the path uses git pathspec magic, fails without running git', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ commandSpy }),
     })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const show = gitShow({
       applicationData,
@@ -152,9 +150,9 @@ describe('gitShow', () => {
     })
     await show.run()
 
-    expect(commandSpy.calls.length).toBe(0)
+    expect(commandSpy.mock.calls.length).toBe(0)
     expect(show.success()).toBe(false)
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       'Git show: path not allowed: :/src/a.ts',
     )
   })
@@ -167,7 +165,7 @@ describe('gitShow', () => {
         stderr: 'fatal: bad revision abc123',
       }),
     })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const show = gitShow({
       applicationData,
@@ -177,7 +175,7 @@ describe('gitShow', () => {
 
     expect(show.success()).toBe(false)
     expect(show.result()).toEqual([])
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       'Git show: fatal: bad revision abc123',
     )
   })
@@ -188,7 +186,7 @@ describe('gitShow', () => {
         outputError: 'No such file or directory (os error 2): git',
       }),
     })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const show = gitShow({
       applicationData,
@@ -198,7 +196,7 @@ describe('gitShow', () => {
 
     expect(show.success()).toBe(false)
     expect(show.result()).toEqual({ path: 'src/a.ts', text: '' })
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       'Git show: No such file or directory (os error 2): git',
     )
   })
@@ -211,7 +209,7 @@ describe('gitShow', () => {
         stderr: "fatal: path 'src/a.ts' does not exist in 'abc123'",
       }),
     })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const show = gitShow({
       applicationData,
@@ -221,7 +219,7 @@ describe('gitShow', () => {
 
     expect(show.success()).toBe(false)
     expect(show.result()).toEqual({ path: 'src/a.ts', text: '' })
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       "Git show: fatal: path 'src/a.ts' does not exist in 'abc123'",
     )
   })

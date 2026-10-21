@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { configPathViewModel } from '../../../../src/tui/install/views/config-path-view-model.ts'
 import { emptyBuffer, insertText } from '../../../../src/tui/input-buffer.ts'
 

@@ -1,6 +1,4 @@
-import { describe, it, mock } from 'node:test'
-import { expect } from '@std/expect'
-import { spy } from '@std/testing/mock'
+import { describe, expect, it, mock } from 'bun:test'
 import { GitCommit } from '../../../src/cli/commands/git-commit.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { mockCommand } from '../../support/mock-command.ts'
@@ -31,9 +29,9 @@ describe('GitCommit', () => {
   })
 
   it('when --goal is missing, fails without running git or the model', async () => {
-    const consoleLog = mock.fn()
-    const consoleError = mock.fn()
-    const commandSpy = spy()
+    const consoleLog = mock()
+    const consoleError = mock()
+    const commandSpy = mock()
     const fetch = mockFetchSuccess({})
     const applicationData = mockApplicationData({
       args: ['git-commit', 'src/a.ts'],
@@ -51,17 +49,17 @@ describe('GitCommit', () => {
     gitCommit.reportFailure()
 
     expect(gitCommit.success()).toBe(false)
-    expect(consoleError.mock.calls[0].arguments[0]).toBe(
+    expect(consoleError.mock.calls[0][0]).toBe(
       'Error: missing --goal=<goal> for git-commit',
     )
     expect(consoleLog.mock.calls).toHaveLength(0)
-    expect(commandSpy.calls.length).toBe(0)
+    expect(commandSpy.mock.calls.length).toBe(0)
     expect(fetch.calls.length).toBe(0)
   })
 
   it('when a downstream operation fails, reports a brief error', async () => {
-    const consoleLog = mock.fn()
-    const consoleError = mock.fn()
+    const consoleLog = mock()
+    const consoleError = mock()
     const applicationData = mockApplicationData({
       args: ['git-commit', '--goal=add login', 'src/a.ts'],
       consoleLog,
@@ -77,16 +75,16 @@ describe('GitCommit', () => {
     gitCommit.reportFailure()
 
     expect(gitCommit.success()).toBe(false)
-    expect(consoleError.mock.calls[0].arguments[0]).toBe(
+    expect(consoleError.mock.calls[0][0]).toBe(
       'Error: git tracked changes failed for git-commit',
     )
     expect(consoleLog.mock.calls).toHaveLength(0)
   })
 
   it('when run succeeds, prints the commit subject and stages the files', async () => {
-    const consoleLog = mock.fn()
-    const consoleError = mock.fn()
-    const commandSpy = spy()
+    const consoleLog = mock()
+    const consoleError = mock()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       args: ['git-commit', '--goal=add login', 'src/a.ts'],
       consoleLog,
@@ -133,13 +131,12 @@ describe('GitCommit', () => {
     await gitCommit.run()
 
     expect(gitCommit.success()).toBe(true)
-    expect(consoleLog.mock.calls[0].arguments[0]).toBe('Add login')
+    expect(consoleLog.mock.calls[0][0]).toBe('Add login')
     expect(consoleError.mock.calls).toHaveLength(0)
-    expect(commandSpy.calls[3].args[1].args).toEqual([
+    expect(commandSpy.mock.calls[3][1].args).toEqual([
       'add',
       '--',
       'src/a.ts',
     ])
-    await database.destroy()
   })
 })

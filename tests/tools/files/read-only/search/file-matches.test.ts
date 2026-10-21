@@ -1,6 +1,5 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join } from '@std/path'
+import { describe, expect, it } from 'bun:test'
+import { join } from 'node:path'
 import { fileMatches } from '../../../../../src/tools/files/read-only/search/file-matches.ts'
 import { defaultFilesystem } from '../../../../../src/application-data/filesystem.ts'
 import { fixturesDirectory } from '../../../../support/fixtures.ts'

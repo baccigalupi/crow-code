@@ -1,6 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { assertSpyCall, spy } from '@std/testing/mock'
+import { describe, expect, it, mock } from 'bun:test'
 import { commitMessage } from '../../../src/tasks/commit/message.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { mockCommand } from '../../support/mock-command.ts'
@@ -13,7 +11,7 @@ import {
 
 describe('commitMessage', () => {
   it('when the model answers, returns the commit message', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       chatClient: mockOpenAiClient(
         '{"subject":"Add login","body":"Adds the login form."}',
@@ -55,9 +53,11 @@ describe('commitMessage', () => {
       },
     }).run()
 
-    assertSpyCall(commandSpy, 0, {
-      args: ['git', { args: ['log', '--format=%s', '-n', '10'] }],
-    })
+    expect(commandSpy).toHaveBeenNthCalledWith(
+      1,
+      'git',
+      expect.objectContaining({ args: ['log', '--format=%s', '-n', '10'] }),
+    )
     expect(operation.result()).toEqual({
       subject: 'Add login',
       body: 'Adds the login form.',

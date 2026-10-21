@@ -1,43 +1,53 @@
+import {
+  lstat,
+  mkdir,
+  readFile,
+  realpath,
+  rename,
+  rmdir,
+  unlink,
+  writeFile,
+} from 'node:fs/promises'
+
 export class Filesystem {
-  private deno: typeof Deno
-
-  constructor(deno: typeof Deno) {
-    this.deno = deno
-  }
-
   readTextFile(path: string) {
-    return this.deno.readTextFile(path)
+    return readFile(path, 'utf8')
   }
 
   writeTextFile(path: string, text: string) {
-    return this.deno.writeTextFile(path, text)
+    return writeFile(path, text)
   }
 
-  mkdirWithParents(path: string) {
-    return this.deno.mkdir(path, { recursive: true })
+  async mkdirWithParents(path: string) {
+    await mkdir(path, { recursive: true })
   }
 
   rename(from: string, to: string) {
-    return this.deno.rename(from, to)
+    return rename(from, to)
   }
 
-  remove(path: string) {
-    return this.deno.remove(path)
+  async remove(path: string) {
+    const stats = await lstat(path)
+    if (stats.isDirectory()) {
+      await rmdir(path)
+    } else {
+      await unlink(path)
+    }
   }
 
   async assertExists(path: string) {
-    await this.deno.lstat(path)
+    await lstat(path)
   }
 
   realPath(path: string) {
-    return this.deno.realPath(path)
+    return realpath(path)
   }
 
   isNotFound(error: unknown) {
-    return error instanceof this.deno.errors.NotFound
+    return error instanceof Error && 'code' in error && error.code === 'ENOENT'
   }
 }
 
 export const defaultFilesystem = () => {
-  return new Filesystem(globalThis.Deno)
+  return new Filesystem()
 }

@@ -1,5 +1,4 @@
-import { describe, it, mock } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it, mock } from 'bun:test'
 import { APIConnectionError } from 'openai'
 import type { APIError } from 'openai'
 import { OpenAiRequest } from '../../../src/model-requests/framework/openai-request.ts'
@@ -152,7 +151,7 @@ describe('OpenAiRequest', () => {
   })
 
   it('when the endpoint has an api key, constructs the client with it', async () => {
-    const chatClient = mock.fn(mockOpenAiClient(''))
+    const chatClient = mock(mockOpenAiClient(''))
     const applicationData = mockApplicationData({ chatClient })
     const request = new OpenAiRequest({
       applicationData,
@@ -169,14 +168,14 @@ describe('OpenAiRequest', () => {
 
     await request.run()
 
-    expect(chatClient.mock.calls[0].arguments[0]).toEqual({
+    expect(chatClient.mock.calls[0][0]).toEqual({
       apiKey: 'test-key',
       baseURL: 'https://example.com/api/v1',
     })
   })
 
   it('when the endpoint has no api key, constructs the client with the placeholder', async () => {
-    const chatClient = mock.fn(mockOpenAiClient(''))
+    const chatClient = mock(mockOpenAiClient(''))
     const applicationData = mockApplicationData({ chatClient })
     const request = new OpenAiRequest({
       applicationData,
@@ -193,7 +192,7 @@ describe('OpenAiRequest', () => {
 
     await request.run()
 
-    expect(chatClient.mock.calls[0].arguments[0]).toEqual({
+    expect(chatClient.mock.calls[0][0]).toEqual({
       apiKey: 'crow-no-api-key',
       baseURL: 'https://example.com/api/v1',
     })

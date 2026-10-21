@@ -1,7 +1,5 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { join, resolve } from '@std/path'
-import { spy } from '@std/testing/mock'
+import { describe, expect, it, spyOn } from 'bun:test'
+import { join, resolve } from 'node:path'
 import {
   ReadFile,
   readFile,
@@ -52,8 +50,8 @@ describe('readFile', () => {
 
   it('when the path is outside the allowed directories, returns empty text and logs', async () => {
     const applicationData = mockApplicationData()
-    const path = resolve(Deno.cwd(), '..', 'outside.txt')
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const path = resolve(process.cwd(), '..', 'outside.txt')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const file = readFile({
       applicationData,
@@ -63,7 +61,7 @@ describe('readFile', () => {
 
     expect(file.success()).toBe(false)
     expect(file.result()).toEqual({ path, text: '' })
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Read file: path not allowed: ${path}`,
     )
   })
@@ -84,14 +82,14 @@ describe('readFile', () => {
         },
       }),
     })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const file = readFile({ applicationData, operationArguments: { path } })
     await file.run()
 
     expect(file.success()).toBe(false)
     expect(file.result()).toEqual({ path, text: '' })
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Read file: path not allowed: ${path}`,
     )
   })
@@ -99,15 +97,15 @@ describe('readFile', () => {
   it('when the file does not exist, returns empty text and logs', async () => {
     const applicationData = mockApplicationData()
     const path = join(fixturesDirectory, 'tools', 'files', 'missing.txt')
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const file = readFile({ applicationData, operationArguments: { path } })
     await file.run()
 
     expect(file.success()).toBe(false)
     expect(file.result()).toEqual({ path, text: '' })
-    expect(loggerErrorSpy.calls[0].args[0]).toContain(
-      'Read file: No such file or directory',
+    expect(loggerErrorSpy.mock.calls[0][0]).toContain(
+      'Read file: ENOENT: no such file or directory',
     )
   })
 

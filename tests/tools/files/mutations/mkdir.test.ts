@@ -1,7 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { resolve } from '@std/path'
-import { spy, stub } from '@std/testing/mock'
+import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
+import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { makeDirectory } from '../../../../src/tools/files/mutations/mkdir.ts'
 import { CrowConfig } from '../../../../src/application-data/config.ts'
 import { denyAllPermissions } from '../../../support/deny-permissions.ts'
@@ -13,7 +12,7 @@ describe('makeDirectory', () => {
   afterEach(() => clearDirectory(`${fixturesDirectory}/mkdir`))
 
   it('creates a nested directory including missing ancestors', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/mkdir`, { recursive: true })
+    mkdirSync(`${fixturesDirectory}/mkdir`, { recursive: true })
     const applicationData = mockApplicationData()
 
     const mkdir = makeDirectory({
@@ -30,12 +29,12 @@ describe('makeDirectory', () => {
       created: true,
     })
     expect(
-      Deno.statSync(`${fixturesDirectory}/mkdir/one/two/three`).isDirectory,
+      statSync(`${fixturesDirectory}/mkdir/one/two/three`).isDirectory(),
     ).toBe(true)
   })
 
   it('when the directory already exists, succeeds without claiming creation', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/mkdir/existing`, { recursive: true })
+    mkdirSync(`${fixturesDirectory}/mkdir/existing`, { recursive: true })
     const applicationData = mockApplicationData()
 
     const mkdir = makeDirectory({
@@ -50,14 +49,14 @@ describe('makeDirectory', () => {
       created: false,
     })
     expect(
-      Deno.statSync(`${fixturesDirectory}/mkdir/existing`).isDirectory,
+      statSync(`${fixturesDirectory}/mkdir/existing`).isDirectory(),
     ).toBe(true)
   })
 
   it('when the path is outside the allowed directories, fails without creating', async () => {
-    const path = resolve(Deno.cwd(), '..', 'outside-mkdir-denied')
+    const path = resolve(process.cwd(), '..', 'outside-mkdir-denied')
     const applicationData = mockApplicationData()
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const mkdir = makeDirectory({
       applicationData,
@@ -67,14 +66,14 @@ describe('makeDirectory', () => {
 
     expect(mkdir.success()).toBe(false)
     expect(mkdir.result()).toEqual({ path, created: false })
-    expect(() => Deno.statSync(path)).toThrow()
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(() => statSync(path)).toThrow()
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Make directory: path not allowed: ${path}`,
     )
   })
 
   it('when the path is inside a configured ignored directory, fails without creating', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/mkdir`, { recursive: true })
+    mkdirSync(`${fixturesDirectory}/mkdir`, { recursive: true })
     const applicationData = mockApplicationData({
       config: new CrowConfig('.', {
         crowGlobalDirectory: '~/.crow',
@@ -89,7 +88,7 @@ describe('makeDirectory', () => {
         },
       }),
     })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const mkdir = makeDirectory({
       applicationData,
@@ -98,21 +97,19 @@ describe('makeDirectory', () => {
     await mkdir.run()
 
     expect(mkdir.success()).toBe(false)
-    expect(() => Deno.statSync(`${fixturesDirectory}/mkdir/ignored`)).toThrow()
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(() => statSync(`${fixturesDirectory}/mkdir/ignored`)).toThrow()
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Make directory: path not allowed: ${fixturesDirectory}/mkdir/ignored/child`,
     )
   })
 
   it('when the existence check is not allowed, fails without creating', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/mkdir`, { recursive: true })
+    mkdirSync(`${fixturesDirectory}/mkdir`, { recursive: true })
     const applicationData = mockApplicationData()
-    using _permissionsStub = stub(
-      applicationData,
-      'readPathPermissions',
+    spyOn(applicationData, 'readPathPermissions').mockImplementation(
       denyAllPermissions,
     )
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const mkdir = makeDirectory({
       applicationData,
@@ -121,17 +118,17 @@ describe('makeDirectory', () => {
     await mkdir.run()
 
     expect(mkdir.success()).toBe(false)
-    expect(() => Deno.statSync(`${fixturesDirectory}/mkdir/denied`)).toThrow()
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(() => statSync(`${fixturesDirectory}/mkdir/denied`)).toThrow()
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Path exists: path not allowed: ${fixturesDirectory}/mkdir/denied`,
     )
   })
 
   it('when the path exists as a file, fails and leaves the file unchanged', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/mkdir`, { recursive: true })
-    Deno.writeTextFileSync(`${fixturesDirectory}/mkdir/alpha.txt`, 'one\ntwo\n')
+    mkdirSync(`${fixturesDirectory}/mkdir`, { recursive: true })
+    writeFileSync(`${fixturesDirectory}/mkdir/alpha.txt`, 'one\ntwo\n')
     const applicationData = mockApplicationData()
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const mkdir = makeDirectory({
       applicationData,
@@ -145,8 +142,8 @@ describe('makeDirectory', () => {
       created: false,
     })
     expect(
-      Deno.readTextFileSync(`${fixturesDirectory}/mkdir/alpha.txt`),
+      readFileSync(`${fixturesDirectory}/mkdir/alpha.txt`, 'utf8'),
     ).toBe('one\ntwo\n')
-    expect(loggerErrorSpy.calls.length).toBeGreaterThan(0)
+    expect(loggerErrorSpy.mock.calls.length).toBeGreaterThan(0)
   })
 })

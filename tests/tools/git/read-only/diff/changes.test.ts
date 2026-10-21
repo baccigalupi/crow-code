@@ -1,13 +1,11 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { assertSpyCall, spy } from '@std/testing/mock'
+import { describe, expect, it, mock } from 'bun:test'
 import { gitChanges } from '../../../../../src/tools/git/read-only/diff/changes.ts'
 import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 import { mockCommand } from '../../../../support/mock-command.ts'
 
 describe('gitChanges', () => {
   it('when tracked and untracked files changed, returns both diffs and succeeds', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({
         commandSpy,
@@ -22,14 +20,14 @@ describe('gitChanges', () => {
 
     await changes.run()
 
-    assertSpyCall(commandSpy, 0, {
-      args: ['git', { args: ['diff', 'HEAD'] }],
+    expect(commandSpy).toHaveBeenNthCalledWith(1, 'git', {
+      args: ['diff', 'HEAD'],
     })
-    assertSpyCall(commandSpy, 1, {
-      args: ['git', { args: ['status', '--porcelain', '-uall'] }],
+    expect(commandSpy).toHaveBeenNthCalledWith(2, 'git', {
+      args: ['status', '--porcelain', '-uall'],
     })
-    assertSpyCall(commandSpy, 2, {
-      args: ['git', { args: ['diff', '--no-index', '/dev/null', 'src/b.ts'] }],
+    expect(commandSpy).toHaveBeenNthCalledWith(3, 'git', {
+      args: ['diff', '--no-index', '/dev/null', 'src/b.ts'],
     })
     expect(changes.success()).toBe(true)
     expect(changes.result().length).toBe(2)
@@ -38,7 +36,7 @@ describe('gitChanges', () => {
   })
 
   it('when a filter is given, scopes both children', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({
         commandSpy,
@@ -55,13 +53,13 @@ describe('gitChanges', () => {
 
     await changes.run()
 
-    assertSpyCall(commandSpy, 0, {
-      args: ['git', { args: ['diff', 'HEAD', '--', 'src/a.ts'] }],
+    expect(commandSpy).toHaveBeenNthCalledWith(1, 'git', {
+      args: ['diff', 'HEAD', '--', 'src/a.ts'],
     })
-    assertSpyCall(commandSpy, 1, {
-      args: ['git', { args: ['status', '--porcelain', '-uall'] }],
+    expect(commandSpy).toHaveBeenNthCalledWith(2, 'git', {
+      args: ['status', '--porcelain', '-uall'],
     })
-    expect(commandSpy.calls.length).toBe(2)
+    expect(commandSpy.mock.calls.length).toBe(2)
     expect(changes.success()).toBe(true)
     expect(changes.result().length).toBe(1)
     expect(changes.result()[0].path).toBe('src/a.ts')
@@ -99,7 +97,7 @@ describe('gitChanges', () => {
   })
 
   it('when only applicationData is given, diffs HEAD without a filter', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ commandSpy }),
     })
@@ -107,13 +105,13 @@ describe('gitChanges', () => {
 
     await changes.run()
 
-    assertSpyCall(commandSpy, 0, {
-      args: ['git', { args: ['diff', 'HEAD'] }],
+    expect(commandSpy).toHaveBeenNthCalledWith(1, 'git', {
+      args: ['diff', 'HEAD'],
     })
   })
 
   it('when a filter path is outside the repository, fails without running git', async () => {
-    const commandSpy = spy()
+    const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ commandSpy }),
     })
@@ -124,7 +122,7 @@ describe('gitChanges', () => {
 
     await changes.run()
 
-    expect(commandSpy.calls.length).toBe(0)
+    expect(commandSpy.mock.calls.length).toBe(0)
     expect(changes.success()).toBe(false)
   })
 })

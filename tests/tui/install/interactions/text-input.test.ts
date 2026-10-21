@@ -1,6 +1,5 @@
-import { describe, it } from 'node:test'
+import { describe, expect, it } from 'bun:test'
 import { signal } from '@preact/signals-core'
-import { expect } from '@std/expect'
 import {
   TextInput,
   textInput,

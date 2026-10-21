@@ -1,7 +1,12 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
-import { expect } from '@std/expect'
-import { resolve } from '@std/path'
-import { spy, stub } from '@std/testing/mock'
+import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
+import {
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs'
+import { resolve } from 'node:path'
 import { moveFile } from '../../../../src/tools/files/mutations/move.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
@@ -11,8 +16,8 @@ describe('moveFile', () => {
   afterEach(() => clearDirectory(`${fixturesDirectory}/move`))
 
   it('moves a file, keeping its contents', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/move`, { recursive: true })
-    Deno.writeTextFileSync(`${fixturesDirectory}/move/alpha.txt`, 'one\ntwo\n')
+    mkdirSync(`${fixturesDirectory}/move`, { recursive: true })
+    writeFileSync(`${fixturesDirectory}/move/alpha.txt`, 'one\ntwo\n')
     const applicationData = mockApplicationData()
 
     const move = moveFile({
@@ -30,15 +35,15 @@ describe('moveFile', () => {
       to: `${fixturesDirectory}/move/beta.txt`,
     })
     expect(
-      Deno.readTextFileSync(`${fixturesDirectory}/move/beta.txt`),
+      readFileSync(`${fixturesDirectory}/move/beta.txt`, 'utf8'),
     ).toBe('one\ntwo\n')
-    expect(() => Deno.statSync(`${fixturesDirectory}/move/alpha.txt`))
+    expect(() => statSync(`${fixturesDirectory}/move/alpha.txt`))
       .toThrow()
   })
 
   it('creates missing parent directories of the destination', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/move`, { recursive: true })
-    Deno.writeTextFileSync(`${fixturesDirectory}/move/alpha.txt`, 'one\n')
+    mkdirSync(`${fixturesDirectory}/move`, { recursive: true })
+    writeFileSync(`${fixturesDirectory}/move/alpha.txt`, 'one\n')
     const applicationData = mockApplicationData()
 
     const move = moveFile({
@@ -52,16 +57,16 @@ describe('moveFile', () => {
 
     expect(move.success()).toBe(true)
     expect(
-      Deno.readTextFileSync(`${fixturesDirectory}/move/one/two/beta.txt`),
+      readFileSync(`${fixturesDirectory}/move/one/two/beta.txt`, 'utf8'),
     ).toBe('one\n')
   })
 
   it('when the source is outside the allowed directories, fails without moving', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/move`, { recursive: true })
-    const from = resolve(Deno.cwd(), '..', 'outside-move-source.txt')
-    Deno.writeTextFileSync(from, 'one\n')
+    mkdirSync(`${fixturesDirectory}/move`, { recursive: true })
+    const from = resolve(process.cwd(), '..', 'outside-move-source.txt')
+    writeFileSync(from, 'one\n')
     const applicationData = mockApplicationData()
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const move = moveFile({
       applicationData,
@@ -70,19 +75,19 @@ describe('moveFile', () => {
     await move.run()
 
     expect(move.success()).toBe(false)
-    expect(Deno.readTextFileSync(from)).toBe('one\n')
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(readFileSync(from, 'utf8')).toBe('one\n')
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Move file: path not allowed: ${from}`,
     )
-    Deno.removeSync(from)
+    rmSync(from)
   })
 
   it('when the destination is outside the allowed directories, fails without moving', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/move`, { recursive: true })
-    Deno.writeTextFileSync(`${fixturesDirectory}/move/alpha.txt`, 'one\n')
-    const to = resolve(Deno.cwd(), '..', 'outside-move-destination.txt')
+    mkdirSync(`${fixturesDirectory}/move`, { recursive: true })
+    writeFileSync(`${fixturesDirectory}/move/alpha.txt`, 'one\n')
+    const to = resolve(process.cwd(), '..', 'outside-move-destination.txt')
     const applicationData = mockApplicationData()
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const move = moveFile({
       applicationData,
@@ -92,20 +97,20 @@ describe('moveFile', () => {
 
     expect(move.success()).toBe(false)
     expect(
-      Deno.readTextFileSync(`${fixturesDirectory}/move/alpha.txt`),
+      readFileSync(`${fixturesDirectory}/move/alpha.txt`, 'utf8'),
     ).toBe('one\n')
-    expect(() => Deno.statSync(to)).toThrow()
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(() => statSync(to)).toThrow()
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Move file: path not allowed: ${to}`,
     )
   })
 
   it('when the destination exists, fails and leaves both files unchanged', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/move`, { recursive: true })
-    Deno.writeTextFileSync(`${fixturesDirectory}/move/alpha.txt`, 'one\n')
-    Deno.writeTextFileSync(`${fixturesDirectory}/move/beta.txt`, 'two\n')
+    mkdirSync(`${fixturesDirectory}/move`, { recursive: true })
+    writeFileSync(`${fixturesDirectory}/move/alpha.txt`, 'one\n')
+    writeFileSync(`${fixturesDirectory}/move/beta.txt`, 'two\n')
     const applicationData = mockApplicationData()
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const move = moveFile({
       applicationData,
@@ -118,20 +123,20 @@ describe('moveFile', () => {
 
     expect(move.success()).toBe(false)
     expect(
-      Deno.readTextFileSync(`${fixturesDirectory}/move/alpha.txt`),
+      readFileSync(`${fixturesDirectory}/move/alpha.txt`, 'utf8'),
     ).toBe('one\n')
     expect(
-      Deno.readTextFileSync(`${fixturesDirectory}/move/beta.txt`),
+      readFileSync(`${fixturesDirectory}/move/beta.txt`, 'utf8'),
     ).toBe('two\n')
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       `Move file: destination already exists: ${fixturesDirectory}/move/beta.txt`,
     )
   })
 
   it('when the source is missing, fails without creating the destination parent', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/move`, { recursive: true })
+    mkdirSync(`${fixturesDirectory}/move`, { recursive: true })
     const applicationData = mockApplicationData()
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const move = moveFile({
       applicationData,
@@ -143,18 +148,18 @@ describe('moveFile', () => {
     await move.run()
 
     expect(move.success()).toBe(false)
-    expect(() => Deno.statSync(`${fixturesDirectory}/move/one`)).toThrow()
-    expect(loggerErrorSpy.calls.length).toBeGreaterThan(0)
+    expect(() => statSync(`${fixturesDirectory}/move/one`)).toThrow()
+    expect(loggerErrorSpy.mock.calls.length).toBeGreaterThan(0)
   })
 
   it('when the rename fails, fails with the error', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/move`, { recursive: true })
-    Deno.writeTextFileSync(`${fixturesDirectory}/move/alpha.txt`, 'one\n')
+    mkdirSync(`${fixturesDirectory}/move`, { recursive: true })
+    writeFileSync(`${fixturesDirectory}/move/alpha.txt`, 'one\n')
     const applicationData = mockApplicationData()
-    using _renameStub = stub(Deno, 'rename', () => {
+    spyOn(applicationData.filesystem, 'rename').mockImplementation(() => {
       throw new Error('rename exploded')
     })
-    using loggerErrorSpy = spy(applicationData.logger(), 'error')
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
     const move = moveFile({
       applicationData,
@@ -166,14 +171,14 @@ describe('moveFile', () => {
     await move.run()
 
     expect(move.success()).toBe(false)
-    expect(loggerErrorSpy.calls[0].args[0]).toBe(
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
       'Move file: rename exploded',
     )
   })
 
   it('moves a directory with its contents', async () => {
-    Deno.mkdirSync(`${fixturesDirectory}/move/alpha`, { recursive: true })
-    Deno.writeTextFileSync(`${fixturesDirectory}/move/alpha/one.txt`, 'one\n')
+    mkdirSync(`${fixturesDirectory}/move/alpha`, { recursive: true })
+    writeFileSync(`${fixturesDirectory}/move/alpha/one.txt`, 'one\n')
     const applicationData = mockApplicationData()
 
     const move = moveFile({
@@ -187,8 +192,8 @@ describe('moveFile', () => {
 
     expect(move.success()).toBe(true)
     expect(
-      Deno.readTextFileSync(`${fixturesDirectory}/move/beta/one.txt`),
+      readFileSync(`${fixturesDirectory}/move/beta/one.txt`, 'utf8'),
     ).toBe('one\n')
-    expect(() => Deno.statSync(`${fixturesDirectory}/move/alpha`)).toThrow()
+    expect(() => statSync(`${fixturesDirectory}/move/alpha`)).toThrow()
   })
 })

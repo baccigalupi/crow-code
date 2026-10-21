@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import pino from 'pino'
 import { GetGoals, getGoals } from '../../src/model-requests/goals.ts'
 import type { ChatCompletionJson } from '../../src/model-requests/types.ts'

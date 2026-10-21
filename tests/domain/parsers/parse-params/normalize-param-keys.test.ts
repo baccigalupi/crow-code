@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import { expect } from '@std/expect'
+import { describe, expect, it } from 'bun:test'
 import { normalizeParamKeys } from '../../../../src/domain/parsers/parse-params/normalize-param-keys.ts'
 
 describe('normalizeParamKeys', () => {
