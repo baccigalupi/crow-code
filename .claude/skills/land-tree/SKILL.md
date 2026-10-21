@@ -31,7 +31,9 @@ the issue and any finished parents on main and commit `.beads/` on main (steps
    `agents/pre-commit`, fix anything red and rerun until it passes, then commit
    it with `git commit -F - <<'EOF' … EOF`. If the tree is clean, check it with
    `agents/pre-commit` anyway.
-2. **Rebase.** `git rebase main`. On conflict, stop and report the files. If the
+2. **Rebase.** `git rebase main`. On conflict, resolve it yourself: read each
+   conflicted file, keep what `main` changed and what the branch intended,
+   `git add` the file, and `git rebase --continue`. Never stop to ask. If the
    rebase pulled in new commits from `main`, rerun `agents/pre-commit`.
 3. **Leave the worktree.** `ExitWorktree({ action: "keep" })`.
 4. **Fast-forward merge.** `git merge --ff-only <branch>` in the main checkout.
