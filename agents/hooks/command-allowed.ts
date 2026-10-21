@@ -68,7 +68,7 @@ const stripLeading = (command: string) => {
 const gitPushPattern =
   /^git(?:\s+(?:-[A-Za-z0-9-]+(?:\s+\S+)?|[^-\s]\S*))*\s+push\b/
 
-const bunPattern = /^bun(?:\s+test(?:\s|$)|\s+--version$)/
+const bunPattern = /^bun(?:\s+(?:test|add|install)(?:\s|$)|\s+--version$)/
 
 const executableAllowed = (command: string, config: DevinConfig) =>
   config.allowsExec(command)

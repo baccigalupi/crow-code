@@ -1,7 +1,7 @@
 node_modules/
 dist/
 *.tsbuildinfo
-coverage/
+/coverage/
 .cache/
 .crow/models.json
 .crow/logs/*.log

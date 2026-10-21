@@ -43,6 +43,32 @@ describe('commandAllowed', () => {
     expect(result).toBe(true)
   })
 
+  it('when command is bun add with an exact version, returns true', () => {
+    const command = 'bun add --exact istanbul-lib-instrument@6.0.3'
+
+    const result = commandAllowed(
+      command,
+      new DevinConfig(
+        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+      ),
+    )
+
+    expect(result).toBe(true)
+  })
+
+  it('when command is bare bun install, returns true', () => {
+    const command = 'bun install'
+
+    const result = commandAllowed(
+      command,
+      new DevinConfig(
+        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+      ),
+    )
+
+    expect(result).toBe(true)
+  })
+
   it('when command is bun run, returns false', () => {
     const command = 'bun run lint'
 
