@@ -1,0 +1,9 @@
+{
+  "crowGlobalDirectory": "~/.crow",
+  "envFile": "~/.crow/.env",
+  "permissions": {
+    "ignore": [],
+    "additionalRead": [],
+    "additionalWrite": []
+  }
+}

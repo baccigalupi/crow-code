@@ -103,9 +103,9 @@ merge, or fast-forward onto `main` unprompted.
 ## Planning
 
 - Invoke `/planning` whenever creating, researching, or revising a plan.
-- Never ask planning questions in chat; record all unknowns in the plan's
-  Assumptions table and resolve them through research or mark them as requiring
-  a user decision.
+- Never ask planning questions in chat; resolve unknowns through research before
+  writing the plan, and record only decisions the user must make in the plan's
+  Open decisions table.
 
 ## Beads Issue Tracker
 

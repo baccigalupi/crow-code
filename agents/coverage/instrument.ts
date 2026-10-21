@@ -5,7 +5,10 @@ export const instrument = (
   path: string,
   inputSourceMap: object | undefined,
 ) => {
-  const instrumenter = createInstrumenter({ esModules: true, produceSourceMap: true })
+  const instrumenter = createInstrumenter({
+    esModules: true,
+    produceSourceMap: true,
+  })
   const code = instrumenter.instrumentSync(source, path, inputSourceMap)
 
   return { code, coverage: instrumenter.lastFileCoverage() }

@@ -4,7 +4,8 @@ import { instrument } from '../../../agents/coverage/instrument.ts'
 
 describe('instrument', () => {
   it('when source has an if, records both branch arms', () => {
-    const source = 'export const pick = (flag) => { if (flag) { return 1 } return 2 }'
+    const source =
+      'export const pick = (flag) => { if (flag) { return 1 } return 2 }'
 
     const result = instrument(source, 'src/pick.ts', undefined)
 
