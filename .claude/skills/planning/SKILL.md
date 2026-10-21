@@ -25,6 +25,35 @@ decisions table, with the consequence of each plausible answer; do not silently
 pick one. Don't ask whether to implement the plan in chat text; the user starts
 implementation when ready.
 
+### Blocked research is not finished research
+
+A lookup that was blocked or came back empty — a denied command, a tool you
+lack, a subagent reporting "not found" or "couldn't access" — is an unanswered
+question, not an answer. Before treating anything as unfindable, exhaust the
+fallbacks and record what you tried:
+
+- Read candidate paths directly (`Read` on a likely file, not only listing a
+  directory); use `bd show`/`bd comments`, `git log`/`git grep`, and the other
+  allowlisted commands.
+- Resume the subagent (`SendMessage`) or launch another with a different
+  approach and the exact paths or commands to try; never accept its "not found"
+  unverified.
+- If every fallback is exhausted, ask with `AskUserQuestion` for the missing
+  input only (a file path, a name, access) — a request for input, not a
+  decision row. Do not write the plan around the gap.
+
+Your own tool limits are never a reason to move work to the user's Open
+decisions table.
+
+### Open decisions test
+
+Before adding any row to Open decisions, ask: could a tool call or a reasonable
+action answer this? If yes, it is research — do it and put the answer in
+Verified research. A row is allowed only when the answer is the user's
+preference, priority, or risk tolerance and no investigation could settle it.
+"I could not find X", "I proposed Y, confirm?", and "scope A or scope B?" where
+the issue text already settles scope, are not decisions.
+
 ## Planning responses
 
 While planning, all work product goes into the plan file — never into code
@@ -128,6 +157,18 @@ read the packages, count the affected files, and compare behaviors rather than
 listing them as things to check later. An inference that investigation could
 confirm or refute is not allowed to stand — investigate it. "Verify at
 implementation time" and "to be confirmed" are not acceptable plan content.
+
+Named artifacts: when the issue, goal, or user prompt refers to a specific
+artifact ("the mapping table in the plan", "the approved design", "the spec"),
+locating and quoting it is a required research item. Never substitute your own
+version of it and never write the plan with it missing. If it cannot be found
+after the fallbacks in the Interaction rule, stop and ask for it.
+
+Pre-write check: before writing or revising the plan, list every fact the plan
+depends on and the source of each (file, command output, issue text). Any fact
+marked "not found", "proposed by me", "assumed", or "inferred" blocks writing
+the plan — go back and research it. Do not write the plan until every
+dependency has a source.
 
 ### Open decisions
 
