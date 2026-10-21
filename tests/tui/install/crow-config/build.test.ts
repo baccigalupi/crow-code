@@ -12,6 +12,8 @@ describe('build', () => {
       repoDirectory,
       globalDirectory,
       envFile: emptyBuffer(),
+      escalateRead: emptyBuffer(),
+      escalateWrite: emptyBuffer(),
     })
       .all()
 
@@ -28,6 +30,8 @@ describe('build', () => {
       repoDirectory,
       globalDirectory,
       envFile: emptyBuffer(),
+      escalateRead: emptyBuffer(),
+      escalateWrite: emptyBuffer(),
     })
       .all()
 
@@ -45,6 +49,8 @@ describe('build', () => {
       repoDirectory,
       globalDirectory,
       envFile,
+      escalateRead: emptyBuffer(),
+      escalateWrite: emptyBuffer(),
     }).all()
 
     expect(config.envFile).toBe('~/.crow/.env')
@@ -59,6 +65,8 @@ describe('build', () => {
       repoDirectory,
       globalDirectory,
       envFile,
+      escalateRead: emptyBuffer(),
+      escalateWrite: emptyBuffer(),
     }).all()
 
     expect(config.envFile).toBe('/opt/crow/.env')
@@ -73,6 +81,8 @@ describe('build', () => {
       repoDirectory,
       globalDirectory,
       envFile,
+      escalateRead: emptyBuffer(),
+      escalateWrite: emptyBuffer(),
     }).all()
 
     expect(config.envFile).toBe('/secrets/crow.env')
@@ -86,11 +96,59 @@ describe('build', () => {
       repoDirectory,
       globalDirectory,
       envFile: emptyBuffer(),
+      escalateRead: emptyBuffer(),
+      escalateWrite: emptyBuffer(),
     }).all()
 
     expect(config.permissions.ignore).toEqual([])
     expect(config.permissions.additionalRead).toEqual([])
     expect(config.permissions.additionalWrite).toEqual([])
+  })
+
+  it('when no escalate directories are given, resolves the defaults', () => {
+    const escalateRead = emptyBuffer()
+    const escalateWrite = emptyBuffer()
+
+    const { config } = buildCrowConfig({
+      repoDirectory: emptyBuffer(),
+      globalDirectory: emptyBuffer(),
+      envFile: emptyBuffer(),
+      escalateRead,
+      escalateWrite,
+    }).all()
+
+    expect(config.permissions.escalateRead).toEqual([])
+    expect(config.permissions.escalateWrite).toEqual(['./dev', './agent'])
+  })
+
+  it('when escalate directories are given, splits them on commas', () => {
+    const escalateRead = insertText(emptyBuffer(), '/docs, ~/notes')
+    const escalateWrite = insertText(emptyBuffer(), './scripts')
+
+    const { config } = buildCrowConfig({
+      repoDirectory: emptyBuffer(),
+      globalDirectory: emptyBuffer(),
+      envFile: emptyBuffer(),
+      escalateRead,
+      escalateWrite,
+    }).all()
+
+    expect(config.permissions.escalateRead).toEqual(['/docs', '~/notes'])
+    expect(config.permissions.escalateWrite).toEqual(['./scripts'])
+  })
+
+  it('when escalate input has only separators, resolves the defaults', () => {
+    const escalateWrite = insertText(emptyBuffer(), ' , ,')
+
+    const { config } = buildCrowConfig({
+      repoDirectory: emptyBuffer(),
+      globalDirectory: emptyBuffer(),
+      envFile: emptyBuffer(),
+      escalateRead: emptyBuffer(),
+      escalateWrite,
+    }).all()
+
+    expect(config.permissions.escalateWrite).toEqual(['./dev', './agent'])
   })
 
   it('serializes the config to pretty json', () => {
@@ -101,6 +159,8 @@ describe('build', () => {
       repoDirectory,
       globalDirectory,
       envFile: emptyBuffer(),
+      escalateRead: emptyBuffer(),
+      escalateWrite: emptyBuffer(),
     }).all()
 
     expect(JSON.parse(crowConfigJson)).toEqual(config)

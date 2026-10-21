@@ -12,14 +12,14 @@ type EnvPromptProps = {
 export const EnvPrompt = (
   { step, globalDirectory, envFile }: EnvPromptProps,
 ) => {
-  const { fallback } = envPromptViewModel({ globalDirectory })
+  const { defaultValue } = envPromptViewModel({ globalDirectory })
   if (step !== 'envFile') return null
 
   return (
     <Prompt
       label='Credentials .env file'
       input={envFile}
-      fallback={fallback}
+      defaultValue={defaultValue}
     />
   )
 }

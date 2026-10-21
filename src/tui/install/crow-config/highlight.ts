@@ -4,7 +4,7 @@ type HighlightJsonArguments = {
 }
 
 // Splits `JSON.stringify(_, null, 2)` output around the line(s) of one
-// top-level key. A key that is not found highlights nothing.
+// key, top-level or nested. A key that is not found highlights nothing.
 export class JsonHighlighter {
   private json: string
   private lines: string[]
@@ -21,7 +21,14 @@ export class JsonHighlighter {
   }
 
   private keyIndex() {
-    return this.lines.findIndex((line) => line.startsWith(`  "${this.key}":`))
+    return this.lines.findIndex((line) =>
+      line.trimStart().startsWith(`"${this.key}":`)
+    )
+  }
+
+  private indentation(index: number) {
+    const line = this.lines[index]
+    return line.slice(0, line.length - line.trimStart().length)
   }
 
   private unhighlighted() {
@@ -36,10 +43,14 @@ export class JsonHighlighter {
   private splitAround(index: number) {
     const end = this.blockEnd(index)
     return {
-      before: [...this.lines.slice(0, index), '  '].join('\n'),
+      before: this.beforeText(index),
       highlighted: this.lines.slice(index, end + 1).join('\n').trimStart(),
       after: this.lines.slice(end + 1).map((line) => `\n${line}`).join(''),
     }
+  }
+
+  private beforeText(index: number) {
+    return [...this.lines.slice(0, index), this.indentation(index)].join('\n')
   }
 
   private blockEnd(index: number) {
@@ -53,8 +64,9 @@ export class JsonHighlighter {
   }
 
   private closingIndex(index: number) {
+    const indent = this.indentation(index)
     const closing = this.lines.slice(index + 1).findIndex((line) =>
-      line.startsWith('  }') || line.startsWith('  ]')
+      line.startsWith(`${indent}}`) || line.startsWith(`${indent}]`)
     )
     return index + 1 + closing
   }

@@ -29,6 +29,8 @@ describe('search', () => {
           ignore: [join(path, 'node_modules')],
           additionalRead: [],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })
@@ -94,6 +96,8 @@ describe('search', () => {
           ignore: [join(path, 'nested')],
           additionalRead: [],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })
@@ -137,6 +141,8 @@ describe('search', () => {
           ignore: [join(path, 'node_modules')],
           additionalRead: [],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })

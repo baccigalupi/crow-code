@@ -20,6 +20,8 @@ describe('write', () => {
       ),
       globalDirectory: inputSignal(''),
       envFile: inputSignal(''),
+      escalateRead: inputSignal(''),
+      escalateWrite: inputSignal(''),
       step: signal<InstallStep>('confirm'),
       confirmation: signal(true),
     }
@@ -56,6 +58,8 @@ describe('write', () => {
       ),
       globalDirectory: inputSignal(''),
       envFile: inputSignal(''),
+      escalateRead: inputSignal(''),
+      escalateWrite: inputSignal(''),
       step: signal<InstallStep>('envFile'),
       confirmation: signal(true),
     }

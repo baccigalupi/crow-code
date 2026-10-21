@@ -1,13 +1,9 @@
 import { Box, Text } from 'ink'
-import { configViewModel } from './config-view-model.ts'
-import type { InputBuffer } from '../../../types.ts'
 import type { InstallStep } from '../../types.ts'
 
 type ConfirmPromptProps = {
   readonly step: InstallStep
-  readonly repoDirectory: InputBuffer
-  readonly globalDirectory: InputBuffer
-  readonly envFile: InputBuffer
+  readonly crowConfigPath: string
   readonly confirmation: boolean
 }
 
@@ -21,17 +17,10 @@ const Choice = ({ label, active }: {
 }
 
 export const ConfirmPrompt = (
-  { step, repoDirectory, globalDirectory, envFile, confirmation }:
-    ConfirmPromptProps,
+  { step, crowConfigPath, confirmation }: ConfirmPromptProps,
 ) => {
   if (step !== 'confirm') return null
 
-  const { crowConfigPath } = configViewModel({
-    step,
-    repoDirectory,
-    globalDirectory,
-    envFile,
-  })
   return (
     <Box paddingX={1}>
       <Text>

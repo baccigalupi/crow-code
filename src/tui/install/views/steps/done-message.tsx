@@ -1,26 +1,14 @@
 import { Box, Text } from 'ink'
-import { configViewModel } from './config-view-model.ts'
-import type { InputBuffer } from '../../../types.ts'
 import type { InstallStep } from '../../types.ts'
 
 type DoneMessageProps = {
   readonly step: InstallStep
-  readonly repoDirectory: InputBuffer
-  readonly globalDirectory: InputBuffer
-  readonly envFile: InputBuffer
+  readonly crowConfigPath: string
 }
 
-export const DoneMessage = (
-  { step, repoDirectory, globalDirectory, envFile }: DoneMessageProps,
-) => {
+export const DoneMessage = ({ step, crowConfigPath }: DoneMessageProps) => {
   if (step !== 'done') return null
 
-  const { crowConfigPath } = configViewModel({
-    step,
-    repoDirectory,
-    globalDirectory,
-    envFile,
-  })
   return (
     <Box paddingX={1} flexDirection='column'>
       <Text>Wrote config to {crowConfigPath}</Text>

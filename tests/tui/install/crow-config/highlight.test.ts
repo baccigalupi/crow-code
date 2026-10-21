@@ -30,6 +30,29 @@ describe('highlightJson', () => {
     expect(split.after).toBe('\n}')
   })
 
+  it('when the key is nested and its array spans lines, highlights through the closing bracket', () => {
+    const json =
+      '{\n  "p": {\n    "i": [],\n    "w": [\n      "./dev",\n      "./agent"\n    ]\n  }\n}'
+
+    const split = highlightJson({ json, key: 'w' })
+
+    expect(split.before).toBe('{\n  "p": {\n    "i": [],\n    ')
+    expect(split.highlighted).toBe(
+      '"w": [\n      "./dev",\n      "./agent"\n    ]',
+    )
+    expect(split.after).toBe('\n  }\n}')
+  })
+
+  it('when the key is nested and its array is one line, highlights that line', () => {
+    const json =
+      '{\n  "p": {\n    "i": [],\n    "w": [\n      "./dev"\n    ]\n  }\n}'
+
+    const split = highlightJson({ json, key: 'i' })
+
+    expect(split.before).toBe('{\n  "p": {\n    ')
+    expect(split.highlighted).toBe('"i": [],')
+  })
+
   it('when the key is empty, highlights nothing', () => {
     const json = '{\n  "a": 1\n}'
 

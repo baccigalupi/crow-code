@@ -258,6 +258,8 @@ describe('path-permissions', () => {
           ignore: ['vendor'],
           additionalRead: [],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })
@@ -279,6 +281,8 @@ describe('path-permissions', () => {
           ignore: ['src/secret.txt'],
           additionalRead: [],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })
@@ -300,6 +304,8 @@ describe('path-permissions', () => {
           ignore: ['vendor'],
           additionalRead: [],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })
@@ -326,6 +332,8 @@ describe('path-permissions', () => {
           ignore: ['~/git'],
           additionalRead: [],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })
@@ -348,6 +356,8 @@ describe('path-permissions', () => {
           ignore: [join(directory, 'git')],
           additionalRead: [],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })
@@ -378,6 +388,8 @@ describe('path-permissions', () => {
           ignore: [`${fixturesDirectory}/path-permissions/ignored`],
           additionalRead: [],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })
@@ -401,6 +413,8 @@ describe('path-permissions', () => {
           ignore: ['/abs/dir', '/abs/../other'],
           additionalRead: [],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })

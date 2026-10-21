@@ -16,6 +16,8 @@ describe('config panel', () => {
         repoDirectory={repoDirectory}
         globalDirectory={globalDirectory}
         envFile={envFile}
+        escalateRead={emptyBuffer()}
+        escalateWrite={emptyBuffer()}
       />,
     )
 
@@ -33,6 +35,8 @@ describe('config panel', () => {
         repoDirectory={repoDirectory}
         globalDirectory={globalDirectory}
         envFile={envFile}
+        escalateRead={emptyBuffer()}
+        escalateWrite={emptyBuffer()}
       />,
     )
 
@@ -54,6 +58,8 @@ describe('config panel', () => {
         repoDirectory={repoDirectory}
         globalDirectory={globalDirectory}
         envFile={envFile}
+        escalateRead={emptyBuffer()}
+        escalateWrite={emptyBuffer()}
       />,
     )
 

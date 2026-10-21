@@ -256,6 +256,8 @@ describe('run', () => {
           ignore: [],
           additionalRead: [],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     )

@@ -92,6 +92,8 @@ describe('gitCompare', () => {
         ignore: [],
         additionalRead: [outside],
         additionalWrite: [],
+        escalateRead: [],
+        escalateWrite: [],
       },
     })
     const applicationData = mockApplicationData({

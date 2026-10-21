@@ -8,6 +8,8 @@ export const defaultCrowConfig = (): CrowConfigData => ({
     ignore: [],
     additionalRead: [],
     additionalWrite: [],
+    escalateRead: [],
+    escalateWrite: ['./dev', './agent'],
   },
 })
 
@@ -18,6 +20,8 @@ const crowConfigSchema = z.object({
     ignore: z.array(z.string()),
     additionalRead: z.array(z.string()),
     additionalWrite: z.array(z.string()),
+    escalateRead: z.array(z.string()),
+    escalateWrite: z.array(z.string()),
   }),
 })
 

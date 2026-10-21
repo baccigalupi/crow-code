@@ -191,6 +191,8 @@ describe('InstallApp', () => {
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
     await instance.waitUntilRenderFlush()
 
     expect(stripAnsi(terminal.lastFrame())).toContain(
@@ -249,8 +251,47 @@ describe('InstallApp', () => {
     instance.unmount()
   })
 
-  it('when the env file question is answered, the write confirmation shows', async () => {
+  it('when the env file question is answered, the escalate read question shows', async () => {
     const step = signal<InstallStep>('envFile')
+    const { terminal, instance } = mountInstallApp(24, { step })
+
+    terminal.stdin.write('\r')
+    await instance.waitUntilRenderFlush()
+
+    expect(stripAnsi(terminal.lastFrame())).toContain(
+      'Escalate read directories: (none)',
+    )
+    instance.unmount()
+  })
+
+  it('when the escalate read question is answered, the escalate write question shows', async () => {
+    const step = signal<InstallStep>('escalateRead')
+    const { terminal, instance } = mountInstallApp(24, { step })
+
+    terminal.stdin.write('\r')
+    await instance.waitUntilRenderFlush()
+
+    expect(stripAnsi(terminal.lastFrame())).toContain(
+      'Escalate write directories: (./dev, ./agent)',
+    )
+    instance.unmount()
+  })
+
+  it('when escalate read directories are typed, the config updates', async () => {
+    const escalateRead = inputSignal('')
+    const step = signal<InstallStep>('escalateRead')
+    const { terminal, instance } = mountInstallApp(24, { escalateRead, step })
+
+    terminal.stdin.write('/docs')
+    await instance.waitUntilRenderFlush()
+
+    expect(stripAnsi(terminal.lastFrame())).toContain('"/docs"')
+    expect(escalateRead.peek().text).toBe('/docs')
+    instance.unmount()
+  })
+
+  it('when the escalate write question is answered, the write confirmation shows', async () => {
+    const step = signal<InstallStep>('escalateWrite')
     const { terminal, instance } = mountInstallApp(24, { step })
 
     terminal.stdin.write('\r')
@@ -276,6 +317,8 @@ describe('InstallApp', () => {
     stdin.write('\r')
     stdin.write('\r')
     stdin.write('\r')
+    stdin.write('\r')
+    stdin.write('\r')
     stdin.write('\x1b[C')
 
     expect(confirmation.peek()).toBe(false)
@@ -293,6 +336,8 @@ describe('InstallApp', () => {
       />,
     )
 
+    stdin.write('\r')
+    stdin.write('\r')
     stdin.write('\r')
     stdin.write('\r')
     stdin.write('\r')
@@ -317,6 +362,8 @@ describe('InstallApp', () => {
     stdin.write('\r')
     stdin.write('\r')
     stdin.write('\r')
+    stdin.write('\r')
+    stdin.write('\r')
     stdin.write('n')
 
     expect(confirmation.peek()).toBe(false)
@@ -327,6 +374,8 @@ describe('InstallApp', () => {
     const step = signal<InstallStep>('repo')
     const { terminal, instance } = mountInstallApp(24, { step })
 
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
@@ -355,6 +404,8 @@ describe('InstallApp', () => {
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
     terminal.stdin.write('\x1b[C')
     terminal.stdin.write('\r')
     await instance.waitUntilExit()
@@ -366,6 +417,8 @@ describe('InstallApp', () => {
     const step = signal<InstallStep>('repo')
     const { terminal, instance } = mountInstallApp(8, { step })
 
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')

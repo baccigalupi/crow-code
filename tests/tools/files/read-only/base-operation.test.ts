@@ -25,6 +25,8 @@ describe('ReadOnlyFileOperation', () => {
           ignore: [],
           additionalRead: ['../outside-read'],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })

@@ -20,7 +20,7 @@ describe('env-prompt', () => {
     expect(lastFrame()).toBe('')
   })
 
-  it('when the step is envFile, shows the derived fallback', () => {
+  it('when the step is envFile, shows the derived default value', () => {
     const globalDirectory = insertText(emptyBuffer(), '/opt/crow')
     const envFile = emptyBuffer()
 

@@ -15,7 +15,7 @@ export const RepoPathPrompt = ({ step, input }: RepoPathPromptProps) => {
     <Prompt
       label='What directory for the local repo crow setup'
       input={input}
-      fallback={defaultCrowRepoDirectory}
+      defaultValue={defaultCrowRepoDirectory}
     />
   )
 }

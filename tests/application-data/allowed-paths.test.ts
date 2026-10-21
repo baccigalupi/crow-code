@@ -16,7 +16,13 @@ describe('AllowedPaths', () => {
       config: new CrowConfig('.', {
         crowGlobalDirectory: '~/.crow',
         envFile: '~/.crow/.env',
-        permissions: { ignore: [], additionalRead: [], additionalWrite: [] },
+        permissions: {
+          ignore: [],
+          additionalRead: [],
+          additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
+        },
       }),
     })
 
@@ -40,6 +46,8 @@ describe('AllowedPaths', () => {
           ignore: [],
           additionalRead: [],
           additionalWrite: ['~/docs'],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })
@@ -65,6 +73,8 @@ describe('AllowedPaths', () => {
           ignore: [],
           additionalRead: [],
           additionalWrite: ['~/work'],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })
@@ -89,6 +99,8 @@ describe('AllowedPaths', () => {
           ignore: [],
           additionalRead: ['~/docs'],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })
@@ -144,6 +156,8 @@ describe('AllowedPaths', () => {
           ignore: ['vendor'],
           additionalRead: [],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })
@@ -163,6 +177,8 @@ describe('AllowedPaths', () => {
           ignore: ['vendor'],
           additionalRead: [],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })
@@ -182,6 +198,8 @@ describe('AllowedPaths', () => {
           ignore: [join(fixturesDirectory, 'vendor')],
           additionalRead: [],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })

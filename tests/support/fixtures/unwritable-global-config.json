@@ -4,6 +4,8 @@
   "permissions": {
     "ignore": ["vendor"],
     "additionalRead": ["/readable"],
-    "additionalWrite": ["/writable"]
+    "additionalWrite": ["/writable"],
+    "escalateRead": [],
+    "escalateWrite": []
   }
 }

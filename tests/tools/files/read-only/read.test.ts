@@ -78,6 +78,8 @@ describe('readFile', () => {
           ignore: [join(fixturesDirectory, 'tools', 'files')],
           additionalRead: [],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })

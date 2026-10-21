@@ -7,6 +7,8 @@ export type CrowPermissionsConfig = {
   ignore: string[]
   additionalRead: string[]
   additionalWrite: string[]
+  escalateRead: string[]
+  escalateWrite: string[]
 }
 
 export type CrowConfigData = {

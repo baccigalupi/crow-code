@@ -40,6 +40,8 @@ export class CrowConfigWrite {
       repoDirectory: this.installData.repoDirectory.peek(),
       globalDirectory: this.installData.globalDirectory.peek(),
       envFile: this.installData.envFile.peek(),
+      escalateRead: this.installData.escalateRead.peek(),
+      escalateWrite: this.installData.escalateWrite.peek(),
     }).all()
   }
 }

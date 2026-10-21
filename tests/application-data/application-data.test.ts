@@ -66,7 +66,13 @@ describe('ApplicationData', () => {
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory: join(fixturesDirectory, 'database'),
       envFile: join(fixturesDirectory, 'database', '.env'),
-      permissions: { ignore: [], additionalRead: [], additionalWrite: [] },
+      permissions: {
+        ignore: [],
+        additionalRead: [],
+        additionalWrite: [],
+        escalateRead: [],
+        escalateWrite: [],
+      },
     })
 
     const delegated = appData.writePathPermissions()
@@ -80,7 +86,13 @@ describe('ApplicationData', () => {
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory: join(fixturesDirectory, 'database'),
       envFile: join(fixturesDirectory, 'database', '.env'),
-      permissions: { ignore: [], additionalRead: [], additionalWrite: [] },
+      permissions: {
+        ignore: [],
+        additionalRead: [],
+        additionalWrite: [],
+        escalateRead: [],
+        escalateWrite: [],
+      },
     })
 
     const delegated = appData.readPathPermissions()
@@ -95,7 +107,13 @@ describe('ApplicationData', () => {
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory: join(fixturesDirectory, 'database'),
       envFile: join(fixturesDirectory, 'database', '.env'),
-      permissions: { ignore: [], additionalRead: [], additionalWrite: [] },
+      permissions: {
+        ignore: [],
+        additionalRead: [],
+        additionalWrite: [],
+        escalateRead: [],
+        escalateWrite: [],
+      },
     })
 
     const delegated = appData.gitPathPermissions()
@@ -112,7 +130,13 @@ describe('ApplicationData', () => {
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory,
       envFile: join(crowGlobalDirectory, '.env'),
-      permissions: { ignore: [], additionalRead: [], additionalWrite: [] },
+      permissions: {
+        ignore: [],
+        additionalRead: [],
+        additionalWrite: [],
+        escalateRead: [],
+        escalateWrite: [],
+      },
     })
     appData.envars = new Environment({
       runtimeEnvironment: {},
@@ -136,7 +160,13 @@ describe('ApplicationData', () => {
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory: '~/.crow',
       envFile: '~/.crow/.env',
-      permissions: { ignore: [], additionalRead: [], additionalWrite: [] },
+      permissions: {
+        ignore: [],
+        additionalRead: [],
+        additionalWrite: [],
+        escalateRead: [],
+        escalateWrite: [],
+      },
     })
     appData.envars = new Environment({
       runtimeEnvironment: { HOME: home },
@@ -169,7 +199,13 @@ describe('ApplicationData', () => {
     appData.config = new CrowConfig('.', {
       crowGlobalDirectory: join(fixturesDirectory, 'database'),
       envFile: join(fixturesDirectory, 'database', '.env'),
-      permissions: { ignore: [], additionalRead: [], additionalWrite: [] },
+      permissions: {
+        ignore: [],
+        additionalRead: [],
+        additionalWrite: [],
+        escalateRead: [],
+        escalateWrite: [],
+      },
     })
     appData.envars = new Environment({
       runtimeEnvironment: {},

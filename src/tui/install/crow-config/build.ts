@@ -1,4 +1,5 @@
 import { join } from 'node:path'
+import { buildPermissions } from './permissions.ts'
 import {
   defaultCrowGlobalDirectory,
   defaultCrowRepoDirectory,
@@ -12,13 +13,23 @@ export class CrowConfigBuilder {
   private globalDirectoryInput: InputBuffer
   private repoDirectoryInput: InputBuffer
   private envFileInput: InputBuffer
+  private escalateReadInput: InputBuffer
+  private escalateWriteInput: InputBuffer
 
   constructor(
-    { globalDirectory, repoDirectory, envFile }: BuildCrowConfigArguments,
+    {
+      globalDirectory,
+      repoDirectory,
+      envFile,
+      escalateRead,
+      escalateWrite,
+    }: BuildCrowConfigArguments,
   ) {
     this.globalDirectoryInput = globalDirectory
     this.repoDirectoryInput = repoDirectory
     this.envFileInput = envFile
+    this.escalateReadInput = escalateRead
+    this.escalateWriteInput = escalateWrite
   }
 
   all() {
@@ -54,8 +65,8 @@ export class CrowConfigBuilder {
     return this.directory(this.repoDirectoryInput, defaultCrowRepoDirectory)
   }
 
-  private directory(input: InputBuffer, fallback: string) {
-    if (input.text.length === 0) return fallback
+  private directory(input: InputBuffer, defaultValue: string) {
+    if (input.text.length === 0) return defaultValue
     return input.text
   }
 
@@ -68,11 +79,10 @@ export class CrowConfigBuilder {
   }
 
   private permissions() {
-    return {
-      ignore: [],
-      additionalRead: [],
-      additionalWrite: [],
-    }
+    return buildPermissions({
+      escalateRead: this.escalateReadInput,
+      escalateWrite: this.escalateWriteInput,
+    })
   }
 }
 

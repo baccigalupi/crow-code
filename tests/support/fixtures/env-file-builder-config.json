@@ -4,6 +4,8 @@
   "permissions": {
     "ignore": [],
     "additionalRead": [],
-    "additionalWrite": []
+    "additionalWrite": [],
+    "escalateRead": [],
+    "escalateWrite": []
   }
 }

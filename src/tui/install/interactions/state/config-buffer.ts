@@ -8,6 +8,8 @@ export const defaultCrowGlobalDirectory = '~/.crow'
 export const crowRepoDirectoryInput = signal(emptyBuffer())
 export const crowGlobalDirectoryInput = signal(emptyBuffer())
 export const envFileInput = signal(emptyBuffer())
+export const escalateReadInput = signal(emptyBuffer())
+export const escalateWriteInput = signal(emptyBuffer())
 
 export const installStep = signal<InstallStep>('repo')
 export const writeConfirmation = signal(true)
@@ -16,6 +18,8 @@ export const installState: InstallState = {
   repoDirectory: crowRepoDirectoryInput,
   globalDirectory: crowGlobalDirectoryInput,
   envFile: envFileInput,
+  escalateRead: escalateReadInput,
+  escalateWrite: escalateWriteInput,
   step: installStep,
   confirmation: writeConfirmation,
 }

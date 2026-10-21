@@ -6,13 +6,16 @@ type EnvPromptViewModelArguments = {
   readonly globalDirectory: InputBuffer
 }
 
+const blankInputs = {
+  repoDirectory: emptyBuffer(),
+  envFile: emptyBuffer(),
+  escalateRead: emptyBuffer(),
+  escalateWrite: emptyBuffer(),
+}
+
 export const envPromptViewModel = (
   { globalDirectory }: EnvPromptViewModelArguments,
 ) => {
-  const { config } = buildCrowConfig({
-    globalDirectory,
-    repoDirectory: emptyBuffer(),
-    envFile: emptyBuffer(),
-  }).all()
-  return { fallback: config.envFile }
+  const { config } = buildCrowConfig({ ...blankInputs, globalDirectory }).all()
+  return { defaultValue: config.envFile }
 }

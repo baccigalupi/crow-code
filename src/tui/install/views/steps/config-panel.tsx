@@ -30,17 +30,8 @@ const Config = (configPanelProps: ConfigPanelProps) => {
   )
 }
 
-export const ConfigPanel = (
-  { step, globalDirectory, repoDirectory, envFile }: ConfigPanelProps,
-) => {
-  if (step === 'repo') return null
+export const ConfigPanel = (configPanelProps: ConfigPanelProps) => {
+  if (configPanelProps.step === 'repo') return null
 
-  return (
-    <Config
-      step={step}
-      globalDirectory={globalDirectory}
-      repoDirectory={repoDirectory}
-      envFile={envFile}
-    />
-  )
+  return <Config {...configPanelProps} />
 }

@@ -25,6 +25,8 @@ describe('sorted-matches', () => {
           ignore: [join(path, 'node_modules')],
           additionalRead: [],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })
@@ -85,6 +87,8 @@ describe('sorted-matches', () => {
           ignore: [join(path, 'node_modules')],
           additionalRead: [],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })

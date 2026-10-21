@@ -88,7 +88,13 @@ describe('AddProvider', () => {
       config: new CrowConfig('.', {
         crowGlobalDirectory: '~/.crow',
         envFile: '/secrets/crow.env',
-        permissions: { ignore: [], additionalRead: [], additionalWrite: [] },
+        permissions: {
+          ignore: [],
+          additionalRead: [],
+          additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
+        },
       }),
     })
 

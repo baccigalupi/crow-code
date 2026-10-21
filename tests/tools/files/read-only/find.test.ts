@@ -71,6 +71,8 @@ describe('find', () => {
           ignore: [join(path, 'nested')],
           additionalRead: [],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })

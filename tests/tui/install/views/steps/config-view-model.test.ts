@@ -14,6 +14,8 @@ describe('configViewModel', () => {
       repoDirectory,
       globalDirectory,
       envFile,
+      escalateRead: emptyBuffer(),
+      escalateWrite: emptyBuffer(),
     })
 
     expect(viewModel.before).toBe('{\n  ')
@@ -30,9 +32,45 @@ describe('configViewModel', () => {
       repoDirectory,
       globalDirectory,
       envFile,
+      escalateRead: emptyBuffer(),
+      escalateWrite: emptyBuffer(),
     })
 
     expect(viewModel.highlighted).toBe('"envFile": "~/.crow/.env",')
+  })
+
+  it('when the step is escalateRead, highlights the escalateRead line', () => {
+    const repoDirectory = emptyBuffer()
+    const globalDirectory = emptyBuffer()
+
+    const viewModel = configViewModel({
+      step: 'escalateRead',
+      repoDirectory,
+      globalDirectory,
+      envFile: emptyBuffer(),
+      escalateRead: emptyBuffer(),
+      escalateWrite: emptyBuffer(),
+    })
+
+    expect(viewModel.highlighted).toBe('"escalateRead": [],')
+  })
+
+  it('when the step is escalateWrite, highlights the whole escalateWrite array', () => {
+    const repoDirectory = emptyBuffer()
+    const globalDirectory = emptyBuffer()
+
+    const viewModel = configViewModel({
+      step: 'escalateWrite',
+      repoDirectory,
+      globalDirectory,
+      envFile: emptyBuffer(),
+      escalateRead: emptyBuffer(),
+      escalateWrite: emptyBuffer(),
+    })
+
+    expect(viewModel.highlighted).toBe(
+      '"escalateWrite": [\n      "./dev",\n      "./agent"\n    ]',
+    )
   })
 
   it('when the step is confirm, highlights nothing', () => {
@@ -45,6 +83,8 @@ describe('configViewModel', () => {
       repoDirectory,
       globalDirectory,
       envFile,
+      escalateRead: emptyBuffer(),
+      escalateWrite: emptyBuffer(),
     })
 
     expect(viewModel.highlighted).toBe('')

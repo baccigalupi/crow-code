@@ -24,6 +24,8 @@ describe('runInstalltTui', () => {
       ),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
+      escalateRead: signal(emptyBuffer()),
+      escalateWrite: signal(emptyBuffer()),
       step,
       confirmation: signal(true),
     }

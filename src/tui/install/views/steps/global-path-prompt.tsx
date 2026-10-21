@@ -15,7 +15,7 @@ export const GlobalPathPrompt = ({ step, input }: GlobalPathPromptProps) => {
     <Prompt
       label='User crow directory'
       input={input}
-      fallback={defaultCrowGlobalDirectory}
+      defaultValue={defaultCrowGlobalDirectory}
     />
   )
 }

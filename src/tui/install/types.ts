@@ -7,6 +7,8 @@ export type InstallStep =
   | 'repo'
   | 'crowGlobalDirectory'
   | 'envFile'
+  | 'escalateRead'
+  | 'escalateWrite'
   | 'confirm'
   | 'write'
   | 'done'
@@ -29,6 +31,8 @@ export type BuildCrowConfigArguments = {
   readonly globalDirectory: InputBuffer
   readonly repoDirectory: InputBuffer
   readonly envFile: InputBuffer
+  readonly escalateRead: InputBuffer
+  readonly escalateWrite: InputBuffer
 }
 
 export type ConfigPanelProps = BuildCrowConfigArguments & {
@@ -39,6 +43,8 @@ export type InstallAppProps = {
   readonly repoDirectory?: Signal<InputBuffer>
   readonly globalDirectory?: Signal<InputBuffer>
   readonly envFile?: Signal<InputBuffer>
+  readonly escalateRead?: Signal<InputBuffer>
+  readonly escalateWrite?: Signal<InputBuffer>
   readonly step?: Signal<InstallStep>
   readonly confirmation?: Signal<boolean>
 }
@@ -47,6 +53,8 @@ export type InstallState = {
   readonly repoDirectory: Signal<InputBuffer>
   readonly globalDirectory: Signal<InputBuffer>
   readonly envFile: Signal<InputBuffer>
+  readonly escalateRead: Signal<InputBuffer>
+  readonly escalateWrite: Signal<InputBuffer>
   readonly step: Signal<InstallStep>
   readonly confirmation: Signal<boolean>
 }

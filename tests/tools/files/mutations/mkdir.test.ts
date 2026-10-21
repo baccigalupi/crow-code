@@ -83,6 +83,8 @@ describe('makeDirectory', () => {
           ignore: [`${fixturesDirectory}/mkdir/ignored`],
           additionalRead: [],
           additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
         },
       }),
     })

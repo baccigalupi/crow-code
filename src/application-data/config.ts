@@ -28,4 +28,12 @@ export class CrowConfig {
   get readableDirectories() {
     return this.data.permissions.additionalRead
   }
+
+  get escalateReadDirectories() {
+    return this.data.permissions.escalateRead
+  }
+
+  get escalateWriteDirectories() {
+    return [...this.data.permissions.escalateWrite, this.crowRepoDirectory]
+  }
 }
