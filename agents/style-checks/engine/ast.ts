@@ -24,6 +24,11 @@ export const functionBody = (node: ts.Node) => {
   return node.body
 }
 
+export const isNamedCall = (node: ts.Node, name: string) =>
+  ts.isCallExpression(node) &&
+  ts.isIdentifier(node.expression) &&
+  node.expression.text === name
+
 export const isTopLevel = (ctx: Context) => {
   const parent = ctx.ancestors[ctx.ancestors.length - 1]
   return parent !== undefined && ts.isSourceFile(parent)
