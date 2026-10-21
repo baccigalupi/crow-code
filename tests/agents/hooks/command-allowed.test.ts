@@ -17,6 +17,58 @@ describe('commandAllowed', () => {
     expect(result).toBe(true)
   })
 
+  it('when command is bun test with a path, returns true', () => {
+    const command = 'bun test tests/decorators.test.ts'
+
+    const result = commandAllowed(
+      command,
+      new DevinConfig(
+        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+      ),
+    )
+
+    expect(result).toBe(true)
+  })
+
+  it('when command is bun --version, returns true', () => {
+    const command = 'bun --version'
+
+    const result = commandAllowed(
+      command,
+      new DevinConfig(
+        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+      ),
+    )
+
+    expect(result).toBe(true)
+  })
+
+  it('when command is bun run, returns false', () => {
+    const command = 'bun run lint'
+
+    const result = commandAllowed(
+      command,
+      new DevinConfig(
+        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+      ),
+    )
+
+    expect(result).toBe(false)
+  })
+
+  it('when command is a bare bun script name, returns false', () => {
+    const command = 'bun lint'
+
+    const result = commandAllowed(
+      command,
+      new DevinConfig(
+        Deno.readTextFileSync('tests/support/fixtures/devin-config.json'),
+      ),
+    )
+
+    expect(result).toBe(false)
+  })
+
   it('when command is a dev script, returns true', () => {
     const command = 'dev/test'
 

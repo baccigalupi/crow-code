@@ -68,6 +68,8 @@ const stripLeading = (command: string) => {
 const gitPushPattern =
   /^git(?:\s+(?:-[A-Za-z0-9-]+(?:\s+\S+)?|[^-\s]\S*))*\s+push\b/
 
+const bunPattern = /^bun(?:\s+test(?:\s|$)|\s+--version$)/
+
 const executableAllowed = (command: string, config: DevinConfig) =>
   config.allowsExec(command)
 
@@ -76,5 +78,6 @@ export const commandAllowed = (command: string, config: DevinConfig) => {
   if (!isSafeShell(command)) return false
   const stripped = stripLeading(command)
   if (stripped.startsWith('git ')) return !gitPushPattern.test(stripped)
+  if (bunPattern.test(stripped)) return true
   return executableAllowed(stripped, config)
 }
