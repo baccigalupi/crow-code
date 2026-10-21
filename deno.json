@@ -37,6 +37,9 @@
   "exclude": [
     ".deps",
     ".worktrees",
-    ".claude/worktrees"
+    ".claude/worktrees",
+    "src/database/bun-sqlite-client.ts",
+    "tests/database/bun-sqlite-client.test.ts",
+    "tests/bun-compat"
   ]
 }

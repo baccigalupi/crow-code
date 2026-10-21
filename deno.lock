@@ -516,6 +516,22 @@
       "npm:pino@10.3.1",
       "npm:react@19.3.0",
       "npm:zod@4.6.5"
-    ]
+    ],
+    "packageJson": {
+      "dependencies": [
+        "npm:@preact/signals-core@1.14.4",
+        "npm:@types/picomatch@4.0.3",
+        "npm:@types/react@19.2.14",
+        "npm:dotenv@18.0.8",
+        "npm:ink-testing-library@4.0.0",
+        "npm:ink@7.1.1",
+        "npm:knex@3.3.0",
+        "npm:openai@7.15.0",
+        "npm:picomatch@4.0.7",
+        "npm:pino@10.3.1",
+        "npm:react@19.3.0",
+        "npm:zod@4.6.5"
+      ]
+    }
   }
 }
