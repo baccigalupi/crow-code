@@ -40,6 +40,8 @@
     ".claude/worktrees",
     "src/database/bun-sqlite-client.ts",
     "tests/database/bun-sqlite-client.test.ts",
-    "tests/bun-compat"
+    "tests/bun-compat",
+    "agents/coverage/preload.ts",
+    "tests/agents/coverage/preload.test.ts"
   ]
 }

@@ -9,6 +9,7 @@ tests/support/fixtures/.crow/
 tests/support/fixtures/logs/
 tests/support/fixtures/env/
 tests/support/fixtures/logger/
+tests/support/fixtures/coverage-raw/
 .env
 .env.local
 .devin/state/

@@ -5,6 +5,7 @@
   },
   "dependencies": {
     "@preact/signals-core": "1.14.4",
+    "@std/expect": "npm:@jsr/std__expect@1.0.20",
     "@types/picomatch": "4.0.3",
     "@types/react": "19.2.14",
     "dotenv": "18.0.8",
@@ -12,8 +13,6 @@
     "ink-testing-library": "4.0.0",
     "istanbul-lib-coverage": "3.2.2",
     "istanbul-lib-instrument": "6.0.3",
-    "istanbul-lib-report": "3.0.1",
-    "istanbul-reports": "3.2.0",
     "knex": "3.3.0",
     "openai": "7.15.0",
     "picomatch": "4.0.7",
