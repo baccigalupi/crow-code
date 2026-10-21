@@ -122,7 +122,7 @@ Stable anchor, first content section.
 
 - If a Beads issue was provided, quote its complete contents verbatim
   (`bd
-  show <id>`).
+show <id>`).
 - Otherwise, quote the user's complete prompt verbatim.
 - Add a concise outcome statement below the quote without replacing or
   paraphrasing the source text.
@@ -172,8 +172,8 @@ dependency has a source.
 
 ### Open decisions
 
-| ID | Decision needed from the user | Consequence of each plausible answer |
-| -- | ----------------------------- | ------------------------------------ |
+| ID  | Decision needed from the user | Consequence of each plausible answer |
+| --- | ----------------------------- | ------------------------------------ |
 
 - Holds only decisions the user must make. Never unresearched work, unverified
   facts, guesses, or questions that investigation could answer.
