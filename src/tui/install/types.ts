@@ -54,27 +54,16 @@ export type StepValues = BuildCrowConfigArguments & {
 }
 
 export type InstallAppProps = {
-  readonly repoDirectory?: Signal<InputBuffer>
-  readonly globalDirectory?: Signal<InputBuffer>
-  readonly envFile?: Signal<InputBuffer>
-  readonly additionalRead?: Signal<InputBuffer>
-  readonly escalateRead?: Signal<InputBuffer>
-  readonly escalateWrite?: Signal<InputBuffer>
-  readonly allowedLocalScripts?: Signal<InputBuffer>
-  readonly step?: Signal<InstallStep>
-  readonly confirmation?: Signal<boolean>
+  readonly installState?: InstallState
+}
+
+export type InstallValues = BuildCrowConfigArguments & {
+  readonly step: InstallStep
+  readonly confirmation: boolean
 }
 
 export type InstallState = {
-  readonly repoDirectory: Signal<InputBuffer>
-  readonly globalDirectory: Signal<InputBuffer>
-  readonly envFile: Signal<InputBuffer>
-  readonly additionalRead: Signal<InputBuffer>
-  readonly escalateRead: Signal<InputBuffer>
-  readonly escalateWrite: Signal<InputBuffer>
-  readonly allowedLocalScripts: Signal<InputBuffer>
-  readonly step: Signal<InstallStep>
-  readonly confirmation: Signal<boolean>
+  readonly [Key in keyof InstallValues]: Signal<InstallValues[Key]>
 }
 
 export type WriteCrowConfigArguments = {

@@ -5,11 +5,7 @@ import { render as inkRender } from 'ink'
 import { signal } from '@preact/signals-core'
 import { InstallApp } from '../../../../src/tui/install/views/install-app.tsx'
 import type { InstallStep } from '../../../../src/tui/install/types.ts'
-import {
-  crowGlobalDirectoryInput,
-  crowRepoDirectoryInput,
-  installStep,
-} from '../../../../src/tui/install/interactions/state/config-buffer.ts'
+import { installState } from '../../../../src/tui/install/interactions/state/config-buffer.ts'
 import { emptyBuffer } from '../../../../src/tui/input-buffer.ts'
 import { inputSignal } from '../../../support/input-signal.ts'
 import { mountInstallApp } from '../../../support/install-mount.tsx'
@@ -18,125 +14,81 @@ import { stripAnsi } from '../../../support/strip-ansi.ts'
 
 describe('InstallApp', () => {
   it('when mounted, renders the header and the repo directory question', () => {
-    const repoDirectory = inputSignal('')
-    const globalDirectory = inputSignal('')
     const step = signal<InstallStep>('repo')
 
-    const { lastFrame, unmount } = render(
-      <InstallApp
-        repoDirectory={repoDirectory}
-        globalDirectory={globalDirectory}
-        step={step}
-      />,
-    )
+    const { terminal, instance } = mountInstallApp(24, { step })
 
-    expect(stripAnsi(lastFrame())).toContain('Installing Crow Code')
-    expect(stripAnsi(lastFrame())).toContain('ctrl-c quit')
-    expect(stripAnsi(lastFrame())).toContain(
+    expect(stripAnsi(terminal.lastFrame())).toContain('Installing Crow Code')
+    expect(stripAnsi(terminal.lastFrame())).toContain('ctrl-c quit')
+    expect(stripAnsi(terminal.lastFrame())).toContain(
       'What directory for the local repo crow setup: (.crow)',
     )
-    expect(stripAnsi(lastFrame())).not.toContain('config.json')
-    expect(stripAnsi(lastFrame())).not.toContain('crowGlobalDirectory')
-    unmount()
+    expect(stripAnsi(terminal.lastFrame())).not.toContain('config.json')
+    expect(stripAnsi(terminal.lastFrame())).not.toContain('crowGlobalDirectory')
+    instance.unmount()
   })
 
   it('when text is typed, it becomes the repo directory', () => {
     const repoDirectory = inputSignal('')
-    const { stdin, unmount } = render(
-      <InstallApp
-        repoDirectory={repoDirectory}
-        globalDirectory={inputSignal('')}
-        step={signal<InstallStep>('repo')}
-      />,
-    )
+    const { terminal, instance } = mountInstallApp(24, { repoDirectory })
 
-    stdin.write('./crow2')
+    terminal.stdin.write('./crow2')
 
     expect(repoDirectory.peek().text).toBe('./crow2')
-    unmount()
+    instance.unmount()
   })
 
   it('when backspace arrives, the previous char is deleted', () => {
     const repoDirectory = inputSignal('~/x')
-    const { stdin, unmount } = render(
-      <InstallApp
-        repoDirectory={repoDirectory}
-        globalDirectory={inputSignal('')}
-        step={signal<InstallStep>('repo')}
-      />,
-    )
+    const { terminal, instance } = mountInstallApp(24, { repoDirectory })
 
-    stdin.write('\x7f')
+    terminal.stdin.write('\x7f')
 
     expect(repoDirectory.peek().text).toBe('~/')
-    unmount()
+    instance.unmount()
   })
 
   it('when delete arrives, the char under the cursor is removed', () => {
     const repoDirectory = inputSignal('~/x')
-    const { stdin, unmount } = render(
-      <InstallApp
-        repoDirectory={repoDirectory}
-        globalDirectory={inputSignal('')}
-        step={signal<InstallStep>('repo')}
-      />,
-    )
+    const { terminal, instance } = mountInstallApp(24, { repoDirectory })
 
-    stdin.write('\x1b[H\x1b[3~')
+    terminal.stdin.write('\x1b[H\x1b[3~')
 
     expect(repoDirectory.peek().text).toBe('/x')
-    unmount()
+    instance.unmount()
   })
 
   it('when home and end arrive, the cursor moves to the line edges', () => {
     const repoDirectory = inputSignal('~/x')
-    const { stdin, unmount } = render(
-      <InstallApp
-        repoDirectory={repoDirectory}
-        globalDirectory={inputSignal('')}
-        step={signal<InstallStep>('repo')}
-      />,
-    )
+    const { terminal, instance } = mountInstallApp(24, { repoDirectory })
 
-    stdin.write('\x1b[H')
-    stdin.write('\x1b[F')
-    stdin.write('\x1b[C')
+    terminal.stdin.write('\x1b[H')
+    terminal.stdin.write('\x1b[F')
+    terminal.stdin.write('\x1b[C')
 
     expect(repoDirectory.peek().cursor).toBe('~/x'.length)
-    unmount()
+    instance.unmount()
   })
 
   it('when a ctrl-modified key has no binding, nothing changes', () => {
     const repoDirectory = inputSignal('~/x')
-    const { stdin, unmount } = render(
-      <InstallApp
-        repoDirectory={repoDirectory}
-        globalDirectory={inputSignal('')}
-        step={signal<InstallStep>('repo')}
-      />,
-    )
+    const { terminal, instance } = mountInstallApp(24, { repoDirectory })
 
-    stdin.write('\x18')
+    terminal.stdin.write('\x18')
 
     expect(repoDirectory.peek().text).toBe('~/x')
-    unmount()
+    instance.unmount()
   })
 
   it('when arrows arrive, the cursor moves', () => {
     const repoDirectory = inputSignal('~/x')
-    const { stdin, unmount } = render(
-      <InstallApp
-        repoDirectory={repoDirectory}
-        globalDirectory={inputSignal('')}
-        step={signal<InstallStep>('repo')}
-      />,
-    )
+    const { terminal, instance } = mountInstallApp(24, { repoDirectory })
 
-    stdin.write('\x1b[D\x1b[D')
-    stdin.write('X')
+    terminal.stdin.write('\x1b[D\x1b[D')
+    terminal.stdin.write('X')
 
     expect(repoDirectory.peek().text).toBe('~X/x')
-    unmount()
+    instance.unmount()
   })
 
   it('when the repo question is answered, the config and user question show', async () => {
@@ -360,75 +312,54 @@ describe('InstallApp', () => {
 
   it('when right arrow arrives on the confirm step, the choice becomes no', () => {
     const confirmation = signal(true)
-    const { stdin, unmount } = render(
-      <InstallApp
-        repoDirectory={inputSignal('')}
-        globalDirectory={inputSignal('')}
-        step={signal<InstallStep>('repo')}
-        confirmation={confirmation}
-      />,
-    )
+    const { terminal, instance } = mountInstallApp(24, { confirmation })
 
-    stdin.write('\r')
-    stdin.write('\r')
-    stdin.write('\r')
-    stdin.write('\r')
-    stdin.write('\r')
-    stdin.write('\r')
-    stdin.write('\r')
-    stdin.write('\x1b[C')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\x1b[C')
 
     expect(confirmation.peek()).toBe(false)
-    unmount()
+    instance.unmount()
   })
 
   it('when left arrow arrives on the confirm step, the choice becomes yes', () => {
     const confirmation = signal(false)
-    const { stdin, unmount } = render(
-      <InstallApp
-        repoDirectory={inputSignal('')}
-        globalDirectory={inputSignal('')}
-        step={signal<InstallStep>('repo')}
-        confirmation={confirmation}
-      />,
-    )
+    const { terminal, instance } = mountInstallApp(24, { confirmation })
 
-    stdin.write('\r')
-    stdin.write('\r')
-    stdin.write('\r')
-    stdin.write('\r')
-    stdin.write('\r')
-    stdin.write('\r')
-    stdin.write('\r')
-    stdin.write('\x1b[C')
-    stdin.write('\x1b[D')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\x1b[C')
+    terminal.stdin.write('\x1b[D')
 
     expect(confirmation.peek()).toBe(true)
-    unmount()
+    instance.unmount()
   })
 
   it('when n arrives on the confirm step, the choice becomes no', () => {
     const confirmation = signal(true)
-    const { stdin, unmount } = render(
-      <InstallApp
-        repoDirectory={inputSignal('')}
-        globalDirectory={inputSignal('')}
-        step={signal<InstallStep>('repo')}
-        confirmation={confirmation}
-      />,
-    )
+    const { terminal, instance } = mountInstallApp(24, { confirmation })
 
-    stdin.write('\r')
-    stdin.write('\r')
-    stdin.write('\r')
-    stdin.write('\r')
-    stdin.write('\r')
-    stdin.write('\r')
-    stdin.write('\r')
-    stdin.write('n')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
+    terminal.stdin.write('n')
 
     expect(confirmation.peek()).toBe(false)
-    unmount()
+    instance.unmount()
   })
 
   it('when yes is confirmed, moves to the write step', () => {
@@ -515,16 +446,9 @@ describe('InstallApp', () => {
 
   it('when stdin is not a tty, mounts without input handling', () => {
     const terminal = mockTerminal({ tty: false })
-    const repoDirectory = inputSignal('')
-    const globalDirectory = inputSignal('')
-    const step = signal<InstallStep>('repo')
 
     const instance = inkRender(
-      <InstallApp
-        repoDirectory={repoDirectory}
-        globalDirectory={globalDirectory}
-        step={step}
-      />,
+      <InstallApp />,
       { ...terminal.io, debug: true, exitOnCtrlC: false },
     )
 
@@ -543,16 +467,9 @@ describe('InstallApp', () => {
 
   it('when stdout reports no columns, falls back to 80', () => {
     const terminal = mockTerminal({ columns: 0 })
-    const repoDirectory = inputSignal('')
-    const globalDirectory = inputSignal('')
-    const step = signal<InstallStep>('repo')
 
     const instance = inkRender(
-      <InstallApp
-        repoDirectory={repoDirectory}
-        globalDirectory={globalDirectory}
-        step={step}
-      />,
+      <InstallApp />,
       { ...terminal.io, debug: true, exitOnCtrlC: false },
     )
 
@@ -572,9 +489,9 @@ describe('InstallApp', () => {
   })
 
   it('when no props are given, uses the shared install data', () => {
-    crowRepoDirectoryInput.value = emptyBuffer()
-    crowGlobalDirectoryInput.value = emptyBuffer()
-    installStep.value = 'repo'
+    installState.repoDirectory.value = emptyBuffer()
+    installState.globalDirectory.value = emptyBuffer()
+    installState.step.value = 'repo'
 
     const { lastFrame, unmount } = render(<InstallApp />)
 
