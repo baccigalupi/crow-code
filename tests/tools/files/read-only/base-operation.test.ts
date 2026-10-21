@@ -27,6 +27,7 @@ describe('ReadOnlyFileOperation', () => {
           additionalWrite: [],
           escalateRead: [],
           escalateWrite: [],
+          allowedLocalScripts: [],
         },
       }),
     })

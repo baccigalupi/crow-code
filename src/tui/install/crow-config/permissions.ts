@@ -4,6 +4,7 @@ import type { InputBuffer } from '../../types.ts'
 type PermissionsArguments = {
   readonly escalateRead: InputBuffer
   readonly escalateWrite: InputBuffer
+  readonly allowedLocalScripts: InputBuffer
 }
 
 const entries = (text: string) => {
@@ -22,12 +23,14 @@ const directoryList = (input: InputBuffer, defaultValue: string[]) => {
 }
 
 export const buildPermissions = (
-  { escalateRead, escalateWrite }: PermissionsArguments,
+  { escalateRead, escalateWrite, allowedLocalScripts: scripts }:
+    PermissionsArguments,
 ) => {
   const defaults = defaultCrowConfig().permissions
   return {
     ...defaults,
     escalateRead: directoryList(escalateRead, defaults.escalateRead),
     escalateWrite: directoryList(escalateWrite, defaults.escalateWrite),
+    allowedLocalScripts: directoryList(scripts, defaults.allowedLocalScripts),
   }
 }

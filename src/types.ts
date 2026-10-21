@@ -9,6 +9,7 @@ export type CrowPermissionsConfig = {
   additionalWrite: string[]
   escalateRead: string[]
   escalateWrite: string[]
+  allowedLocalScripts: string[]
 }
 
 export type CrowConfigData = {

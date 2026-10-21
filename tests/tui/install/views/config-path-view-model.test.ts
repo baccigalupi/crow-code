@@ -11,6 +11,7 @@ describe('config-path-view-model', () => {
       envFile: emptyBuffer(),
       escalateRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
+      allowedLocalScripts: emptyBuffer(),
     }
 
     const { crowConfigPath } = configPathViewModel(inputs)
@@ -25,6 +26,7 @@ describe('config-path-view-model', () => {
       envFile: emptyBuffer(),
       escalateRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
+      allowedLocalScripts: emptyBuffer(),
     }
 
     const { crowConfigPath } = configPathViewModel(inputs)

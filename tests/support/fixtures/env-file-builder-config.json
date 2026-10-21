@@ -6,6 +6,7 @@
     "additionalRead": [],
     "additionalWrite": [],
     "escalateRead": [],
-    "escalateWrite": []
+    "escalateWrite": [],
+    "allowedLocalScripts": []
   }
 }

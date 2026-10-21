@@ -1,11 +1,7 @@
 import { Box, Text } from 'ink'
-import type { InstallStep } from '../../types.ts'
+import type { StepValues } from '../../types.ts'
 
-type ConfirmPromptProps = {
-  readonly step: InstallStep
-  readonly crowConfigPath: string
-  readonly confirmation: boolean
-}
+type ConfirmPromptProps = Pick<StepValues, 'crowConfigPath' | 'confirmation'>
 
 const Choice = ({ label, active }: {
   readonly label: string
@@ -17,10 +13,8 @@ const Choice = ({ label, active }: {
 }
 
 export const ConfirmPrompt = (
-  { step, crowConfigPath, confirmation }: ConfirmPromptProps,
+  { crowConfigPath, confirmation }: ConfirmPromptProps,
 ) => {
-  if (step !== 'confirm') return null
-
   return (
     <Box paddingX={1}>
       <Text>

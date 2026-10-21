@@ -5,31 +5,21 @@ import { EscalateReadPrompt } from '../../../../../src/tui/install/views/steps/e
 import { emptyBuffer, insertText } from '../../../../../src/tui/input-buffer.ts'
 
 describe('escalate-read-prompt', () => {
-  it('when the step is not escalateRead, renders nothing', () => {
-    const input = emptyBuffer()
+  it('when nothing is typed, shows the empty default', () => {
+    const escalateRead = emptyBuffer()
 
     const { lastFrame } = render(
-      <EscalateReadPrompt step='envFile' input={input} />,
-    )
-
-    expect(lastFrame()).toBe('')
-  })
-
-  it('when the step is escalateRead, shows the empty default', () => {
-    const input = emptyBuffer()
-
-    const { lastFrame } = render(
-      <EscalateReadPrompt step='escalateRead' input={input} />,
+      <EscalateReadPrompt escalateRead={escalateRead} />,
     )
 
     expect(lastFrame()).toContain('Escalate read directories: (none)')
   })
 
   it('when directories are typed, shows them instead of the default', () => {
-    const input = insertText(emptyBuffer(), '/docs, ~/notes')
+    const escalateRead = insertText(emptyBuffer(), '/docs, ~/notes')
 
     const { lastFrame } = render(
-      <EscalateReadPrompt step='escalateRead' input={input} />,
+      <EscalateReadPrompt escalateRead={escalateRead} />,
     )
 
     expect(lastFrame()).toContain('Escalate read directories: /docs, ~/notes')

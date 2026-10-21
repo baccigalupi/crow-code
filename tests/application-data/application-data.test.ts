@@ -72,6 +72,7 @@ describe('ApplicationData', () => {
         additionalWrite: [],
         escalateRead: [],
         escalateWrite: [],
+        allowedLocalScripts: [],
       },
     })
 
@@ -92,6 +93,7 @@ describe('ApplicationData', () => {
         additionalWrite: [],
         escalateRead: [],
         escalateWrite: [],
+        allowedLocalScripts: [],
       },
     })
 
@@ -113,6 +115,7 @@ describe('ApplicationData', () => {
         additionalWrite: [],
         escalateRead: [],
         escalateWrite: [],
+        allowedLocalScripts: [],
       },
     })
 
@@ -136,6 +139,7 @@ describe('ApplicationData', () => {
         additionalWrite: [],
         escalateRead: [],
         escalateWrite: [],
+        allowedLocalScripts: [],
       },
     })
     appData.envars = new Environment({
@@ -166,6 +170,7 @@ describe('ApplicationData', () => {
         additionalWrite: [],
         escalateRead: [],
         escalateWrite: [],
+        allowedLocalScripts: [],
       },
     })
     appData.envars = new Environment({
@@ -205,6 +210,7 @@ describe('ApplicationData', () => {
         additionalWrite: [],
         escalateRead: [],
         escalateWrite: [],
+        allowedLocalScripts: [],
       },
     })
     appData.envars = new Environment({

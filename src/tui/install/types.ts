@@ -9,6 +9,7 @@ export type InstallStep =
   | 'envFile'
   | 'escalateRead'
   | 'escalateWrite'
+  | 'allowedLocalScripts'
   | 'confirm'
   | 'write'
   | 'done'
@@ -33,10 +34,16 @@ export type BuildCrowConfigArguments = {
   readonly envFile: InputBuffer
   readonly escalateRead: InputBuffer
   readonly escalateWrite: InputBuffer
+  readonly allowedLocalScripts: InputBuffer
 }
 
 export type ConfigPanelProps = BuildCrowConfigArguments & {
   readonly step: InstallStep
+}
+
+export type StepValues = BuildCrowConfigArguments & {
+  readonly crowConfigPath: string
+  readonly confirmation: boolean
 }
 
 export type InstallAppProps = {
@@ -45,6 +52,7 @@ export type InstallAppProps = {
   readonly envFile?: Signal<InputBuffer>
   readonly escalateRead?: Signal<InputBuffer>
   readonly escalateWrite?: Signal<InputBuffer>
+  readonly allowedLocalScripts?: Signal<InputBuffer>
   readonly step?: Signal<InstallStep>
   readonly confirmation?: Signal<boolean>
 }
@@ -55,6 +63,7 @@ export type InstallState = {
   readonly envFile: Signal<InputBuffer>
   readonly escalateRead: Signal<InputBuffer>
   readonly escalateWrite: Signal<InputBuffer>
+  readonly allowedLocalScripts: Signal<InputBuffer>
   readonly step: Signal<InstallStep>
   readonly confirmation: Signal<boolean>
 }

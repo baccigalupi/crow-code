@@ -31,6 +31,7 @@ describe('search', () => {
           additionalWrite: [],
           escalateRead: [],
           escalateWrite: [],
+          allowedLocalScripts: [],
         },
       }),
     })
@@ -98,6 +99,7 @@ describe('search', () => {
           additionalWrite: [],
           escalateRead: [],
           escalateWrite: [],
+          allowedLocalScripts: [],
         },
       }),
     })
@@ -143,6 +145,7 @@ describe('search', () => {
           additionalWrite: [],
           escalateRead: [],
           escalateWrite: [],
+          allowedLocalScripts: [],
         },
       }),
     })

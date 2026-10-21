@@ -80,6 +80,7 @@ describe('readFile', () => {
           additionalWrite: [],
           escalateRead: [],
           escalateWrite: [],
+          allowedLocalScripts: [],
         },
       }),
     })

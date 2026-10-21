@@ -15,6 +15,7 @@ export class CrowConfigBuilder {
   private envFileInput: InputBuffer
   private escalateReadInput: InputBuffer
   private escalateWriteInput: InputBuffer
+  private allowedLocalScriptsInput: InputBuffer
 
   constructor(
     {
@@ -23,6 +24,7 @@ export class CrowConfigBuilder {
       envFile,
       escalateRead,
       escalateWrite,
+      allowedLocalScripts,
     }: BuildCrowConfigArguments,
   ) {
     this.globalDirectoryInput = globalDirectory
@@ -30,6 +32,7 @@ export class CrowConfigBuilder {
     this.envFileInput = envFile
     this.escalateReadInput = escalateRead
     this.escalateWriteInput = escalateWrite
+    this.allowedLocalScriptsInput = allowedLocalScripts
   }
 
   all() {
@@ -82,6 +85,7 @@ export class CrowConfigBuilder {
     return buildPermissions({
       escalateRead: this.escalateReadInput,
       escalateWrite: this.escalateWriteInput,
+      allowedLocalScripts: this.allowedLocalScriptsInput,
     })
   }
 }

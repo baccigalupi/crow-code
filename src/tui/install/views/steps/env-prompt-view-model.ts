@@ -11,6 +11,7 @@ const blankInputs = {
   envFile: emptyBuffer(),
   escalateRead: emptyBuffer(),
   escalateWrite: emptyBuffer(),
+  allowedLocalScripts: emptyBuffer(),
 }
 
 export const envPromptViewModel = (

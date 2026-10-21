@@ -258,6 +258,7 @@ describe('run', () => {
           additionalWrite: [],
           escalateRead: [],
           escalateWrite: [],
+          allowedLocalScripts: [],
         },
       }),
     )

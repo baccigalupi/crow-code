@@ -10,6 +10,7 @@ export const crowGlobalDirectoryInput = signal(emptyBuffer())
 export const envFileInput = signal(emptyBuffer())
 export const escalateReadInput = signal(emptyBuffer())
 export const escalateWriteInput = signal(emptyBuffer())
+export const allowedLocalScriptsInput = signal(emptyBuffer())
 
 export const installStep = signal<InstallStep>('repo')
 export const writeConfirmation = signal(true)
@@ -20,6 +21,7 @@ export const installState: InstallState = {
   envFile: envFileInput,
   escalateRead: escalateReadInput,
   escalateWrite: escalateWriteInput,
+  allowedLocalScripts: allowedLocalScriptsInput,
   step: installStep,
   confirmation: writeConfirmation,
 }

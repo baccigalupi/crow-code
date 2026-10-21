@@ -22,6 +22,7 @@ describe('AllowedPaths', () => {
           additionalWrite: [],
           escalateRead: [],
           escalateWrite: [],
+          allowedLocalScripts: [],
         },
       }),
     })
@@ -48,6 +49,7 @@ describe('AllowedPaths', () => {
           additionalWrite: ['~/docs'],
           escalateRead: [],
           escalateWrite: [],
+          allowedLocalScripts: [],
         },
       }),
     })
@@ -75,6 +77,7 @@ describe('AllowedPaths', () => {
           additionalWrite: ['~/work'],
           escalateRead: [],
           escalateWrite: [],
+          allowedLocalScripts: [],
         },
       }),
     })
@@ -101,6 +104,7 @@ describe('AllowedPaths', () => {
           additionalWrite: [],
           escalateRead: [],
           escalateWrite: [],
+          allowedLocalScripts: [],
         },
       }),
     })
@@ -158,6 +162,7 @@ describe('AllowedPaths', () => {
           additionalWrite: [],
           escalateRead: [],
           escalateWrite: [],
+          allowedLocalScripts: [],
         },
       }),
     })
@@ -179,6 +184,7 @@ describe('AllowedPaths', () => {
           additionalWrite: [],
           escalateRead: [],
           escalateWrite: [],
+          allowedLocalScripts: [],
         },
       }),
     })
@@ -200,6 +206,7 @@ describe('AllowedPaths', () => {
           additionalWrite: [],
           escalateRead: [],
           escalateWrite: [],
+          allowedLocalScripts: [],
         },
       }),
     })

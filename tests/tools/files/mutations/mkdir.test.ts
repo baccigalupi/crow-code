@@ -85,6 +85,7 @@ describe('makeDirectory', () => {
           additionalWrite: [],
           escalateRead: [],
           escalateWrite: [],
+          allowedLocalScripts: [],
         },
       }),
     })

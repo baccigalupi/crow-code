@@ -1,14 +1,7 @@
-import type { Signal } from '@preact/signals-core'
-import type { ExitApp, InputBuffer, KeyFlags } from '../../types.ts'
-import type { InstallState, InstallStep, KeypressArguments } from '../types.ts'
+import type { ExitApp, KeyFlags } from '../../types.ts'
+import type { InstallState, KeypressArguments } from '../types.ts'
+import { currentStep } from '../steps/current.ts'
 import { textInput } from './text-input.ts'
-
-const nextSteps = new Map<InstallStep, InstallStep>([
-  ['repo', 'crowGlobalDirectory'],
-  ['crowGlobalDirectory', 'envFile'],
-  ['envFile', 'escalateRead'],
-  ['escalateRead', 'escalateWrite'],
-])
 
 export class Keypress {
   private installData: InstallState
@@ -32,8 +25,7 @@ export class Keypress {
   }
 
   private advance() {
-    const step = this.installData.step.peek()
-    this.installData.step.value = nextSteps.get(step) || 'confirm'
+    this.installData.step.value = currentStep(this.installData).nextStep
   }
 
   private confirm() {
@@ -58,18 +50,8 @@ export class Keypress {
       .edit()
   }
 
-  private activeText(): Signal<InputBuffer> {
-    const step = this.installData.step.peek()
-    return this.textBuffers().get(step) || this.installData.envFile
-  }
-
-  private textBuffers() {
-    return new Map<InstallStep, Signal<InputBuffer>>([
-      ['repo', this.installData.repoDirectory],
-      ['crowGlobalDirectory', this.installData.globalDirectory],
-      ['escalateRead', this.installData.escalateRead],
-      ['escalateWrite', this.installData.escalateWrite],
-    ])
+  private activeText() {
+    return currentStep(this.installData).state()
   }
 
   private isQuit() {

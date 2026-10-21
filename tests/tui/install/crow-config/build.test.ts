@@ -14,6 +14,7 @@ describe('build', () => {
       envFile: emptyBuffer(),
       escalateRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
+      allowedLocalScripts: emptyBuffer(),
     })
       .all()
 
@@ -32,6 +33,7 @@ describe('build', () => {
       envFile: emptyBuffer(),
       escalateRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
+      allowedLocalScripts: emptyBuffer(),
     })
       .all()
 
@@ -51,6 +53,7 @@ describe('build', () => {
       envFile,
       escalateRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
+      allowedLocalScripts: emptyBuffer(),
     }).all()
 
     expect(config.envFile).toBe('~/.crow/.env')
@@ -67,6 +70,7 @@ describe('build', () => {
       envFile,
       escalateRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
+      allowedLocalScripts: emptyBuffer(),
     }).all()
 
     expect(config.envFile).toBe('/opt/crow/.env')
@@ -83,6 +87,7 @@ describe('build', () => {
       envFile,
       escalateRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
+      allowedLocalScripts: emptyBuffer(),
     }).all()
 
     expect(config.envFile).toBe('/secrets/crow.env')
@@ -98,6 +103,7 @@ describe('build', () => {
       envFile: emptyBuffer(),
       escalateRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
+      allowedLocalScripts: emptyBuffer(),
     }).all()
 
     expect(config.permissions.ignore).toEqual([])
@@ -115,6 +121,7 @@ describe('build', () => {
       envFile: emptyBuffer(),
       escalateRead,
       escalateWrite,
+      allowedLocalScripts: emptyBuffer(),
     }).all()
 
     expect(config.permissions.escalateRead).toEqual([])
@@ -131,6 +138,7 @@ describe('build', () => {
       envFile: emptyBuffer(),
       escalateRead,
       escalateWrite,
+      allowedLocalScripts: emptyBuffer(),
     }).all()
 
     expect(config.permissions.escalateRead).toEqual(['/docs', '~/notes'])
@@ -146,6 +154,7 @@ describe('build', () => {
       envFile: emptyBuffer(),
       escalateRead: emptyBuffer(),
       escalateWrite,
+      allowedLocalScripts: emptyBuffer(),
     }).all()
 
     expect(config.permissions.escalateWrite).toEqual(['./dev', './agent'])
@@ -161,6 +170,7 @@ describe('build', () => {
       envFile: emptyBuffer(),
       escalateRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
+      allowedLocalScripts: emptyBuffer(),
     }).all()
 
     expect(JSON.parse(crowConfigJson)).toEqual(config)

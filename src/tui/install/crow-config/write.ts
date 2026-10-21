@@ -37,12 +37,25 @@ export class CrowConfigWrite {
 
   private config() {
     return buildCrowConfig({
+      ...this.pathInputs(),
+      ...this.permissionInputs(),
+    }).all()
+  }
+
+  private pathInputs() {
+    return {
       repoDirectory: this.installData.repoDirectory.peek(),
       globalDirectory: this.installData.globalDirectory.peek(),
       envFile: this.installData.envFile.peek(),
+    }
+  }
+
+  private permissionInputs() {
+    return {
       escalateRead: this.installData.escalateRead.peek(),
       escalateWrite: this.installData.escalateWrite.peek(),
-    }).all()
+      allowedLocalScripts: this.installData.allowedLocalScripts.peek(),
+    }
   }
 }
 

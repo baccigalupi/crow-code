@@ -1,14 +1,9 @@
 import { Box, Text } from 'ink'
-import type { InstallStep } from '../../types.ts'
+import type { StepValues } from '../../types.ts'
 
-type DoneMessageProps = {
-  readonly step: InstallStep
-  readonly crowConfigPath: string
-}
+type DoneMessageProps = Pick<StepValues, 'crowConfigPath'>
 
-export const DoneMessage = ({ step, crowConfigPath }: DoneMessageProps) => {
-  if (step !== 'done') return null
-
+export const DoneMessage = ({ crowConfigPath }: DoneMessageProps) => {
   return (
     <Box paddingX={1} flexDirection='column'>
       <Text>Wrote config to {crowConfigPath}</Text>

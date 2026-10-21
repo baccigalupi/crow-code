@@ -5,20 +5,12 @@ import { RepoPathPrompt } from '../../../../../src/tui/install/views/steps/repo-
 import { emptyBuffer } from '../../../../../src/tui/input-buffer.ts'
 
 describe('repo-path-prompt', () => {
-  it('when the step is not repo, renders nothing', () => {
-    const input = emptyBuffer()
+  it('when rendered, shows the default repo directory', () => {
+    const repoDirectory = emptyBuffer()
 
     const { lastFrame } = render(
-      <RepoPathPrompt step='crowGlobalDirectory' input={input} />,
+      <RepoPathPrompt repoDirectory={repoDirectory} />,
     )
-
-    expect(lastFrame()).toBe('')
-  })
-
-  it('when the step is repo, shows the default repo directory', () => {
-    const input = emptyBuffer()
-
-    const { lastFrame } = render(<RepoPathPrompt step='repo' input={input} />)
 
     expect(lastFrame()).toContain(
       'What directory for the local repo crow setup: (.crow)',

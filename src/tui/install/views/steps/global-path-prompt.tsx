@@ -1,20 +1,16 @@
 import { Prompt } from '../prompt.tsx'
 import { defaultCrowGlobalDirectory } from '../../interactions/state/config-buffer.ts'
-import type { InputBuffer } from '../../../types.ts'
-import type { InstallStep } from '../../types.ts'
+import type { StepValues } from '../../types.ts'
 
-type GlobalPathPromptProps = {
-  readonly step: InstallStep
-  readonly input: InputBuffer
-}
+type GlobalPathPromptProps = Pick<StepValues, 'globalDirectory'>
 
-export const GlobalPathPrompt = ({ step, input }: GlobalPathPromptProps) => {
-  if (step !== 'crowGlobalDirectory') return null
-
+export const GlobalPathPrompt = (
+  { globalDirectory }: GlobalPathPromptProps,
+) => {
   return (
     <Prompt
       label='User crow directory'
-      input={input}
+      input={globalDirectory}
       defaultValue={defaultCrowGlobalDirectory}
     />
   )

@@ -14,6 +14,7 @@ describe('useKeypress', () => {
       envFile: signal(emptyBuffer()),
       escalateRead: signal(emptyBuffer()),
       escalateWrite: signal(emptyBuffer()),
+      allowedLocalScripts: signal(emptyBuffer()),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -32,6 +33,7 @@ describe('useKeypress', () => {
       envFile: signal(emptyBuffer()),
       escalateRead: signal(emptyBuffer()),
       escalateWrite: signal(emptyBuffer()),
+      allowedLocalScripts: signal(emptyBuffer()),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -50,6 +52,7 @@ describe('useKeypress', () => {
       envFile: signal(emptyBuffer()),
       escalateRead: signal(emptyBuffer()),
       escalateWrite: signal(emptyBuffer()),
+      allowedLocalScripts: signal(emptyBuffer()),
       step: signal<InstallStep>('crowGlobalDirectory'),
       confirmation: signal(true),
     }
@@ -68,6 +71,7 @@ describe('useKeypress', () => {
       envFile: signal(emptyBuffer()),
       escalateRead: signal(emptyBuffer()),
       escalateWrite: signal(emptyBuffer()),
+      allowedLocalScripts: signal(emptyBuffer()),
       step: signal<InstallStep>('envFile'),
       confirmation: signal(true),
     }
@@ -86,6 +90,7 @@ describe('useKeypress', () => {
       envFile: signal(emptyBuffer()),
       escalateRead: signal(emptyBuffer()),
       escalateWrite: signal(emptyBuffer()),
+      allowedLocalScripts: signal(emptyBuffer()),
       step: signal<InstallStep>('envFile'),
       confirmation: signal(true),
     }
@@ -104,6 +109,7 @@ describe('useKeypress', () => {
       envFile: signal(emptyBuffer()),
       escalateRead: signal(emptyBuffer()),
       escalateWrite: signal(emptyBuffer()),
+      allowedLocalScripts: signal(emptyBuffer()),
       step: signal<InstallStep>('escalateRead'),
       confirmation: signal(true),
     }
@@ -115,14 +121,34 @@ describe('useKeypress', () => {
     unmount()
   })
 
-  it('when return arrives on the escalateWrite step, advances to confirm', () => {
+  it('when return arrives on the escalateWrite step, advances to allowedLocalScripts', () => {
     const installData = {
       repoDirectory: signal(emptyBuffer()),
       globalDirectory: signal(emptyBuffer()),
       envFile: signal(emptyBuffer()),
       escalateRead: signal(emptyBuffer()),
       escalateWrite: signal(emptyBuffer()),
+      allowedLocalScripts: signal(emptyBuffer()),
       step: signal<InstallStep>('escalateWrite'),
+      confirmation: signal(true),
+    }
+    const { stdin, unmount } = renderHook(() => useKeypress(installData))
+
+    stdin.write('\r')
+
+    expect(installData.step.peek()).toBe('allowedLocalScripts')
+    unmount()
+  })
+
+  it('when return arrives on the allowedLocalScripts step, advances to confirm', () => {
+    const installData = {
+      repoDirectory: signal(emptyBuffer()),
+      globalDirectory: signal(emptyBuffer()),
+      envFile: signal(emptyBuffer()),
+      escalateRead: signal(emptyBuffer()),
+      escalateWrite: signal(emptyBuffer()),
+      allowedLocalScripts: signal(emptyBuffer()),
+      step: signal<InstallStep>('allowedLocalScripts'),
       confirmation: signal(true),
     }
     const { stdin, unmount } = renderHook(() => useKeypress(installData))
@@ -133,6 +159,26 @@ describe('useKeypress', () => {
     unmount()
   })
 
+  it('when a char arrives on the allowedLocalScripts step, edits the allowedLocalScripts input', () => {
+    const installData = {
+      repoDirectory: signal(emptyBuffer()),
+      globalDirectory: signal(emptyBuffer()),
+      envFile: signal(emptyBuffer()),
+      escalateRead: signal(emptyBuffer()),
+      escalateWrite: signal(emptyBuffer()),
+      allowedLocalScripts: signal(emptyBuffer()),
+      step: signal<InstallStep>('allowedLocalScripts'),
+      confirmation: signal(true),
+    }
+    const { stdin, unmount } = renderHook(() => useKeypress(installData))
+
+    stdin.write('x')
+
+    expect(installData.allowedLocalScripts.peek().text).toBe('x')
+    expect(installData.escalateWrite.peek().text).toBe('')
+    unmount()
+  })
+
   it('when a char arrives on the escalateRead step, edits the escalateRead input', () => {
     const installData = {
       repoDirectory: signal(emptyBuffer()),
@@ -140,6 +186,7 @@ describe('useKeypress', () => {
       envFile: signal(emptyBuffer()),
       escalateRead: signal(emptyBuffer()),
       escalateWrite: signal(emptyBuffer()),
+      allowedLocalScripts: signal(emptyBuffer()),
       step: signal<InstallStep>('escalateRead'),
       confirmation: signal(true),
     }
@@ -159,6 +206,7 @@ describe('useKeypress', () => {
       envFile: signal(emptyBuffer()),
       escalateRead: signal(emptyBuffer()),
       escalateWrite: signal(emptyBuffer()),
+      allowedLocalScripts: signal(emptyBuffer()),
       step: signal<InstallStep>('escalateWrite'),
       confirmation: signal(true),
     }
@@ -178,6 +226,7 @@ describe('useKeypress', () => {
       envFile: signal(emptyBuffer()),
       escalateRead: signal(emptyBuffer()),
       escalateWrite: signal(emptyBuffer()),
+      allowedLocalScripts: signal(emptyBuffer()),
       step: signal<InstallStep>('confirm'),
       confirmation: signal(true),
     }

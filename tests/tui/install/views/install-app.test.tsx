@@ -193,6 +193,7 @@ describe('InstallApp', () => {
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
     await instance.waitUntilRenderFlush()
 
     expect(stripAnsi(terminal.lastFrame())).toContain(
@@ -290,8 +291,35 @@ describe('InstallApp', () => {
     instance.unmount()
   })
 
-  it('when the escalate write question is answered, the write confirmation shows', async () => {
+  it('when the escalate write question is answered, the allowed local scripts question shows', async () => {
     const step = signal<InstallStep>('escalateWrite')
+    const { terminal, instance } = mountInstallApp(24, { step })
+
+    terminal.stdin.write('\r')
+    await instance.waitUntilRenderFlush()
+
+    expect(stripAnsi(terminal.lastFrame())).toContain('Allowed local scripts')
+    instance.unmount()
+  })
+
+  it('when allowed local scripts are typed, the config updates', async () => {
+    const allowedLocalScripts = inputSignal('')
+    const step = signal<InstallStep>('allowedLocalScripts')
+    const { terminal, instance } = mountInstallApp(24, {
+      allowedLocalScripts,
+      step,
+    })
+
+    terminal.stdin.write('./build.sh')
+    await instance.waitUntilRenderFlush()
+
+    expect(stripAnsi(terminal.lastFrame())).toContain('"./build.sh"')
+    expect(allowedLocalScripts.peek().text).toBe('./build.sh')
+    instance.unmount()
+  })
+
+  it('when the allowed local scripts question is answered, the write confirmation shows', async () => {
+    const step = signal<InstallStep>('allowedLocalScripts')
     const { terminal, instance } = mountInstallApp(24, { step })
 
     terminal.stdin.write('\r')
@@ -319,6 +347,7 @@ describe('InstallApp', () => {
     stdin.write('\r')
     stdin.write('\r')
     stdin.write('\r')
+    stdin.write('\r')
     stdin.write('\x1b[C')
 
     expect(confirmation.peek()).toBe(false)
@@ -336,6 +365,7 @@ describe('InstallApp', () => {
       />,
     )
 
+    stdin.write('\r')
     stdin.write('\r')
     stdin.write('\r')
     stdin.write('\r')
@@ -364,6 +394,7 @@ describe('InstallApp', () => {
     stdin.write('\r')
     stdin.write('\r')
     stdin.write('\r')
+    stdin.write('\r')
     stdin.write('n')
 
     expect(confirmation.peek()).toBe(false)
@@ -380,6 +411,7 @@ describe('InstallApp', () => {
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
 
     expect(step.peek()).toBe('write')
     instance.unmount()
@@ -388,7 +420,7 @@ describe('InstallApp', () => {
   it('when the step is done, a written message shows', async () => {
     const step = signal<InstallStep>('done')
 
-    const { terminal, instance } = mountInstallApp(24, { step })
+    const { terminal, instance } = mountInstallApp(30, { step })
 
     expect(stripAnsi(terminal.lastFrame())).toContain(
       'Wrote config to .crow/config.json',
@@ -406,6 +438,7 @@ describe('InstallApp', () => {
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
+    terminal.stdin.write('\r')
     terminal.stdin.write('\x1b[C')
     terminal.stdin.write('\r')
     await instance.waitUntilExit()
@@ -417,6 +450,7 @@ describe('InstallApp', () => {
     const step = signal<InstallStep>('repo')
     const { terminal, instance } = mountInstallApp(8, { step })
 
+    terminal.stdin.write('\r')
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')
     terminal.stdin.write('\r')

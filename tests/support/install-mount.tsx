@@ -20,6 +20,7 @@ export const mountInstallApp = (
       envFile={inputSignal('')}
       escalateRead={inputSignal('')}
       escalateWrite={inputSignal('')}
+      allowedLocalScripts={inputSignal('')}
       step={signal<InstallStep>('repo')}
       {...props}
     />,

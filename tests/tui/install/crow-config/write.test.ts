@@ -22,6 +22,7 @@ describe('write', () => {
       envFile: inputSignal(''),
       escalateRead: inputSignal(''),
       escalateWrite: inputSignal(''),
+      allowedLocalScripts: inputSignal(''),
       step: signal<InstallStep>('confirm'),
       confirmation: signal(true),
     }
@@ -60,6 +61,7 @@ describe('write', () => {
       envFile: inputSignal(''),
       escalateRead: inputSignal(''),
       escalateWrite: inputSignal(''),
+      allowedLocalScripts: inputSignal(''),
       step: signal<InstallStep>('envFile'),
       confirmation: signal(true),
     }

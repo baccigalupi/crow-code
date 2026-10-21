@@ -18,6 +18,7 @@ describe('config panel', () => {
         envFile={envFile}
         escalateRead={emptyBuffer()}
         escalateWrite={emptyBuffer()}
+        allowedLocalScripts={emptyBuffer()}
       />,
     )
 
@@ -37,6 +38,7 @@ describe('config panel', () => {
         envFile={envFile}
         escalateRead={emptyBuffer()}
         escalateWrite={emptyBuffer()}
+        allowedLocalScripts={emptyBuffer()}
       />,
     )
 
@@ -60,6 +62,7 @@ describe('config panel', () => {
         envFile={envFile}
         escalateRead={emptyBuffer()}
         escalateWrite={emptyBuffer()}
+        allowedLocalScripts={emptyBuffer()}
       />,
     )
 

@@ -13,6 +13,7 @@ describe('CrowConfig', () => {
         additionalWrite: [],
         escalateRead: ['/docs'],
         escalateWrite: [],
+        allowedLocalScripts: [],
       },
     })
 
@@ -31,6 +32,7 @@ describe('CrowConfig', () => {
         additionalWrite: [],
         escalateRead: [],
         escalateWrite: ['./scripts'],
+        allowedLocalScripts: [],
       },
     })
 
@@ -49,11 +51,31 @@ describe('CrowConfig', () => {
         additionalWrite: [],
         escalateRead: [],
         escalateWrite: [],
+        allowedLocalScripts: [],
       },
     })
 
     const directories = config.escalateWriteDirectories
 
     expect(directories).toEqual(['.crow'])
+  })
+
+  it('when allowedLocalScripts is configured, allowedLocalScripts returns it', () => {
+    const config = new CrowConfig('.crow', {
+      crowGlobalDirectory: '~/.crow',
+      envFile: '~/.crow/.env',
+      permissions: {
+        ignore: [],
+        additionalRead: [],
+        additionalWrite: [],
+        escalateRead: [],
+        escalateWrite: [],
+        allowedLocalScripts: ['./a.sh'],
+      },
+    })
+
+    const scripts = config.allowedLocalScripts
+
+    expect(scripts).toEqual(['./a.sh'])
   })
 })

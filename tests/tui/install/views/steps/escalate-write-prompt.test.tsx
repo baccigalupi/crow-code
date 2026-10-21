@@ -5,21 +5,11 @@ import { EscalateWritePrompt } from '../../../../../src/tui/install/views/steps/
 import { emptyBuffer, insertText } from '../../../../../src/tui/input-buffer.ts'
 
 describe('escalate-write-prompt', () => {
-  it('when the step is not escalateWrite, renders nothing', () => {
-    const input = emptyBuffer()
+  it('when nothing is typed, shows the default directories', () => {
+    const escalateWrite = emptyBuffer()
 
     const { lastFrame } = render(
-      <EscalateWritePrompt step='escalateRead' input={input} />,
-    )
-
-    expect(lastFrame()).toBe('')
-  })
-
-  it('when the step is escalateWrite, shows the default directories', () => {
-    const input = emptyBuffer()
-
-    const { lastFrame } = render(
-      <EscalateWritePrompt step='escalateWrite' input={input} />,
+      <EscalateWritePrompt escalateWrite={escalateWrite} />,
     )
 
     expect(lastFrame()).toContain(
@@ -28,10 +18,10 @@ describe('escalate-write-prompt', () => {
   })
 
   it('when directories are typed, shows them instead of the default', () => {
-    const input = insertText(emptyBuffer(), './scripts')
+    const escalateWrite = insertText(emptyBuffer(), './scripts')
 
     const { lastFrame } = render(
-      <EscalateWritePrompt step='escalateWrite' input={input} />,
+      <EscalateWritePrompt escalateWrite={escalateWrite} />,
     )
 
     expect(lastFrame()).toContain('Escalate write directories: ./scripts')

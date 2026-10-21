@@ -16,6 +16,7 @@ describe('configViewModel', () => {
       envFile,
       escalateRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
+      allowedLocalScripts: emptyBuffer(),
     })
 
     expect(viewModel.before).toBe('{\n  ')
@@ -34,6 +35,7 @@ describe('configViewModel', () => {
       envFile,
       escalateRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
+      allowedLocalScripts: emptyBuffer(),
     })
 
     expect(viewModel.highlighted).toBe('"envFile": "~/.crow/.env",')
@@ -50,6 +52,7 @@ describe('configViewModel', () => {
       envFile: emptyBuffer(),
       escalateRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
+      allowedLocalScripts: emptyBuffer(),
     })
 
     expect(viewModel.highlighted).toBe('"escalateRead": [],')
@@ -66,10 +69,11 @@ describe('configViewModel', () => {
       envFile: emptyBuffer(),
       escalateRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
+      allowedLocalScripts: emptyBuffer(),
     })
 
     expect(viewModel.highlighted).toBe(
-      '"escalateWrite": [\n      "./dev",\n      "./agent"\n    ]',
+      '"escalateWrite": [\n      "./dev",\n      "./agent"\n    ],',
     )
   })
 
@@ -85,6 +89,7 @@ describe('configViewModel', () => {
       envFile,
       escalateRead: emptyBuffer(),
       escalateWrite: emptyBuffer(),
+      allowedLocalScripts: emptyBuffer(),
     })
 
     expect(viewModel.highlighted).toBe('')

@@ -36,4 +36,8 @@ export class CrowConfig {
   get escalateWriteDirectories() {
     return [...this.data.permissions.escalateWrite, this.crowRepoDirectory]
   }
+
+  get allowedLocalScripts() {
+    return this.data.permissions.allowedLocalScripts
+  }
 }
