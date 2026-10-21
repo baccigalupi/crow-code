@@ -3,7 +3,12 @@ root = "tests"
 preload = ["./agents/coverage/preload.ts", "./tests/support/setup.ts"]
 # Deno-only tests, run by dev/test through deno test until their code moves to Bun.
 pathIgnorePatterns = [
-  "**/agents/style-checks/**",
+  "**/agents/style-checks/cli.test.ts",
+  "**/agents/style-checks/code.test.ts",
+  "**/agents/style-checks/install-names.test.ts",
+  "**/agents/style-checks/tsx.test.ts",
+  "**/agents/style-checks/unit-tests.test.ts",
+  "**/agents/style-checks/void-guard-calls-analysis.test.ts",
   "**/agents/hooks/block-random-execs.test.ts",
   "**/agents/hooks/stop-after-blocked-tool.test.ts",
   "**/agents/hooks/dependency-lookup-context.test.ts",
