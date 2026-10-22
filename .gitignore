@@ -31,3 +31,6 @@ docs/plans/
 .worktrees/
 .claude/worktrees/
 .claude/hooks/bash-gate.log
+
+# Editor settings are local only
+.vscode/settings.json

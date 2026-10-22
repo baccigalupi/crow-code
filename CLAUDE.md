@@ -36,7 +36,7 @@ deterministically (allow or deny, never a prompt) using
 config — one allowlist. See `.claude/skills/correct-command/SKILL.md` for the
 full command table and wrong→right rewrites. In short: only `dev/*`, `agents/*`,
 `bin/crow`, `bd`, `curl`, `chmod`, `rm`, `git mv`, any `git` subcommand except
-`push`, and `deno doc` are permitted — never bare `deno`, `bash`, `sh`, or `cd`.
+`push`, `deno doc`, and `bun install` are permitted — never bare `deno`, `bash`, `sh`, or `cd`.
 Any shell metacharacter (`` ` ``, `$(`, `<`, `>`, `;`, `|`, `&`, literal
 newline) anywhere in the command denies it outright — there is no piping, even
 between two read-only inspectors — except the two commit shapes: repeated `-m`

@@ -22,7 +22,7 @@ same shape just repeats the deny.
 ## The gate is real and terminal
 
 - **Pre-approved** (run without a prompt, per `.devin/config.json`): `dev/*`,
-  `agents/*`, `bin/crow`, `bd`, `curl`, `chmod`, `rm`, `deno doc`, and `git mv`.
+  `agents/*`, `bin/crow`, `bd`, `curl`, `chmod`, `rm`, `deno doc`, `bun install`, and `git mv`.
 - **Read-only inspectors are pre-approved too, but checked separately**: `rg`,
   `grep`, `egrep`, `fgrep`, `ls`, `find`, `ps`, `cat`, `head`, `tail`, `sed`,
   `awk`, `wc`, `jq`, `sort`, `uniq`, `stat`, `file`, `tree`, `diff`, `pwd`,
@@ -149,6 +149,7 @@ Run from the repo root, or inside a worktree entered via `EnterWorktree`.
 | Coverage reports (lcov/html)                 | `agents/coverage-report`                              |
 | Enforce 95% per-file coverage                | `agents/check-coverage`                               |
 | Full pre-commit gate                         | `agents/pre-commit`                                   |
+| Install npm dependencies                     | `bun install`                                         |
 | Beads ready work / claim / close             | `bd ready`, `bd update <id> --claim`, `bd close <id>` |
 | Enter a worktree                             | `EnterWorktree({ name: "<full-id-or-feature>" })`     |
 | Leave a worktree (keep it)                   | `ExitWorktree({ action: "keep" })`                    |
