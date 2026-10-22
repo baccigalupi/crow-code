@@ -49,7 +49,7 @@ export type GitOutput = {
   stdout: string
 }
 
-export type GitFlagKind = 'switch' | 'number' | 'text'
+export type GitFlagKind = 'switch' | 'number' | 'text' | 'path'
 
 export type GitSubcommand = {
   forms?: string[]

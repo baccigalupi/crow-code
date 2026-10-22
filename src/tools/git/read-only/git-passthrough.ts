@@ -20,7 +20,7 @@ export class GitReadOnlyPassthrough extends OperationWithResult<
   private stdout = ''
 
   async run() {
-    const refusal = this.refusal()
+    const refusal = this.refusal() || (await this.deniedReason())
     if (refusal !== '') this.fail(refusal)
     else await this.runGit()
     return this
@@ -53,10 +53,33 @@ export class GitReadOnlyPassthrough extends OperationWithResult<
     return `git exited with code ${output.code}: ${this.operationArguments.args.join(' ')}`
   }
 
+  private async deniedReason() {
+    const denied = await this.deniedPaths(this.rules().requestedPaths())
+    return this.deniedMessage(denied)
+  }
+
+  private deniedMessage(denied: string[]) {
+    if (denied.length === 0) return ''
+    return `path not allowed: ${denied.join(', ')}`
+  }
+
+  private async deniedPaths(paths: string[]) {
+    const forbidden = await this.applicationData
+      .gitPathPermissions()
+      .forbiddenPaths(paths.filter((path) => !path.startsWith(':')))
+    return paths.filter(
+      (path) => path.startsWith(':') || forbidden.includes(path),
+    )
+  }
+
   private refusal() {
+    return this.rules().refusal()
+  }
+
+  private rules() {
     return new GitReadOnlyRules({
       enabled: this.enabled,
       args: this.operationArguments.args,
-    }).refusal()
+    })
   }
 }

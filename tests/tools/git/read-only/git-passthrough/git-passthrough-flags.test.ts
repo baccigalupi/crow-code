@@ -205,6 +205,85 @@ describe('GitFlagValidator', () => {
     expect(validator.offenders).toEqual(['-o'])
   })
 
+  it('when a bare -- is given, stops validating flags after it', () => {
+    const validator = new GitFlagValidator({
+      flags: { '--oneline': 'switch' },
+      values: ['--oneline', '--', '-weird'],
+    })
+
+    validator.validate()
+
+    expect(validator.offenders).toEqual([])
+  })
+
+  it('when tokens follow the first bare --, reports them all as pathspecs', () => {
+    const validator = new GitFlagValidator({
+      flags: { '--oneline': 'switch' },
+      values: ['--oneline', '--', 'src/a.ts', '-x', '--'],
+    })
+
+    validator.validate()
+
+    expect(validator.pathspecs).toEqual(['src/a.ts', '-x', '--'])
+  })
+
+  it('when bare tokens precede --, reports them as positionals but not flag values', () => {
+    const validator = new GitFlagValidator({
+      flags: { '-n': 'number', '--oneline': 'switch' },
+      values: ['--oneline', 'HEAD', '-n', '5', 'main', '--', 'x'],
+    })
+
+    validator.validate()
+
+    expect(validator.positionals).toEqual(['HEAD', 'main'])
+  })
+
+  it('when a long path flag uses --name=value, reports the value as a flag path', () => {
+    const validator = new GitFlagValidator({
+      flags: { '--contents': 'path' },
+      values: ['--contents=notes.txt'],
+    })
+
+    validator.validate()
+
+    expect(validator.flagPaths).toEqual(['notes.txt'])
+    expect(validator.offenders).toEqual([])
+  })
+
+  it('when a short path flag has a separate value, reports it as a flag path only', () => {
+    const validator = new GitFlagValidator({
+      flags: { '-O': 'path' },
+      values: ['-O', 'ord'],
+    })
+
+    validator.validate()
+
+    expect(validator.flagPaths).toEqual(['ord'])
+    expect(validator.positionals).toEqual([])
+  })
+
+  it('when a short path flag has an attached value, reports it as a flag path', () => {
+    const validator = new GitFlagValidator({
+      flags: { '-O': 'path' },
+      values: ['-Oord'],
+    })
+
+    validator.validate()
+
+    expect(validator.flagPaths).toEqual(['ord'])
+  })
+
+  it('when a long path flag has its value as a separate token, reports it', () => {
+    const validator = new GitFlagValidator({
+      flags: { '--contents': 'path' },
+      values: ['--contents', 'notes.txt'],
+    })
+
+    validator.validate()
+
+    expect(validator.offenders).toEqual(['--contents'])
+  })
+
   it('when several flags are refused, reports every one in order', () => {
     const validator = new GitFlagValidator({
       flags: { '--oneline': 'switch' },

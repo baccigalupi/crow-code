@@ -1,4 +1,5 @@
 import type { GitSubcommand } from '../../../types.ts'
+import { GitArgumentPaths } from './git-argument-paths.ts'
 import { GitFlagValidator } from './git-passthrough-flags.ts'
 
 const listOrNone = (names: string[]) => {
@@ -44,12 +45,20 @@ export class GitReadOnlyRules {
     return this.forms().includes(`${this.args[1]}`)
   }
 
+  requestedPaths() {
+    return new GitArgumentPaths(this.validator()).paths()
+  }
+
   private flagRefusal() {
-    const validator = new GitFlagValidator({
+    const validator = this.validator()
+    return this.offenderReason(validator) || this.numberReason(validator)
+  }
+
+  private validator() {
+    return new GitFlagValidator({
       flags: this.subcommand().flags,
       values: this.args.slice(this.flagStart()),
     }).validate()
-    return this.offenderReason(validator) || this.numberReason(validator)
   }
 
   private offenderReason(validator: GitFlagValidator) {

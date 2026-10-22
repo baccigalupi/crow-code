@@ -12,6 +12,28 @@ describe('GitReadOnlyRules', () => {
     )
   })
 
+  it('when args have revisions and a pathspec, requestedPaths lists them without flags', () => {
+    const rules = new GitReadOnlyRules({
+      enabled: { log: { flags: { '--oneline': 'switch' } } },
+      args: ['log', '--oneline', 'HEAD', '--', 'src/a.ts'],
+    })
+
+    const paths = rules.requestedPaths()
+
+    expect(paths).toEqual(['HEAD', 'src/a.ts'])
+  })
+
+  it('when the subcommand has forms, requestedPaths skips the form token', () => {
+    const rules = new GitReadOnlyRules({
+      enabled: { stash: { forms: ['list'], flags: {} } },
+      args: ['stash', 'list', 'stash@{1}'],
+    })
+
+    const paths = rules.requestedPaths()
+
+    expect(paths).toEqual(['stash@{1}'])
+  })
+
   it('when the subcommand is not enabled, names it and lists the enabled ones sorted', () => {
     const rules = new GitReadOnlyRules({
       enabled: { log: { flags: {} }, blame: { flags: {} } },

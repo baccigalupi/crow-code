@@ -5,6 +5,8 @@ const isNumber = (value: string) => /^\d+$/.test(value)
 export class GitFlagValidator {
   readonly offenders: string[] = []
   readonly badNumbers: string[] = []
+  readonly positionals: string[] = []
+  readonly flagPaths: string[] = []
   private flags: Map<string, GitFlagKind>
   private values: string[]
   private consumed = new Set<number>()
@@ -21,13 +23,26 @@ export class GitFlagValidator {
   }
 
   validate() {
-    this.values.forEach((token, index) => this.visit(token, index))
+    this.beforeSeparator().forEach((token, index) => this.visit(token, index))
     return this
   }
 
+  get pathspecs() {
+    return this.values.slice(this.separator() + 1)
+  }
+
+  private beforeSeparator() {
+    return this.values.slice(0, this.separator())
+  }
+
+  private separator() {
+    return [...this.values, '--'].indexOf('--')
+  }
+
   private visit(token: string, index: number) {
-    if (this.consumed.has(index) || !token.startsWith('-')) return
-    if (token.startsWith('--')) this.long(token)
+    if (this.consumed.has(index)) return
+    if (!token.startsWith('-')) this.positionals.push(token)
+    else if (token.startsWith('--')) this.long(token)
     else this.short(token, index)
   }
 
@@ -44,6 +59,7 @@ export class GitFlagValidator {
     else if (kind !== 'switch' && value === null) this.offenders.push(token)
     else if (kind === 'number' && !isNumber(`${value}`))
       this.badNumbers.push(token)
+    else if (kind === 'path') this.flagPaths.push(`${value}`)
   }
 
   private short(token: string, index: number) {
@@ -58,7 +74,7 @@ export class GitFlagValidator {
     if (value === undefined) this.offenders.push(token)
     else if (kind === 'number' && !isNumber(value)) {
       this.badNumbers.push(`${token} ${value}`)
-    }
+    } else if (kind === 'path') this.flagPaths.push(value)
   }
 
   private attached(token: string) {
@@ -68,7 +84,7 @@ export class GitFlagValidator {
       this.offenders.push(token)
     } else if (kind === 'number' && !isNumber(value)) {
       this.offenders.push(token)
-    }
+    } else if (kind === 'path') this.flagPaths.push(value)
   }
 
   private kindOf(name: string) {
