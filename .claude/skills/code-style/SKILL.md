@@ -32,7 +32,7 @@ of it is self-enforced (see rule 14), only a subset is linted by
    condition for the guard. A guard's return may be a call only when the call
    returns a value; `return f()` where `f` returns `void`/`Promise<void>`
    smuggles a side effect — do the work in the condition or in a value-returning
-   helper instead (`agents/style-checks/void-guard-calls` catches this one
+   helper instead (`agents/style-checks/void-guard.ts` catches this one
    mechanically).
 10. Prefer null object pattern over null checks
 11. Do not nest `function` declarations inside functions. Arrow functions and

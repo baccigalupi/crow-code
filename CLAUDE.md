@@ -162,10 +162,11 @@ analogous view-model/view/interaction split. State uses `@preact/signals-core`
 
 ## Style gates
 
-`agents/style-checks/*` are custom `deno lint` plugins enforcing
-project-specific conventions beyond standard lint — notably `void-guard-calls`
-(flags guard-shaped `if` statements that return a void/Promise<void> call, since
-the return value communicates nothing). Run through `agents/style-check`, which
+`agents/style-checks/*` are custom rules enforcing project-specific conventions
+beyond standard lint — notably the void-guard check
+(`agents/style-checks/void-guard.ts`, on the TypeScript type checker), which
+flags guard-shaped `if` statements that return a void/Promise<void> call, since
+the return value communicates nothing. Run through `agents/style-check`, which
 classifies files by path (`src/**/*.ts(x)` = code, `tests/**/*.test.ts(x)` =
 test, other `tests/**/*.ts(x)` = support) to decide which checks are blocking
 vs. advisory.

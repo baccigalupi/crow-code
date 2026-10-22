@@ -15,6 +15,7 @@ import type { Plugin } from './engine/types.ts'
 import { installNamesPlugin } from './install-names-plugin.ts'
 import { tsxPlugin } from './tsx-plugin.ts'
 import { unitTestsPlugin } from './unit-tests-plugin.ts'
+import { voidGuardViolations } from './void-guard.ts'
 
 export const usage = 'Usage: agents/style-check [--changed] [--all] [FILE ...]'
 
@@ -31,7 +32,6 @@ const supportGlobs = [
   'tests/**/*.ts',
   'tests/**/*.tsx',
 ]
-const checksDir = 'agents/style-checks'
 
 export type Kind = 'code' | 'test' | 'support' | 'other'
 
@@ -174,16 +174,11 @@ const lintFile = async (file: string): Promise<boolean> => {
   return lines.length === 0
 }
 
-const voidGuard = async (files: string[]): Promise<boolean> =>
-  (await run([
-    'deno',
-    'run',
-    '--allow-run',
-    '--allow-read',
-    '--allow-env',
-    `${checksDir}/void-guard-calls.ts`,
-    ...files,
-  ])) === 0
+const voidGuard = (files: string[]) => {
+  const lines = voidGuardViolations(files)
+  for (const line of lines) console.log(line)
+  return lines.length === 0
+}
 
 const checkMirror = async (testFile: string): Promise<boolean> => {
   const base = testFile.slice('tests/'.length).replace(/\.test\.tsx?$/, '')
@@ -226,7 +221,7 @@ const checkFiles = async (files: string[]): Promise<boolean> => {
   const others = files.filter((file) => classify(file) === 'other')
   let ok = true
   for (const file of [...code, ...support]) ok = (await lintFile(file)) && ok
-  if (code.length > 0) ok = (await voidGuard(code)) && ok
+  if (code.length > 0) ok = voidGuard(code) && ok
   for (const test of tests) ok = (await checkTest(test)) && ok
   for (const other of others) await advise(other)
   return ok

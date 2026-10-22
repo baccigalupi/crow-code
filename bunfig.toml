@@ -7,7 +7,6 @@ pathIgnorePatterns = [
   "**/agents/style-checks/install-names.test.ts",
   "**/agents/style-checks/tsx.test.ts",
   "**/agents/style-checks/unit-tests.test.ts",
-  "**/agents/style-checks/void-guard-calls-analysis.test.ts",
   "**/agents/hooks/block-random-execs.test.ts",
   "**/agents/hooks/stop-after-blocked-tool.test.ts",
   "**/agents/hooks/dependency-lookup-context.test.ts",

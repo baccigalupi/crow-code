@@ -10,7 +10,6 @@ deno_tests=(
   tests/agents/style-checks/tsx.test.ts
   tests/agents/style-checks/unit-tests.test.ts
   tests/agents/style-checks/install-names.test.ts
-  tests/agents/style-checks/void-guard-calls-analysis.test.ts
   tests/agents/hooks/block-random-execs.test.ts
   tests/agents/hooks/stop-after-blocked-tool.test.ts
   tests/agents/hooks/dependency-lookup-context.test.ts

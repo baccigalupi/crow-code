@@ -1,5 +1,5 @@
-// Ambient types for the files still running under Deno (hooks, editor tools,
-// style-check plugins and their tests). Covers only the members they use.
+// Ambient types for the files still running under Deno (hooks, style-check
+// plugins and their tests). Covers only the members they use.
 // Delete this file when the last Deno consumer is ported to Bun.
 
 declare module '@std/expect' {
@@ -16,7 +16,6 @@ declare module '@std/fs' {
 
 declare namespace Deno {
   const args: string[]
-  const pid: number
   const cwd: () => string
   const exit: (code?: number) => never
 
