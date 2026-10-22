@@ -23,6 +23,7 @@ export class Command {
     return Bun.spawn([this.executable, ...this.options.args], {
       stdout: 'pipe',
       stderr: 'pipe',
+      env: this.options.env,
     })
   }
 }

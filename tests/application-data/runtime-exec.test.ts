@@ -24,4 +24,25 @@ describe('runtimeExec', () => {
     expect(output.code).not.toBe(0)
     expect(output.stderr).toContain('no-such-subcommand')
   })
+
+  it('when env is given, the child sees it', async () => {
+    const options = { args: ['CROW_PROBE'], env: { CROW_PROBE: 'one' } }
+
+    const output = await runtimeExec('printenv', options)
+
+    expect(output.stdout).toBe('one\n')
+  })
+
+  it('when env is given, parent variables do not leak into the child', async () => {
+    process.env.CROW_LEAK = 'leaked'
+    const options = {
+      args: ['CROW_LEAK'],
+      env: { PATH: process.env.PATH as string },
+    }
+
+    const output = await runtimeExec('printenv', options)
+
+    expect(output.stdout).toBe('')
+    delete process.env.CROW_LEAK
+  })
 })

@@ -35,7 +35,7 @@ export interface AsyncOperationWithResult<Result> extends AsyncOperation {
 
 export type ConsoleLog = typeof console.log
 export type ConsoleError = typeof console.error
-export type CommandOptions = { args: string[] }
+export type CommandOptions = { args: string[]; env?: Record<string, string> }
 export type CommandOutput = {
   success: boolean
   code: number
