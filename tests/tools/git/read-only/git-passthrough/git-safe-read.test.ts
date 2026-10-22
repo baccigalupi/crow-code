@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import {
   gitSafeReadEnv,
   gitSafeReadSubcommand,
-} from '../../../src/tools/git/git-safe-read.ts'
+} from '../../../../../src/tools/git/read-only/git-passthrough/git-safe-read.ts'
 
 describe('git-safe-read', () => {
   it('when parent has retargeting variables, removes them and applies settings', () => {

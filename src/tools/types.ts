@@ -45,6 +45,17 @@ export type EditInstruction = {
   replaceAll?: boolean
 }
 
+export type GitOutput = {
+  stdout: string
+}
+
+export type GitFlagKind = 'switch' | 'number' | 'text'
+
+export type GitSubcommand = {
+  forms?: string[]
+  flags: Record<string, GitFlagKind>
+}
+
 export type MultiEditResult = EditResult[]
 
 export type SnapshotEntry = [path: string, text: string]
