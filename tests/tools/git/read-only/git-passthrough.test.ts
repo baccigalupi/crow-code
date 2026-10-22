@@ -5,14 +5,280 @@ import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { mockCommand } from '../../../support/mock-command.ts'
 
 describe('GitReadOnlyPassthrough', () => {
+  it('when push is requested, refuses listing log as allowed', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['push'] },
+    })
+    await passthrough.run()
+
+    expect(commandSpy.mock.calls.length).toBe(0)
+    expect(passthrough.reason).toBe(
+      'subcommand not allowed: push; allowed subcommands: log',
+    )
+  })
+
+  describe('log subcommand', () => {
+    it('when log is given --oneline, -n and a pathspec, runs git with them', async () => {
+      const commandSpy = mock()
+      const applicationData = mockApplicationData({
+        command: mockCommand({ commandSpy }),
+      })
+
+      const passthrough = new GitReadOnlyPassthrough({
+        applicationData,
+        operationArguments: {
+          args: ['log', '--oneline', '-n', '5', '--', 'src/a.ts'],
+        },
+      })
+      await passthrough.run()
+
+      expect(commandSpy.mock.calls[0][1].args.slice(-6)).toEqual([
+        'log',
+        '--oneline',
+        '-n',
+        '5',
+        '--',
+        'src/a.ts',
+      ])
+      expect(passthrough.success()).toBe(true)
+    })
+
+    it('when log is given the arguments GitLogHistory builds, runs git with them', async () => {
+      const commandSpy = mock()
+      const applicationData = mockApplicationData({
+        command: mockCommand({ commandSpy }),
+      })
+
+      const passthrough = new GitReadOnlyPassthrough({
+        applicationData,
+        operationArguments: {
+          args: ['log', '--format=%H%x1f%an%x1f%aI%x1f%s', '-n', '20'],
+        },
+      })
+      await passthrough.run()
+
+      expect(commandSpy.mock.calls[0][1].args.slice(-4)).toEqual([
+        'log',
+        '--format=%H%x1f%an%x1f%aI%x1f%s',
+        '-n',
+        '20',
+      ])
+    })
+
+    it('when log is given --stat, runs git', async () => {
+      const commandSpy = mock()
+      const applicationData = mockApplicationData({
+        command: mockCommand({ commandSpy }),
+      })
+
+      const passthrough = new GitReadOnlyPassthrough({
+        applicationData,
+        operationArguments: { args: ['log', '--stat'] },
+      })
+      await passthrough.run()
+
+      expect(passthrough.success()).toBe(true)
+    })
+
+    it('when log is given --name-only, runs git', async () => {
+      const commandSpy = mock()
+      const applicationData = mockApplicationData({
+        command: mockCommand({ commandSpy }),
+      })
+
+      const passthrough = new GitReadOnlyPassthrough({
+        applicationData,
+        operationArguments: { args: ['log', '--name-only'] },
+      })
+      await passthrough.run()
+
+      expect(passthrough.success()).toBe(true)
+    })
+
+    it('when log is given --name-status, runs git', async () => {
+      const commandSpy = mock()
+      const applicationData = mockApplicationData({
+        command: mockCommand({ commandSpy }),
+      })
+
+      const passthrough = new GitReadOnlyPassthrough({
+        applicationData,
+        operationArguments: { args: ['log', '--name-status'] },
+      })
+      await passthrough.run()
+
+      expect(passthrough.success()).toBe(true)
+    })
+
+    it('when log is given --follow, runs git', async () => {
+      const commandSpy = mock()
+      const applicationData = mockApplicationData({
+        command: mockCommand({ commandSpy }),
+      })
+
+      const passthrough = new GitReadOnlyPassthrough({
+        applicationData,
+        operationArguments: { args: ['log', '--follow'] },
+      })
+      await passthrough.run()
+
+      expect(passthrough.success()).toBe(true)
+    })
+
+    it('when log is given --no-merges, runs git', async () => {
+      const commandSpy = mock()
+      const applicationData = mockApplicationData({
+        command: mockCommand({ commandSpy }),
+      })
+
+      const passthrough = new GitReadOnlyPassthrough({
+        applicationData,
+        operationArguments: { args: ['log', '--no-merges'] },
+      })
+      await passthrough.run()
+
+      expect(passthrough.success()).toBe(true)
+    })
+
+    it('when log is given -p, runs git', async () => {
+      const commandSpy = mock()
+      const applicationData = mockApplicationData({
+        command: mockCommand({ commandSpy }),
+      })
+
+      const passthrough = new GitReadOnlyPassthrough({
+        applicationData,
+        operationArguments: { args: ['log', '-p'] },
+      })
+      await passthrough.run()
+
+      expect(passthrough.success()).toBe(true)
+    })
+
+    it('when log is given --output=f, refuses without running git', async () => {
+      const commandSpy = mock()
+      const applicationData = mockApplicationData({
+        command: mockCommand({ commandSpy }),
+      })
+
+      const passthrough = new GitReadOnlyPassthrough({
+        applicationData,
+        operationArguments: { args: ['log', '--output=f'] },
+      })
+      await passthrough.run()
+
+      expect(commandSpy.mock.calls.length).toBe(0)
+      expect(passthrough.reason).toBe(
+        'flag not allowed: --output=f; allowed flags for log: --follow, --format, --name-only, --name-status, --no-merges, --oneline, --stat, -n, -p',
+      )
+    })
+
+    it('when log is given --ext-diff, refuses without running git', async () => {
+      const commandSpy = mock()
+      const applicationData = mockApplicationData({
+        command: mockCommand({ commandSpy }),
+      })
+
+      const passthrough = new GitReadOnlyPassthrough({
+        applicationData,
+        operationArguments: { args: ['log', '--ext-diff'] },
+      })
+      await passthrough.run()
+
+      expect(commandSpy.mock.calls.length).toBe(0)
+      expect(passthrough.reason).toBe(
+        'flag not allowed: --ext-diff; allowed flags for log: --follow, --format, --name-only, --name-status, --no-merges, --oneline, --stat, -n, -p',
+      )
+    })
+
+    it('when log is given -C, refuses without running git', async () => {
+      const commandSpy = mock()
+      const applicationData = mockApplicationData({
+        command: mockCommand({ commandSpy }),
+      })
+
+      const passthrough = new GitReadOnlyPassthrough({
+        applicationData,
+        operationArguments: { args: ['log', '-C', '..'] },
+      })
+      await passthrough.run()
+
+      expect(commandSpy.mock.calls.length).toBe(0)
+      expect(passthrough.reason).toBe(
+        'flag not allowed: -C; allowed flags for log: --follow, --format, --name-only, --name-status, --no-merges, --oneline, --stat, -n, -p',
+      )
+    })
+
+    it('when log is given -c core.pager=x, refuses without running git', async () => {
+      const commandSpy = mock()
+      const applicationData = mockApplicationData({
+        command: mockCommand({ commandSpy }),
+      })
+
+      const passthrough = new GitReadOnlyPassthrough({
+        applicationData,
+        operationArguments: { args: ['log', '-c', 'core.pager=x'] },
+      })
+      await passthrough.run()
+
+      expect(commandSpy.mock.calls.length).toBe(0)
+      expect(passthrough.reason).toBe(
+        'flag not allowed: -c; allowed flags for log: --follow, --format, --name-only, --name-status, --no-merges, --oneline, --stat, -n, -p',
+      )
+    })
+
+    it('when log is given the abbreviated --out=f, refuses without running git', async () => {
+      const commandSpy = mock()
+      const applicationData = mockApplicationData({
+        command: mockCommand({ commandSpy }),
+      })
+
+      const passthrough = new GitReadOnlyPassthrough({
+        applicationData,
+        operationArguments: { args: ['log', '--out=f'] },
+      })
+      await passthrough.run()
+
+      expect(commandSpy.mock.calls.length).toBe(0)
+      expect(passthrough.reason).toBe(
+        'flag not allowed: --out=f; allowed flags for log: --follow, --format, --name-only, --name-status, --no-merges, --oneline, --stat, -n, -p',
+      )
+    })
+
+    it('when log is given a pathspec outside permissions, refuses without running git', async () => {
+      const commandSpy = mock()
+      const applicationData = mockApplicationData({
+        command: mockCommand({ commandSpy }),
+      })
+
+      const passthrough = new GitReadOnlyPassthrough({
+        applicationData,
+        operationArguments: { args: ['log', '--', '../x'] },
+      })
+      await passthrough.run()
+
+      expect(commandSpy.mock.calls.length).toBe(0)
+      expect(passthrough.reason).toBe('path not allowed: ../x')
+    })
+  })
+
   it('when no subcommand is enabled, refuses log without running git', async () => {
+    class EnabledNone extends GitReadOnlyPassthrough {
+      protected override enabled: Record<string, GitSubcommand> = {}
+    }
     const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ commandSpy }),
     })
     const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
 
-    const passthrough = new GitReadOnlyPassthrough({
+    const passthrough = new EnabledNone({
       applicationData,
       operationArguments: { args: ['log'] },
     })

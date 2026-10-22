@@ -1,6 +1,7 @@
 import { OperationWithResult } from '../../../operation.ts'
 import type { CommandOutput } from '../../../types.ts'
 import type { GitOutput, GitSubcommand } from '../../types.ts'
+import { gitReadOnlySubcommands } from './git-passthrough/git-read-only-subcommands.ts'
 import { GitReadOnlyRules } from './git-passthrough/git-passthrough-rules.ts'
 import {
   gitSafeReadEnv,
@@ -16,7 +17,7 @@ export class GitReadOnlyPassthrough extends OperationWithResult<
   GitOutput
 > {
   protected override logPrefix = 'Git read only passthrough: '
-  protected enabled: Record<string, GitSubcommand> = {}
+  protected enabled: Record<string, GitSubcommand> = gitReadOnlySubcommands
   private stdout = ''
 
   async run() {
