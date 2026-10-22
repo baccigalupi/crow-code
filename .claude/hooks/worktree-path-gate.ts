@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run
+#!/usr/bin/env bun
 // Terminal decision for EnterWorktree's `path` argument. permissions.allow
 // grants the bare "EnterWorktree" tool name with no argument constraint, so
 // without this hook any path — absolute, `~`-relative, or traversal — is
@@ -11,14 +11,14 @@
 // character set on its own.
 import { decideWorktreePath } from './worktree-path-decision.ts'
 
-const raw = await new Response(Deno.stdin.readable).text()
+const raw = await Bun.stdin.text()
 
 try {
   const payload = JSON.parse(raw)
   const targetPath: string = payload?.tool_input?.path ?? ''
 
   if (targetPath === '') {
-    Deno.exit(0)
+    process.exit(0)
   }
 
   const { decision, reason } = decideWorktreePath(targetPath)
@@ -29,7 +29,7 @@ try {
       permissionDecisionReason: reason,
     },
   })
-  Deno.stdout.writeSync(new TextEncoder().encode(text))
+  process.stdout.write(text)
 } catch (error) {
   const text = JSON.stringify({
     hookSpecificOutput: {
@@ -40,5 +40,5 @@ try {
       }. Report this to the maintainer — it is a gate bug, not a bad path.`,
     },
   })
-  Deno.stdout.writeSync(new TextEncoder().encode(text))
+  process.stdout.write(text)
 }

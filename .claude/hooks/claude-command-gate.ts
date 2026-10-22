@@ -1,12 +1,17 @@
-#!/usr/bin/env -S deno run --allow-env --allow-read
-// PreToolUse hook for Claude Code's Bash tool. For anything other than a
-// read-only inspector (see below), this delegates to the already-tested
-// Devin gate (agents/hooks/command-allowed.ts + devin-config.ts +
-// block-reason.ts) as the single source of truth for "is this command
-// allowed" — same .devin/config.json, same heredoc-commit and git-push
-// handling. Only the IO envelope differs: Devin's hook prints
+#!/usr/bin/env bun
+// PreToolUse hook for Claude Code's Bash tool, run on Bun. For anything other
+// than a read-only inspector (see below), this delegates to the already-tested
+// gate modules shared with Devin (agents/hooks/command-allowed.ts +
+// devin-config.ts + block-reason.ts) as the single source of truth for "is
+// this command allowed" — same heredoc-commit and git-push handling. Only the
+// IO envelope and the allowlist differ: Devin's hook prints
 // {"decision":"block",...}; Claude Code expects
 // {"hookSpecificOutput": {permissionDecision, permissionDecisionReason}}.
+//
+// The allowlist is .claude/command-allowlist.json, read from next to this
+// script rather than from CLAUDE_PROJECT_DIR, so the live hook and the config
+// it reads always come from the same checkout — a worktree's gate reads the
+// worktree's allowlist, main's gate reads main's.
 //
 // One wording patch: blockReason's cd message points at "the exec tool's
 // workdir parameter" — Devin-specific. Claude Code's Bash tool has no such
@@ -124,22 +129,19 @@ const emit = (decision: string, reason: string) => {
       permissionDecisionReason: reason,
     },
   })
-  Deno.stdout.writeSync(new TextEncoder().encode(text))
+  process.stdout.write(text)
 }
 
-const loadConfig = async (root: string) => {
-  const path = `${root}/.devin/config.json`
-  return new DevinConfig(await Deno.readTextFile(path))
+const loadConfig = async () => {
+  const path = `${import.meta.dir}/../command-allowlist.json`
+  return new DevinConfig(await Bun.file(path).text())
 }
 
-const raw = await new Response(Deno.stdin.readable).text()
+const raw = await Bun.stdin.text()
 
 try {
   const payload = JSON.parse(raw)
   const command: string = payload?.tool_input?.command ?? ''
-  const cwd: string = (payload?.cwd ?? Deno.cwd()).replace(/\/+$/, '')
-  const root = Deno.env.get('CLAUDE_PROJECT_DIR') ?? cwd
-
   const runInBackground = Boolean(payload?.tool_input?.run_in_background)
 
   if (command.trim() === '') {
@@ -152,11 +154,11 @@ try {
       'dev/test, dev/coverage, and agents/pre-commit clean the shared coverage/ directory on every invocation. Backgrounding one lets a second stack on top of it and corrupt the results — run it in the foreground instead.',
     )
   } else {
-    const config = await loadConfig(root)
+    const config = await loadConfig()
     if (commandAllowed(command, config)) {
       emit(
         'allow',
-        'Approved by .devin/config.json via agents/hooks/command-allowed.ts.',
+        'Approved by .claude/command-allowlist.json via agents/hooks/command-allowed.ts.',
       )
     } else {
       const reason = blockReason(command, config).replace(

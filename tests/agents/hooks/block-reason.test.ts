@@ -88,6 +88,34 @@ describe('blockReason', () => {
     expect(result).toContain('dev/test')
   })
 
+  it('when command is bun test, names dev/test', () => {
+    const json = readFileSync(
+      'tests/support/fixtures/devin-config.json',
+      'utf8',
+    )
+    const config = new DevinConfig(json)
+
+    const result = blockReason('bun test tests/foo.test.ts', config)
+
+    expect(result).toBe(
+      'Blocked: run `dev/test` instead. Run the approved command now, do not retry variants, and do not end your turn.',
+    )
+  })
+
+  it('when command is bun run, names dev/test', () => {
+    const json = readFileSync(
+      'tests/support/fixtures/devin-config.json',
+      'utf8',
+    )
+    const config = new DevinConfig(json)
+
+    const result = blockReason('bun run lint', config)
+
+    expect(result).toBe(
+      'Blocked: run `dev/test` instead. Run the approved command now, do not retry variants, and do not end your turn.',
+    )
+  })
+
   it('when command is unmapped, lists approved exec commands', () => {
     const json = readFileSync(
       'tests/support/fixtures/devin-config.json',

@@ -17,7 +17,7 @@ describe('commandAllowed', () => {
     expect(result).toBe(true)
   })
 
-  it('when command is bun test with a path, returns true', () => {
+  it('when command is bun test with a path, returns false', () => {
     const command = 'bun test tests/decorators.test.ts'
 
     const result = commandAllowed(
@@ -27,7 +27,7 @@ describe('commandAllowed', () => {
       ),
     )
 
-    expect(result).toBe(true)
+    expect(result).toBe(false)
   })
 
   it('when command is bun --version, returns true', () => {

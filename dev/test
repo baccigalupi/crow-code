@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 # Run the test suite. Tests run on bun:test, except the files below that
-# exercise Deno-only code (style-check lint plugins and hooks) until those move
-# to Bun; those run on deno test. Any arguments are forwarded: paths in the
+# exercise Deno-only code (style-check lint plugins and Devin hooks) until those
+# move to Bun; those run on deno test. Any arguments are forwarded: paths in the
 # Deno list go to deno test, everything else goes to bun test.
+#
+# bun test discovery skips dot directories, so the bare run passes
+# ./tests/.claude explicitly to pick up the Claude hook tests. Paths into a dot
+# directory need the ./ prefix, or bun treats them as name filters.
 #
 # Coverage comes from the bun preload (bunfig.toml), which needs bun test to
 # run in a single process: never add --parallel.
@@ -20,7 +24,6 @@ deno_tests=(
   tests/agents/hooks/dependency-lookup-context.test.ts
   tests/agents/hooks/recovery-state.test.ts
   tests/agents/hooks/stop-recovery.test.ts
-  tests/.claude/hooks/claude-command-gate.test.ts
 )
 
 is_deno_test() {
@@ -43,7 +46,7 @@ run_deno() {
 
 if [[ $# -eq 0 ]]; then
   run_deno "${deno_tests[@]}"
-  exec bun test
+  exec bun test ./tests ./tests/.claude
 fi
 
 deno_args=()

@@ -1,0 +1,49 @@
+{
+  "permissions": {
+    "allow": [
+      "Exec(dev/test)",
+      "Exec(dev/lint)",
+      "Exec(dev/coverage)",
+      "Exec(dev/loc)",
+      "Exec(dev/productivity)",
+      "Exec(dev/create-model-catalog)",
+      "Exec(dev/db)",
+      "Exec(agents/typecheck)",
+      "Exec(agents/format-check)",
+      "Exec(agents/style-check)",
+      "Exec(agents/pre-commit)",
+      "Exec(agents/check-coverage)",
+      "Exec(agents/coverage-report)",
+      "Exec(agents/generate-review)",
+      "Exec(./dev/test)",
+      "Exec(./dev/lint)",
+      "Exec(./dev/coverage)",
+      "Exec(./dev/loc)",
+      "Exec(./dev/productivity)",
+      "Exec(./dev/create-model-catalog)",
+      "Exec(./dev/db)",
+      "Exec(./agents/typecheck)",
+      "Exec(./agents/format-check)",
+      "Exec(./agents/style-check)",
+      "Exec(./agents/pre-commit)",
+      "Exec(./agents/check-coverage)",
+      "Exec(./agents/coverage-report)",
+      "Exec(./agents/generate-review)",
+      "Exec(git)",
+      "Exec(git mv)",
+      "Exec(bd)",
+      "Exec(curl)",
+      "Exec(chmod)",
+      "Exec(rm)",
+      "Exec(bin/crow)"
+    ],
+    "deny": [
+      "Exec(cd)",
+      "Exec(sudo)",
+      "Exec(bash)",
+      "Exec(sh)",
+      "Exec(deno)",
+      "Exec(git push)"
+    ]
+  }
+}

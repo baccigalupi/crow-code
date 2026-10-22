@@ -9,8 +9,6 @@
       "Bash(bin/crow)",
       "Bash(bd:*)",
       "Bash(git:*)",
-      "Bash(deno doc:*)",
-      "Bash(bun test:*)",
       "Bash(bun add:*)",
       "Bash(bun install:*)",
       "Bash(bun --version)",

@@ -12,5 +12,4 @@ pathIgnorePatterns = [
   "**/agents/hooks/dependency-lookup-context.test.ts",
   "**/agents/hooks/recovery-state.test.ts",
   "**/agents/hooks/stop-recovery.test.ts",
-  "**/claude-command-gate.test.ts",
 ]

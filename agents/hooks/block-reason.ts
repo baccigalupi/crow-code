@@ -15,6 +15,8 @@ const mappings = [
   { pattern: /^deno\s+coverage\b/, script: 'dev/coverage' },
   { pattern: /^(npm|npx|yarn|pnpm)\s+(run\s+)?test\b/, script: 'dev/test' },
   { pattern: /^(vitest|jest)\b/, script: 'dev/test' },
+  { pattern: /^bun\s+test\b/, script: 'dev/test' },
+  { pattern: /^bun\s+run\b/, script: 'dev/test' },
 ]
 
 const mappedScript = (command: string) => {
