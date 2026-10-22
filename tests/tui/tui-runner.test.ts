@@ -1,13 +1,23 @@
 import { describe, expect, it, mock, spyOn } from 'bun:test'
+import { createElement } from 'react'
+import { Text, useApp, useInput } from 'ink'
 import { createTuiRunner } from '../../src/tui/tui-runner.ts'
-import { Agent } from '../../src/tui/agent/views/agent.tsx'
 import { mockApplicationData } from '../support/mock-application-data.ts'
 import { mockTerminal } from '../support/mock-terminal.ts'
 
 describe('tui-runner', () => {
   it('when ctrl-c is written to stdin, status resolves completed', async () => {
+    const Quitter = () => {
+      const { exit } = useApp()
+      useInput((input, key) => {
+        if (key.ctrl && input === 'c') {
+          exit()
+        }
+      })
+      return createElement(Text, null, 'quit')
+    }
     const terminal = mockTerminal({})
-    const runner = createTuiRunner(mockApplicationData(), terminal.io, Agent)
+    const runner = createTuiRunner(mockApplicationData(), terminal.io, Quitter)
 
     const pending = runner.status()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -17,8 +27,12 @@ describe('tui-runner', () => {
   })
 
   it('when stdin cannot set raw mode, status resolves interrupted since Ink requires it for user input', async () => {
+    const Listener = () => {
+      useInput(() => {})
+      return createElement(Text, null, 'listen')
+    }
     const terminal = mockTerminal({ rawMode: false })
-    const runner = createTuiRunner(mockApplicationData(), terminal.io, Agent)
+    const runner = createTuiRunner(mockApplicationData(), terminal.io, Listener)
 
     const status = await runner.status()
 
@@ -26,9 +40,18 @@ describe('tui-runner', () => {
   })
 
   it('when the app runs to completion, its signal listeners are removed', async () => {
+    const Quitter = () => {
+      const { exit } = useApp()
+      useInput((input, key) => {
+        if (key.ctrl && input === 'c') {
+          exit()
+        }
+      })
+      return createElement(Text, null, 'quit')
+    }
     const terminal = mockTerminal({})
     const applicationData = mockApplicationData()
-    const runner = createTuiRunner(applicationData, terminal.io, Agent)
+    const runner = createTuiRunner(applicationData, terminal.io, Quitter)
     const remove = spyOn(applicationData.runtime, 'removeSignalListener')
 
     const pending = runner.status()
@@ -41,8 +64,12 @@ describe('tui-runner', () => {
   })
 
   it('when interrupted, unmounts and resolves interrupted', async () => {
+    const Listener = () => {
+      useInput(() => {})
+      return createElement(Text, null, 'listen')
+    }
     const terminal = mockTerminal({})
-    const runner = createTuiRunner(mockApplicationData(), terminal.io, Agent)
+    const runner = createTuiRunner(mockApplicationData(), terminal.io, Listener)
 
     const status = runner.status()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -52,8 +79,12 @@ describe('tui-runner', () => {
   })
 
   it('when the app fails, writes the error to stderr and resolves interrupted', async () => {
+    const Listener = () => {
+      useInput(() => {})
+      return createElement(Text, null, 'listen')
+    }
     const terminal = mockTerminal({ rawMode: false })
-    const runner = createTuiRunner(mockApplicationData(), terminal.io, Agent)
+    const runner = createTuiRunner(mockApplicationData(), terminal.io, Listener)
     const write = spyOn(terminal.stderr, 'write')
 
     const status = await runner.status()
@@ -65,6 +96,10 @@ describe('tui-runner', () => {
   })
 
   it('when no stderr is provided, writes the error through the console error', async () => {
+    const Listener = () => {
+      useInput(() => {})
+      return createElement(Text, null, 'listen')
+    }
     const terminal = mockTerminal({ rawMode: false })
     const consoleError = mock()
     const applicationData = mockApplicationData({ consoleError })
@@ -74,7 +109,7 @@ describe('tui-runner', () => {
         stdin: terminal.io.stdin,
         stdout: terminal.io.stdout,
       },
-      Agent,
+      Listener,
     )
 
     const status = await runner.status()

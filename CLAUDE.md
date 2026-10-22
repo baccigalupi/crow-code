@@ -152,12 +152,11 @@ per-path.
 
 ### TUI
 
-`src/tui/*` is an Ink/React (`react-jsx`) terminal UI. `agent/` is the main chat
-REPL (view-models in `*-view-model.ts` paired with `.tsx` views,
-`interactions/state/chat-session.ts` for session state, `interactions/keymap.ts`
-for key bindings); `install/` is the first-run config installer with an
-analogous view-model/view/interaction split. State uses `@preact/signals-core`
-(see `use-signal-value.ts`).
+`src/tui/*` is an Ink/React (`react-jsx`) terminal UI. `install/` is the
+first-run config installer (view-models in `*-view-model.ts` paired with `.tsx`
+views, plus interactions). The agent app is not built yet: `crow` with no args
+prints a coming-soon message. State uses `@preact/signals-core` (see
+`use-signal-value.ts`).
 
 `@opentui/core` and `@opentui/react` (pinned 0.6.6) are installed alongside Ink.
 OpenTUI `.tsx` files start with the pragma `/** @jsxImportSource @opentui/react */`;

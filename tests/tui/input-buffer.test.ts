@@ -3,7 +3,6 @@ import {
   deleteBackward,
   deleteForward,
   insertText,
-  measureRows,
   moveCursor,
 } from '../../src/tui/input-buffer.ts'
 
@@ -94,45 +93,5 @@ describe('input buffer', () => {
     const next = moveCursor(start, 'end')
 
     expect(next.cursor).toBe(5)
-  })
-
-  it('when a line wraps, counts each wrapped row', () => {
-    const text = 'x'.repeat(200)
-
-    const rows = measureRows(text, 80)
-
-    expect(rows).toBe(3)
-  })
-
-  it('when rows exceed the cap, clamps to 8', () => {
-    const text = 'x\nx\nx\nx\nx\nx\nx\nx\nx\nx\nx\nx\nx\nx\nx\nx\nx\nx\nx\nx'
-
-    const rows = measureRows(text, 80)
-
-    expect(rows).toBe(8)
-  })
-
-  it('when the line fits the width, is a single row', () => {
-    const text = 'x'.repeat(200)
-
-    const rows = measureRows(text, 400)
-
-    expect(rows).toBe(1)
-  })
-
-  it('when text is empty, is a single row', () => {
-    const text = ''
-
-    const rows = measureRows(text, 80)
-
-    expect(rows).toBe(1)
-  })
-
-  it('when columns is 0, counts one row per line', () => {
-    const text = 'x'.repeat(200) + '\n' + 'y'.repeat(200)
-
-    const rows = measureRows(text, 0)
-
-    expect(rows).toBe(2)
   })
 })

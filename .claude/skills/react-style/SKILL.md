@@ -7,7 +7,7 @@ description: >-
 
 # React style
 
-Conventions for TSX views under `src/tui/`, derived from `src/tui/agent/views/`.
+Conventions for TSX views under `src/tui/`, derived from `src/tui/install/views/`.
 Follow these when writing or reviewing any `.tsx` file.
 
 The mechanically checkable rules are enforced by `agents/style-check`
@@ -25,29 +25,28 @@ rules to assert here.
 ## Components
 
 - Arrow-function components only (scripted):
-  `export const Input = (props) => ...`. No default exports.
-- Exported components are capitalized (`App`, `Header`, `Chat`, `Input`).
-- Unexported helper components are also capitalized consts (`Bar`,
-  `Placeholder`, `Buffer`, `HistoryLine`) and live in the same file above the
-  exported component they serve.
+  `export const Prompt = (props) => ...`. No default exports.
+- Exported components are capitalized (`InstallApp`, `Header`, `Prompt`).
+- Unexported helper components are also capitalized consts (`Bar`) and live in
+  the same file above the exported component they serve.
 - Components take one props object, never positional args.
 
 ## Props
 
 - Exported components take a named `*Props` or `*ViewModelArguments` type
-  declared in the sibling `types.ts` (`AgentProps`, `ChatViewModelArguments`,
-  `InputViewModelArguments`) — not inline object types.
+  declared in the sibling `types.ts` (`InstallAppProps`, `ConfigPanelProps`) —
+  not inline object types.
 - Tiny helper components may declare inline props:
-  `{ readonly entry: HistoryEntry }`. Always `readonly`.
-- Injectable state is a default parameter (`session = chatSession`) so tests can
-  substitute signals without touching module state.
+  `{ readonly label: string }`. Always `readonly`.
+- Injectable state is a default parameter so tests can substitute signals
+  without touching module state.
 - Wrapper components use `PropsWithChildren` from `react`.
 
 ## Views are thin — view models do the thinking
 
 - A view computes nothing. Every derived value (sizes, splits, lists,
-  visibility) comes from a `*ViewModel` function: `agentViewModel`,
-  `chatViewModel`, `inputViewModel`, `bufferViewModel`.
+  visibility) comes from a `*ViewModel` function: `configViewModel`,
+  `bufferViewModel`.
 - The component body is: read signals → call view model(s) → return JSX. Inline
   conditionals for derived data are a smell; push them into the view model where
   they are unit-testable.
@@ -57,7 +56,7 @@ rules to assert here.
 
 - State is `@preact/signals-core` signals read via `useSignalValue` — React
   state hooks are banned (scripted).
-- Input handling lives in dedicated hooks (`useReplKeys`, `useResize`), not
+- Input handling lives in dedicated hooks (`useInstallState`, `useKeypress`), not
   inline `useInput` in a view (scripted).
 - Signal updates go through the shared buffer/session functions (`insertText`,
   `deleteBackward`, `moveCursor`, …) — never mutate `InputBuffer` fields in
@@ -65,7 +64,7 @@ rules to assert here.
 
 ## Conditional rendering
 
-- Guard with early `return null` in a helper component (`Placeholder`), not
+- Guard with early `return null` in a helper component (`Prompt`), not
   `cond && <Text>` inside JSX (scripted).
-- Lists render via `.map` with an entity `key={entry.id}` — never array indexes
+- Lists render via `.map` with an entity id as `key` — never array indexes
   or derived string content as keys.

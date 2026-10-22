@@ -1,7 +1,5 @@
 import type { CursorMove, InputBuffer } from './types.ts'
 
-const inputRowCap = 8
-
 export const emptyBuffer = (): InputBuffer => ({ text: '', cursor: 0 })
 
 const normalizeNewlines = (text: string): string =>
@@ -52,17 +50,3 @@ export const moveCursor = (
   buffer: InputBuffer,
   to: CursorMove,
 ): InputBuffer => ({ ...buffer, cursor: moveTarget(buffer, to) })
-
-const lineRows = (line: string, columns: number): number => {
-  if (columns <= 0) return 1
-  return Math.max(1, Math.ceil(line.length / columns))
-}
-
-export const measureLines = (text: string, columns: number): number =>
-  text
-    .split('\n')
-    .map((line) => lineRows(line, columns))
-    .reduce((total, count) => total + count, 0)
-
-export const measureRows = (text: string, columns: number): number =>
-  Math.min(inputRowCap, Math.max(1, measureLines(text, columns)))

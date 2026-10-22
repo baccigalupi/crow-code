@@ -8,7 +8,6 @@ import {
   spyOn,
 } from 'bun:test'
 import { spawn } from 'node:child_process'
-import { existsSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import pino from 'pino'
@@ -271,7 +270,7 @@ describe('run', () => {
     expect(exit).toHaveBeenNthCalledWith(1, 0)
   })
 
-  it('when no arguments are given, launches the repl and exits on interrupt', async () => {
+  it('when no arguments are given, prints that the agent TUI is coming soon', async () => {
     const cwd = join(fixturesDirectory, 'cli')
     await mkdir(join(cwd, '.crow'), { recursive: true })
     await writeFile(
@@ -295,21 +294,19 @@ describe('run', () => {
       [join(process.cwd(), 'bin', 'crow')],
       {
         cwd,
-        stdio: 'ignore',
+        stdio: ['ignore', 'pipe', 'ignore'],
         signal: AbortSignal.timeout(60_000),
       },
     )
+    let output = ''
+    child.stdout.on('data', (chunk) => {
+      output += String(chunk)
+    })
     const exitCode = new Promise<number | null>((resolve) => {
       child.once('exit', (code) => resolve(code))
     })
-    // The sqlite file proves the real builder opened and migrated the database;
-    // the buffer covers the remaining gap to Runner.listen() registering SIGINT.
-    while (!existsSync(join(cwd, 'crow-global', 'crow.db'))) {
-      await new Promise((resolve) => setTimeout(resolve, 100))
-    }
-    await new Promise((resolve) => setTimeout(resolve, 1_000))
 
-    child.kill('SIGINT')
-    expect(await exitCode).toBe(1)
+    expect(await exitCode).toBe(0)
+    expect(output).toBe('Agent TUI app ... coming soon\n')
   }, 60_000)
 })
