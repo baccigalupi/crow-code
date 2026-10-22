@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 # Style-check gate: see agents/style-checks/cli.ts for usage.
 set -euo pipefail
-exec deno run --allow-run --allow-read --allow-env agents/style-checks/cli.ts "$@"
+exec bun run agents/style-checks/cli.ts "$@"

@@ -8,6 +8,14 @@
 //               checks apply. Files outside src/ and tests/ get advisory
 //               lint that reports but never fails the run.
 
+import { readFile, stat } from 'node:fs/promises'
+import { codePlugin } from './code-plugin.ts'
+import { checkSource } from './engine/check-source.ts'
+import type { Plugin } from './engine/types.ts'
+import { installNamesPlugin } from './install-names-plugin.ts'
+import { tsxPlugin } from './tsx-plugin.ts'
+import { unitTestsPlugin } from './unit-tests-plugin.ts'
+
 export const usage = 'Usage: agents/style-check [--changed] [--all] [FILE ...]'
 
 const codeGlobs = ['src/*.ts', 'src/*.tsx', 'src/**/*.ts', 'src/**/*.tsx']
@@ -74,12 +82,28 @@ export const parseArgs = (args: string[]): Parsed => {
   return { ok: true, scope: scope ?? 'all', files }
 }
 
+const pluginsFor = (file: string): Plugin[] => {
+  const kind = classify(file)
+  const tsx = file.endsWith('.tsx') ? [tsxPlugin] : []
+  if (kind === 'code') return [codePlugin, installNamesPlugin, ...tsx]
+  if (kind === 'test') return [unitTestsPlugin, installNamesPlugin]
+  if (kind === 'support') return [codePlugin, ...tsx]
+  return []
+}
+
+export const lintSource = (file: string, source: string): string[] =>
+  pluginsFor(file).flatMap((plugin) =>
+    checkSource(plugin, file, source).map(
+      ({ rule, message, line, column }) =>
+        `${file}:${line}:${column}: ${rule}: ${message}`,
+    ),
+  )
+
 const gitFiles = async (args: string[]): Promise<string[]> => {
-  const output = await new Deno.Command('git', { args }).output()
-  return new TextDecoder()
-    .decode(output.stdout)
-    .split('\n')
-    .filter((line) => line.length > 0)
+  const child = Bun.spawn(['git', ...args], { stdout: 'pipe' })
+  const output = await new Response(child.stdout).text()
+  await child.exited
+  return output.split('\n').filter((line) => line.length > 0)
 }
 
 const trackedFiles = async (): Promise<string[]> => {
@@ -119,10 +143,12 @@ const changedFiles = async (): Promise<string[]> => {
   return [...new Set(files)]
 }
 
+const exists = async (file: string): Promise<boolean> =>
+  (await stat(file).catch(() => null))?.isFile() === true
+
 const existingFiles = async (files: string[]): Promise<string[] | null> => {
   for (const file of files) {
-    const stat = await Deno.stat(file).catch(() => null)
-    if (stat === null || !stat.isFile) {
+    if (!(await exists(file))) {
       console.error(`${file}: no such file`)
       return null
     }
@@ -139,39 +165,25 @@ const resolveFiles = async (
   return await existingFiles(files)
 }
 
-const runDeno = async (args: string[]): Promise<number> => {
-  const output = await new Deno.Command('deno', {
-    args,
-    stdout: 'piped',
-    stderr: 'piped',
-  }).output()
-  await Deno.stdout.write(output.stdout)
-  await Deno.stderr.write(output.stderr)
-  return output.code
+const run = async (command: string[]): Promise<number> =>
+  await Bun.spawn(command, { stdout: 'inherit', stderr: 'inherit' }).exited
+
+const lintFile = async (file: string): Promise<boolean> => {
+  const lines = lintSource(file, await readFile(file, 'utf8'))
+  for (const line of lines) console.log(line)
+  return lines.length === 0
 }
 
-const lintConfig = async (config: string, files: string[]) =>
-  await runDeno(['lint', '--config', `${checksDir}/${config}`, ...files])
-
-const checkCode = async (files: string[]): Promise<boolean> => {
-  let ok = (await lintConfig('code.deno.json', files)) === 0
-  const tsxFiles = files.filter((file) => file.endsWith('.tsx'))
-  if (tsxFiles.length > 0) {
-    ok = (await lintConfig('tsx.deno.json', tsxFiles)) === 0 && ok
-  }
-  const guard = await runDeno([
+const voidGuard = async (files: string[]): Promise<boolean> =>
+  (await run([
+    'deno',
     'run',
     '--allow-run',
     '--allow-read',
     '--allow-env',
     `${checksDir}/void-guard-calls.ts`,
     ...files,
-  ])
-  return guard === 0 && ok
-}
-
-const exists = async (file: string): Promise<boolean> =>
-  (await Deno.stat(file).catch(() => null))?.isFile === true
+  ])) === 0
 
 const checkMirror = async (testFile: string): Promise<boolean> => {
   const base = testFile.slice('tests/'.length).replace(/\.test\.tsx?$/, '')
@@ -195,7 +207,7 @@ const checkMirror = async (testFile: string): Promise<boolean> => {
 
 const checkTest = async (testFile: string): Promise<boolean> => {
   const mirrored = await checkMirror(testFile)
-  const linted = (await lintConfig('unit-tests.deno.json', [testFile])) === 0
+  const linted = await lintFile(testFile)
   return mirrored && linted
 }
 
@@ -204,16 +216,7 @@ const advise = async (file: string): Promise<void> => {
     console.log(`${file}: no style checks apply`)
     return
   }
-  await runDeno(['lint', file])
-}
-
-const checkSupport = async (files: string[]): Promise<boolean> => {
-  let ok = (await lintConfig('code.deno.json', files)) === 0
-  const tsxFiles = files.filter((file) => file.endsWith('.tsx'))
-  if (tsxFiles.length > 0) {
-    ok = (await lintConfig('tsx.deno.json', tsxFiles)) === 0 && ok
-  }
-  return ok
+  await run(['node_modules/.bin/oxlint', file])
 }
 
 const checkFiles = async (files: string[]): Promise<boolean> => {
@@ -222,23 +225,23 @@ const checkFiles = async (files: string[]): Promise<boolean> => {
   const support = files.filter((file) => classify(file) === 'support')
   const others = files.filter((file) => classify(file) === 'other')
   let ok = true
-  if (code.length > 0) ok = (await checkCode(code)) && ok
+  for (const file of [...code, ...support]) ok = (await lintFile(file)) && ok
+  if (code.length > 0) ok = (await voidGuard(code)) && ok
   for (const test of tests) ok = (await checkTest(test)) && ok
-  if (support.length > 0) ok = (await checkSupport(support)) && ok
   for (const other of others) await advise(other)
   return ok
 }
 
 const main = async () => {
-  const parsed = parseArgs(Deno.args)
+  const parsed = parseArgs(process.argv.slice(2))
   if (!parsed.ok) {
     console.error(usage)
-    Deno.exit(1)
+    process.exit(1)
   }
   const files = await resolveFiles(parsed.scope, parsed.files)
-  if (files === null) Deno.exit(1)
+  if (files === null) process.exit(1)
   if (files.length === 0) console.log('No violations')
-  Deno.exit((await checkFiles(files)) ? 0 : 1)
+  process.exit((await checkFiles(files)) ? 0 : 1)
 }
 
 if (import.meta.main) await main()
