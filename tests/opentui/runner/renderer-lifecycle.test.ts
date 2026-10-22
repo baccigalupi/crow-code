@@ -1,5 +1,4 @@
 import { describe, expect, it, mock } from 'bun:test'
-import type { CliRenderer } from '@opentui/core'
 import { RendererLifecycle } from '../../../src/opentui/runner/renderer-lifecycle.ts'
 
 describe('RendererLifecycle', () => {
@@ -32,7 +31,7 @@ describe('RendererLifecycle', () => {
   it('when exit is called after attaching, destroys the renderer', () => {
     const destroy = mock(() => {})
     const lifecycle = new RendererLifecycle()
-    lifecycle.attach({ destroy } as unknown as CliRenderer)
+    lifecycle.attach({ destroy, closed: Promise.resolve() })
 
     lifecycle.exit()
 
@@ -44,7 +43,7 @@ describe('RendererLifecycle', () => {
     const lifecycle = new RendererLifecycle()
     lifecycle.exit()
 
-    lifecycle.attach({ destroy } as unknown as CliRenderer)
+    lifecycle.attach({ destroy, closed: Promise.resolve() })
 
     expect(destroy).toHaveBeenCalledTimes(1)
   })
@@ -53,7 +52,7 @@ describe('RendererLifecycle', () => {
     const destroy = mock(() => {})
     const lifecycle = new RendererLifecycle()
 
-    lifecycle.attach({ destroy } as unknown as CliRenderer)
+    lifecycle.attach({ destroy, closed: Promise.resolve() })
 
     expect(destroy).not.toHaveBeenCalled()
   })
@@ -61,10 +60,7 @@ describe('RendererLifecycle', () => {
   it('when closed, destroys the renderer and waits for it to close', async () => {
     const destroy = mock(() => {})
     const lifecycle = new RendererLifecycle()
-    lifecycle.attach({
-      destroy,
-      closed: Promise.resolve(),
-    } as unknown as CliRenderer)
+    lifecycle.attach({ destroy, closed: Promise.resolve() })
 
     await lifecycle.close()
 

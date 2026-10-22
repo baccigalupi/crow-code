@@ -1,4 +1,4 @@
-import { createCliRenderer, type CliRenderer } from '@opentui/core'
+import type { CliRenderer } from '@opentui/core'
 import { createRoot } from '@opentui/react'
 import { createElement, type FunctionComponent } from 'react'
 import type { ApplicationData } from '../application-data/application-data.ts'
@@ -83,11 +83,9 @@ export class OpenTuiRunner {
   }
 }
 
-const placeholderView = () => createElement('text', null, 'crow')
-
 export const createOpenTuiRunner = (
   applicationData: ApplicationData,
   io: ReplIo,
-  view: FunctionComponent = placeholderView,
-  createRenderer: CreateRenderer = createCliRenderer,
+  view: FunctionComponent,
+  createRenderer: CreateRenderer,
 ) => new OpenTuiRunner(applicationData, io, view, createRenderer)

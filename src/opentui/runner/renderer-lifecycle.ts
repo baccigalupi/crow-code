@@ -1,4 +1,3 @@
-import type { CliRenderer } from '@opentui/core'
 import type { Teardown } from './types.ts'
 
 export class RendererLifecycle {
@@ -6,7 +5,7 @@ export class RendererLifecycle {
   private interrupted = false
   private exiting = false
 
-  attach(renderer: CliRenderer) {
+  attach(renderer: Teardown) {
     this.renderer = renderer
     if (this.exiting) {
       renderer.destroy()
