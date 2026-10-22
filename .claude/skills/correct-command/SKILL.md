@@ -116,7 +116,7 @@ the session's cwd has to actually be inside the worktree, which is exactly what
    `dev/*`/`agents/*` equivalent.
 6. **No ad-hoc `bash -c`/`sh -c`** — issue the real command directly.
 7. Don't background `dev/test`, `dev/coverage`, or `agents/pre-commit` — they
-   run `--clean` and wipe the shared `coverage/` directory; a backgrounded
+   clean the shared `coverage/` directory; a backgrounded
    second run stomps on a foreground one. This check lives in
    `claude-command-gate.ts`, on top of the allowlist.
 

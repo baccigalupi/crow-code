@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# Shared coverage reporter. Use --lcov to emit the machine-checked lcov file.
+# Shared coverage reporter over the Istanbul raw data dev/test collects.
+# Use --lcov to emit the machine-checked lcov file, --html for an HTML report
+# at coverage/html/index.html; no flag prints a per-file summary.
 set -euo pipefail
 
-coverageOptions=(--exclude="tests/" --exclude="agents/" --exclude="src/database/migrations/" --exclude="src/application-data.ts")
-
 if [[ "${1:-}" == "--lcov" ]]; then
-  exec deno coverage --lcov "${coverageOptions[@]}" --output coverage/lcov.info
+  exec bun agents/coverage/cli.ts lcov
 fi
 
 if [[ "${1:-}" == "--html" ]]; then
-  exec deno coverage --html "${coverageOptions[@]}"
+  exec bun agents/coverage/cli.ts html
 fi
 
-deno coverage "${coverageOptions[@]}" || true
+bun agents/coverage/cli.ts

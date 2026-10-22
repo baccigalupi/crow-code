@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Export the coverage profile collected by dev/test to lcov for machine checking.
+# Rebuild coverage/lcov.info from the Istanbul raw data dev/test collected, for
+# agents/check-coverage.
 set -euo pipefail
 
 exec bash agents/lib/coverage --lcov

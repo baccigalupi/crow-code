@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 # Run the test suite. Tests run on bun:test, except the files below that
 # exercise Deno-only code (style-check lint plugins and hooks) until those move
-# to Bun; those run on deno test with coverage. Any arguments are forwarded:
-# paths in the Deno list go to deno test, everything else goes to bun test.
+# to Bun; those run on deno test. Any arguments are forwarded: paths in the
+# Deno list go to deno test, everything else goes to bun test.
+#
+# Coverage comes from the bun preload (bunfig.toml), which needs bun test to
+# run in a single process: never add --parallel.
 set -euo pipefail
+
+rm -rf coverage
 
 deno_tests=(
   tests/agents/style-checks/code.test.ts
@@ -30,12 +35,10 @@ is_deno_test() {
 }
 
 run_deno() {
-  # --clean empties the coverage directory before collecting profiles so stale
-  # lcov/raw files do not accumulate across runs.
   # --no-check: Deno cannot type the Bun-native src these files reach;
   # agents/typecheck runs tsc, with agents/deno-types.d.ts supplying the Deno
   # types until the last Deno consumer is ported.
-  deno test --no-check --clean --coverage --coverage-raw-data-only --allow-env --allow-read --allow-write --allow-ffi --allow-run --allow-sys=hostname "$@"
+  deno test --no-check --allow-env --allow-read --allow-write --allow-ffi --allow-run --allow-sys=hostname "$@"
 }
 
 if [[ $# -eq 0 ]]; then

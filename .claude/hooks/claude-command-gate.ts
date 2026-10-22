@@ -106,8 +106,8 @@ const worktreePhrase =
 
 // Devin's gate has no concept of backgrounding, so command-allowed.ts never
 // considers it. Claude Code's Bash tool does (run_in_background) — and
-// dev/test / dev/coverage run --clean, wiping the shared coverage/ directory
-// on every invocation. Stacking a backgrounded run on a foreground one (or
+// dev/test / dev/coverage clean the shared coverage/ directory on every
+// invocation. Stacking a backgrounded run on a foreground one (or
 // on agents/pre-commit, which runs dev/test itself) corrupts both.
 const HEAVY = new Set(['dev/test', 'dev/coverage', 'agents/pre-commit'])
 
@@ -149,7 +149,7 @@ try {
   } else if (runInBackground && isHeavy(command)) {
     emit(
       'deny',
-      'dev/test, dev/coverage, and agents/pre-commit run `--clean` and wipe the shared coverage/ directory on every invocation. Backgrounding one lets a second stack on top of it and corrupt the results — run it in the foreground instead.',
+      'dev/test, dev/coverage, and agents/pre-commit clean the shared coverage/ directory on every invocation. Backgrounding one lets a second stack on top of it and corrupt the results — run it in the foreground instead.',
     )
   } else {
     const config = await loadConfig(root)

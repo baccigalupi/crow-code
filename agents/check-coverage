@@ -16,6 +16,7 @@ while IFS= read -r line; do
   case "$line" in
     SF:*)
       current_file="${line#SF:}"
+      fnf="" fnh="" lf="" lh="" brf="" brh=""
       ;;
     FNF:*)
       fnf="${line#FNF:}"
@@ -39,6 +40,10 @@ while IFS= read -r line; do
       # Test files and test helpers are not gated.
       if [[ "$current_file" == *"/tests/"* ]]; then
         continue
+      fi
+      if [[ -z "$brf" ]]; then
+        echo "FAIL: $current_file has no branch data"
+        FAILED=1
       fi
       # Compute percentages
       if [[ -n "$fnf" && "$fnf" -gt 0 ]]; then
