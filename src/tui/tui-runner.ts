@@ -2,7 +2,7 @@ import { createElement, type FunctionComponent } from 'react'
 import { render } from 'ink'
 import type { Instance } from 'ink'
 import type { ApplicationData } from '../application-data/application-data.ts'
-import type { Signal } from '../types.ts'
+import type { ProcessSignal } from '../types.ts'
 import type { ReplIo, ReplStatus } from './types.ts'
 
 export class TuiRunner {
@@ -11,7 +11,7 @@ export class TuiRunner {
   private view: FunctionComponent
   private instance!: Instance
   private interrupted = false
-  private signals: Signal[] = ['SIGINT', 'SIGTERM']
+  private signals: ProcessSignal[] = ['SIGINT', 'SIGTERM']
 
   constructor(
     applicationData: ApplicationData,

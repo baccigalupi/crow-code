@@ -46,4 +46,4 @@ export type Command = (
   executable: string,
   options: CommandOptions,
 ) => Promise<CommandOutput>
-export type Signal = 'SIGINT' | 'SIGTERM'
+export type ProcessSignal = 'SIGINT' | 'SIGTERM'

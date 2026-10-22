@@ -1,5 +1,5 @@
 import { runtimeExec } from './runtime-exec.ts'
-import type { CommandOptions, Signal } from '../types.ts'
+import type { CommandOptions, ProcessSignal } from '../types.ts'
 
 export class Runtime {
   private process: NodeJS.Process
@@ -26,11 +26,11 @@ export class Runtime {
     return this.process.exit(code)
   }
 
-  addSignalListener(signal: Signal, handler: () => void) {
+  addSignalListener(signal: ProcessSignal, handler: () => void) {
     this.process.on(signal, handler)
   }
 
-  removeSignalListener(signal: Signal, handler: () => void) {
+  removeSignalListener(signal: ProcessSignal, handler: () => void) {
     this.process.off(signal, handler)
   }
 }
