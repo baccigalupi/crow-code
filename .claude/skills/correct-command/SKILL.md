@@ -22,7 +22,7 @@ same shape just repeats the deny.
 ## The gate is real and terminal
 
 - **Pre-approved** (run without a prompt, per `.claude/command-allowlist.json`): `dev/*`,
-  `agents/*`, `bin/crow`, `bd`, `curl`, `chmod`, `rm`, `deno doc`, `bun install`, and `git mv`.
+  `agents/*`, `bin/crow`, `bd`, `curl`, `chmod`, `rm`, `bun install`, and `git mv`.
 - **Read-only inspectors are pre-approved too, but checked separately**: `rg`,
   `grep`, `egrep`, `fgrep`, `ls`, `find`, `ps`, `cat`, `head`, `tail`, `sed`,
   `awk`, `wc`, `jq`, `sort`, `uniq`, `stat`, `file`, `tree`, `diff`, `pwd`,
@@ -50,9 +50,8 @@ same shape just repeats the deny.
   `grep -E "foo|bar"` is fine (quote-aware check); `dev/test "foo|bar"` is not
   (quote-blind check) — don't carry a pipe-containing quoted argument into a
   non-inspector command.
-- **DENIED, with no retry path** — rewrite instead: bare `deno` (only `deno doc`
-  is approved — use `dev/test`/`dev/lint`/`dev/coverage`/ `agents/typecheck` for
-  everything else), `bash`/`sh` (issue the command directly, not wrapped), `cd`
+- **DENIED, with no retry path** — rewrite instead: bare `deno` (use
+  `dev/test`/`dev/lint`/`dev/coverage`/`agents/typecheck`), `bash`/`sh` (issue the command directly, not wrapped), `cd`
   (see **Worktrees** below), `git push`, anything not named in
   `.claude/command-allowlist.json` or the read-only inspector list above.
 
@@ -79,8 +78,9 @@ files in a worktree" is the **`EnterWorktree`** tool, not `cd`:
 2. `bd update <id> --claim`.
 3. All subsequent `dev/*`/`agents/*`/file-tool calls now naturally target the
    worktree — no absolute paths, no `--config` flags, no `cd`. `dev/test` picks
-   up the worktree's own `deno.json` because the session's cwd really is the
-   worktree now, not a flag pointed at it from outside.
+   up the worktree's own `bunfig.toml` and `node_modules` because the session's
+   cwd really is the worktree now, not a path pointed at it from outside.
+   Run `bun install` once in a fresh worktree so `node_modules` exists.
 4. To return to the main checkout for the landing sequence (rebase,
    `git
 merge --ff-only`), call **`ExitWorktree({ action: "keep" })`** — this
@@ -88,14 +88,13 @@ merge --ff-only`), call **`ExitWorktree({ action: "keep" })`** — this
    `action: "remove"` only once the branch is fully merged or the work is
    abandoned.
 
-Why this matters: Deno's config auto-discovery walks up from the process's
-actual `cwd`, not from an argument's absolute path. Running
-`dev/test /abs/path/to/.worktrees/x/tests/foo.test.ts` from the main checkout
-still discovers the **main checkout's** `deno.json` — which excludes
-`.worktrees` and `.claude/worktrees` — so the file is filtered out ("No test
-modules found") no matter how the path is spelled. There is no flag-only fix;
-the session's cwd has to actually be inside the worktree, which is exactly what
-`EnterWorktree` does and `cd` cannot do safely here.
+Why this matters: Bun reads `bunfig.toml`, `package.json` and `node_modules`
+from the process's actual `cwd`, not from an argument's absolute path. Running
+`dev/test /abs/path/to/.claude/worktrees/x/tests/foo.test.ts` from the main
+checkout still uses the **main checkout's** config and dependencies, so the
+worktree's own setup never applies no matter how the path is spelled. There is
+no flag-only fix; the session's cwd has to actually be inside the worktree,
+which is exactly what `EnterWorktree` does and `cd` cannot do safely here.
 
 ## Hard rules (shell)
 
@@ -112,8 +111,7 @@ the session's cwd has to actually be inside the worktree, which is exactly what
    `>`/`<`/`2>&1`.** Write files with the Write tool, read them with Read. The
    only exceptions are the two commit shapes named above.
 4. **No `cd` prefix, ever** — see **Worktrees** above.
-5. **No bare `deno`** — `deno doc` is the only exception; everything else has a
-   `dev/*`/`agents/*` equivalent.
+5. **No bare `deno`** — everything has a `dev/*`/`agents/*` equivalent.
 6. **No ad-hoc `bash -c`/`sh -c`** — issue the real command directly.
 7. Don't background `dev/test`, `dev/coverage`, or `agents/pre-commit` — they
    clean the shared `coverage/` directory; a backgrounded
@@ -122,16 +120,16 @@ the session's cwd has to actually be inside the worktree, which is exactly what
 
 ## Wrong → right
 
-| ❌ Escalation bait                                     | ✅ Correct                                                        |
-| ------------------------------------------------------ | ----------------------------------------------------------------- |
-| `cd .worktrees/foo && dev/test tests/x.test.ts`        | `EnterWorktree({ name: "foo" })`, then `dev/test tests/x.test.ts` |
-| `EnterWorktree({ name: "akj" })` (bare ID postfix)     | `EnterWorktree({ name: "crow-code-akj" })` or `"write-tool"`      |
-| `dev/test && agents/typecheck`                         | Two Bash calls: `dev/test` then `agents/typecheck`                |
-| `deno test tests/x.test.ts`                            | `dev/test tests/x.test.ts`                                        |
-| `deno fmt` / `deno lint --fix`                         | `dev/lint`                                                        |
-| `bash agents/pre-commit`                               | `agents/pre-commit`                                               |
-| `dev/test path --config /abs/.worktrees/foo/deno.json` | Enter the worktree first, then run `dev/test path` with no flags  |
-| `rg foo src/ \| head -20`                              | Not granted here — run `rg foo src/` alone, or two calls          |
+| ❌ Escalation bait                                       | ✅ Correct                                                        |
+| -------------------------------------------------------- | ----------------------------------------------------------------- |
+| `cd .worktrees/foo && dev/test tests/x.test.ts`          | `EnterWorktree({ name: "foo" })`, then `dev/test tests/x.test.ts` |
+| `EnterWorktree({ name: "akj" })` (bare ID postfix)       | `EnterWorktree({ name: "crow-code-akj" })` or `"write-tool"`      |
+| `dev/test && agents/typecheck`                           | Two Bash calls: `dev/test` then `agents/typecheck`                |
+| `bun test tests/x.test.ts`                               | `dev/test tests/x.test.ts`                                        |
+| `deno fmt` / `deno lint --fix`                           | `dev/lint`                                                        |
+| `bash agents/pre-commit`                                 | `agents/pre-commit`                                               |
+| `dev/test path --config /abs/.worktrees/foo/bunfig.toml` | Enter the worktree first, then run `dev/test path` with no flags  |
+| `rg foo src/ \| head -20`                                | Not granted here — run `rg foo src/` alone, or two calls          |
 
 ## Command table
 

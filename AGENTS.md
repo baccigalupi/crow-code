@@ -64,8 +64,7 @@ Never create scripts there to try to circumvent permissions.
 
 - All planned work happens in a dedicated git worktree, never directly on the
   main checkout.
-- Worktrees live under `.claude/worktrees/` (already gitignored and excluded
-  from `deno.json`).
+- Worktrees live under `.claude/worktrees/` (already gitignored).
 - Creating the worktree is the first step of implementing a plan, never part of
   planning: call `EnterWorktree({ name: "<name>" })`, where `<name>` is the
   value recorded in the plan (derived from the Beads issue or feature name). It
@@ -136,27 +135,21 @@ bd close <id>         # Complete work
 
 ## Dependency lookup
 
-Core dependencies are indexed as named `codebase-memory-mcp` projects, backed by
-checkouts under `.deps/` (gitignored). Indexes persist across sessions in the
-daemon store — no reindex needed per session. A `UserPromptSubmit` hook
-(`agents/hooks/dependency-lookup-context.ts`) injects the routing summary into
-context on dep-flavored prompts.
+Core dependencies are indexed as named `codebase-memory-mcp` projects. Indexes
+persist across sessions in the daemon store — no reindex needed per session. A
+`UserPromptSubmit` hook (`agents/hooks/dependency-lookup-context.ts`) injects
+the routing summary into context on dep-flavored prompts.
 
-| Project       | Source                                                       | Pinned to                              | Covers                                  |
-| ------------- | ------------------------------------------------------------ | -------------------------------------- | --------------------------------------- |
-| `terminal-ui` | `.deps/terminal-ui` (clone of `Ismail-elkorchi/terminal-ui`) | `v0.1.5` = `deno.lock` pin             | All terminal-ui source, tests, examples |
-| `deno`        | `.deps/deno` (fetched d.ts files)                            | Deno `v2.9.7` (`cli/tsc/dts/`)         | `Deno.*` namespace + web globals        |
-| `deno-std`    | `.deps/std` (clone of `denoland/std`)                        | HEAD — drifts vs `deno.lock` @std pins | All @std packages                       |
+| Project     | Source                   | Pinned to                 | Covers                                     |
+| ----------- | ------------------------ | ------------------------- | ------------------------------------------ |
+| `bun-types` | `node_modules/bun-types` | `bun.lock` (`@types/bun`) | `Bun.*` namespace, `bun:test`, web globals |
 
 ### Routing — which project to query
 
-- terminal-ui / TUI components / `defineTui` / `createTuiRuntime` / `textArea` /
-  `logViewer` → `terminal-ui`
-- `Deno.*` globals, runtime APIs, permissions → `deno`
-- `@std/*` imports (`walk`, `assertEquals`, `join`, …) → `deno-std`
+- `Bun.*` globals, `bun:test`, runtime APIs → `bun-types`
 - crow-code's own code → `Users-kane-Projects-rho-crow-code`
-- The file's imports pick the project: `@ismail-elkorchi/terminal-ui*` →
-  `terminal-ui`, `@std/*` → `deno-std`, `Deno.` globals → `deno`
+- The file's imports pick the project: `bun:*` imports and `Bun.` globals →
+  `bun-types`
 
 ### Query pattern
 
@@ -170,30 +163,19 @@ context on dep-flavored prompts.
    project first to find real call sites, then look up the definition in the dep
    project. (There are no cross-project `CROSS_*` edges —
    `cross-repo-intelligence` only links service calls, verified 0 edges.)
-5. Zero hits → fan out `search_graph` across the other dep projects, then fetch
-   the exact file via curl: `https://jsr.io/@scope/pkg/<ver>/<path>` (JSR) or
-   `https://raw.githubusercontent.com/denoland/std/<rev>/<path>`.
+5. Zero hits → fetch the exact file via curl, e.g.
+   `https://raw.githubusercontent.com/oven-sh/bun/<rev>/<path>`.
 
-**Verify dep signatures against the graph — never write terminal-ui/Deno code
-from memory.** `semantic_query` scores on these niche APIs are weak
-(~0.02–0.04); treat low scores as "no match" and switch to
-`name_pattern`/`query`.
+**Verify dep signatures against the graph — never write `Bun.*` code from
+memory.** `semantic_query` scores on niche APIs are weak (~0.02–0.04); treat low
+scores as "no match" and switch to `name_pattern`/`query`.
 
-Note: `.deps/` is gitignored (keeps dep code out of `git status` and crow's own
-index) and is in `deno.json`'s `exclude` (keeps `deno test`/`lint`/`fmt`
-discovery out of dep test suites) — but file tools CAN read and grep inside it,
-so it doubles as a local source fallback alongside `get_code_snippet` and the
-curl URLs above.
+Note: file tools can read and grep inside `node_modules/bun-types` directly, so
+it doubles as a local source fallback alongside `get_code_snippet`.
 
 ### Reindexing
 
-- On a `deno.json`/`deno.lock` dep bump:
-  `git -C .deps/terminal-ui fetch --depth 1
-origin tag vX.Y.Z`,
-  `git -C .deps/terminal-ui checkout vX.Y.Z` — the daemon watcher re-indexes git
-  checkouts automatically, or run
-  `index_repository(repo_path, name="terminal-ui", mode="full", persistence=true)`.
-- `.deps/deno` is not a git repo — after re-fetching d.ts files for a new Deno
-  tag, re-run `index_repository(..., name="deno", mode="full")` manually.
+- On a `bun.lock` bump of `@types/bun`/`bun-types`, run
+  `index_repository(repo_path="node_modules/bun-types", name="bun-types", mode="full", persistence=true)`.
 - Always use `mode="full"` for dep projects — `moderate`/`fast` skip `*.d.ts`
-  and other filtered patterns, which would gut the `deno` index.
+  and other filtered patterns, which would gut the `bun-types` index.

@@ -5,14 +5,14 @@ code in this repository.
 
 ## What this is
 
-`crow` — a CLI-based coding agent, written in TypeScript on Deno. Entry point:
+`crow` — a CLI-based coding agent, written in TypeScript on Bun. Entry point:
 `bin/crow` → `src/cli.ts`.
 
 ## Commands
 
 ```
 dev/lint               # oxlint --fix, prettier --write, then agents/typecheck
-dev/test [args]        # deno test with coverage (--allow-env --allow-read --allow-write --allow-ffi --allow-run --allow-sys=hostname); args forward to deno test
+dev/test [args]        # bun test with coverage; args forward to bun test
 dev/coverage [args]    # dev/test, then lcov export + human-readable coverage summary
 agents/typecheck       # TS check only
 agents/format-check    # prettier check only
@@ -23,8 +23,7 @@ agents/pre-commit      # full gate: format-check, lint, typecheck, style-check, 
 ```
 
 Run a single test file: `dev/test tests/path/to/file.test.ts`. Tests use
-`node:test` (`describe`/`it`), `@std/expect`, and `@std/testing/mock`
-(`spy`/`stub`/`returnsNext`).
+`bun:test` (`describe`/`it`/`expect`, plus `spyOn`/`mock` for stubs).
 
 ### Execution restrictions (this environment)
 
@@ -36,7 +35,7 @@ deterministically (allow or deny, never a prompt) using
 config — one allowlist. See `.claude/skills/correct-command/SKILL.md` for the
 full command table and wrong→right rewrites. In short: only `dev/*`, `agents/*`,
 `bin/crow`, `bd`, `curl`, `chmod`, `rm`, `git mv`, any `git` subcommand except
-`push`, `deno doc`, and `bun install` are permitted — never bare `deno`, `bash`, `sh`, or `cd`.
+`push`, and `bun install` are permitted — never bare `deno`, `bash`, `sh`, or `cd`.
 Any shell metacharacter (`` ` ``, `$(`, `<`, `>`, `;`, `|`, `&`, literal
 newline) anywhere in the command denies it outright — there is no piping, even
 between two read-only inspectors — except the two commit shapes: repeated `-m`
@@ -44,11 +43,11 @@ flags, or `git commit -F - <<'EOF' ... EOF`.
 
 **No `cd`, no `--config` flags, no absolute-path workarounds for targeting a
 worktree.** The Bash tool has no `workdir` parameter, so `cd` is the _only_
-shell-level way to change it — which is exactly why it's denied. Deno's config
-auto-discovery walks up from the process's actual `cwd`, not from a file
-argument's path, so running `dev/test` against an absolute path into a worktree
-from the main checkout still picks up the main checkout's `deno.json` (which
-excludes worktree directories) and silently finds nothing. The actual fix is the
+shell-level way to change it — which is exactly why it's denied. Bun reads
+`bunfig.toml`, `package.json` and `node_modules` from the process's actual
+`cwd`, not from a file argument's path, so running `dev/test` against an
+absolute path into a worktree from the main checkout still uses the main
+checkout's config and dependencies, not the worktree's. The actual fix is the
 `EnterWorktree` tool, which creates `.claude/worktrees/<name>` and switches the
 session's real cwd into it — then `dev/test`, `agents/*`, and file paths all
 just work, unprefixed. Use `ExitWorktree({ action: "keep" })` to return to the
@@ -179,9 +178,9 @@ See `AGENTS.md` for the full, authoritative rules — summary:
   `git commit -F - <<'EOF'` heredoc.
 - All planned work happens in a dedicated worktree, created as the first step of
   implementation (not planning). Use `EnterWorktree({ name: "<id>" })` so the
-  session's actual cwd moves into `.claude/worktrees/<name>` (gitignored,
-  excluded from `deno.json`) and `dev/*`/`agents/*` resolve the worktree's own
-  `deno.json` with no flags or absolute paths. See
+  session's actual cwd moves into `.claude/worktrees/<name>` (gitignored) and
+  `dev/*`/`agents/*` resolve the worktree's own `bunfig.toml` and
+  `node_modules` with no flags or absolute paths. See
   `.claude/skills/correct-command/SKILL.md` § Worktrees for why `cd`/`--config`
   don't work here.
 - Landing is a fixed, approval-gated sequence: commit in the worktree →
@@ -207,21 +206,19 @@ deny reasons to point at `EnterWorktree` and adds one more check (deny
 backgrounding `dev/test`/`dev/coverage`/`agents/pre-commit`, which would stomp
 the shared `coverage/` directory). `worktree-path-gate.ts` (decision logic in
 `worktree-path-decision.ts`) separately validates `EnterWorktree`'s `path`
-argument. Tests: `tests/claude-hooks/*.test.ts`. A deny always names the exact
+argument. Tests: `tests/.claude/hooks/*.test.ts` and
+`tests/agents/hooks/{block-reason,command-allowed}.test.ts`. A deny always names the exact
 command to run instead; don't retry a variant of a denied command. Full command
 table and wrong→right rewrites: `.claude/skills/correct-command/SKILL.md`.
 
 ## Dependency lookup (codebase-memory-mcp)
 
-Core deps (`deno`, `deno-std`) are indexed as named `codebase-memory-mcp`
-projects backed by checkouts under `.deps/` (gitignored, excluded from
-`deno.json`). Verify dependency signatures against the graph
-(`search_graph`/`get_code_snippet`/`trace_path`) rather than writing Deno API
+The Bun runtime types (`bun-types`) are indexed as a named
+`codebase-memory-mcp` project backed by `node_modules/bun-types`, pinned by
+`bun.lock`. Verify dependency signatures against the graph
+(`search_graph`/`get_code_snippet`/`trace_path`) rather than writing `Bun.*`
 calls from memory — see `AGENTS.md` § Dependency lookup for the query pattern.
 
-`AGENTS.md`'s dependency-lookup table also lists a `terminal-ui` project
-(`.deps/terminal-ui`, pinned to `Ismail-elkorchi/terminal-ui`) — that checkout
-is stale. The TUI (`src/tui/*`) is actually built on **Ink + React**, with
+The TUI (`src/tui/*`) is built on **Ink + React**, with
 **`@preact/signals-core`** for state (see the TUI section above and
-`deno.json`'s `imports`); nothing in `src/` or `deno.json`/`deno.lock`
-references `terminal-ui`. Don't route TUI questions there.
+`package.json`'s `dependencies`).

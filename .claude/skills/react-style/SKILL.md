@@ -11,7 +11,7 @@ Conventions for TSX views under `src/tui/`, derived from `src/tui/agent/views/`.
 Follow these when writing or reviewing any `.tsx` file.
 
 The mechanically checkable rules are enforced by `agents/style-check`
-(`agents/style-checks/tsx.ts`): arrow-function components, no
+(`agents/style-checks/tsx-plugin.ts`): arrow-function components, no
 `useState`/`useReducer`, no inline `useInput` outside `hooks/`, no `&&`
 conditionals in JSX, no `split('\n')` line-mapping (multi-line text renders in a
 single `<Text wrap='wrap'>`). The rules below are the ones a reviewer must still

@@ -17,7 +17,7 @@ coding   in/out ($/M)     total    model
 
 ```
 dev/lint   # auto-fix lint + formatting, then typecheck
-dev/test   # run tests with coverage, forward args to deno test
+dev/test   # run tests with coverage, forward args to bun test
 dev/coverage   # run tests with coverage then print human-readable summary
 ```
 

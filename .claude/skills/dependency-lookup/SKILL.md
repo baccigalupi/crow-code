@@ -1,39 +1,34 @@
 ---
 name: dependency-lookup
 description: >-
-  Look up Deno runtime and @std APIs (and crow-code's own code) in indexed
-  dependency graphs instead of guessing signatures. Triggers on: Deno.* API,
-  @std imports, Ink/React TUI components, Signal, "which component", "how do
-  I draw", dependency API questions.
+  Look up Bun runtime APIs (and crow-code's own code) in indexed dependency
+  graphs instead of guessing signatures. Triggers on: Bun.* API, bun:test
+  imports, Ink/React TUI components, Signal, "which component", "how do I
+  draw", dependency API questions.
 ---
 
 # Dependency lookup
 
-Note on the TUI: older notes pin a project named `exotui` as crow-code's TUI
-dependency. It isn't. `CLAUDE.md`'s Dependency lookup section flags this: the
-TUI (`src/tui/*`) is built on **Ink + React** with **`@preact/signals-core`**
-for state; nothing in `src/` or `deno.json`/`deno.lock` references `exotui` or
-`terminal-ui`. Don't route TUI questions to either indexed project — there isn't
-one. Read `src/tui/*` source directly for TUI questions instead.
+Note on the TUI: the TUI (`src/tui/*`) is built on **Ink + React** with
+**`@preact/signals-core`** for state. No indexed dependency project covers it.
+Read `src/tui/*` source directly for TUI questions instead.
 
-Core dependencies are indexed as `codebase-memory-mcp` projects, backed by
-checkouts under `.deps/` (gitignored). Verify dependency signatures against the
-graph — never write Deno/`@std` API calls from memory.
+Bun runtime types are indexed as a `codebase-memory-mcp` project, backed by
+`node_modules/bun-types`. Verify dependency signatures against the graph — never
+write `Bun.*` API calls from memory.
 
 ## Projects
 
-| Project                             | Covers                                            | Source checkout (gitignored, readable) |
-| ----------------------------------- | ------------------------------------------------- | -------------------------------------- |
-| `deno`                              | `Deno.*` namespace + web globals (v2.9.7 d.ts)    | `.deps/deno`                           |
-| `deno-std`                          | All `@std` packages (HEAD; drifts vs `deno.lock`) | `.deps/std`                            |
-| `Users-kane-Projects-rho-crow-code` | this codebase                                     | repo root                              |
+| Project                             | Covers                                     | Source (readable)        |
+| ----------------------------------- | ------------------------------------------ | ------------------------ |
+| `bun-types`                         | `Bun.*` namespace, `bun:test`, web globals | `node_modules/bun-types` |
+| `Users-kane-Projects-rho-crow-code` | this codebase                              | repo root                |
 
 ## Routing
 
 The file's imports pick the project:
 
-- `Deno.` globals, runtime APIs, permissions → `deno`
-- `@std/*` imports (`walk`, `assertEquals`, `join`, …) → `deno-std`
+- `Bun.` globals, `bun:*` imports, runtime APIs → `bun-types`
 - crow-code's own code (including `src/tui/*`) →
   `Users-kane-Projects-rho-crow-code`
 
@@ -52,24 +47,19 @@ The file's imports pick the project:
 There are no `CROSS_*` edges (service-call linkers only, 0 edges verified). Use
 the two-project hop: `search_graph`/`trace_path` on
 `Users-kane-Projects-rho-crow-code` first to find real crow call sites — the
-best usage examples — then resolve the definition in the dep project.
+best usage examples — then resolve the definition in `bun-types`.
 
 ## Fallbacks
 
-- Zero hits → fan out `search_graph` across the other dep projects in parallel.
-- Need a file the graph lacks → `curl https://jsr.io/@scope/pkg/<ver>/<path>`
-  (JSR, version-exact) or
-  `curl https://raw.githubusercontent.com/denoland/std/<rev>/<path>`.
-- `.deps/` checkouts are gitignored but readable — `Read`/`Grep` inside them
-  work as a local source fallback when the graph lacks a file.
-- No MCP access → the curl fallback above for the exact file, then read it.
+- Zero hits → read the file under `node_modules/bun-types` directly with
+  `Read`/`Grep`.
+- Need a file the package lacks →
+  `curl https://raw.githubusercontent.com/oven-sh/bun/<rev>/<path>`.
+- No MCP access → the local read or curl fallback above.
 
 ## Freshness
 
-Pinned sources: `deno` = v2.9.7 d.ts, `deno-std` = HEAD clone (drifts vs
-`deno.lock` @std pins). On a dep bump, re-fetch/re-checkout `.deps/*` and re-run
-`index_repository(repo_path, name=<project>, mode="full",
-persistence=true)` —
-git checkouts (`deno-std`) also self-refresh via the daemon watcher;
-`.deps/deno` (fetched d.ts files, not a git repo) needs the manual rerun. Always
-`mode="full"` — `moderate`/`fast` skip `*.d.ts` and would gut the `deno` index.
+`bun-types` is pinned by `bun.lock` (`@types/bun`). On a bump, run
+`bun install`, then
+`index_repository(repo_path="node_modules/bun-types", name="bun-types", mode="full", persistence=true)`.
+Always `mode="full"` — `moderate`/`fast` skip `*.d.ts` and would gut the index.
