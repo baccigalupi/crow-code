@@ -1,6 +1,0 @@
-{
-  "deno.enable": false,
-  "deno.codeLens.references": false,
-  "deno.codeLens.referencesAllFunctions": false,
-  "js/ts.experimental.useTsgo": false
-}
