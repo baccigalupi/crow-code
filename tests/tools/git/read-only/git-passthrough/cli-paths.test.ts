@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { GitArgumentPaths } from '../../../../../src/tools/git/read-only/git-passthrough/git-argument-paths.ts'
+import { GitArgumentPaths } from '../../../../../src/tools/git/read-only/git-passthrough/cli-paths.ts'
 
 describe('GitArgumentPaths', () => {
   it('when all three sources have paths, lists positionals, flag paths, then pathspecs', () => {

@@ -1,3 +1,9 @@
+import type { GitSubcommand } from './git/read-only/git-passthrough/git-subcommand.ts'
+
+export type GitSubcommandClass = new (arguments_: {
+  args: string[]
+}) => GitSubcommand
+
 export type GitLogEntry = {
   sha: string
   author: string
@@ -50,11 +56,6 @@ export type GitOutput = {
 }
 
 export type GitFlagKind = 'switch' | 'number' | 'text' | 'path'
-
-export type GitSubcommand = {
-  forms?: string[]
-  flags: Record<string, GitFlagKind>
-}
 
 export type MultiEditResult = EditResult[]
 

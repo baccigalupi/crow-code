@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { GitFlagValidator } from '../../../../../src/tools/git/read-only/git-passthrough/git-passthrough-flags.ts'
+import { GitFlagValidator } from '../../../../../src/tools/git/read-only/git-passthrough/cli-flags.ts'
 
 describe('GitFlagValidator', () => {
   it('when an enabled switch is given by its exact spelling, accepts it', () => {

@@ -2,9 +2,9 @@ import { describe, expect, it } from 'bun:test'
 import {
   gitSafeReadEnv,
   gitSafeReadSubcommand,
-} from '../../../../../src/tools/git/read-only/git-passthrough/git-safe-read.ts'
+} from '../../../../../src/tools/git/read-only/git-passthrough/cli-subcommand-wrapper.ts'
 
-describe('git-safe-read', () => {
+describe('cli-subcommand-wrapper', () => {
   it('when parent has retargeting variables, removes them and applies settings', () => {
     const parent = {
       PATH: '/usr/bin',
