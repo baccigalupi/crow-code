@@ -54,9 +54,9 @@ export class GitReadOnlyPassthrough extends OperationWithResult<
   }
 
   private refusal() {
-    return new GitReadOnlyRules(
-      this.enabled,
-      this.operationArguments.args,
-    ).refusal()
+    return new GitReadOnlyRules({
+      enabled: this.enabled,
+      args: this.operationArguments.args,
+    }).refusal()
   }
 }

@@ -10,7 +10,13 @@ export class GitReadOnlyRules {
   private enabled: Record<string, GitSubcommand>
   private args: string[]
 
-  constructor(enabled: Record<string, GitSubcommand>, args: string[]) {
+  constructor({
+    enabled,
+    args,
+  }: {
+    enabled: Record<string, GitSubcommand>
+    args: string[]
+  }) {
     this.enabled = enabled
     this.args = args
   }
@@ -39,10 +45,10 @@ export class GitReadOnlyRules {
   }
 
   private flagRefusal() {
-    const validator = new GitFlagValidator(
-      this.subcommand().flags,
-      this.args.slice(this.flagStart()),
-    ).validate()
+    const validator = new GitFlagValidator({
+      flags: this.subcommand().flags,
+      values: this.args.slice(this.flagStart()),
+    }).validate()
     return this.offenderReason(validator) || this.numberReason(validator)
   }
 

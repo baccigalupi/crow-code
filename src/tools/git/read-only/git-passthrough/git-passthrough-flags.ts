@@ -6,16 +6,22 @@ export class GitFlagValidator {
   readonly offenders: string[] = []
   readonly badNumbers: string[] = []
   private flags: Map<string, GitFlagKind>
-  private tokens: string[]
+  private values: string[]
   private consumed = new Set<number>()
 
-  constructor(flags: Record<string, GitFlagKind>, tokens: string[]) {
+  constructor({
+    flags,
+    values,
+  }: {
+    flags: Record<string, GitFlagKind>
+    values: string[]
+  }) {
     this.flags = new Map(Object.entries(flags))
-    this.tokens = tokens
+    this.values = values
   }
 
   validate() {
-    this.tokens.forEach((token, index) => this.visit(token, index))
+    this.values.forEach((token, index) => this.visit(token, index))
     return this
   }
 
@@ -47,7 +53,7 @@ export class GitFlagValidator {
   }
 
   private separate(token: string, index: number, kind: GitFlagKind) {
-    const value = this.tokens[index + 1]
+    const value = this.values[index + 1]
     this.consumed.add(index + 1)
     if (value === undefined) this.offenders.push(token)
     else if (kind === 'number' && !isNumber(value)) {
