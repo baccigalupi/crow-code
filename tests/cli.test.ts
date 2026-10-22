@@ -250,6 +250,27 @@ describe('run', () => {
     expect(consoleLog.mock.calls[0][0]).toContain('Usage: crow <command>')
   })
 
+  it('when no application data is given, builds it from the process', async () => {
+    const argv = process.argv
+    process.argv = [
+      'bun',
+      'crow',
+      '-V',
+      `--config=${join(fixturesDirectory, 'config.json')}`,
+    ]
+    const exit = spyOn(process, 'exit').mockImplementation(
+      () => undefined as never,
+    )
+    const log = spyOn(console, 'log').mockImplementation(() => {})
+
+    await run()
+    process.argv = argv
+    await clearDirectory(join(fixturesDirectory, '.crow'))
+
+    expect(log).toHaveBeenNthCalledWith(1, 'crow 0.0.1')
+    expect(exit).toHaveBeenNthCalledWith(1, 0)
+  })
+
   it('when no arguments are given, launches the repl and exits on interrupt', async () => {
     const cwd = join(fixturesDirectory, 'cli')
     await mkdir(join(cwd, '.crow'), { recursive: true })

@@ -1,5 +1,5 @@
 import type { ApplicationData } from '../application-data/application-data.ts'
-import type { ReplStatus } from '../tui/types.ts'
+import type { ReplIo, ReplStatus } from '../tui/types.ts'
 
 export type ParsedArgumentsOptions = Record<string, string | boolean>
 
@@ -10,4 +10,4 @@ export type ParsedArguments = {
 
 export type TuiRunner = { status(): Promise<ReplStatus> }
 
-export type RunTui = (applicationData: ApplicationData) => TuiRunner
+export type RunTui = (applicationData: ApplicationData, io: ReplIo) => TuiRunner

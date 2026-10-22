@@ -11,7 +11,7 @@ import { Agent } from './views/agent.tsx'
 // the view, so no view ever sees the application data.
 export const runAgentTui = (
   applicationData: ApplicationData,
-  io: ReplIo = {},
+  io: ReplIo,
   state: ChatSession = chatSession,
 ) => {
   return createTuiRunner(applicationData, io, () =>

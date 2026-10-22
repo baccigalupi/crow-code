@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'bun:test'
+import type { Database } from 'bun:sqlite'
 import knex from 'knex'
 import pino from 'pino'
 import { migrateDatabase } from '../../src/database/migrate.ts'
@@ -71,6 +72,27 @@ describe('BunSqliteClient', () => {
 
     expect(foreignKeys).toEqual([{ foreign_keys: 1 }])
     expect(migrations.length).toBeGreaterThan(0)
+    await database.destroy()
+  })
+
+  it('when the driver throws a non-error value, rejects with that value', async () => {
+    const database = knex({
+      client: BunSqliteClient,
+      connection: { filename: ':memory:' },
+      useNullAsDefault: true,
+    })
+    const client = database.client as BunSqliteClient
+
+    const querying = client._query(
+      {
+        prepare: () => {
+          throw 'locked'
+        },
+      } as unknown as Database,
+      { sql: 'select 1' },
+    )
+
+    await expect(querying).rejects.toBe('locked')
     await database.destroy()
   })
 })

@@ -11,7 +11,7 @@ import { InstallApp } from './views/install-app.tsx'
 // no view, hook or keypress ever sees the filesystem or the writer.
 export const runInstalltTui = (
   applicationData: ApplicationData,
-  io: ReplIo = {},
+  io: ReplIo,
   store: InstallStore = installStore,
 ) => {
   const { filesystem } = applicationData

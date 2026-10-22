@@ -19,7 +19,7 @@ class Walker {
       includeDirs = true,
       includeSymlinks = true,
       ignore = [],
-    }: WalkOptions = {},
+    }: WalkOptions,
   ) {
     this.root = root
     this.maxDepth = maxDepth

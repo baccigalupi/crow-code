@@ -23,7 +23,7 @@ describe('CommandTui', () => {
 
     await tui.run()
 
-    expect<unknown>(runTui.mock.calls[0]).toEqual([applicationData])
+    expect<unknown>(runTui.mock.calls[0]).toEqual([applicationData, {}])
     expect(status.mock.calls.length).toBe(1)
   })
 

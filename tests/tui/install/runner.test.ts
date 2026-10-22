@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { runInstalltTui } from '../../../src/tui/install/runner.ts'
 import { emptyBuffer, insertText } from '../../../src/tui/input-buffer.ts'
+import { installStore } from '../../../src/tui/install/interactions/state/config-buffer.ts'
 import { effect, signal } from '@preact/signals-core'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { mockTerminal } from '../../support/mock-terminal.ts'
@@ -49,5 +50,31 @@ describe('runInstalltTui', () => {
     )
     expect(written.crowGlobalDirectory).toBe('~/.crow')
     expect(written.permissions.ignore).toEqual([])
+  })
+
+  it('when no store is given, writes the shared install data', async () => {
+    installStore.repoDirectory.value = insertText(
+      emptyBuffer(),
+      join(fixturesDirectory, 'install-runner', 'crow'),
+    )
+    runInstalltTui(mockApplicationData(), mockTerminal({}).io)
+    const finished = new Promise((resolve) =>
+      effect(() => {
+        if (installStore.step.value === 'done') resolve(true)
+      }),
+    )
+
+    installStore.step.value = 'write'
+    await finished
+    installStore.repoDirectory.value = emptyBuffer()
+    installStore.step.value = 'repo'
+
+    const written = JSON.parse(
+      readFileSync(
+        join(fixturesDirectory, 'install-runner', 'crow', 'config.json'),
+        'utf8',
+      ),
+    )
+    expect(written.crowGlobalDirectory).toBe('~/.crow')
   })
 })

@@ -17,6 +17,6 @@ export abstract class CommandTui extends Command {
   }
 
   runner() {
-    return this.runTui(this.applicationData)
+    return this.runTui(this.applicationData, {})
   }
 }
