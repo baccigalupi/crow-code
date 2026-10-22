@@ -13,21 +13,21 @@ description: >-
 **Stop before the shell runs.** `.claude/hooks/claude-command-gate.ts` decides
 every Bash call deterministically — allow or deny, never a human prompt. It uses
 this repo's tested gate logic (`agents/hooks/command-allowed.ts` +
-`devin-config.ts` + `block-reason.ts`, backed by `.devin/config.json`, a legacy
-directory name) as its single source of truth — there is one allowlist. Under
+`block-reason.ts`, backed by `.claude/command-allowlist.json`) as its single
+source of truth — there is one allowlist. Under
 pressure, agents `cd`, chain commands, run bare `deno`/`bash`/`sh`, or invent
 workarounds — none of that matches, the deny carries a rewrite, and retrying the
 same shape just repeats the deny.
 
 ## The gate is real and terminal
 
-- **Pre-approved** (run without a prompt, per `.devin/config.json`): `dev/*`,
+- **Pre-approved** (run without a prompt, per `.claude/command-allowlist.json`): `dev/*`,
   `agents/*`, `bin/crow`, `bd`, `curl`, `chmod`, `rm`, `deno doc`, `bun install`, and `git mv`.
 - **Read-only inspectors are pre-approved too, but checked separately**: `rg`,
   `grep`, `egrep`, `fgrep`, `ls`, `find`, `ps`, `cat`, `head`, `tail`, `sed`,
   `awk`, `wc`, `jq`, `sort`, `uniq`, `stat`, `file`, `tree`, `diff`, `pwd`,
   `echo`, `printf`, `basename`, `dirname`, `realpath`. These aren't in
-  `.devin/config.json` at all. This session has no dedicated search tool, so
+  `.claude/command-allowlist.json` at all. This session has no dedicated search tool, so
   Bash is the only way to grep the repo; `claude-command-gate.ts` allows these
   by name with its **own** quote-aware check (track `'...'`/`"..."` state, deny
   only a _live_ `` ` $( < > ; | & `` or newline outside quotes) — not the
@@ -54,13 +54,13 @@ same shape just repeats the deny.
   is approved — use `dev/test`/`dev/lint`/`dev/coverage`/ `agents/typecheck` for
   everything else), `bash`/`sh` (issue the command directly, not wrapped), `cd`
   (see **Worktrees** below), `git push`, anything not named in
-  `.devin/config.json`'s allow list or the read-only inspector list above.
+  `.claude/command-allowlist.json` or the read-only inspector list above.
 
 `claude-command-gate.ts` has **no fall-through**: a command matching nothing
 above is **denied**, not escalated to a permission prompt. The deny reason names
 the fix — do not retry a variant of a denied command, run the approved form it
 names. If a command is genuinely missing from the gate, the fix is adding it to
-`.devin/config.json`'s `permissions.allow`, not working around the deny.
+`.claude/command-allowlist.json`'s `permissions.allow`, not working around the deny.
 
 ## Worktrees — no `cd`, use `EnterWorktree`
 
@@ -160,6 +160,6 @@ Run from the repo root, or inside a worktree entered via `EnterWorktree`.
   not swap to bare `deno`, raw binaries, or probe scripts.
 - **A command you expect to be approved gets denied:** the deny reason names the
   fix — follow it. If the command is genuinely missing from the gate, say so;
-  the fix is adding it to `.devin/config.json`, not working around the deny.
+  the fix is adding it to `.claude/command-allowlist.json`, not working around the deny.
 - **Need to target a worktree:** `EnterWorktree`, never `cd`, `--config`, or an
   absolute path flag — see **Worktrees** above.

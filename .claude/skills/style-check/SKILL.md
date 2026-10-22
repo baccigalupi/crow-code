@@ -8,8 +8,8 @@ description: >-
 # Style check
 
 `.claude/hooks/claude-command-gate.ts` already allows `agents/style-check` (and
-its `--changed`/`--all`/`FILE...` forms) through the `.devin/config.json`
-allowlist, so there's nothing extra to grant.
+its `--changed`/`--all`/`FILE...` forms) through the
+`.claude/command-allowlist.json` allowlist, so there's nothing extra to grant.
 
 Run `agents/style-check` to enforce the mechanical style and test conventions on
 every file in the codebase.

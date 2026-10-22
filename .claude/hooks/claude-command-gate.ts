@@ -1,11 +1,8 @@
 #!/usr/bin/env bun
 // PreToolUse hook for Claude Code's Bash tool, run on Bun. For anything other
-// than a read-only inspector (see below), this delegates to the already-tested
-// gate modules shared with Devin (agents/hooks/command-allowed.ts +
-// devin-config.ts + block-reason.ts) as the single source of truth for "is
-// this command allowed" — same heredoc-commit and git-push handling. Only the
-// IO envelope and the allowlist differ: Devin's hook prints
-// {"decision":"block",...}; Claude Code expects
+// than a read-only inspector (see below), this delegates to the tested gate
+// modules (agents/hooks/command-allowed.ts + block-reason.ts) as the single
+// source of truth for "is this command allowed", and emits Claude Code's
 // {"hookSpecificOutput": {permissionDecision, permissionDecisionReason}}.
 //
 // The allowlist is .claude/command-allowlist.json, read from next to this
@@ -14,21 +11,15 @@
 // worktree's allowlist, main's gate reads main's.
 //
 // One wording patch: blockReason's cd message points at "the exec tool's
-// workdir parameter" — Devin-specific. Claude Code's Bash tool has no such
-// parameter; the real fix here is the EnterWorktree tool (see
-// .claude/skills/correct-command/SKILL.md § Worktrees).
+// workdir parameter", which Claude Code's Bash tool doesn't have; the real fix
+// here is the EnterWorktree tool (see .claude/skills/correct-command/SKILL.md
+// § Worktrees).
 //
-// One allow-list supplement, handled separately rather than by reuse: Devin
-// keeps its exec allowlist narrow because it has separate, non-exec tools for
-// reading and searching files — grep/cat/ls never need to be *executed*
-// there. This Claude Code session has no such dedicated search tool (no
-// Grep/Glob), so Bash is the only way to inspect the repo. But
+// One allow-list supplement: Bash is the only way to inspect the repo here, but
 // command-allowed.ts's shell-safety check is a quote-blind regex — any `|`
 // anywhere in the command text denies it, even inside a quoted alternation
-// pattern like `grep -E "foo|bar"`. That's fine for Devin, which never runs
-// quote-heavy search commands via exec, but wrong for grep/rg here. So
-// read-only inspectors get their own quote-aware check instead of widening
-// Devin's shared, quote-blind one.
+// pattern like `grep -E "foo|bar"`. So read-only inspectors get their own
+// quote-aware check instead of widening the shared quote-blind one.
 import { blockReason } from '../../agents/hooks/block-reason.ts'
 import { commandAllowed } from '../../agents/hooks/command-allowed.ts'
 import { DevinConfig } from '../../agents/hooks/devin-config.ts'
@@ -109,8 +100,8 @@ const workdirPhrase = "Use the exec tool's `workdir` parameter instead."
 const worktreePhrase =
   'Use the EnterWorktree tool to switch into a worktree instead — see .claude/skills/correct-command/SKILL.md.'
 
-// Devin's gate has no concept of backgrounding, so command-allowed.ts never
-// considers it. Claude Code's Bash tool does (run_in_background) — and
+// command-allowed.ts never considers backgrounding. Claude Code's Bash tool
+// has it (run_in_background) — and
 // dev/test / dev/coverage clean the shared coverage/ directory on every
 // invocation. Stacking a backgrounded run on a foreground one (or
 // on agents/pre-commit, which runs dev/test itself) corrupts both.
