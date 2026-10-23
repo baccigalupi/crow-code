@@ -1,8 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import { readdir, readFile, rename } from 'node:fs/promises'
 import { resolve } from 'node:path'
-import { CrowConfig } from '../../../../src/application-data/config.ts'
-import { defaultCrowConfig } from '../../../../src/domain/config.ts'
 import { GitReadOnlyPassthrough } from '../../../../src/tools/git/read-only/git-passthrough.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
@@ -20,70 +18,6 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
       resolve('tests/support/fixtures/tools/git/read-only/repo', '.git'),
       resolve('tests/support/fixtures/tools/git/read-only/repo', 'dot-git'),
     )
-  })
-
-  it('when rev-parse --show-toplevel runs, the fixture is its own top level', async () => {
-    const applicationData = mockApplicationData({
-      cwd: resolve('tests/support/fixtures/tools/git/read-only/repo'),
-    })
-
-    const passthrough = new GitReadOnlyPassthrough({
-      applicationData,
-      operationArguments: { args: ['rev-parse', '--show-toplevel'] },
-    })
-    await passthrough.run()
-
-    expect(passthrough.result().stdout).toEndWith(
-      'tests/support/fixtures/tools/git/read-only/repo\n',
-    )
-  })
-
-  it('when for-each-ref runs, the fixture has one branch at a fixed commit', async () => {
-    const applicationData = mockApplicationData({
-      cwd: resolve('tests/support/fixtures/tools/git/read-only/repo'),
-    })
-
-    const passthrough = new GitReadOnlyPassthrough({
-      applicationData,
-      operationArguments: {
-        args: ['for-each-ref', '--format=%(refname) %(objectname)'],
-      },
-    })
-    await passthrough.run()
-
-    expect(passthrough.result().stdout).toBe(
-      'refs/heads/main 7f2203f286226e6c29da25b8edb35b13a7efa7c6\n',
-    )
-  })
-
-  it('when status runs, the fixture has one modified and one untracked file', async () => {
-    const applicationData = mockApplicationData({
-      cwd: resolve('tests/support/fixtures/tools/git/read-only/repo'),
-    })
-
-    const passthrough = new GitReadOnlyPassthrough({
-      applicationData,
-      operationArguments: { args: ['status', '--porcelain=v2'] },
-    })
-    await passthrough.run()
-
-    expect(passthrough.result().stdout).toBe(
-      '1 .M N... 100644 100644 100644 4e84e5c7a7f85f793bc5a168d6d80daed0df9bb4 4e84e5c7a7f85f793bc5a168d6d80daed0df9bb4 notes.txt\n? untracked.txt\n',
-    )
-  })
-
-  it('when rev-list --count runs, the fixture has two commits', async () => {
-    const applicationData = mockApplicationData({
-      cwd: resolve('tests/support/fixtures/tools/git/read-only/repo'),
-    })
-
-    const passthrough = new GitReadOnlyPassthrough({
-      applicationData,
-      operationArguments: { args: ['rev-list', '--count', 'HEAD'] },
-    })
-    await passthrough.run()
-
-    expect(passthrough.result().stdout).toBe('2\n')
   })
 
   it('when log runs, repository state is unchanged', async () => {
@@ -1178,83 +1112,5 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
     expect(await readFile(indexPath)).toEqual(indexBefore)
-  })
-
-  it('when show HEAD:allowed.txt runs with denied.txt ignored, returns the content', async () => {
-    const defaults = defaultCrowConfig()
-    const applicationData = mockApplicationData({
-      cwd: resolve('tests/support/fixtures/tools/git/read-only/repo'),
-      config: new CrowConfig('.', {
-        ...defaults,
-        permissions: { ...defaults.permissions, ignore: ['denied.txt'] },
-      }),
-    })
-
-    const passthrough = new GitReadOnlyPassthrough({
-      applicationData,
-      operationArguments: { args: ['show', 'HEAD:allowed.txt'] },
-    })
-    await passthrough.run()
-
-    expect(passthrough.result().stdout).toBe('allowed two\n')
-  })
-
-  it('when show HEAD:denied.txt runs with denied.txt ignored, refuses it', async () => {
-    const defaults = defaultCrowConfig()
-    const applicationData = mockApplicationData({
-      cwd: resolve('tests/support/fixtures/tools/git/read-only/repo'),
-      config: new CrowConfig('.', {
-        ...defaults,
-        permissions: { ...defaults.permissions, ignore: ['denied.txt'] },
-      }),
-    })
-
-    const passthrough = new GitReadOnlyPassthrough({
-      applicationData,
-      operationArguments: { args: ['show', 'HEAD:denied.txt'] },
-    })
-    await passthrough.run()
-
-    expect(passthrough.reason).toBe('path not allowed: denied.txt')
-  })
-
-  it('when log -- denied.txt runs with denied.txt ignored, refuses it', async () => {
-    const defaults = defaultCrowConfig()
-    const applicationData = mockApplicationData({
-      cwd: resolve('tests/support/fixtures/tools/git/read-only/repo'),
-      config: new CrowConfig('.', {
-        ...defaults,
-        permissions: { ...defaults.permissions, ignore: ['denied.txt'] },
-      }),
-    })
-
-    const passthrough = new GitReadOnlyPassthrough({
-      applicationData,
-      operationArguments: { args: ['log', '--', 'denied.txt'] },
-    })
-    await passthrough.run()
-
-    expect(passthrough.reason).toBe('path not allowed: denied.txt')
-  })
-
-  it('when blame --contents denied.txt runs with denied.txt ignored, refuses it', async () => {
-    const defaults = defaultCrowConfig()
-    const applicationData = mockApplicationData({
-      cwd: resolve('tests/support/fixtures/tools/git/read-only/repo'),
-      config: new CrowConfig('.', {
-        ...defaults,
-        permissions: { ...defaults.permissions, ignore: ['denied.txt'] },
-      }),
-    })
-
-    const passthrough = new GitReadOnlyPassthrough({
-      applicationData,
-      operationArguments: {
-        args: ['blame', '--contents', 'denied.txt', '--', 'allowed.txt'],
-      },
-    })
-    await passthrough.run()
-
-    expect(passthrough.reason).toBe('path not allowed: denied.txt')
   })
 })

@@ -109,8 +109,9 @@ describe('GitReadOnlyPassthrough', () => {
     })
     await passthrough.run()
 
-    expect(commandSpy.mock.calls[0][1].args.slice(-4)).toEqual([
+    expect(commandSpy.mock.calls[0][1].args.slice(-5)).toEqual([
       'blame',
+      '--line-porcelain',
       '--porcelain',
       '--',
       'src/a.ts',

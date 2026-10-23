@@ -71,6 +71,7 @@ export type EditInstruction = {
 export type GitOutput = {
   stdout?: string
   commits?: GitLogCommit[]
+  lines?: GitBlameLine[]
 }
 
 export type GitFlagKind = 'boolean' | 'number' | 'text' | 'path'
