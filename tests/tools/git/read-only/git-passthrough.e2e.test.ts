@@ -105,6 +105,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -123,6 +125,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when log --oneline -n 1 runs, repository state is unchanged', async () => {
@@ -144,6 +147,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -162,6 +167,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when show --stat HEAD runs, repository state is unchanged', async () => {
@@ -183,6 +189,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -201,6 +209,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when diff runs, repository state is unchanged', async () => {
@@ -222,6 +231,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -240,6 +251,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when diff --cached --stat runs, repository state is unchanged', async () => {
@@ -261,6 +273,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -279,6 +293,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when blame --porcelain runs, repository state is unchanged', async () => {
@@ -300,6 +315,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -320,6 +337,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when status --porcelain=v2 runs, repository state is unchanged', async () => {
@@ -341,6 +359,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -359,6 +379,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when ls-files -o runs, repository state is unchanged', async () => {
@@ -380,6 +401,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -398,6 +421,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when ls-tree -r HEAD runs, repository state is unchanged', async () => {
@@ -419,6 +443,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -437,6 +463,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when rev-parse --show-toplevel runs, repository state is unchanged', async () => {
@@ -458,6 +485,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -476,6 +505,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when rev-list --count runs, repository state is unchanged', async () => {
@@ -497,6 +527,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -515,6 +547,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when merge-base runs, repository state is unchanged', async () => {
@@ -536,6 +569,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -554,6 +589,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when name-rev --name-only runs, repository state is unchanged', async () => {
@@ -575,6 +611,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -593,6 +631,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when count-objects -v runs, repository state is unchanged', async () => {
@@ -614,6 +653,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -632,6 +673,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when show-ref --heads runs, repository state is unchanged', async () => {
@@ -653,6 +695,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -671,6 +715,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when for-each-ref --format runs, repository state is unchanged', async () => {
@@ -692,6 +737,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -710,6 +757,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when cat-file -p runs, repository state is unchanged', async () => {
@@ -731,6 +779,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -749,6 +799,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when check-attr -a runs, repository state is unchanged', async () => {
@@ -770,6 +821,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -788,6 +841,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when grep -n runs, repository state is unchanged', async () => {
@@ -809,6 +863,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -827,6 +883,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when branch -a runs, repository state is unchanged', async () => {
@@ -848,6 +905,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -866,6 +925,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when tag -l runs, repository state is unchanged', async () => {
@@ -887,6 +947,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -905,6 +967,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when remote -v runs, repository state is unchanged', async () => {
@@ -926,6 +989,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -944,6 +1009,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when config --list runs, repository state is unchanged', async () => {
@@ -965,6 +1031,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -983,6 +1051,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when stash list runs, repository state is unchanged', async () => {
@@ -1004,6 +1073,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -1022,6 +1093,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when worktree list runs, repository state is unchanged', async () => {
@@ -1043,6 +1115,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -1061,6 +1135,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when reflog show runs, repository state is unchanged', async () => {
@@ -1082,6 +1157,8 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     await statusBefore.run()
     const gitFilesBefore = await readdir(gitDirectory, { recursive: true })
     const notesBefore = await readFile(notesPath, 'utf8')
+    const indexPath = resolve(gitDirectory, 'index')
+    const indexBefore = await readFile(indexPath)
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
@@ -1100,6 +1177,7 @@ describe('GitReadOnlyPassthrough against the fixture repository', () => {
     expect(gitFilesAfter).toHaveLength(gitFilesBefore.length)
     expect(gitFilesAfter).toEqual(expect.arrayContaining(gitFilesBefore))
     expect(await readFile(notesPath, 'utf8')).toBe(notesBefore)
+    expect(await readFile(indexPath)).toEqual(indexBefore)
   })
 
   it('when show HEAD:allowed.txt runs with denied.txt ignored, returns the content', async () => {

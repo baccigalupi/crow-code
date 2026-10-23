@@ -31,6 +31,8 @@ describe('GitReadOnlyPassthrough', () => {
       'protocol.allow=never',
       '-c',
       'core.untrackedCache=false',
+      '-c',
+      'diff.autoRefreshIndex=false',
       'log',
     ])
     expect(commandSpy.mock.calls[0][1].env.GIT_PAGER).toBe('cat')

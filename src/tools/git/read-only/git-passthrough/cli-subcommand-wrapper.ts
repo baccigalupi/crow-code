@@ -45,6 +45,8 @@ const prefix = [
   'protocol.allow=never',
   '-c',
   'core.untrackedCache=false',
+  '-c',
+  'diff.autoRefreshIndex=false',
 ]
 
 export const gitSafeReadSubcommand = (subcommand: string[]) =>

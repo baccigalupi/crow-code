@@ -50,6 +50,8 @@ describe('cli-subcommand-wrapper', () => {
       'protocol.allow=never',
       '-c',
       'core.untrackedCache=false',
+      '-c',
+      'diff.autoRefreshIndex=false',
       'status',
     ])
   })
