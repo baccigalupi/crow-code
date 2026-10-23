@@ -4,10 +4,10 @@ export class GitDiffSubcommand extends GitSubcommand {
   readonly name = 'diff'
   override readonly fixedFlags = ['--no-ext-diff', '--no-textconv']
   readonly flags = {
-    '--cached': 'switch',
-    '--stat': 'switch',
-    '--name-only': 'switch',
-    '--name-status': 'switch',
+    '--cached': 'boolean',
+    '--stat': 'boolean',
+    '--name-only': 'boolean',
+    '--name-status': 'boolean',
     '-U': 'number',
   } as const
 }

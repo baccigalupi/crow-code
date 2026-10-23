@@ -5,7 +5,7 @@ describe('GitSubcommand', () => {
   it('when args have revisions and a pathspec, requestedPaths lists them without flags', () => {
     class Log extends GitSubcommand {
       readonly name = 'log'
-      readonly flags = { '--oneline': 'switch' } as const
+      readonly flags = { '--oneline': 'boolean' } as const
     }
     const subcommand = new Log({
       args: ['--oneline', 'HEAD', '--', 'src/a.ts'],
@@ -19,7 +19,7 @@ describe('GitSubcommand', () => {
   it('when a flag is not enabled, names it and lists the allowed flags sorted', () => {
     class Log extends GitSubcommand {
       readonly name = 'log'
-      readonly flags = { '-n': 'number', '--oneline': 'switch' } as const
+      readonly flags = { '-n': 'number', '--oneline': 'boolean' } as const
     }
     const subcommand = new Log({ args: ['--graph'] })
 
@@ -47,7 +47,7 @@ describe('GitSubcommand', () => {
   it('when several flags are refused, names every one', () => {
     class Log extends GitSubcommand {
       readonly name = 'log'
-      readonly flags = { '--oneline': 'switch' } as const
+      readonly flags = { '--oneline': 'boolean' } as const
     }
     const subcommand = new Log({ args: ['--output=f', '--exec=x'] })
 

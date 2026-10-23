@@ -4,8 +4,8 @@ export class GitBlameSubcommand extends GitSubcommand {
   readonly name = 'blame'
   readonly flags = {
     '-L': 'text',
-    '-w': 'switch',
-    '--porcelain': 'switch',
+    '-w': 'boolean',
+    '--porcelain': 'boolean',
     '--contents': 'path',
   } as const
 }

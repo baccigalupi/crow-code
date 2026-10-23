@@ -1,3 +1,9 @@
+type GitArgumentPathsArguments = {
+  positionals: string[]
+  flagPaths: string[]
+  pathspecs: string[]
+}
+
 export class GitArgumentPaths {
   private positionals: string[]
   private flagPaths: string[]
@@ -7,11 +13,7 @@ export class GitArgumentPaths {
     positionals,
     flagPaths,
     pathspecs,
-  }: {
-    positionals: string[]
-    flagPaths: string[]
-    pathspecs: string[]
-  }) {
+  }: GitArgumentPathsArguments) {
     this.positionals = positionals
     this.flagPaths = flagPaths
     this.pathspecs = pathspecs
@@ -42,4 +44,8 @@ export class GitArgumentPaths {
     const colon = token.indexOf(':')
     return [token.slice(0, colon), token.slice(colon + 1)]
   }
+}
+
+export const gitArgumentPaths = (args: GitArgumentPathsArguments) => {
+  return new GitArgumentPaths(args)
 }

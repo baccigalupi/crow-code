@@ -1,6 +1,5 @@
 import type { GitFlagKind } from '../../../types.ts'
-import { GitFlagValidator } from './cli-flags.ts'
-import { GitArgumentPaths } from './cli-paths.ts'
+import { gitParsedArguments } from './cli-options/parsed-arguments.ts'
 import { GitRefusals } from './git-refusals.ts'
 
 export abstract class GitSubcommand {
@@ -20,11 +19,11 @@ export abstract class GitSubcommand {
   }
 
   refusal() {
-    return this.badForm() || this.flagRefusal()
+    return this.badForm() || this.parsedArguments().refusal()
   }
 
   requestedPaths() {
-    return new GitArgumentPaths(this.validator()).paths()
+    return this.parsedArguments().paths()
   }
 
   private badForm() {
@@ -38,35 +37,16 @@ export abstract class GitSubcommand {
     return this.refusals.formNotAllowed(attempted, this.name, forms)
   }
 
-  private flagRefusal() {
-    const validator = this.validator()
-    return this.offenderReason(validator) || this.numberReason(validator)
-  }
-
-  private validator() {
-    return new GitFlagValidator({
+  private parsedArguments() {
+    return gitParsedArguments({
+      name: this.name,
       flags: this.flags,
       values: this.args.slice(this.flagStart()),
-    }).validate()
+    })
   }
 
   private flagStart() {
     if (this.forms === undefined) return 0
     return 1
-  }
-
-  private offenderReason(validator: GitFlagValidator) {
-    if (validator.offenders.length === 0) return ''
-    const allowed = Object.keys(this.flags)
-    return this.refusals.flagsNotAllowed(
-      validator.offenders,
-      this.name,
-      allowed,
-    )
-  }
-
-  private numberReason(validator: GitFlagValidator) {
-    if (validator.badNumbers.length === 0) return ''
-    return this.refusals.valuesNotNumbers(validator.badNumbers)
   }
 }

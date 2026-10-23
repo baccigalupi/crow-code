@@ -55,7 +55,9 @@ export type GitOutput = {
   stdout: string
 }
 
-export type GitFlagKind = 'switch' | 'number' | 'text' | 'path'
+export type GitFlagKind = 'boolean' | 'number' | 'text' | 'path'
+
+export type GitFlagReason = 'notAllowed' | 'notNumber'
 
 export type MultiEditResult = EditResult[]
 

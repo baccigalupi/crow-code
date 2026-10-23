@@ -98,6 +98,66 @@ describe('GitReadOnlyPassthrough', () => {
     ])
   })
 
+  it('when status is requested, runs git status', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: {
+        args: ['status', '--porcelain=v2', '--', 'src/a.ts'],
+      },
+    })
+    await passthrough.run()
+
+    expect(commandSpy.mock.calls[0][1].args.slice(-4)).toEqual([
+      'status',
+      '--porcelain=v2',
+      '--',
+      'src/a.ts',
+    ])
+  })
+
+  it('when ls-files is requested, runs git ls-files', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['ls-files', '-o', '--exclude-standard'] },
+    })
+    await passthrough.run()
+
+    expect(commandSpy.mock.calls[0][1].args.slice(-3)).toEqual([
+      'ls-files',
+      '-o',
+      '--exclude-standard',
+    ])
+  })
+
+  it('when ls-tree is requested, runs git ls-tree', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['ls-tree', '-r', 'HEAD'] },
+    })
+    await passthrough.run()
+
+    expect(commandSpy.mock.calls[0][1].args.slice(-3)).toEqual([
+      'ls-tree',
+      '-r',
+      'HEAD',
+    ])
+  })
+
   it('when push is requested, refuses listing the allowed subcommands', async () => {
     const commandSpy = mock()
     const applicationData = mockApplicationData({
@@ -112,7 +172,7 @@ describe('GitReadOnlyPassthrough', () => {
 
     expect(commandSpy.mock.calls.length).toBe(0)
     expect(passthrough.reason).toBe(
-      'subcommand not allowed: push; allowed subcommands: blame, diff, log, show',
+      'subcommand not allowed: push; allowed subcommands: blame, diff, log, ls-files, ls-tree, show, status',
     )
   })
 
@@ -126,7 +186,7 @@ describe('GitReadOnlyPassthrough', () => {
     await passthrough.run()
 
     expect(passthrough.reason).toBe(
-      'subcommand not allowed: difftool; allowed subcommands: blame, diff, log, show',
+      'subcommand not allowed: difftool; allowed subcommands: blame, diff, log, ls-files, ls-tree, show, status',
     )
   })
 
@@ -140,7 +200,7 @@ describe('GitReadOnlyPassthrough', () => {
     await passthrough.run()
 
     expect(passthrough.reason).toBe(
-      'subcommand not allowed: (none); allowed subcommands: blame, diff, log, show',
+      'subcommand not allowed: (none); allowed subcommands: blame, diff, log, ls-files, ls-tree, show, status',
     )
   })
 
@@ -154,7 +214,7 @@ describe('GitReadOnlyPassthrough', () => {
     await passthrough.run()
 
     expect(passthrough.reason).toBe(
-      'subcommand not allowed: constructor; allowed subcommands: blame, diff, log, show',
+      'subcommand not allowed: constructor; allowed subcommands: blame, diff, log, ls-files, ls-tree, show, status',
     )
   })
 
@@ -168,7 +228,7 @@ describe('GitReadOnlyPassthrough', () => {
     await passthrough.run()
 
     expect(passthrough.reason).toBe(
-      'subcommand not allowed: -C; allowed subcommands: blame, diff, log, show',
+      'subcommand not allowed: -C; allowed subcommands: blame, diff, log, ls-files, ls-tree, show, status',
     )
   })
 
