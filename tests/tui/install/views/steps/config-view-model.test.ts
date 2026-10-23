@@ -16,6 +16,7 @@ describe('configViewModel', () => {
       escalateRead: emptyText(),
       ignore: emptyText(),
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
     })
@@ -37,6 +38,7 @@ describe('configViewModel', () => {
       escalateRead: emptyText(),
       ignore: emptyText(),
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
     })
@@ -55,6 +57,7 @@ describe('configViewModel', () => {
       escalateRead: emptyText(),
       ignore,
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
     })
@@ -73,6 +76,7 @@ describe('configViewModel', () => {
       escalateRead: emptyText(),
       ignore,
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
     })
@@ -92,11 +96,33 @@ describe('configViewModel', () => {
       escalateRead: emptyText(),
       ignore: emptyText(),
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
     })
 
     expect(viewModel.highlighted).toBe('"additionalRead": [],')
+  })
+
+  it('when the step is additionalWrite and a path is typed, highlights the whole additionalWrite array', () => {
+    const additionalWrite = insertText(emptyText(), '/work')
+
+    const viewModel = configViewModel({
+      step: 'additionalWrite',
+      repoDirectory: emptyText(),
+      globalDirectory: emptyText(),
+      envFile: emptyText(),
+      escalateRead: emptyText(),
+      ignore: emptyText(),
+      additionalRead: emptyText(),
+      additionalWrite,
+      escalateWrite: emptyText(),
+      allowedLocalScripts: emptyText(),
+    })
+
+    expect(viewModel.highlighted).toBe(
+      '"additionalWrite": [\n      "/work"\n    ],',
+    )
   })
 
   it('when the step is escalateRead, highlights the escalateRead line', () => {
@@ -111,6 +137,7 @@ describe('configViewModel', () => {
       escalateRead: emptyText(),
       ignore: emptyText(),
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
     })
@@ -130,6 +157,7 @@ describe('configViewModel', () => {
       escalateRead: emptyText(),
       ignore: emptyText(),
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
     })
@@ -152,6 +180,7 @@ describe('configViewModel', () => {
       escalateRead: emptyText(),
       ignore: emptyText(),
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
     })

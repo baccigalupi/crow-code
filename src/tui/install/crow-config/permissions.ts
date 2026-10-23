@@ -34,11 +34,13 @@ const readLists = ({
 }
 
 const writeLists = ({
+  additionalWrite,
   escalateWrite,
   allowedLocalScripts: scripts,
 }: PermissionInputs) => {
   const defaults = defaultPermissions()
   return {
+    additionalWrite: directoryList(additionalWrite, defaults.additionalWrite),
     escalateWrite: directoryList(escalateWrite, defaults.escalateWrite),
     allowedLocalScripts: directoryList(scripts, defaults.allowedLocalScripts),
   }

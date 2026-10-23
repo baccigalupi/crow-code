@@ -18,6 +18,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
@@ -46,6 +47,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('crowGlobalDirectory'),
@@ -74,6 +76,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
@@ -101,6 +104,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
@@ -128,6 +132,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('envFile'),
@@ -156,6 +161,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore,
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('ignore'),
@@ -175,6 +181,63 @@ describe('InstallApp', () => {
     renderer.destroy()
   })
 
+  it('when return arrives on the additional read step, asks for additional write directories', async () => {
+    const installStore = {
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
+      step: signal<InstallStep>('additionalRead'),
+      confirmation: signal(true),
+    }
+    const { renderer, renderOnce, captureCharFrame, mockInput } =
+      await testRender(<InstallApp installStore={installStore} />, {
+        width: 70,
+        height: 24,
+      })
+
+    mockInput.pressEnter()
+    await renderOnce()
+
+    expect(installStore.step.peek()).toBe('additionalWrite')
+    expect(captureCharFrame()).toContain('Additional write directories: []')
+    renderer.destroy()
+  })
+
+  it('when text is typed on the additional write step, it shows in the frame', async () => {
+    const additionalWrite = inputSignal('')
+    const installStore = {
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      additionalWrite,
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
+      step: signal<InstallStep>('additionalWrite'),
+      confirmation: signal(true),
+    }
+    const { renderer, renderOnce, captureCharFrame, mockInput } =
+      await testRender(<InstallApp installStore={installStore} />, {
+        width: 70,
+        height: 24,
+      })
+
+    await mockInput.typeText('/work')
+    await renderOnce()
+
+    expect(additionalWrite.peek().text).toBe('/work')
+    expect(captureCharFrame()).toContain('Additional write directories: /work')
+    renderer.destroy()
+  })
+
   it('when backspace arrives, the previous char is deleted', async () => {
     const repoDirectory = inputSignal('~/x')
     const installStore = {
@@ -184,6 +247,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
@@ -209,6 +273,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
@@ -235,6 +300,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
@@ -262,6 +328,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
@@ -288,6 +355,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('confirm'),
@@ -312,6 +380,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('confirm'),
@@ -336,6 +405,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('confirm'),
@@ -360,6 +430,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('confirm'),
@@ -385,6 +456,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('done'),
@@ -409,6 +481,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
@@ -433,6 +506,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
@@ -458,6 +532,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
@@ -483,6 +558,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('crowGlobalDirectory'),
@@ -508,6 +584,7 @@ describe('InstallApp', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('confirm'),

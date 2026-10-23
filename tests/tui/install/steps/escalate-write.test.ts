@@ -13,6 +13,7 @@ describe('EscalateWriteStep', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('escalateWrite'),

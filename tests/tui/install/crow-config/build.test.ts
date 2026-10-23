@@ -14,6 +14,7 @@ describe('build', () => {
       escalateRead: emptyText(),
       ignore: emptyText(),
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
     }).all()
@@ -34,6 +35,7 @@ describe('build', () => {
       escalateRead: emptyText(),
       ignore: emptyText(),
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
     }).all()
@@ -55,6 +57,7 @@ describe('build', () => {
       escalateRead: emptyText(),
       ignore: emptyText(),
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
     }).all()
@@ -74,6 +77,7 @@ describe('build', () => {
       escalateRead: emptyText(),
       ignore: emptyText(),
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
     }).all()
@@ -93,6 +97,7 @@ describe('build', () => {
       escalateRead: emptyText(),
       ignore: emptyText(),
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
     }).all()
@@ -111,6 +116,7 @@ describe('build', () => {
       escalateRead: emptyText(),
       ignore: emptyText(),
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
     }).all()
@@ -129,6 +135,7 @@ describe('build', () => {
       envFile: emptyText(),
       ignore: emptyText(),
       additionalRead,
+      additionalWrite: emptyText(),
       escalateRead: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
@@ -146,6 +153,7 @@ describe('build', () => {
       envFile: emptyText(),
       ignore,
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateRead: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
@@ -165,6 +173,7 @@ describe('build', () => {
       envFile: emptyText(),
       ignore: emptyText(),
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateRead,
       escalateWrite,
       allowedLocalScripts: emptyText(),
@@ -184,6 +193,7 @@ describe('build', () => {
       envFile: emptyText(),
       ignore: emptyText(),
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateRead,
       escalateWrite,
       allowedLocalScripts: emptyText(),
@@ -202,6 +212,7 @@ describe('build', () => {
       envFile: emptyText(),
       ignore: emptyText(),
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateRead: emptyText(),
       escalateWrite,
       allowedLocalScripts: emptyText(),
@@ -221,6 +232,7 @@ describe('build', () => {
       escalateRead: emptyText(),
       ignore: emptyText(),
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
     }).all()

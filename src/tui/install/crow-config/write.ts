@@ -38,7 +38,8 @@ export class CrowConfigWrite {
   private config() {
     return buildCrowConfig({
       ...this.pathInputs(),
-      ...this.permissionInputs(),
+      ...this.readInputs(),
+      ...this.writeInputs(),
     }).all()
   }
 
@@ -50,11 +51,17 @@ export class CrowConfigWrite {
     }
   }
 
-  private permissionInputs() {
+  private readInputs() {
     return {
       ignore: this.installData.ignore.peek(),
       additionalRead: this.installData.additionalRead.peek(),
       escalateRead: this.installData.escalateRead.peek(),
+    }
+  }
+
+  private writeInputs() {
+    return {
+      additionalWrite: this.installData.additionalWrite.peek(),
       escalateWrite: this.installData.escalateWrite.peek(),
       allowedLocalScripts: this.installData.allowedLocalScripts.peek(),
     }

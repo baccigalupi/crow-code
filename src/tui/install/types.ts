@@ -9,6 +9,7 @@ export type InstallStep =
   | 'envFile'
   | 'ignore'
   | 'additionalRead'
+  | 'additionalWrite'
   | 'escalateRead'
   | 'escalateWrite'
   | 'allowedLocalScripts'
@@ -36,6 +37,7 @@ export type BuildCrowConfigArguments = {
   readonly envFile: InputText
   readonly ignore: InputText
   readonly additionalRead: InputText
+  readonly additionalWrite: InputText
   readonly escalateRead: InputText
   readonly escalateWrite: InputText
   readonly allowedLocalScripts: InputText
@@ -45,6 +47,7 @@ export type PermissionInputs = Pick<
   BuildCrowConfigArguments,
   | 'ignore'
   | 'additionalRead'
+  | 'additionalWrite'
   | 'escalateRead'
   | 'escalateWrite'
   | 'allowedLocalScripts'

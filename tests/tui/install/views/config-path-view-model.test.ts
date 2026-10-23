@@ -11,6 +11,7 @@ describe('config-path-view-model', () => {
       escalateRead: emptyText(),
       ignore: emptyText(),
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
     }
@@ -28,6 +29,7 @@ describe('config-path-view-model', () => {
       escalateRead: emptyText(),
       ignore: emptyText(),
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
     }

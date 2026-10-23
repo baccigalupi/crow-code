@@ -25,6 +25,7 @@ describe('write', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('confirm'),
@@ -67,6 +68,7 @@ describe('write', () => {
       envFile: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(insertText(emptyText(), '/docs')),
+      additionalWrite: signal(emptyText()),
       escalateRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -96,6 +98,48 @@ describe('write', () => {
     dispose()
   })
 
+  it('when additional write directories are typed, writes them to the config', async () => {
+    const installData = {
+      repoDirectory: signal(
+        insertText(
+          emptyText(),
+          join(fixturesDirectory, 'write-crow-config', 'crow'),
+        ),
+      ),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      ignore: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      additionalWrite: signal(insertText(emptyText(), '/work')),
+      escalateRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
+      step: signal<InstallStep>('confirm'),
+      confirmation: signal(true),
+    }
+    const dispose = writeCrowConfig({
+      installData,
+      filesystem: defaultFilesystem(),
+    }).subscribe()
+    const finished = new Promise((resolve) =>
+      effect(() => {
+        if (installData.step.value === 'done') resolve(true)
+      }),
+    )
+
+    installData.step.value = 'write'
+    await finished
+
+    const written = JSON.parse(
+      readFileSync(
+        join(fixturesDirectory, 'write-crow-config', 'crow', 'config.json'),
+        'utf8',
+      ),
+    )
+    expect(written.permissions.additionalWrite).toEqual(['/work'])
+    dispose()
+  })
+
   it('when ignore paths are typed, writes them to the config', async () => {
     const installData = {
       repoDirectory: signal(
@@ -108,6 +152,7 @@ describe('write', () => {
       envFile: signal(emptyText()),
       ignore: signal(insertText(emptyText(), '.env')),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -152,6 +197,7 @@ describe('write', () => {
       escalateRead: signal(emptyText()),
       ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('envFile'),

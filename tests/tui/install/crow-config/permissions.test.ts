@@ -12,6 +12,7 @@ describe('buildPermissions', () => {
     const permissions = buildPermissions({
       ignore: emptyText(),
       additionalRead,
+      additionalWrite: emptyText(),
       escalateRead,
       escalateWrite,
       allowedLocalScripts,
@@ -30,6 +31,7 @@ describe('buildPermissions', () => {
     const permissions = buildPermissions({
       ignore: emptyText(),
       additionalRead,
+      additionalWrite: emptyText(),
       escalateRead,
       escalateWrite,
       allowedLocalScripts,
@@ -48,6 +50,7 @@ describe('buildPermissions', () => {
     const permissions = buildPermissions({
       ignore: emptyText(),
       additionalRead,
+      additionalWrite: emptyText(),
       escalateRead,
       escalateWrite,
       allowedLocalScripts,
@@ -65,6 +68,7 @@ describe('buildPermissions', () => {
     const permissions = buildPermissions({
       ignore: emptyText(),
       additionalRead,
+      additionalWrite: emptyText(),
       escalateRead,
       escalateWrite,
       allowedLocalScripts,
@@ -82,6 +86,7 @@ describe('buildPermissions', () => {
     const permissions = buildPermissions({
       ignore: emptyText(),
       additionalRead,
+      additionalWrite: emptyText(),
       escalateRead,
       escalateWrite,
       allowedLocalScripts,
@@ -99,6 +104,7 @@ describe('buildPermissions', () => {
     const permissions = buildPermissions({
       ignore: emptyText(),
       additionalRead,
+      additionalWrite: emptyText(),
       escalateRead,
       escalateWrite,
       allowedLocalScripts,
@@ -107,12 +113,43 @@ describe('buildPermissions', () => {
     expect(permissions.additionalRead).toEqual(['/docs', '~/notes'])
   })
 
+  it('when additionalWrite input is empty, it is the default empty list', () => {
+    const additionalWrite = emptyText()
+
+    const permissions = buildPermissions({
+      ignore: emptyText(),
+      additionalRead: emptyText(),
+      additionalWrite,
+      escalateRead: emptyText(),
+      escalateWrite: emptyText(),
+      allowedLocalScripts: emptyText(),
+    })
+
+    expect(permissions.additionalWrite).toEqual([])
+  })
+
+  it('when additionalWrite input is comma separated, it is trimmed entries', () => {
+    const additionalWrite = insertText(emptyText(), ' /docs ,~/work,')
+
+    const permissions = buildPermissions({
+      ignore: emptyText(),
+      additionalRead: emptyText(),
+      additionalWrite,
+      escalateRead: emptyText(),
+      escalateWrite: emptyText(),
+      allowedLocalScripts: emptyText(),
+    })
+
+    expect(permissions.additionalWrite).toEqual(['/docs', '~/work'])
+  })
+
   it('when ignore input is empty, it is the default empty list', () => {
     const ignore = emptyText()
 
     const permissions = buildPermissions({
       ignore,
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateRead: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
@@ -127,6 +164,7 @@ describe('buildPermissions', () => {
     const permissions = buildPermissions({
       ignore,
       additionalRead: emptyText(),
+      additionalWrite: emptyText(),
       escalateRead: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),

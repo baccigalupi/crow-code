@@ -10,6 +10,7 @@ const blankInputs = {
   repoDirectory: emptyText(),
   envFile: emptyText(),
   ignore: emptyText(),
+  additionalWrite: emptyText(),
   additionalRead: emptyText(),
   escalateRead: emptyText(),
   escalateWrite: emptyText(),
