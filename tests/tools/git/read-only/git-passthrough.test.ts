@@ -269,6 +269,62 @@ describe('GitReadOnlyPassthrough', () => {
     ])
   })
 
+  it('when check-ignore is requested, runs git check-ignore', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['check-ignore', '-v', 'a.log'] },
+    })
+    await passthrough.run()
+
+    expect(commandSpy.mock.calls[0][1].args.slice(-3)).toEqual([
+      'check-ignore',
+      '-v',
+      'a.log',
+    ])
+  })
+
+  it('when check-attr is requested, runs git check-attr', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['check-attr', '-a', 'a.ts'] },
+    })
+    await passthrough.run()
+
+    expect(commandSpy.mock.calls[0][1].args.slice(-3)).toEqual([
+      'check-attr',
+      '-a',
+      'a.ts',
+    ])
+  })
+
+  it('when check-ignore is given --stdin, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['check-ignore', '--stdin'] },
+    })
+    await passthrough.run()
+
+    expect(commandSpy.mock.calls.length).toBe(0)
+    expect(passthrough.reason).toBe(
+      'flag not allowed: --stdin; allowed flags for check-ignore: -v',
+    )
+  })
+
   it('when show-ref is requested, runs git show-ref', async () => {
     const commandSpy = mock()
     const applicationData = mockApplicationData({
@@ -359,7 +415,7 @@ describe('GitReadOnlyPassthrough', () => {
 
     expect(commandSpy.mock.calls.length).toBe(0)
     expect(passthrough.reason).toBe(
-      'subcommand not allowed: push; allowed subcommands: blame, cat-file, count-objects, describe, diff, for-each-ref, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, show-ref, status',
+      'subcommand not allowed: push; allowed subcommands: blame, cat-file, check-attr, check-ignore, count-objects, describe, diff, for-each-ref, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, show-ref, status',
     )
   })
 
@@ -373,7 +429,7 @@ describe('GitReadOnlyPassthrough', () => {
     await passthrough.run()
 
     expect(passthrough.reason).toBe(
-      'subcommand not allowed: difftool; allowed subcommands: blame, cat-file, count-objects, describe, diff, for-each-ref, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, show-ref, status',
+      'subcommand not allowed: difftool; allowed subcommands: blame, cat-file, check-attr, check-ignore, count-objects, describe, diff, for-each-ref, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, show-ref, status',
     )
   })
 
@@ -387,7 +443,7 @@ describe('GitReadOnlyPassthrough', () => {
     await passthrough.run()
 
     expect(passthrough.reason).toBe(
-      'subcommand not allowed: (none); allowed subcommands: blame, cat-file, count-objects, describe, diff, for-each-ref, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, show-ref, status',
+      'subcommand not allowed: (none); allowed subcommands: blame, cat-file, check-attr, check-ignore, count-objects, describe, diff, for-each-ref, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, show-ref, status',
     )
   })
 
@@ -401,7 +457,7 @@ describe('GitReadOnlyPassthrough', () => {
     await passthrough.run()
 
     expect(passthrough.reason).toBe(
-      'subcommand not allowed: constructor; allowed subcommands: blame, cat-file, count-objects, describe, diff, for-each-ref, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, show-ref, status',
+      'subcommand not allowed: constructor; allowed subcommands: blame, cat-file, check-attr, check-ignore, count-objects, describe, diff, for-each-ref, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, show-ref, status',
     )
   })
 
@@ -415,7 +471,7 @@ describe('GitReadOnlyPassthrough', () => {
     await passthrough.run()
 
     expect(passthrough.reason).toBe(
-      'subcommand not allowed: -C; allowed subcommands: blame, cat-file, count-objects, describe, diff, for-each-ref, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, show-ref, status',
+      'subcommand not allowed: -C; allowed subcommands: blame, cat-file, check-attr, check-ignore, count-objects, describe, diff, for-each-ref, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, show-ref, status',
     )
   })
 

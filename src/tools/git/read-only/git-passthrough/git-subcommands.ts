@@ -3,6 +3,8 @@ import { GitRefusals } from './git-refusals.ts'
 import { nullSubcommand } from './null-subcommand.ts'
 import { GitBlameSubcommand } from './subcommands/blame.ts'
 import { GitCatFileSubcommand } from './subcommands/cat-file.ts'
+import { GitCheckAttrSubcommand } from './subcommands/check-attr.ts'
+import { GitCheckIgnoreSubcommand } from './subcommands/check-ignore.ts'
 import { GitCountObjectsSubcommand } from './subcommands/count-objects.ts'
 import { GitDescribeSubcommand } from './subcommands/describe.ts'
 import { GitDiffSubcommand } from './subcommands/diff.ts'
@@ -36,6 +38,8 @@ export class GitSubcommands {
     'count-objects': GitCountObjectsSubcommand,
     'show-ref': GitShowRefSubcommand,
     'for-each-ref': GitForEachRefSubcommand,
+    'check-ignore': GitCheckIgnoreSubcommand,
+    'check-attr': GitCheckAttrSubcommand,
   }
   private refusals = new GitRefusals()
 
