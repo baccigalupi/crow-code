@@ -1,20 +1,22 @@
-import type { GitLogShape } from '../../../../types.ts'
 import { GitSubcommand } from '../git-subcommand.ts'
-import { GitLogCommits } from './log/commits.ts'
-
-const format = '--format=%H%x1f%an%x1f%aI%x1f%s'
-
-const shapes: [string[], GitLogShape][] = [
-  [['--name-status'], 'name-status'],
-  [['--name-only'], 'name-only'],
-  [['--stat', '-p'], 'stat-patch'],
-  [['--stat'], 'stat'],
-  [['-p'], 'patch'],
-]
+import { GitLogNameOnlyParser } from './log/name-only-parser.ts'
+import { GitLogNameStatusParser } from './log/name-status-parser.ts'
+import { GitLogPatchParser } from './log/patch-parser.ts'
+import { GitLogPlainParser } from './log/plain-parser.ts'
+import { GitLogStatParser } from './log/stat-parser.ts'
+import { GitLogStatPatchParser } from './log/stat-patch-parser.ts'
 
 export class GitLogSubcommand extends GitSubcommand {
   protected override logPrefix = 'Git log: '
   readonly name = 'log'
+  private format = '--format=%H%x1f%an%x1f%aI%x1f%s'
+  private parserClasses = [
+    GitLogNameStatusParser,
+    GitLogNameOnlyParser,
+    GitLogStatPatchParser,
+    GitLogStatParser,
+    GitLogPatchParser,
+  ]
   readonly flags = {
     '--oneline': 'boolean',
     '--stat': 'boolean',
@@ -29,24 +31,20 @@ export class GitLogSubcommand extends GitSubcommand {
 
   override gitArguments() {
     const pathspecs = this.args.slice(this.options().length)
-    return [this.name, ...this.options(), format, ...pathspecs]
+    return [this.name, ...this.options(), this.format, ...pathspecs]
   }
 
   protected override parse() {
-    const stdout = this.rawResponse
-    const commits = new GitLogCommits({ stdout, shape: this.shape() })
-    return { commits: commits.commits() }
+    return this.parser().parse(this.rawResponse)
   }
 
-  private shape() {
-    const [, shape = 'none'] =
-      shapes.find(([flags]) => flags.every((flag) => this.hasOption(flag))) ||
-      []
-    return shape
+  private parser() {
+    const match = this.parsers().find((parser) => parser.isMatch())
+    return match || new GitLogPlainParser()
   }
 
-  private hasOption(flag: string) {
-    return this.options().includes(flag)
+  private parsers() {
+    return this.parserClasses.map((Parser) => new Parser(this.options()))
   }
 
   private options() {

@@ -22,9 +22,6 @@ export type GitLogStat = {
   paths: { path: string; changes: string }[]
 }
 
-export type GitLogShape =
-  'none' | 'name-status' | 'name-only' | 'stat' | 'patch' | 'stat-patch'
-
 export type GitLogCommit = GitLogEntry & {
   files?: GitLogFile[]
   stat?: GitLogStat
