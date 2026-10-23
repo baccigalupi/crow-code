@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { runtimeExec } from '../../src/application-data/runtime-exec.ts'
+import { fixturesDirectory } from '../support/fixtures.ts'
 
 describe('runtimeExec', () => {
   it('returns the code and output of a successful command', async () => {
@@ -31,6 +32,14 @@ describe('runtimeExec', () => {
     const output = await runtimeExec('printenv', options)
 
     expect(output.stdout).toBe('one\n')
+  })
+
+  it('when cwd is given, the child runs there', async () => {
+    const options = { args: [], cwd: fixturesDirectory }
+
+    const output = await runtimeExec('pwd', options)
+
+    expect(output.stdout.endsWith('tests/support/fixtures\n')).toBe(true)
   })
 
   it('when env is given, parent variables do not leak into the child', async () => {

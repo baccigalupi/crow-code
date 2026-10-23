@@ -183,7 +183,9 @@ const voidGuard = (files: string[]) => {
 }
 
 const checkMirror = async (testFile: string): Promise<boolean> => {
-  const base = testFile.slice('tests/'.length).replace(/\.test\.tsx?$/, '')
+  const base = testFile
+    .slice('tests/'.length)
+    .replace(/(\.e2e)?\.test\.tsx?$/, '')
   const candidates = [
     `src/${base}.ts`,
     `src/${base}.tsx`,

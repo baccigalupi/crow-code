@@ -24,6 +24,7 @@ export class Command {
       stdout: 'pipe',
       stderr: 'pipe',
       env: this.options.env,
+      cwd: this.options.cwd,
     })
   }
 }

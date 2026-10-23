@@ -37,6 +37,22 @@ describe('GitReadOnlyPassthrough', () => {
     expect(passthrough.result()).toEqual({ stdout: 'abc\n' })
   })
 
+  it('when log is requested, runs git in the runtime cwd', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      cwd: '/work',
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['log'] },
+    })
+    await passthrough.run()
+
+    expect(commandSpy.mock.calls[0][1].cwd).toBe('/work')
+  })
+
   it('when show is requested, runs git show', async () => {
     const commandSpy = mock()
     const applicationData = mockApplicationData({
@@ -799,5 +815,965 @@ describe('GitReadOnlyPassthrough', () => {
     expect(passthrough.reason).toBe(
       'No such file or directory (os error 2): git',
     )
+  })
+
+  it('when add is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['add'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when commit is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['commit'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when reset is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['reset'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when restore is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['restore'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when checkout is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['checkout'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when switch is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['switch'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when merge is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['merge'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when rebase is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['rebase'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when cherry-pick is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['cherry-pick'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when revert is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['revert'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when apply is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['apply'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when am is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['am'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when pull is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['pull'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when fetch is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['fetch'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when clone is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['clone'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when init is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['init'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when rm is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['rm'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when mv is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['mv'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when clean is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['clean'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when gc is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['gc'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when prune is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['prune'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when repack is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['repack'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when update-index is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['update-index'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when update-ref is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['update-ref'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when symbolic-ref is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['symbolic-ref'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when write-tree is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['write-tree'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when commit-tree is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['commit-tree'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when hash-object is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['hash-object'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when mktag is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['mktag'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when mktree is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['mktree'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when bisect is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['bisect'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when filter-branch is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['filter-branch'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when replace is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['replace'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when pack-refs is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['pack-refs'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when maintenance is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['maintenance'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when sparse-checkout is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['sparse-checkout'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when lfs is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['lfs'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when daemon is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['daemon'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when instaweb is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['instaweb'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when web--browse is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['web--browse'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when send-email is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['send-email'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when request-pull is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['request-pull'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when archive is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['archive'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when bundle is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['bundle'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when mergetool is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['mergetool'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when an alias is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['co'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when an external git-foo is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['foo'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when tag is given a name, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['tag', 'v1'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when config is given a value, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['config', 'user.name', 'x'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when remote add is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['remote', 'add', 'origin', 'url'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when stash has no list form, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['stash'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when reflog expire is requested, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['reflog', 'expire'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when diff is given --no-index, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['diff', '--no-index', 'a', 'b'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when log is given an abbreviated --out=f, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['log', '--out=f'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when log is given a :(top) pathspec, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['log', ':(top)x'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when show is given HEAD:../../etc/passwd, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['show', 'HEAD:../../etc/passwd'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when -c core.pager=x precedes the subcommand, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['-c', 'core.pager=x', 'log'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when -c alias.x=!sh precedes the subcommand, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['-c', 'alias.x=!sh', 'log'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when --git-dir=.. precedes the subcommand, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['--git-dir=..', 'log'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
+  })
+
+  it('when --work-tree=.. precedes the subcommand, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['--work-tree=..', 'log'] },
+    })
+    await passthrough.run()
+
+    expect(passthrough.success()).toBe(false)
+    expect(commandSpy.mock.calls.length).toBe(0)
   })
 })

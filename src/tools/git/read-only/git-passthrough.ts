@@ -51,6 +51,7 @@ export class GitReadOnlyPassthrough extends OperationWithResult<
     const output = await this.applicationData.runtime.runCommand('git', {
       args: gitSafeReadSubcommand(subcommand.gitArguments()),
       env: gitSafeReadEnv(this.applicationData.runtime.env()),
+      cwd: this.applicationData.runtime.cwd,
     })
     this.stdout = output.stdout
     if (!output.success) this.fail(this.failureReason(output))

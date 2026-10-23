@@ -171,6 +171,18 @@ describe('style-check cli', () => {
     expect(stderr).not.toContain('Checked 1 file')
   })
 
+  it('when an e2e test file is named, it mirrors the source without the e2e segment', async () => {
+    const command = [
+      'agents/style-check',
+      'tests/tools/git/read-only/git-passthrough.e2e.test.ts',
+    ]
+
+    const child = Bun.spawn(command, { stdout: 'pipe', stderr: 'pipe' })
+    const stdout = await new Response(child.stdout).text()
+
+    expect(stdout).not.toContain('must mirror source')
+  })
+
   it('when a named file does not exist, exits 1', async () => {
     const command = ['agents/style-check', 'src/no-such-file.ts']
 
