@@ -1,0 +1,26 @@
+import { describe, expect, it } from 'bun:test'
+import { GitDescribeSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/describe.ts'
+
+describe('GitDescribeSubcommand', () => {
+  it('when given a commit-ish, does not refuse', () => {
+    const subcommand = new GitDescribeSubcommand({ args: ['HEAD'] })
+
+    const refusal = subcommand.refusal()
+    const gitArguments = subcommand.gitArguments()
+    const requestedPaths = subcommand.requestedPaths()
+
+    expect(refusal).toBe('')
+    expect(gitArguments).toEqual(['describe', 'HEAD'])
+    expect(requestedPaths).toEqual(['HEAD'])
+  })
+
+  it('when given --dirty, refuses naming that no flags are allowed', () => {
+    const subcommand = new GitDescribeSubcommand({ args: ['--dirty'] })
+
+    const refusal = subcommand.refusal()
+
+    expect(refusal).toBe(
+      'flag not allowed: --dirty; allowed flags for describe: none',
+    )
+  })
+})

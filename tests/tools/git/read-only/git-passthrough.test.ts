@@ -158,6 +158,136 @@ describe('GitReadOnlyPassthrough', () => {
     ])
   })
 
+  it('when rev-parse is requested, runs git rev-parse', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['rev-parse', '--show-toplevel'] },
+    })
+    await passthrough.run()
+
+    expect(commandSpy.mock.calls[0][1].args.slice(-2)).toEqual([
+      'rev-parse',
+      '--show-toplevel',
+    ])
+  })
+
+  it('when rev-list is requested, runs git rev-list', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['rev-list', '--count', 'HEAD'] },
+    })
+    await passthrough.run()
+
+    expect(commandSpy.mock.calls[0][1].args.slice(-3)).toEqual([
+      'rev-list',
+      '--count',
+      'HEAD',
+    ])
+  })
+
+  it('when merge-base is requested, runs git merge-base', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['merge-base', 'a', 'b'] },
+    })
+    await passthrough.run()
+
+    expect(commandSpy.mock.calls[0][1].args.slice(-3)).toEqual([
+      'merge-base',
+      'a',
+      'b',
+    ])
+  })
+
+  it('when describe is requested, runs git describe', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['describe', 'HEAD'] },
+    })
+    await passthrough.run()
+
+    expect(commandSpy.mock.calls[0][1].args.slice(-2)).toEqual([
+      'describe',
+      'HEAD',
+    ])
+  })
+
+  it('when name-rev is requested, runs git name-rev', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['name-rev', '--name-only', 'HEAD'] },
+    })
+    await passthrough.run()
+
+    expect(commandSpy.mock.calls[0][1].args.slice(-3)).toEqual([
+      'name-rev',
+      '--name-only',
+      'HEAD',
+    ])
+  })
+
+  it('when cat-file is requested, runs git cat-file', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['cat-file', '-p', 'HEAD:src/a.ts'] },
+    })
+    await passthrough.run()
+
+    expect(commandSpy.mock.calls[0][1].args.slice(-3)).toEqual([
+      'cat-file',
+      '-p',
+      'HEAD:src/a.ts',
+    ])
+  })
+
+  it('when rev-parse is given --git-dir, refuses without running git', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({ commandSpy }),
+    })
+
+    const passthrough = new GitReadOnlyPassthrough({
+      applicationData,
+      operationArguments: { args: ['rev-parse', '--git-dir'] },
+    })
+    await passthrough.run()
+
+    expect(commandSpy.mock.calls.length).toBe(0)
+    expect(passthrough.reason).toBe(
+      'flag not allowed: --git-dir; allowed flags for rev-parse: --abbrev-ref, --is-inside-work-tree, --short, --show-toplevel, --verify',
+    )
+  })
+
   it('when push is requested, refuses listing the allowed subcommands', async () => {
     const commandSpy = mock()
     const applicationData = mockApplicationData({
@@ -172,7 +302,7 @@ describe('GitReadOnlyPassthrough', () => {
 
     expect(commandSpy.mock.calls.length).toBe(0)
     expect(passthrough.reason).toBe(
-      'subcommand not allowed: push; allowed subcommands: blame, diff, log, ls-files, ls-tree, show, status',
+      'subcommand not allowed: push; allowed subcommands: blame, cat-file, describe, diff, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, status',
     )
   })
 
@@ -186,7 +316,7 @@ describe('GitReadOnlyPassthrough', () => {
     await passthrough.run()
 
     expect(passthrough.reason).toBe(
-      'subcommand not allowed: difftool; allowed subcommands: blame, diff, log, ls-files, ls-tree, show, status',
+      'subcommand not allowed: difftool; allowed subcommands: blame, cat-file, describe, diff, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, status',
     )
   })
 
@@ -200,7 +330,7 @@ describe('GitReadOnlyPassthrough', () => {
     await passthrough.run()
 
     expect(passthrough.reason).toBe(
-      'subcommand not allowed: (none); allowed subcommands: blame, diff, log, ls-files, ls-tree, show, status',
+      'subcommand not allowed: (none); allowed subcommands: blame, cat-file, describe, diff, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, status',
     )
   })
 
@@ -214,7 +344,7 @@ describe('GitReadOnlyPassthrough', () => {
     await passthrough.run()
 
     expect(passthrough.reason).toBe(
-      'subcommand not allowed: constructor; allowed subcommands: blame, diff, log, ls-files, ls-tree, show, status',
+      'subcommand not allowed: constructor; allowed subcommands: blame, cat-file, describe, diff, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, status',
     )
   })
 
@@ -228,7 +358,7 @@ describe('GitReadOnlyPassthrough', () => {
     await passthrough.run()
 
     expect(passthrough.reason).toBe(
-      'subcommand not allowed: -C; allowed subcommands: blame, diff, log, ls-files, ls-tree, show, status',
+      'subcommand not allowed: -C; allowed subcommands: blame, cat-file, describe, diff, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, status',
     )
   })
 
