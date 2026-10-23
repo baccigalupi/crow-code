@@ -27,11 +27,18 @@ describe('GitLogRecords', () => {
 
     const result = records.records()
 
-    expect(result).toHaveLength(2)
-    expect(result[0].entry().subject).toBe('Fix tests')
-    expect(result[0].body()).toEqual(['allowed.txt'])
-    expect(result[1].entry().subject).toBe('Add login')
-    expect(result[1].body()).toEqual([])
+    expect(result).toMatchObject([
+      {
+        header:
+          '7f2203f286226e6c29da25b8edb35b13a7efa7c6\x1fAda\x1f2026-10-02T11:00:00+00:00\x1fFix tests',
+        lines: ['', 'allowed.txt', ''],
+      },
+      {
+        header:
+          'ffd175847ab5c34abf8e3a66c4bab26b9ef87939\x1fGrace\x1f2026-10-01T10:00:00+00:00\x1fAdd login',
+        lines: [''],
+      },
+    ])
   })
 
   it('when lines come before the first header, leaves them out', () => {
@@ -41,8 +48,12 @@ describe('GitLogRecords', () => {
 
     const result = records.records()
 
-    expect(result).toHaveLength(1)
-    expect(result[0].entry().subject).toBe('Fix tests')
-    expect(result[0].body()).toEqual([])
+    expect(result).toMatchObject([
+      {
+        header:
+          '7f2203f286226e6c29da25b8edb35b13a7efa7c6\x1fAda\x1f2026-10-02T11:00:00+00:00\x1fFix tests',
+        lines: [''],
+      },
+    ])
   })
 })
