@@ -2,9 +2,11 @@ import type { GitSubcommandClass } from '../../../types.ts'
 import { GitRefusals } from './git-refusals.ts'
 import { nullSubcommand } from './null-subcommand.ts'
 import { GitBlameSubcommand } from './subcommands/blame.ts'
+import { GitBranchSubcommand } from './subcommands/branch.ts'
 import { GitCatFileSubcommand } from './subcommands/cat-file.ts'
 import { GitCheckAttrSubcommand } from './subcommands/check-attr.ts'
 import { GitCheckIgnoreSubcommand } from './subcommands/check-ignore.ts'
+import { GitConfigSubcommand } from './subcommands/config.ts'
 import { GitCountObjectsSubcommand } from './subcommands/count-objects.ts'
 import { GitDescribeSubcommand } from './subcommands/describe.ts'
 import { GitDiffSubcommand } from './subcommands/diff.ts'
@@ -15,11 +17,16 @@ import { GitLsFilesSubcommand } from './subcommands/ls-files.ts'
 import { GitLsTreeSubcommand } from './subcommands/ls-tree.ts'
 import { GitMergeBaseSubcommand } from './subcommands/merge-base.ts'
 import { GitNameRevSubcommand } from './subcommands/name-rev.ts'
+import { GitReflogSubcommand } from './subcommands/reflog.ts'
+import { GitRemoteSubcommand } from './subcommands/remote.ts'
 import { GitRevListSubcommand } from './subcommands/rev-list.ts'
 import { GitRevParseSubcommand } from './subcommands/rev-parse.ts'
 import { GitShowRefSubcommand } from './subcommands/show-ref.ts'
 import { GitShowSubcommand } from './subcommands/show.ts'
+import { GitStashSubcommand } from './subcommands/stash.ts'
 import { GitStatusSubcommand } from './subcommands/status.ts'
+import { GitTagSubcommand } from './subcommands/tag.ts'
+import { GitWorktreeSubcommand } from './subcommands/worktree.ts'
 
 export class GitSubcommands {
   private registry: Record<string, GitSubcommandClass> = {
@@ -42,6 +49,13 @@ export class GitSubcommands {
     'check-ignore': GitCheckIgnoreSubcommand,
     'check-attr': GitCheckAttrSubcommand,
     grep: GitGrepSubcommand,
+    branch: GitBranchSubcommand,
+    tag: GitTagSubcommand,
+    remote: GitRemoteSubcommand,
+    config: GitConfigSubcommand,
+    stash: GitStashSubcommand,
+    worktree: GitWorktreeSubcommand,
+    reflog: GitReflogSubcommand,
   }
   private refusals = new GitRefusals()
 

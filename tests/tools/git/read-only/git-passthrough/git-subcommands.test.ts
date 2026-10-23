@@ -16,6 +16,13 @@ import { GitNameRevSubcommand } from '../../../../../src/tools/git/read-only/git
 import { GitRevListSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/rev-list.ts'
 import { GitRevParseSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/rev-parse.ts'
 import { GitStatusSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/status.ts'
+import { GitBranchSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/branch.ts'
+import { GitConfigSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/config.ts'
+import { GitReflogSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/reflog.ts'
+import { GitRemoteSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/remote.ts'
+import { GitStashSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/stash.ts'
+import { GitTagSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/tag.ts'
+import { GitWorktreeSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/worktree.ts'
 
 describe('GitSubcommands#classFor', () => {
   it('returns the log subcommand class for log', () => {
@@ -146,13 +153,69 @@ describe('GitSubcommands#classFor', () => {
     expect(Subcommand).toBe(GitForEachRefSubcommand)
   })
 
+  it('returns the branch subcommand class for branch', () => {
+    const subcommands = new GitSubcommands()
+
+    const Subcommand = subcommands.classFor('branch')
+
+    expect(Subcommand).toBe(GitBranchSubcommand)
+  })
+
+  it('returns the tag subcommand class for tag', () => {
+    const subcommands = new GitSubcommands()
+
+    const Subcommand = subcommands.classFor('tag')
+
+    expect(Subcommand).toBe(GitTagSubcommand)
+  })
+
+  it('returns the remote subcommand class for remote', () => {
+    const subcommands = new GitSubcommands()
+
+    const Subcommand = subcommands.classFor('remote')
+
+    expect(Subcommand).toBe(GitRemoteSubcommand)
+  })
+
+  it('returns the config subcommand class for config', () => {
+    const subcommands = new GitSubcommands()
+
+    const Subcommand = subcommands.classFor('config')
+
+    expect(Subcommand).toBe(GitConfigSubcommand)
+  })
+
+  it('returns the stash subcommand class for stash', () => {
+    const subcommands = new GitSubcommands()
+
+    const Subcommand = subcommands.classFor('stash')
+
+    expect(Subcommand).toBe(GitStashSubcommand)
+  })
+
+  it('returns the worktree subcommand class for worktree', () => {
+    const subcommands = new GitSubcommands()
+
+    const Subcommand = subcommands.classFor('worktree')
+
+    expect(Subcommand).toBe(GitWorktreeSubcommand)
+  })
+
+  it('returns the reflog subcommand class for reflog', () => {
+    const subcommands = new GitSubcommands()
+
+    const Subcommand = subcommands.classFor('reflog')
+
+    expect(Subcommand).toBe(GitReflogSubcommand)
+  })
+
   it('returns a class refusing push and listing the allowed subcommands', () => {
     const subcommands = new GitSubcommands()
 
     const Subcommand = subcommands.classFor('push')
 
     expect(new Subcommand({ args: [] }).refusal()).toBe(
-      'subcommand not allowed: push; allowed subcommands: blame, cat-file, check-attr, check-ignore, count-objects, describe, diff, for-each-ref, grep, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, show-ref, status',
+      'subcommand not allowed: push; allowed subcommands: blame, branch, cat-file, check-attr, check-ignore, config, count-objects, describe, diff, for-each-ref, grep, log, ls-files, ls-tree, merge-base, name-rev, reflog, remote, rev-list, rev-parse, show, show-ref, stash, status, tag, worktree',
     )
   })
 
@@ -162,7 +225,7 @@ describe('GitSubcommands#classFor', () => {
     const Subcommand = subcommands.classFor('constructor')
 
     expect(new Subcommand({ args: [] }).refusal()).toBe(
-      'subcommand not allowed: constructor; allowed subcommands: blame, cat-file, check-attr, check-ignore, count-objects, describe, diff, for-each-ref, grep, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, show-ref, status',
+      'subcommand not allowed: constructor; allowed subcommands: blame, branch, cat-file, check-attr, check-ignore, config, count-objects, describe, diff, for-each-ref, grep, log, ls-files, ls-tree, merge-base, name-rev, reflog, remote, rev-list, rev-parse, show, show-ref, stash, status, tag, worktree',
     )
   })
 })

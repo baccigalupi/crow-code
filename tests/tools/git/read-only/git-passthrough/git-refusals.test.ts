@@ -55,6 +55,14 @@ describe('GitRefusals', () => {
     )
   })
 
+  it('when arguments are not allowed, names each', () => {
+    const refusals = new GitRefusals()
+
+    const message = refusals.argumentNotAllowed(['add', 'x'])
+
+    expect(message).toBe('argument not allowed: add, x')
+  })
+
   it('when values are not numbers, names each', () => {
     const refusals = new GitRefusals()
 
