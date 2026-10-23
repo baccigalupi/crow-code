@@ -7,6 +7,7 @@ export type InstallStep =
   | 'repo'
   | 'crowGlobalDirectory'
   | 'envFile'
+  | 'ignore'
   | 'additionalRead'
   | 'escalateRead'
   | 'escalateWrite'
@@ -33,6 +34,7 @@ export type BuildCrowConfigArguments = {
   readonly globalDirectory: InputText
   readonly repoDirectory: InputText
   readonly envFile: InputText
+  readonly ignore: InputText
   readonly additionalRead: InputText
   readonly escalateRead: InputText
   readonly escalateWrite: InputText
@@ -41,7 +43,11 @@ export type BuildCrowConfigArguments = {
 
 export type PermissionInputs = Pick<
   BuildCrowConfigArguments,
-  'additionalRead' | 'escalateRead' | 'escalateWrite' | 'allowedLocalScripts'
+  | 'ignore'
+  | 'additionalRead'
+  | 'escalateRead'
+  | 'escalateWrite'
+  | 'allowedLocalScripts'
 >
 
 export type ConfigPanelProps = BuildCrowConfigArguments & {

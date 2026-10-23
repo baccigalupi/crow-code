@@ -18,6 +18,19 @@ describe('Prompt', () => {
     renderer.destroy()
   })
 
+  it('when the default is bare, shows it without parentheses', async () => {
+    const { renderer, renderOnce, captureCharFrame } = await testRender(
+      <Prompt label="Where" input={emptyText()} defaultValue="[]" bare />,
+      { width: 40, height: 3 },
+    )
+
+    await renderOnce()
+
+    expect(captureCharFrame()).toContain('Where: []')
+    expect(captureCharFrame()).not.toContain('([])')
+    renderer.destroy()
+  })
+
   it('when the input has text, shows the text and hides the default', async () => {
     const input = insertText(emptyText(), './lib')
     const { renderer, renderOnce, captureCharFrame } = await testRender(

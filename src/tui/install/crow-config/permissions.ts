@@ -20,9 +20,14 @@ const directoryList = (input: InputText, defaultValue: string[]) => {
 
 const defaultPermissions = () => defaultCrowConfig().permissions
 
-const readLists = ({ additionalRead, escalateRead }: PermissionInputs) => {
+const readLists = ({
+  ignore,
+  additionalRead,
+  escalateRead,
+}: PermissionInputs) => {
   const defaults = defaultPermissions()
   return {
+    ignore: directoryList(ignore, defaults.ignore),
     additionalRead: directoryList(additionalRead, defaults.additionalRead),
     escalateRead: directoryList(escalateRead, defaults.escalateRead),
   }

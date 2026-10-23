@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { configViewModel } from '../../../../../src/tui/install/views/steps/config-view-model.ts'
-import { emptyText } from '../../../../../src/tui/input-text.ts'
+import { emptyText, insertText } from '../../../../../src/tui/input-text.ts'
 
 describe('configViewModel', () => {
   it('when the step is crowGlobalDirectory, highlights the crowGlobalDirectory line', () => {
@@ -14,6 +14,7 @@ describe('configViewModel', () => {
       globalDirectory,
       envFile,
       escalateRead: emptyText(),
+      ignore: emptyText(),
       additionalRead: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
@@ -34,12 +35,49 @@ describe('configViewModel', () => {
       globalDirectory,
       envFile,
       escalateRead: emptyText(),
+      ignore: emptyText(),
       additionalRead: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
     })
 
     expect(viewModel.highlighted).toBe('"envFile": "~/.crow/.env",')
+  })
+
+  it('when the step is ignore, highlights the ignore line', () => {
+    const ignore = emptyText()
+
+    const viewModel = configViewModel({
+      step: 'ignore',
+      repoDirectory: emptyText(),
+      globalDirectory: emptyText(),
+      envFile: emptyText(),
+      escalateRead: emptyText(),
+      ignore,
+      additionalRead: emptyText(),
+      escalateWrite: emptyText(),
+      allowedLocalScripts: emptyText(),
+    })
+
+    expect(viewModel.highlighted).toBe('"ignore": [],')
+  })
+
+  it('when the step is ignore and paths are typed, highlights the whole ignore array', () => {
+    const ignore = insertText(emptyText(), '.env')
+
+    const viewModel = configViewModel({
+      step: 'ignore',
+      repoDirectory: emptyText(),
+      globalDirectory: emptyText(),
+      envFile: emptyText(),
+      escalateRead: emptyText(),
+      ignore,
+      additionalRead: emptyText(),
+      escalateWrite: emptyText(),
+      allowedLocalScripts: emptyText(),
+    })
+
+    expect(viewModel.highlighted).toBe('"ignore": [\n      ".env"\n    ],')
   })
 
   it('when the step is additionalRead, highlights the additionalRead line', () => {
@@ -52,6 +90,7 @@ describe('configViewModel', () => {
       globalDirectory,
       envFile: emptyText(),
       escalateRead: emptyText(),
+      ignore: emptyText(),
       additionalRead: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
@@ -70,6 +109,7 @@ describe('configViewModel', () => {
       globalDirectory,
       envFile: emptyText(),
       escalateRead: emptyText(),
+      ignore: emptyText(),
       additionalRead: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
@@ -88,6 +128,7 @@ describe('configViewModel', () => {
       globalDirectory,
       envFile: emptyText(),
       escalateRead: emptyText(),
+      ignore: emptyText(),
       additionalRead: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
@@ -109,6 +150,7 @@ describe('configViewModel', () => {
       globalDirectory,
       envFile,
       escalateRead: emptyText(),
+      ignore: emptyText(),
       additionalRead: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),

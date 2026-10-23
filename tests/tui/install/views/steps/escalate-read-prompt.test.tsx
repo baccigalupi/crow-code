@@ -5,7 +5,7 @@ import { EscalateReadPrompt } from '../../../../../src/tui/install/views/steps/e
 import { emptyText, insertText } from '../../../../../src/tui/input-text.ts'
 
 describe('EscalateReadPrompt', () => {
-  it('when nothing is typed, shows the none default', async () => {
+  it('when nothing is typed, shows the config default', async () => {
     const { renderer, renderOnce, captureCharFrame } = await testRender(
       <EscalateReadPrompt escalateRead={emptyText()} />,
       { width: 70, height: 3 },
@@ -13,7 +13,7 @@ describe('EscalateReadPrompt', () => {
 
     await renderOnce()
 
-    expect(captureCharFrame()).toContain('Escalate read directories: (none)')
+    expect(captureCharFrame()).toContain('Escalate read directories: []')
     renderer.destroy()
   })
 
@@ -29,7 +29,7 @@ describe('EscalateReadPrompt', () => {
     expect(captureCharFrame()).toContain(
       'Escalate read directories: /docs, ~/notes',
     )
-    expect(captureCharFrame()).not.toContain('(none)')
+    expect(captureCharFrame()).not.toContain('[]')
     renderer.destroy()
   })
 })

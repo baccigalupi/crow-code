@@ -36,6 +36,7 @@ describe('runInstallTui', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),

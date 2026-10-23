@@ -12,6 +12,7 @@ describe('build', () => {
       globalDirectory,
       envFile: emptyText(),
       escalateRead: emptyText(),
+      ignore: emptyText(),
       additionalRead: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
@@ -31,6 +32,7 @@ describe('build', () => {
       globalDirectory,
       envFile: emptyText(),
       escalateRead: emptyText(),
+      ignore: emptyText(),
       additionalRead: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
@@ -51,6 +53,7 @@ describe('build', () => {
       globalDirectory,
       envFile,
       escalateRead: emptyText(),
+      ignore: emptyText(),
       additionalRead: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
@@ -69,6 +72,7 @@ describe('build', () => {
       globalDirectory,
       envFile,
       escalateRead: emptyText(),
+      ignore: emptyText(),
       additionalRead: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
@@ -87,6 +91,7 @@ describe('build', () => {
       globalDirectory,
       envFile,
       escalateRead: emptyText(),
+      ignore: emptyText(),
       additionalRead: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
@@ -104,6 +109,7 @@ describe('build', () => {
       globalDirectory,
       envFile: emptyText(),
       escalateRead: emptyText(),
+      ignore: emptyText(),
       additionalRead: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
@@ -121,6 +127,7 @@ describe('build', () => {
       repoDirectory: emptyText(),
       globalDirectory: emptyText(),
       envFile: emptyText(),
+      ignore: emptyText(),
       additionalRead,
       escalateRead: emptyText(),
       escalateWrite: emptyText(),
@@ -128,6 +135,24 @@ describe('build', () => {
     }).all()
 
     expect(config.permissions.additionalRead).toEqual(['/docs', '~/notes'])
+  })
+
+  it('when ignore paths are given, includes them in the config and the json', () => {
+    const ignore = insertText(emptyText(), '.env')
+
+    const { config, crowConfigJson } = buildCrowConfig({
+      repoDirectory: emptyText(),
+      globalDirectory: emptyText(),
+      envFile: emptyText(),
+      ignore,
+      additionalRead: emptyText(),
+      escalateRead: emptyText(),
+      escalateWrite: emptyText(),
+      allowedLocalScripts: emptyText(),
+    }).all()
+
+    expect(config.permissions.ignore).toEqual(['.env'])
+    expect(crowConfigJson).toContain('".env"')
   })
 
   it('when no escalate directories are given, resolves the defaults', () => {
@@ -138,6 +163,7 @@ describe('build', () => {
       repoDirectory: emptyText(),
       globalDirectory: emptyText(),
       envFile: emptyText(),
+      ignore: emptyText(),
       additionalRead: emptyText(),
       escalateRead,
       escalateWrite,
@@ -156,6 +182,7 @@ describe('build', () => {
       repoDirectory: emptyText(),
       globalDirectory: emptyText(),
       envFile: emptyText(),
+      ignore: emptyText(),
       additionalRead: emptyText(),
       escalateRead,
       escalateWrite,
@@ -173,6 +200,7 @@ describe('build', () => {
       repoDirectory: emptyText(),
       globalDirectory: emptyText(),
       envFile: emptyText(),
+      ignore: emptyText(),
       additionalRead: emptyText(),
       escalateRead: emptyText(),
       escalateWrite,
@@ -191,6 +219,7 @@ describe('build', () => {
       globalDirectory,
       envFile: emptyText(),
       escalateRead: emptyText(),
+      ignore: emptyText(),
       additionalRead: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),

@@ -23,6 +23,7 @@ describe('write', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -64,6 +65,7 @@ describe('write', () => {
       ),
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(insertText(emptyText(), '/docs')),
       escalateRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
@@ -94,6 +96,47 @@ describe('write', () => {
     dispose()
   })
 
+  it('when ignore paths are typed, writes them to the config', async () => {
+    const installData = {
+      repoDirectory: signal(
+        insertText(
+          emptyText(),
+          join(fixturesDirectory, 'write-crow-config', 'crow'),
+        ),
+      ),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      ignore: signal(insertText(emptyText(), '.env')),
+      additionalRead: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
+      step: signal<InstallStep>('confirm'),
+      confirmation: signal(true),
+    }
+    const dispose = writeCrowConfig({
+      installData,
+      filesystem: defaultFilesystem(),
+    }).subscribe()
+    const finished = new Promise((resolve) =>
+      effect(() => {
+        if (installData.step.value === 'done') resolve(true)
+      }),
+    )
+
+    installData.step.value = 'write'
+    await finished
+
+    const written = JSON.parse(
+      readFileSync(
+        join(fixturesDirectory, 'write-crow-config', 'crow', 'config.json'),
+        'utf8',
+      ),
+    )
+    expect(written.permissions.ignore).toEqual(['.env'])
+    dispose()
+  })
+
   it('when the step is not write, writes nothing', () => {
     const filesystem = defaultFilesystem()
     const mkdir = spyOn(filesystem, 'mkdirWithParents')
@@ -107,6 +150,7 @@ describe('write', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),

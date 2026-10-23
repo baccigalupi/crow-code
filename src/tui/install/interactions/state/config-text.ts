@@ -9,6 +9,7 @@ export const installStore: InstallStore = {
   repoDirectory: signal(emptyText()),
   globalDirectory: signal(emptyText()),
   envFile: signal(emptyText()),
+  ignore: signal(emptyText()),
   additionalRead: signal(emptyText()),
   escalateRead: signal(emptyText()),
   escalateWrite: signal(emptyText()),

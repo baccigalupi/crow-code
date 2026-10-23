@@ -16,6 +16,7 @@ describe('InstallApp', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -43,6 +44,7 @@ describe('InstallApp', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -70,6 +72,7 @@ describe('InstallApp', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -96,6 +99,7 @@ describe('InstallApp', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -116,6 +120,61 @@ describe('InstallApp', () => {
     renderer.destroy()
   })
 
+  it('when return arrives on the env file step, asks for ignored paths', async () => {
+    const installStore = {
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
+      step: signal<InstallStep>('envFile'),
+      confirmation: signal(true),
+    }
+    const { renderer, renderOnce, captureCharFrame, mockInput } =
+      await testRender(<InstallApp installStore={installStore} />, {
+        width: 70,
+        height: 24,
+      })
+
+    mockInput.pressEnter()
+    await renderOnce()
+
+    expect(installStore.step.peek()).toBe('ignore')
+    expect(captureCharFrame()).toContain('Ignored paths: []')
+    renderer.destroy()
+  })
+
+  it('when text is typed on the ignore step, it shows in the frame', async () => {
+    const ignore = inputSignal('')
+    const installStore = {
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      ignore,
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
+      step: signal<InstallStep>('ignore'),
+      confirmation: signal(true),
+    }
+    const { renderer, renderOnce, captureCharFrame, mockInput } =
+      await testRender(<InstallApp installStore={installStore} />, {
+        width: 70,
+        height: 24,
+      })
+
+    await mockInput.typeText('.env')
+    await renderOnce()
+
+    expect(ignore.peek().text).toBe('.env')
+    expect(captureCharFrame()).toContain('Ignored paths: .env')
+    renderer.destroy()
+  })
+
   it('when backspace arrives, the previous char is deleted', async () => {
     const repoDirectory = inputSignal('~/x')
     const installStore = {
@@ -123,6 +182,7 @@ describe('InstallApp', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -147,6 +207,7 @@ describe('InstallApp', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -172,6 +233,7 @@ describe('InstallApp', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -198,6 +260,7 @@ describe('InstallApp', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -223,6 +286,7 @@ describe('InstallApp', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -246,6 +310,7 @@ describe('InstallApp', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -269,6 +334,7 @@ describe('InstallApp', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -292,6 +358,7 @@ describe('InstallApp', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -316,6 +383,7 @@ describe('InstallApp', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -339,6 +407,7 @@ describe('InstallApp', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -362,6 +431,7 @@ describe('InstallApp', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -386,6 +456,7 @@ describe('InstallApp', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -410,6 +481,7 @@ describe('InstallApp', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
@@ -434,6 +506,7 @@ describe('InstallApp', () => {
       globalDirectory: signal(emptyText()),
       envFile: signal(emptyText()),
       escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),

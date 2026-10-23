@@ -5,7 +5,7 @@ import { AdditionalReadPrompt } from '../../../../../src/tui/install/views/steps
 import { emptyText, insertText } from '../../../../../src/tui/input-text.ts'
 
 describe('AdditionalReadPrompt', () => {
-  it('when nothing is typed, shows the none default', async () => {
+  it('when nothing is typed, shows the config default', async () => {
     const { renderer, renderOnce, captureCharFrame } = await testRender(
       <AdditionalReadPrompt additionalRead={emptyText()} />,
       { width: 70, height: 3 },
@@ -13,7 +13,7 @@ describe('AdditionalReadPrompt', () => {
 
     await renderOnce()
 
-    expect(captureCharFrame()).toContain('Additional read directories: (none)')
+    expect(captureCharFrame()).toContain('Additional read directories: []')
     renderer.destroy()
   })
 
@@ -29,7 +29,7 @@ describe('AdditionalReadPrompt', () => {
     expect(captureCharFrame()).toContain(
       'Additional read directories: /docs, ~/notes',
     )
-    expect(captureCharFrame()).not.toContain('(none)')
+    expect(captureCharFrame()).not.toContain('[]')
     renderer.destroy()
   })
 })

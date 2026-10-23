@@ -10,6 +10,7 @@ describe('buildPermissions', () => {
     const allowedLocalScripts = emptyText()
 
     const permissions = buildPermissions({
+      ignore: emptyText(),
       additionalRead,
       escalateRead,
       escalateWrite,
@@ -27,6 +28,7 @@ describe('buildPermissions', () => {
     const allowedLocalScripts = emptyText()
 
     const permissions = buildPermissions({
+      ignore: emptyText(),
       additionalRead,
       escalateRead,
       escalateWrite,
@@ -44,6 +46,7 @@ describe('buildPermissions', () => {
     const allowedLocalScripts = emptyText()
 
     const permissions = buildPermissions({
+      ignore: emptyText(),
       additionalRead,
       escalateRead,
       escalateWrite,
@@ -60,6 +63,7 @@ describe('buildPermissions', () => {
     const allowedLocalScripts = insertText(emptyText(), './a.sh, ./b.sh')
 
     const permissions = buildPermissions({
+      ignore: emptyText(),
       additionalRead,
       escalateRead,
       escalateWrite,
@@ -76,6 +80,7 @@ describe('buildPermissions', () => {
     const allowedLocalScripts = emptyText()
 
     const permissions = buildPermissions({
+      ignore: emptyText(),
       additionalRead,
       escalateRead,
       escalateWrite,
@@ -92,6 +97,7 @@ describe('buildPermissions', () => {
     const allowedLocalScripts = emptyText()
 
     const permissions = buildPermissions({
+      ignore: emptyText(),
       additionalRead,
       escalateRead,
       escalateWrite,
@@ -99,5 +105,33 @@ describe('buildPermissions', () => {
     })
 
     expect(permissions.additionalRead).toEqual(['/docs', '~/notes'])
+  })
+
+  it('when ignore input is empty, it is the default empty list', () => {
+    const ignore = emptyText()
+
+    const permissions = buildPermissions({
+      ignore,
+      additionalRead: emptyText(),
+      escalateRead: emptyText(),
+      escalateWrite: emptyText(),
+      allowedLocalScripts: emptyText(),
+    })
+
+    expect(permissions.ignore).toEqual([])
+  })
+
+  it('when ignore input is comma separated, it is trimmed entries', () => {
+    const ignore = insertText(emptyText(), ' .env ,secrets/,')
+
+    const permissions = buildPermissions({
+      ignore,
+      additionalRead: emptyText(),
+      escalateRead: emptyText(),
+      escalateWrite: emptyText(),
+      allowedLocalScripts: emptyText(),
+    })
+
+    expect(permissions.ignore).toEqual(['.env', 'secrets/'])
   })
 })

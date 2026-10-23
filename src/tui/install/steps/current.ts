@@ -2,6 +2,7 @@ import type { InstallStore } from '../types.ts'
 import { RepoStep } from './repo.ts'
 import { CrowGlobalDirectoryStep } from './crow-global-directory.ts'
 import { EnvFileStep } from './env-file.ts'
+import { IgnoreStep } from './ignore.ts'
 import { AdditionalReadStep } from './additional-read.ts'
 import { EscalateReadStep } from './escalate-read.ts'
 import { EscalateWriteStep } from './escalate-write.ts'
@@ -14,6 +15,7 @@ const stepClasses = [
   RepoStep,
   CrowGlobalDirectoryStep,
   EnvFileStep,
+  IgnoreStep,
   AdditionalReadStep,
   EscalateReadStep,
   EscalateWriteStep,
