@@ -1,6 +1,6 @@
 import ts from 'typescript'
 import { modifierKinds } from '../engine/ast.ts'
-import { isProductionFile } from '../engine/gates.ts'
+import { isProductionOrTestFile } from '../engine/gates.ts'
 import type { Rule } from '../engine/types.ts'
 
 const isStaticMember = (node: ts.Node) =>
@@ -12,7 +12,7 @@ const isStaticMember = (node: ts.Node) =>
 
 export const noStatic: Rule = {
   name: 'no-static',
-  applies: isProductionFile,
+  applies: isProductionOrTestFile,
   enter(node, ctx) {
     if (isStaticMember(node)) {
       ctx.report(

@@ -1,6 +1,6 @@
 import ts from 'typescript'
 import { modifierKinds } from '../engine/ast.ts'
-import { isProductionFile } from '../engine/gates.ts'
+import { isProductionOrTestFile } from '../engine/gates.ts'
 import type { Rule } from '../engine/types.ts'
 
 const propertyModifiers = [
@@ -13,7 +13,7 @@ const propertyModifiers = [
 
 export const noParameterProperties: Rule = {
   name: 'no-parameter-properties',
-  applies: isProductionFile,
+  applies: isProductionOrTestFile,
   enter(node, ctx) {
     if (!ts.isParameter(node)) return
     if (!modifierKinds(node).some((kind) => propertyModifiers.includes(kind)))

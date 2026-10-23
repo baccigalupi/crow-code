@@ -1,5 +1,5 @@
 import ts from 'typescript'
-import { isTsxFile } from '../engine/gates.ts'
+import { isTsxOrTestTsxFile } from '../engine/gates.ts'
 import type { Rule } from '../engine/types.ts'
 
 const reactStateHooks = new Set(['useState', 'useReducer'])
@@ -14,7 +14,7 @@ const importedName = (specifier: ts.ImportSpecifier) => {
 
 export const noReactState: Rule = {
   name: 'no-react-state',
-  applies: isTsxFile,
+  applies: isTsxOrTestTsxFile,
   enter(node, ctx) {
     if (ts.isImportSpecifier(node) && reactStateHooks.has(importedName(node))) {
       ctx.report(node, message)

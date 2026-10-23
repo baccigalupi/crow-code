@@ -1,6 +1,6 @@
 import ts from 'typescript'
 import { rootsAtThis } from '../engine/ast.ts'
-import { isProductionFile } from '../engine/gates.ts'
+import { isProductionOrTestFile } from '../engine/gates.ts'
 import type { Context, Rule } from '../engine/types.ts'
 
 const isConstLocal = (statement: ts.Statement) =>
@@ -35,7 +35,7 @@ const isThisCall = (node: ts.CallExpression) =>
 
 export const constructorAssignOnly: Rule = {
   name: 'constructor-assign-only',
-  applies: isProductionFile,
+  applies: isProductionOrTestFile,
   enter(node, ctx) {
     if (ts.isConstructorDeclaration(node) && node.body !== undefined) {
       node.body.statements.forEach((statement) =>

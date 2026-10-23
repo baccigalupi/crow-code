@@ -1,10 +1,10 @@
 import ts from 'typescript'
-import { isProductionFile } from '../engine/gates.ts'
+import { isProductionOrTestFile } from '../engine/gates.ts'
 import type { Rule } from '../engine/types.ts'
 
 export const noSuper: Rule = {
   name: 'no-super',
-  applies: isProductionFile,
+  applies: isProductionOrTestFile,
   enter(node, ctx) {
     if (node.kind === ts.SyntaxKind.SuperKeyword) {
       ctx.report(

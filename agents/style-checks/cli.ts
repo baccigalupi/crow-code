@@ -86,7 +86,9 @@ const pluginsFor = (file: string): Plugin[] => {
   const kind = classify(file)
   const tsx = file.endsWith('.tsx') ? [tsxPlugin] : []
   if (kind === 'code') return [codePlugin, installNamesPlugin, ...tsx]
-  if (kind === 'test') return [unitTestsPlugin, installNamesPlugin]
+  if (kind === 'test') {
+    return [unitTestsPlugin, codePlugin, installNamesPlugin, ...tsx]
+  }
   if (kind === 'support') return [codePlugin, ...tsx]
   return []
 }

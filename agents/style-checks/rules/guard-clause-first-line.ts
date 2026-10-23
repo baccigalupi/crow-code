@@ -1,6 +1,6 @@
 import ts from 'typescript'
 import { functionBody } from '../engine/ast.ts'
-import { isProductionFile } from '../engine/gates.ts'
+import { isProductionOrTestFile } from '../engine/gates.ts'
 import type { Context, Rule } from '../engine/types.ts'
 
 const containsReturn = (node: ts.Statement): boolean => {
@@ -33,7 +33,7 @@ const checkGuard = (statement: ts.Statement, index: number, ctx: Context) => {
 
 export const guardClauseFirstLine: Rule = {
   name: 'guard-clause-first-line',
-  applies: isProductionFile,
+  applies: isProductionOrTestFile,
   enter(node, ctx) {
     const body = functionBody(node)
     if (body === undefined) return

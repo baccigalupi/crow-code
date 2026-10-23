@@ -126,6 +126,28 @@ describe('style-check cli', () => {
     ])
   })
 
+  it('when a test file has a ternary, reports the code rule', () => {
+    const source =
+      "describe('x', () => {\n  it('y', () => {\n    const x = a ? 1 : 2\n  })\n})\n"
+
+    const lines = lintSource('tests/example.test.ts', source)
+
+    expect(lines).toContain(
+      'tests/example.test.ts:3:15: crow-style-code/no-ternary: conditionals must be flat; no ternary operator (?:)',
+    )
+  })
+
+  it('when a tsx test file has a JSX && conditional, reports the tsx rule', () => {
+    const source =
+      "describe('x', () => {\n  it('y', () => {\n    const v = <b>{a && <i />}</b>\n  })\n})\n"
+
+    const lines = lintSource('tests/example.test.tsx', source)
+
+    expect(lines).toContain(
+      'tests/example.test.tsx:3:19: crow-style-tsx/no-jsx-logical-and: no && conditionals in JSX; use a helper component with early return null',
+    )
+  })
+
   it('when a support file uses ??, reports the code rule', () => {
     const source = 'export const a = b ?? c\n'
 

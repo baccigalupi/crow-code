@@ -22,12 +22,12 @@ describe('noTernary', () => {
     ])
   })
 
-  it('when a ternary is in a test file, does not report it', () => {
+  it('when a ternary is in a test support file, does not report it', () => {
     const plugin = { name: 'crow-style-code', rules: [noTernary] }
 
     const diagnostics = checkSource(
       plugin,
-      'tests/example.test.ts',
+      'tests/support/example.ts',
       'const x = a ? 1 : 2',
     )
 

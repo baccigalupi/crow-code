@@ -1,6 +1,6 @@
 import ts from 'typescript'
 import { modifierKinds } from '../engine/ast.ts'
-import { isTsxFile } from '../engine/gates.ts'
+import { isTsxOrTestTsxFile } from '../engine/gates.ts'
 import type { Rule } from '../engine/types.ts'
 
 const hasInlineTypeLiteral = (arrow: ts.ArrowFunction) => {
@@ -12,7 +12,7 @@ const hasInlineTypeLiteral = (arrow: ts.ArrowFunction) => {
 
 export const noInlinePropsType: Rule = {
   name: 'no-inline-props-type',
-  applies: isTsxFile,
+  applies: isTsxOrTestTsxFile,
   enter(node, ctx) {
     if (!ts.isVariableStatement(node)) return
     if (!modifierKinds(node).includes(ts.SyntaxKind.ExportKeyword)) return

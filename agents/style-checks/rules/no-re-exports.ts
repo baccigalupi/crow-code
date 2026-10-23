@@ -1,5 +1,5 @@
 import ts from 'typescript'
-import { isProductionFile } from '../engine/gates.ts'
+import { isProductionOrTestFile } from '../engine/gates.ts'
 import type { Rule } from '../engine/types.ts'
 
 const isNamed = (node: ts.ExportDeclaration) =>
@@ -7,7 +7,7 @@ const isNamed = (node: ts.ExportDeclaration) =>
 
 export const noReExports: Rule = {
   name: 'no-re-exports',
-  applies: isProductionFile,
+  applies: isProductionOrTestFile,
   enter(node, ctx) {
     if (!ts.isExportDeclaration(node) || node.moduleSpecifier === undefined)
       return

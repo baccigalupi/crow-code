@@ -1,10 +1,10 @@
 import ts from 'typescript'
-import { isProductionFile } from '../engine/gates.ts'
+import { isProductionOrTestFile } from '../engine/gates.ts'
 import type { Rule } from '../engine/types.ts'
 
 export const noForLoops: Rule = {
   name: 'no-for-loops',
-  applies: isProductionFile,
+  applies: isProductionOrTestFile,
   enter(node, ctx) {
     if (ts.isForStatement(node)) {
       ctx.report(node, 'collections use iterators; no for loops')

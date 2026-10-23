@@ -1,10 +1,10 @@
 import ts from 'typescript'
-import { isProductionFile } from '../engine/gates.ts'
+import { isProductionOrTestFile } from '../engine/gates.ts'
 import type { Rule } from '../engine/types.ts'
 
 export const whileOnlyInfinite: Rule = {
   name: 'while-only-infinite',
-  applies: isProductionFile,
+  applies: isProductionOrTestFile,
   enter(node, ctx) {
     if (!ts.isWhileStatement(node)) return
     if (

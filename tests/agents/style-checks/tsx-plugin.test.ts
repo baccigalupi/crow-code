@@ -394,6 +394,61 @@ describe('tsxPlugin', () => {
     expect(diagnostics).toHaveLength(0)
   })
 
+  it('when a tsx test uses a function declaration component, reports it', () => {
+    const source = 'function App() { return null }'
+
+    const diagnostics = checkSource(tsxPlugin, 'tests/example.test.tsx', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('const arrows')
+  })
+
+  it('when a tsx test calls useState, reports it', () => {
+    const source = 'const App = () => { const [x] = useState(0); return null }'
+
+    const diagnostics = checkSource(tsxPlugin, 'tests/example.test.tsx', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('signals')
+  })
+
+  it('when a tsx test component calls useInput, reports it', () => {
+    const source = 'const App = () => { useInput((i, k) => {}); return null }'
+
+    const diagnostics = checkSource(tsxPlugin, 'tests/example.test.tsx', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('hooks')
+  })
+
+  it('when a tsx test calls a plain function, ignores it', () => {
+    const source = "describe('x', () => { expect(JSON.stringify(o)) })"
+
+    const diagnostics = checkSource(tsxPlugin, 'tests/example.test.tsx', source)
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
+  it('when a tsx test exports a component with an inline props type, reports it', () => {
+    const source =
+      'export const App = ({ on }: { readonly on: boolean }) => <div>{on}</div>'
+
+    const diagnostics = checkSource(tsxPlugin, 'tests/example.test.tsx', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('named props type')
+  })
+
+  it('when a tsx test uses a JSX && conditional, reports it', () => {
+    const source =
+      'const App = ({ on }: { on: boolean }) => <div>{on && <b>x</b>}</div>'
+
+    const diagnostics = checkSource(tsxPlugin, 'tests/example.test.tsx', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('early return')
+  })
+
   it('when a non-jsx && expression exists, ignores it', () => {
     const source = 'const ok = (a: boolean, b: boolean) => a && b'
 

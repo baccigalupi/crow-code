@@ -941,4 +941,171 @@ export interface Host {}`
     expect(diagnostics).toHaveLength(1)
     expect(diagnostics[0].message).toContain('file exceeds 100 lines')
   })
+
+  it('when a test has a top-level function declaration, reports it', () => {
+    const source = 'function example() {}'
+
+    const diagnostics = checkSource(codePlugin, 'tests/example.test.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain(
+      'module-level functions must be const arrows',
+    )
+  })
+
+  it('when a test uses a parameter property, reports it', () => {
+    const source = 'class Example { constructor(private name: string) {} }'
+
+    const diagnostics = checkSource(codePlugin, 'tests/example.test.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('no parameter properties')
+  })
+
+  it('when a test constructor calls a this method, reports it', () => {
+    const source = `class Example {
+      constructor(filter: string[]) {
+        this.filter = this.buildFilter(filter)
+      }
+    }`
+
+    const diagnostics = checkSource(codePlugin, 'tests/example.test.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('no this.*() calls')
+  })
+
+  it('when a test has a static member, reports it', () => {
+    const source = 'class Example { static x = 1 }'
+
+    const diagnostics = checkSource(codePlugin, 'tests/example.test.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('no static')
+  })
+
+  it('when a test calls super, reports the constructor and super', () => {
+    const source = 'class A extends B { constructor() { super() } }'
+
+    const diagnostics = checkSource(codePlugin, 'tests/example.test.ts', source)
+
+    expect(diagnostics).toHaveLength(2)
+    expect(diagnostics[0].message).toContain('constructors do no work')
+    expect(diagnostics[1].message).toContain('no super')
+  })
+
+  it('when a test uses a ternary, reports it', () => {
+    const source = 'const x = a ? 1 : 2'
+
+    const diagnostics = checkSource(codePlugin, 'tests/example.test.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('no ternary')
+  })
+
+  it('when a test returns undefined, reports it', () => {
+    const source = `const example = () => {
+      return undefined
+    }`
+
+    const diagnostics = checkSource(codePlugin, 'tests/example.test.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('bare return')
+  })
+
+  it('when a test throws, does not report it', () => {
+    const source = 'throw new Error("bad")'
+
+    const diagnostics = checkSource(codePlugin, 'tests/example.test.ts', source)
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
+  it('when a test uses a for loop, reports it', () => {
+    const source = 'for (let i = 0; i < 1; i++) {}'
+
+    const diagnostics = checkSource(codePlugin, 'tests/example.test.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('no for')
+  })
+
+  it('when a test uses a finite while loop, reports it', () => {
+    const source = 'while (x) {}'
+
+    const diagnostics = checkSource(codePlugin, 'tests/example.test.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('while only allowed')
+  })
+
+  it('when a test re-exports, reports it', () => {
+    const source = "export * from './foo'"
+
+    const diagnostics = checkSource(codePlugin, 'tests/example.test.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('re-export')
+  })
+
+  it('when a test has a SCREAMING_CASE const, reports it', () => {
+    const source = 'const MAX_SIZE = 10'
+
+    const diagnostics = checkSource(codePlugin, 'tests/example.test.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('SCREAMING_CASE')
+  })
+
+  it('when a test has three consecutive ifs on one variable, reports it', () => {
+    const source = `const example = (x: string) => {
+      if (x === 'a') result = 1
+      if (x === 'b') result = 2
+      if (x === 'c') result = 3
+    }`
+
+    const diagnostics = checkSource(codePlugin, 'tests/example.test.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('if/else if/else')
+  })
+
+  it('when a test has a guard clause off the first line, reports it', () => {
+    const source = `const example = (x: string | null) => {
+      const y = x
+      if (y === null) return ''
+      return y
+    }`
+
+    const diagnostics = checkSource(codePlugin, 'tests/example.test.ts', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('guard clauses must be')
+  })
+
+  it('when a test exports a type, does not report it', () => {
+    const source = 'export type Foo = string'
+
+    const diagnostics = checkSource(codePlugin, 'tests/example.test.ts', source)
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
+  it('when a test has a long function, does not report it', () => {
+    const source = `const example = () => {
+      const a = 1
+      const b = 2
+      const c = 3
+      const d = 4
+      const e = 5
+      const f = 6
+      const g = 7
+      const h = 8
+    }`
+
+    const diagnostics = checkSource(codePlugin, 'tests/example.test.ts', source)
+
+    expect(diagnostics).toHaveLength(0)
+  })
 })

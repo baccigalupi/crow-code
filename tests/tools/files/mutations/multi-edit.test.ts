@@ -188,11 +188,12 @@ describe('multiEdit', () => {
     let betaWrites = 0
     spyOn(applicationData.filesystem, 'writeTextFile').mockImplementation(
       (path: string, data: string) => {
-        if (String(path) === beta) betaWrites += 1
-        if (String(path) === beta && betaWrites === 1) {
+        if (String(path) === beta && betaWrites === 0) {
+          betaWrites += 1
           return Promise.reject(new Error('beta boom'))
+        } else {
+          return write(path, data)
         }
-        return write(path, data)
       },
     )
 
@@ -228,15 +229,17 @@ describe('multiEdit', () => {
     let betaWrites = 0
     spyOn(applicationData.filesystem, 'writeTextFile').mockImplementation(
       (path: string, data: string) => {
-        if (String(path) === alpha) alphaWrites += 1
-        if (String(path) === beta) betaWrites += 1
-        if (String(path) === beta && betaWrites === 1) {
+        if (String(path) === beta && betaWrites === 0) {
+          betaWrites += 1
           return Promise.reject(new Error('beta boom'))
-        }
-        if (String(path) === alpha && alphaWrites > 1) {
+        } else if (String(path) === alpha && alphaWrites > 0) {
           return Promise.reject(new Error('alpha boom'))
+        } else if (String(path) === alpha) {
+          alphaWrites += 1
+          return write(path, data)
+        } else {
+          return write(path, data)
         }
-        return write(path, data)
       },
     )
 

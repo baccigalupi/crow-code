@@ -4,9 +4,11 @@ import {
   isHooksFile,
   isInstallFile,
   isProductionFile,
+  isProductionOrTestFile,
   isTestFile,
   isTestSupportFile,
   isTsxFile,
+  isTsxOrTestTsxFile,
 } from '../../../../agents/style-checks/engine/gates.ts'
 
 describe('gates', () => {
@@ -104,6 +106,54 @@ describe('gates', () => {
     const result = isHooksFile(fileName)
 
     expect(result).toBe(true)
+  })
+
+  it('when isProductionOrTestFile gets a src ts path, returns true', () => {
+    const fileName = 'src/a.ts'
+
+    const result = isProductionOrTestFile(fileName)
+
+    expect(result).toBe(true)
+  })
+
+  it('when isProductionOrTestFile gets a tsx test path, returns true', () => {
+    const fileName = 'tests/a.test.tsx'
+
+    const result = isProductionOrTestFile(fileName)
+
+    expect(result).toBe(true)
+  })
+
+  it('when isProductionOrTestFile gets a support path, returns false', () => {
+    const fileName = 'tests/support/x.ts'
+
+    const result = isProductionOrTestFile(fileName)
+
+    expect(result).toBe(false)
+  })
+
+  it('when isTsxOrTestTsxFile gets a src tsx path, returns true', () => {
+    const fileName = 'src/a.tsx'
+
+    const result = isTsxOrTestTsxFile(fileName)
+
+    expect(result).toBe(true)
+  })
+
+  it('when isTsxOrTestTsxFile gets a tsx test path, returns true', () => {
+    const fileName = 'tests/a.test.tsx'
+
+    const result = isTsxOrTestTsxFile(fileName)
+
+    expect(result).toBe(true)
+  })
+
+  it('when isTsxOrTestTsxFile gets a ts test path, returns false', () => {
+    const fileName = 'tests/a.test.ts'
+
+    const result = isTsxOrTestTsxFile(fileName)
+
+    expect(result).toBe(false)
   })
 
   it('when isInstallFile gets a tests tui install path, returns true', () => {

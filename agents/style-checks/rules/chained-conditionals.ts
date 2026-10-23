@@ -1,5 +1,5 @@
 import ts from 'typescript'
-import { isProductionFile } from '../engine/gates.ts'
+import { isProductionOrTestFile } from '../engine/gates.ts'
 import type { Context, Rule } from '../engine/types.ts'
 
 type Run = { start: number; key: string }
@@ -46,7 +46,7 @@ const step = (run: Run, block: ts.Block, index: number, ctx: Context) => {
 
 export const chainedConditionals: Rule = {
   name: 'chained-conditionals',
-  applies: isProductionFile,
+  applies: isProductionOrTestFile,
   enter(node, ctx) {
     if (!ts.isBlock(node)) return
     const run: Run = { start: -1, key: '' }

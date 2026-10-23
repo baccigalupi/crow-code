@@ -15,6 +15,12 @@ export const isAnySourceFile = (fileName: string) =>
 export const isTsxFile = (fileName: string) =>
   /(^|\/)src\/.*\.tsx$/.test(fileName) && !fileName.endsWith('.test.tsx')
 
+export const isProductionOrTestFile = (fileName: string) =>
+  isProductionFile(fileName) || isTestFile(fileName)
+
+export const isTsxOrTestTsxFile = (fileName: string) =>
+  isTsxFile(fileName) || (isTestFile(fileName) && fileName.endsWith('.tsx'))
+
 export const isHooksFile = (fileName: string) => /(^|\/)hooks\//.test(fileName)
 
 export const isInstallFile = (fileName: string) =>
