@@ -3,8 +3,10 @@ import { GitRefusals } from './git-refusals.ts'
 import { nullSubcommand } from './null-subcommand.ts'
 import { GitBlameSubcommand } from './subcommands/blame.ts'
 import { GitCatFileSubcommand } from './subcommands/cat-file.ts'
+import { GitCountObjectsSubcommand } from './subcommands/count-objects.ts'
 import { GitDescribeSubcommand } from './subcommands/describe.ts'
 import { GitDiffSubcommand } from './subcommands/diff.ts'
+import { GitForEachRefSubcommand } from './subcommands/for-each-ref.ts'
 import { GitLogSubcommand } from './subcommands/log.ts'
 import { GitLsFilesSubcommand } from './subcommands/ls-files.ts'
 import { GitLsTreeSubcommand } from './subcommands/ls-tree.ts'
@@ -12,6 +14,7 @@ import { GitMergeBaseSubcommand } from './subcommands/merge-base.ts'
 import { GitNameRevSubcommand } from './subcommands/name-rev.ts'
 import { GitRevListSubcommand } from './subcommands/rev-list.ts'
 import { GitRevParseSubcommand } from './subcommands/rev-parse.ts'
+import { GitShowRefSubcommand } from './subcommands/show-ref.ts'
 import { GitShowSubcommand } from './subcommands/show.ts'
 import { GitStatusSubcommand } from './subcommands/status.ts'
 
@@ -30,6 +33,9 @@ export class GitSubcommands {
     describe: GitDescribeSubcommand,
     'name-rev': GitNameRevSubcommand,
     'cat-file': GitCatFileSubcommand,
+    'count-objects': GitCountObjectsSubcommand,
+    'show-ref': GitShowRefSubcommand,
+    'for-each-ref': GitForEachRefSubcommand,
   }
   private refusals = new GitRefusals()
 

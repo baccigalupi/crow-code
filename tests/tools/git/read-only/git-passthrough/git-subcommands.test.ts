@@ -2,6 +2,9 @@ import { describe, expect, it } from 'bun:test'
 import { GitSubcommands } from '../../../../../src/tools/git/read-only/git-passthrough/git-subcommands.ts'
 import { GitCatFileSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/cat-file.ts'
 import { GitDescribeSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/describe.ts'
+import { GitCountObjectsSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/count-objects.ts'
+import { GitForEachRefSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/for-each-ref.ts'
+import { GitShowRefSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/show-ref.ts'
 import { GitLogSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/log.ts'
 import { GitLsFilesSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/ls-files.ts'
 import { GitLsTreeSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/ls-tree.ts'
@@ -92,13 +95,37 @@ describe('GitSubcommands#classFor', () => {
     expect(Subcommand).toBe(GitCatFileSubcommand)
   })
 
+  it('returns the count-objects subcommand class for count-objects', () => {
+    const subcommands = new GitSubcommands()
+
+    const Subcommand = subcommands.classFor('count-objects')
+
+    expect(Subcommand).toBe(GitCountObjectsSubcommand)
+  })
+
+  it('returns the show-ref subcommand class for show-ref', () => {
+    const subcommands = new GitSubcommands()
+
+    const Subcommand = subcommands.classFor('show-ref')
+
+    expect(Subcommand).toBe(GitShowRefSubcommand)
+  })
+
+  it('returns the for-each-ref subcommand class for for-each-ref', () => {
+    const subcommands = new GitSubcommands()
+
+    const Subcommand = subcommands.classFor('for-each-ref')
+
+    expect(Subcommand).toBe(GitForEachRefSubcommand)
+  })
+
   it('returns a class refusing push and listing the allowed subcommands', () => {
     const subcommands = new GitSubcommands()
 
     const Subcommand = subcommands.classFor('push')
 
     expect(new Subcommand({ args: [] }).refusal()).toBe(
-      'subcommand not allowed: push; allowed subcommands: blame, cat-file, describe, diff, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, status',
+      'subcommand not allowed: push; allowed subcommands: blame, cat-file, count-objects, describe, diff, for-each-ref, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, show-ref, status',
     )
   })
 
@@ -108,7 +135,7 @@ describe('GitSubcommands#classFor', () => {
     const Subcommand = subcommands.classFor('constructor')
 
     expect(new Subcommand({ args: [] }).refusal()).toBe(
-      'subcommand not allowed: constructor; allowed subcommands: blame, cat-file, describe, diff, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, status',
+      'subcommand not allowed: constructor; allowed subcommands: blame, cat-file, count-objects, describe, diff, for-each-ref, log, ls-files, ls-tree, merge-base, name-rev, rev-list, rev-parse, show, show-ref, status',
     )
   })
 })
