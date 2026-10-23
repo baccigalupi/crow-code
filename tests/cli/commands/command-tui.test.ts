@@ -7,7 +7,7 @@ import { mockApplicationData } from '../../support/mock-application-data.ts'
 describe('CommandTui', () => {
   it('when run, starts the tui with the application data and waits for its status', async () => {
     const status = mock(() => Promise.resolve('completed' as ReplStatus))
-    const runTui = mock(() => ({ status }))
+    const runTui = mock<RunTui>(() => ({ status }))
     class FakeTui extends CommandTui {
       protected runTui: RunTui = runTui
 
@@ -23,7 +23,7 @@ describe('CommandTui', () => {
 
     await tui.run()
 
-    expect<unknown>(runTui.mock.calls[0]).toEqual([applicationData, {}])
+    expect(runTui.mock.calls[0]).toEqual([applicationData, {}])
     expect(status.mock.calls.length).toBe(1)
   })
 

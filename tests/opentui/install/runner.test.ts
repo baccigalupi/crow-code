@@ -18,11 +18,10 @@ describe('runInstallTui', () => {
 
     runInstallTui(applicationData, {})
     installStore.step.value = 'write'
-    const calls = mkdir.mock.calls
     installStore.step.value = 'repo'
     installStore.repoDirectory.value = emptyText()
 
-    expect(calls).toEqual([['/repo/shared']])
+    expect(mkdir.mock.calls).toEqual([['/repo/shared']])
   })
 
   it('when a store is given, writes that store install data', () => {

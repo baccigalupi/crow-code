@@ -1,5 +1,6 @@
 /** @jsxImportSource @opentui/react */
 import { describe, expect, it } from 'bun:test'
+import { rgbToHex } from '@opentui/core'
 import { testRender } from '@opentui/react/test-utils'
 import { ConfigPanel } from '../../../../../src/opentui/install/views/steps/config-panel.tsx'
 import { emptyText, insertText } from '../../../../../src/opentui/input-text.ts'
@@ -92,8 +93,8 @@ describe('ConfigPanel', () => {
 
     const highlighted = captureSpans().lines[5].spans[2]
     expect(highlighted.text).toBe('"envFile": "~/.crow/.env",')
-    expect(highlighted.fg.toInts()).toEqual([10, 15, 30, 255])
-    expect(highlighted.bg.toInts()).toEqual([230, 202, 108, 255])
+    expect(rgbToHex(highlighted.fg)).toBe('#0a0f1e')
+    expect(rgbToHex(highlighted.bg)).toBe('#e6ca6c')
     renderer.destroy()
   })
 })

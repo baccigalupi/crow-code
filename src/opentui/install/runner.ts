@@ -1,10 +1,10 @@
-import { createCliRenderer } from '@opentui/core'
 import type { ApplicationData } from '../../application-data/application-data.ts'
-import { createOpenTuiRunner } from '../runner.ts'
 import type { ReplIo } from '../runner/types.ts'
+import type { InstallStore } from './types.ts'
+import { createCliRenderer } from '@opentui/core'
+import { createOpenTuiRunner } from '../runner.ts'
 import { writeCrowConfig } from './crow-config/write.ts'
 import { installStore } from './interactions/state/config-text.ts'
-import type { InstallStore } from './types.ts'
 import { InstallApp } from './views/install-app.tsx'
 
 // The install command's only way into the install TUI. The writer is wired
