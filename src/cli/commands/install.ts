@@ -1,4 +1,4 @@
-import { runInstallTui } from '../../opentui/install/runner.ts'
+import { runInstallTui } from '../../tui/install/runner.ts'
 import { CommandTui } from './command-tui.ts'
 
 export class Install extends CommandTui {

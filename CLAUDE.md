@@ -152,7 +152,7 @@ per-path.
 
 ### TUI
 
-`src/opentui/*` is an OpenTUI/React terminal UI (`@opentui/core` and
+`src/tui/*` is an OpenTUI/React terminal UI (`@opentui/core` and
 `@opentui/react`, pinned 0.6.6). `install/` is the first-run config installer
 (view-models in `*-view-model.ts` paired with `.tsx` views, plus interactions),
 launched by `crow install` via `install/runner.ts`. The agent app is not built
@@ -223,6 +223,6 @@ The Bun runtime types (`bun-types`) are indexed as a named
 (`search_graph`/`get_code_snippet`/`trace_path`) rather than writing `Bun.*`
 calls from memory — see `AGENTS.md` § Dependency lookup for the query pattern.
 
-The TUI (`src/opentui/*`) is built on **OpenTUI + React**, with
+The TUI (`src/tui/*`) is built on **OpenTUI + React**, with
 **`@preact/signals-core`** for state (see the TUI section above and
 `package.json`'s `dependencies`).

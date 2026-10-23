@@ -1,14 +1,14 @@
 ---
 name: react-style
 description: >-
-  Conventions for OpenTUI/React TSX views in src/opentui. Use when writing or
-  reviewing any .tsx file under src/opentui/.
+  Conventions for OpenTUI/React TSX views in src/tui. Use when writing or
+  reviewing any .tsx file under src/tui/.
 ---
 
 # React style
 
-Conventions for OpenTUI TSX views under `src/opentui/`, derived from
-`src/opentui/install/views/`. Follow these when writing or reviewing any `.tsx`
+Conventions for OpenTUI TSX views under `src/tui/`, derived from
+`src/tui/install/views/`. Follow these when writing or reviewing any `.tsx`
 file.
 
 The mechanically checkable rules are enforced by `agents/style-check`
