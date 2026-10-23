@@ -202,6 +202,28 @@ not as Decisions pretending to be user-made. Preserve superseded decisions with
 their replacement noted when revision history matters. Never present an
 unanswered open decision as a decision.
 
+### Design
+
+A plain-language list of the changes the finished work will contain, written for
+a human reviewer who has not read the research. It answers "what will be
+different when this is done?" before the TDD steps answer "in what order?".
+
+- One bullet per expected change, grouped under short headings by area when
+  there are more than a handful (e.g. Behavior, Data/config, Views, Tests).
+- Each bullet names the file or component and states the change in a sentence a
+  non-author can follow: what is added, changed, moved, or removed, and what a
+  user or caller will observe. No code blocks, no test mechanics, no red/green
+  detail — those belong in the steps.
+- Mark each bullet new, changed, or removed. Include user-visible behavior
+  changes, new or changed public interfaces and data shapes, and notable
+  deletions. Mention mechanical edits (renames, fixture updates) in one bullet,
+  not per file.
+- Every bullet traces to Goal, Verified research, or a Decision; every
+  production change in the steps appears here, and nothing here lacks a step.
+  Design may not introduce scope the Goal and Decisions don't cover.
+- Keep it scannable: short bullets, no paragraphs of rationale. Reasoning that
+  justifies a choice goes in Verified research or Decisions.
+
 ### Implementation steps (TDD)
 
 Step 0, in this order (see Worktree setup / Beads issue):
@@ -321,6 +343,6 @@ On every revision:
 4. For every open decision the user answered, resolve it per Decisions →
    Resolving an open decision: delete the Open decisions row, add the Decisions
    row with the same ID, then confirm no ID is in both sections.
-5. Update TDD steps and Regression together whenever scope changes.
+5. Update Design, TDD steps, and Regression together whenever scope changes.
 6. Reject plan details that are unsupported by verified research or a user
    decision.
