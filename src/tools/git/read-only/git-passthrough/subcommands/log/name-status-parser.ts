@@ -1,3 +1,4 @@
+import { nameStatusFile } from '../name-status-file.ts'
 import { GitLogRecords } from './records.ts'
 
 export class GitLogNameStatusParser {
@@ -15,13 +16,8 @@ export class GitLogNameStatusParser {
     const records = new GitLogRecords(stdout).records()
     const commits = records.map((record) => ({
       ...record.entry(),
-      files: record.body().map((line) => this.file(line)),
+      files: record.body().map(nameStatusFile),
     }))
     return { commits }
-  }
-
-  private file(line: string) {
-    const [status, path] = line.split('\t')
-    return { status, path }
   }
 }

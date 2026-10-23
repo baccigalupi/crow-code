@@ -37,6 +37,23 @@ export type GitBlameLine = {
   content: string
 }
 
+export type GitDiffHunk = {
+  oldStart: number
+  oldCount: number
+  newStart: number
+  newCount: number
+  lines: string[]
+}
+
+export type GitDiffKind = 'added' | 'deleted' | 'renamed' | 'modified'
+
+export type GitDiffFile = {
+  path: string
+  kind: GitDiffKind
+  oldPath?: string
+  hunks: GitDiffHunk[]
+}
+
 export type GitFileDiff = {
   path: string
   diff: string
@@ -72,6 +89,9 @@ export type GitOutput = {
   stdout?: string
   commits?: GitLogCommit[]
   lines?: GitBlameLine[]
+  diffs?: GitDiffFile[]
+  stat?: GitLogStat
+  files?: GitLogFile[]
 }
 
 export type GitFlagKind = 'boolean' | 'number' | 'text' | 'path'
