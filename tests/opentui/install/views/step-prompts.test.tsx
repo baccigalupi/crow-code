@@ -7,7 +7,7 @@ import { emptyText } from '../../../../src/opentui/input-text.ts'
 import type { InstallStep } from '../../../../src/opentui/install/types.ts'
 
 describe('StepPrompts', () => {
-  it('when the step has a view, renders it on the bottom row', async () => {
+  it('when the step is repo, renders the repo question on the bottom row', async () => {
     const installStore = {
       repoDirectory: signal(emptyText()),
       globalDirectory: signal(emptyText()),
@@ -30,20 +30,15 @@ describe('StepPrompts', () => {
       crowConfigPath: '.crow/config.json',
       confirmation: true,
     }
-    const Question = () => <text>Q?</text>
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <StepPrompts
-        installStore={installStore}
-        values={values}
-        views={{ repo: Question }}
-      />,
-      { width: 20, height: 6 },
+      <StepPrompts installStore={installStore} values={values} />,
+      { width: 70, height: 6 },
     )
 
     await renderOnce()
 
     const rows = captureCharFrame().split('\n')
-    expect(rows[5]).toContain('Q?')
+    expect(rows[5]).toContain('What directory for the local repo crow setup')
     renderer.destroy()
   })
 })

@@ -129,6 +129,42 @@ describe('keypressFromEvent', () => {
     })
   })
 
+  it('when up arrives, the upArrow flag is set and input is empty', () => {
+    const event = {
+      name: 'up',
+      sequence: '\x1b[A',
+      ctrl: false,
+      meta: false,
+      shift: false,
+      option: false,
+    } as KeyEvent
+
+    const result = keypressFromEvent(event)
+
+    expect(result).toEqual({
+      input: '',
+      key: { ctrl: false, shift: false, meta: false, upArrow: true },
+    })
+  })
+
+  it('when down arrives, the downArrow flag is set and input is empty', () => {
+    const event = {
+      name: 'down',
+      sequence: '\x1b[B',
+      ctrl: false,
+      meta: false,
+      shift: false,
+      option: false,
+    } as KeyEvent
+
+    const result = keypressFromEvent(event)
+
+    expect(result).toEqual({
+      input: '',
+      key: { ctrl: false, shift: false, meta: false, downArrow: true },
+    })
+  })
+
   it('when home arrives, the home flag is set and input is empty', () => {
     const event = {
       name: 'home',

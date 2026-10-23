@@ -1,14 +1,13 @@
 import { describe, expect, it } from 'bun:test'
 import { signal } from '@preact/signals-core'
-import {
-  noView,
-  stepPromptsViewModel,
-} from '../../../../src/opentui/install/views/step-prompts-view-model.ts'
+import { stepPromptsViewModel } from '../../../../src/opentui/install/views/step-prompts-view-model.ts'
+import { RepoPathPrompt } from '../../../../src/opentui/install/views/steps/repo-path-prompt.tsx'
+import { DoneMessage } from '../../../../src/opentui/install/views/steps/done-message.tsx'
 import { emptyText } from '../../../../src/opentui/input-text.ts'
 import type { InstallStep } from '../../../../src/opentui/install/types.ts'
 
 describe('stepPromptsViewModel', () => {
-  it('when the step has a registered view, the view is that view', () => {
+  it('when the step is repo, the view is the repo path prompt', () => {
     const installStore = {
       repoDirectory: signal(emptyText()),
       globalDirectory: signal(emptyText()),
@@ -20,14 +19,13 @@ describe('stepPromptsViewModel', () => {
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
-    const RepoView = () => null
 
-    const { View } = stepPromptsViewModel(installStore, { repo: RepoView })
+    const { View } = stepPromptsViewModel(installStore)
 
-    expect(View).toBe(RepoView)
+    expect(View).toBe(RepoPathPrompt)
   })
 
-  it('when the step has no registered view, the view renders nothing', () => {
+  it('when the step is done, the view is the done message', () => {
     const installStore = {
       repoDirectory: signal(emptyText()),
       globalDirectory: signal(emptyText()),
@@ -36,12 +34,12 @@ describe('stepPromptsViewModel', () => {
       additionalRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
-      step: signal<InstallStep>('write'),
+      step: signal<InstallStep>('done'),
       confirmation: signal(true),
     }
 
-    const { View } = stepPromptsViewModel(installStore, {})
+    const { View } = stepPromptsViewModel(installStore)
 
-    expect(View).toBe(noView)
+    expect(View).toBe(DoneMessage)
   })
 })

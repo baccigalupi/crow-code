@@ -8,6 +8,8 @@ const namedKeys: Record<string, string> = {
   escape: 'escape',
   left: 'leftArrow',
   right: 'rightArrow',
+  up: 'upArrow',
+  down: 'downArrow',
   home: 'home',
   end: 'end',
 }

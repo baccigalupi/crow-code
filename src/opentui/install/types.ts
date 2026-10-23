@@ -1,5 +1,4 @@
 import type { Signal } from '@preact/signals-core'
-import type { FunctionComponent, ReactElement } from 'react'
 import type { Filesystem } from '../../application-data/filesystem.ts'
 import type { ExitApp, InputText, KeyFlags } from '../types.ts'
 import type { CrowPermissionsConfig } from '../../types.ts'
@@ -54,13 +53,8 @@ export type StepValues = BuildCrowConfigArguments & {
   readonly confirmation: boolean
 }
 
-export type StepViews = Record<string, FunctionComponent<StepValues>>
-
-export type StepView = (values: StepValues) => ReactElement | null
-
 export type InstallAppProps = {
   readonly installStore?: InstallStore
-  readonly views?: StepViews
 }
 
 export type InstallState = BuildCrowConfigArguments & {

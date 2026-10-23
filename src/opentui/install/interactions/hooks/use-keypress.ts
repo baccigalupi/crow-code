@@ -1,6 +1,6 @@
 import { useKeyboard, useRenderer } from '@opentui/react'
-import { keypress } from '../../../../tui/install/interactions/keypress.ts'
-import type { InstallStore } from '../../../../tui/install/types.ts'
+import { keypress } from '../keypress.ts'
+import type { InstallStore } from '../../types.ts'
 import { keypressFromEvent } from '../keypress-from-event.ts'
 
 export const useKeypress = (installData: InstallStore) => {

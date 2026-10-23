@@ -17,6 +17,8 @@ export type KeyFlags = {
   readonly escape?: boolean
   readonly leftArrow?: boolean
   readonly rightArrow?: boolean
+  readonly upArrow?: boolean
+  readonly downArrow?: boolean
   readonly home?: boolean
   readonly end?: boolean
 }

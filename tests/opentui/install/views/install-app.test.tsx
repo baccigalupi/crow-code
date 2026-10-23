@@ -5,13 +5,9 @@ import { KeyCodes } from '@opentui/core/testing'
 import { testRender } from '@opentui/react/test-utils'
 import { installStore as sharedInstallStore } from '../../../../src/opentui/install/interactions/state/config-text.ts'
 import { InstallApp } from '../../../../src/opentui/install/views/install-app.tsx'
-import { Prompt } from '../../../../src/opentui/install/views/prompt.tsx'
 import { emptyText } from '../../../../src/opentui/input-text.ts'
 import { inputSignal } from '../../../support/input-signal.ts'
-import type {
-  InstallStep,
-  StepValues,
-} from '../../../../src/opentui/install/types.ts'
+import type { InstallStep } from '../../../../src/opentui/install/types.ts'
 
 describe('InstallApp', () => {
   it('when rendered, shows the header and the repo directory question', async () => {
@@ -27,18 +23,7 @@ describe('InstallApp', () => {
       confirmation: signal(true),
     }
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <InstallApp
-        installStore={installStore}
-        views={{
-          repo: ({ repoDirectory }: StepValues) => (
-            <Prompt
-              label="What directory for the local repo crow setup"
-              input={repoDirectory}
-              defaultValue=".crow"
-            />
-          ),
-        }}
-      />,
+      <InstallApp installStore={installStore} />,
       { width: 70, height: 8 },
     )
 
@@ -49,6 +34,32 @@ describe('InstallApp', () => {
     expect(captureCharFrame()).toContain(
       'What directory for the local repo crow setup: (.crow)',
     )
+    renderer.destroy()
+  })
+
+  it('when the step is past repo, shows the config preview', async () => {
+    const installStore = {
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
+      step: signal<InstallStep>('crowGlobalDirectory'),
+      confirmation: signal(true),
+    }
+    const { renderer, renderOnce, captureCharFrame } = await testRender(
+      <InstallApp installStore={installStore} />,
+      { width: 70, height: 24 },
+    )
+
+    await renderOnce()
+
+    expect(captureCharFrame()).toContain(
+      'Installing repo config in: .crow/config.json',
+    )
+    expect(captureCharFrame()).toContain('"crowGlobalDirectory": "~/.crow"')
     renderer.destroy()
   })
 
@@ -66,21 +77,10 @@ describe('InstallApp', () => {
       confirmation: signal(true),
     }
     const { renderer, renderOnce, captureCharFrame, mockInput } =
-      await testRender(
-        <InstallApp
-          installStore={installStore}
-          views={{
-            repo: ({ repoDirectory }: StepValues) => (
-              <Prompt
-                label="What directory for the local repo crow setup"
-                input={repoDirectory}
-                defaultValue=".crow"
-              />
-            ),
-          }}
-        />,
-        { width: 70, height: 8 },
-      )
+      await testRender(<InstallApp installStore={installStore} />, {
+        width: 70,
+        height: 8,
+      })
 
     await mockInput.typeText('./crow2')
     await renderOnce()
@@ -102,28 +102,11 @@ describe('InstallApp', () => {
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
-    const repoView = ({ repoDirectory }: StepValues) => (
-      <Prompt
-        label="What directory for the local repo crow setup"
-        input={repoDirectory}
-        defaultValue=".crow"
-      />
-    )
-    const globalView = ({ globalDirectory }: StepValues) => (
-      <Prompt
-        label="User crow directory"
-        input={globalDirectory}
-        defaultValue="~/.crow"
-      />
-    )
     const { renderer, renderOnce, captureCharFrame, mockInput } =
-      await testRender(
-        <InstallApp
-          installStore={installStore}
-          views={{ repo: repoView, crowGlobalDirectory: globalView }}
-        />,
-        { width: 70, height: 8 },
-      )
+      await testRender(<InstallApp installStore={installStore} />, {
+        width: 70,
+        height: 24,
+      })
 
     mockInput.pressEnter()
     await renderOnce()
@@ -147,18 +130,7 @@ describe('InstallApp', () => {
       confirmation: signal(true),
     }
     const { renderer, mockInput } = await testRender(
-      <InstallApp
-        installStore={installStore}
-        views={{
-          repo: ({ repoDirectory }: StepValues) => (
-            <Prompt
-              label="What directory for the local repo crow setup"
-              input={repoDirectory}
-              defaultValue=".crow"
-            />
-          ),
-        }}
-      />,
+      <InstallApp installStore={installStore} />,
       { width: 70, height: 8 },
     )
 
@@ -182,18 +154,7 @@ describe('InstallApp', () => {
       confirmation: signal(true),
     }
     const { renderer, mockInput } = await testRender(
-      <InstallApp
-        installStore={installStore}
-        views={{
-          repo: ({ repoDirectory }: StepValues) => (
-            <Prompt
-              label="What directory for the local repo crow setup"
-              input={repoDirectory}
-              defaultValue=".crow"
-            />
-          ),
-        }}
-      />,
+      <InstallApp installStore={installStore} />,
       { width: 70, height: 8 },
     )
 
@@ -218,18 +179,7 @@ describe('InstallApp', () => {
       confirmation: signal(true),
     }
     const { renderer, mockInput } = await testRender(
-      <InstallApp
-        installStore={installStore}
-        views={{
-          repo: ({ repoDirectory }: StepValues) => (
-            <Prompt
-              label="What directory for the local repo crow setup"
-              input={repoDirectory}
-              defaultValue=".crow"
-            />
-          ),
-        }}
-      />,
+      <InstallApp installStore={installStore} />,
       { width: 70, height: 8 },
     )
 
@@ -255,18 +205,7 @@ describe('InstallApp', () => {
       confirmation: signal(true),
     }
     const { renderer, mockInput } = await testRender(
-      <InstallApp
-        installStore={installStore}
-        views={{
-          repo: ({ repoDirectory }: StepValues) => (
-            <Prompt
-              label="What directory for the local repo crow setup"
-              input={repoDirectory}
-              defaultValue=".crow"
-            />
-          ),
-        }}
-      />,
+      <InstallApp installStore={installStore} />,
       { width: 70, height: 8 },
     )
 
@@ -454,18 +393,7 @@ describe('InstallApp', () => {
       confirmation: signal(true),
     }
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <InstallApp
-        installStore={installStore}
-        views={{
-          repo: ({ repoDirectory }: StepValues) => (
-            <Prompt
-              label="What directory for the local repo crow setup"
-              input={repoDirectory}
-              defaultValue=".crow"
-            />
-          ),
-        }}
-      />,
+      <InstallApp installStore={installStore} />,
       { width: 70, height: 8 },
     )
 
@@ -473,6 +401,56 @@ describe('InstallApp', () => {
 
     const rows = captureCharFrame().split('\n')
     expect(rows[7]).toContain('What directory for the local repo crow setup')
+    renderer.destroy()
+  })
+
+  it('when the panel is tall, the question still sits on the last row', async () => {
+    const installStore = {
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
+      step: signal<InstallStep>('crowGlobalDirectory'),
+      confirmation: signal(true),
+    }
+    const { renderer, renderOnce, captureCharFrame } = await testRender(
+      <InstallApp installStore={installStore} />,
+      { width: 70, height: 24 },
+    )
+
+    await renderOnce()
+
+    const rows = captureCharFrame().split('\n')
+    expect(rows[23]).toContain('User crow directory: (~/.crow)')
+    renderer.destroy()
+  })
+
+  it('when down arrives on the confirm step, the select shows No', async () => {
+    const installStore = {
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
+      step: signal<InstallStep>('confirm'),
+      confirmation: signal(true),
+    }
+    const { renderer, renderOnce, captureCharFrame, mockInput } =
+      await testRender(<InstallApp installStore={installStore} />, {
+        width: 70,
+        height: 30,
+      })
+
+    mockInput.pressArrow('down')
+    await renderOnce()
+
+    expect(installStore.confirmation.peek()).toBe(false)
+    expect(captureCharFrame()).toContain('▶ No')
     renderer.destroy()
   })
 

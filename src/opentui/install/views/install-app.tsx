@@ -4,14 +4,13 @@ import { installStore as sharedInstallStore } from '../interactions/state/config
 import { useInstallState } from '../interactions/hooks/use-install-state.ts'
 import { configPathViewModel } from './config-path-view-model.ts'
 import { useKeypress } from '../interactions/hooks/use-keypress.ts'
-import { stepViews } from './step-views.ts'
+import { ConfigPanel } from './steps/config-panel.tsx'
 import { StepPrompts } from './step-prompts.tsx'
 import { Header } from './header.tsx'
 import type { InstallAppProps } from '../types.ts'
 
 export const InstallApp = ({
   installStore = sharedInstallStore,
-  views = stepViews,
 }: InstallAppProps) => {
   const { width, height } = useTerminalDimensions()
   const installState = useInstallState(installStore)
@@ -21,10 +20,10 @@ export const InstallApp = ({
   return (
     <box flexDirection="column" width={width} height={height}>
       <Header />
+      <ConfigPanel {...installState} />
       <StepPrompts
         installStore={installStore}
         values={{ ...installState, crowConfigPath }}
-        views={views}
       />
     </box>
   )
