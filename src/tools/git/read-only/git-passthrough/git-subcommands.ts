@@ -9,6 +9,7 @@ import { GitCountObjectsSubcommand } from './subcommands/count-objects.ts'
 import { GitDescribeSubcommand } from './subcommands/describe.ts'
 import { GitDiffSubcommand } from './subcommands/diff.ts'
 import { GitForEachRefSubcommand } from './subcommands/for-each-ref.ts'
+import { GitGrepSubcommand } from './subcommands/grep.ts'
 import { GitLogSubcommand } from './subcommands/log.ts'
 import { GitLsFilesSubcommand } from './subcommands/ls-files.ts'
 import { GitLsTreeSubcommand } from './subcommands/ls-tree.ts'
@@ -40,6 +41,7 @@ export class GitSubcommands {
     'for-each-ref': GitForEachRefSubcommand,
     'check-ignore': GitCheckIgnoreSubcommand,
     'check-attr': GitCheckAttrSubcommand,
+    grep: GitGrepSubcommand,
   }
   private refusals = new GitRefusals()
 
