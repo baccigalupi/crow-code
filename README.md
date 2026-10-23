@@ -31,3 +31,7 @@ dev/test   # watch it fail (RED)
 3. Implement in src/
 4. dev/test   # watch it pass (GREEN)
 ```
+
+## License
+
+AGPL-3.0-or-later. See [LICENSE](LICENSE).
