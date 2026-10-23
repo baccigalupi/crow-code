@@ -1,8 +1,8 @@
 /** @jsxImportSource @opentui/react */
 import { useTerminalDimensions } from '@opentui/react'
-import { installStore as sharedInstallStore } from '../../../tui/install/interactions/state/config-buffer.ts'
-import { useInstallState } from '../../../tui/install/interactions/hooks/use-install-state.ts'
-import { configPathViewModel } from '../../../tui/install/views/config-path-view-model.ts'
+import { installStore as sharedInstallStore } from '../interactions/state/config-text.ts'
+import { useInstallState } from '../interactions/hooks/use-install-state.ts'
+import { configPathViewModel } from './config-path-view-model.ts'
 import { useKeypress } from '../interactions/hooks/use-keypress.ts'
 import { stepViews } from './step-views.ts'
 import { StepPrompts } from './step-prompts.tsx'

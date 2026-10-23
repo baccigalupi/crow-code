@@ -1,6 +1,5 @@
 import { currentStep } from '../../../tui/install/steps/current.ts'
-import type { InstallStore } from '../../../tui/install/types.ts'
-import type { StepView, StepViews } from '../types.ts'
+import type { InstallStore, StepView, StepViews } from '../types.ts'
 
 export const noView = () => null
 

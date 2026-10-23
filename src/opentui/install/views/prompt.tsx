@@ -1,13 +1,13 @@
 /** @jsxImportSource @opentui/react */
 import { TextAttributes } from '@opentui/core'
-import { bufferViewModel } from '../../../tui/buffer-view-model.ts'
-import type { InputBuffer } from '../../../tui/types.ts'
+import { inputTextViewModel } from '../../input-text-view-model.ts'
+import type { InputText } from '../../types.ts'
 
 const DefaultValue = ({
   input,
   defaultValue,
 }: {
-  readonly input: InputBuffer
+  readonly input: InputText
   readonly defaultValue: string
 }) => {
   if (input.text.length !== 0) return null
@@ -17,12 +17,12 @@ const DefaultValue = ({
 
 type PromptProps = {
   readonly label: string
-  readonly input: InputBuffer
+  readonly input: InputText
   readonly defaultValue: string
 }
 
 export const Prompt = ({ label, input, defaultValue }: PromptProps) => {
-  const { before, cursor, after } = bufferViewModel(input)
+  const { before, cursor, after } = inputTextViewModel(input)
   return (
     <box paddingX={1}>
       <text>

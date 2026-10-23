@@ -3,27 +3,27 @@ import { describe, expect, it, mock } from 'bun:test'
 import { signal } from '@preact/signals-core'
 import { testRender } from '@opentui/react/test-utils'
 import { useKeypress } from '../../../../../src/opentui/install/interactions/hooks/use-keypress.ts'
-import { emptyBuffer } from '../../../../../src/tui/input-buffer.ts'
-import type { InstallStep } from '../../../../../src/tui/install/types.ts'
+import { emptyText } from '../../../../../src/opentui/input-text.ts'
+import type { InstallStep } from '../../../../../src/opentui/install/types.ts'
 
 describe('useKeypress', () => {
   it('when a char arrives, edits the active directory input', async () => {
     const installData = {
-      repoDirectory: signal(emptyBuffer()),
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
-    const Probe = () => {
+    const Reader = () => {
       useKeypress(installData)
-      return <text>probe</text>
+      return <text>reader</text>
     }
-    const { renderer, mockInput } = await testRender(<Probe />, {
+    const { renderer, mockInput } = await testRender(<Reader />, {
       width: 20,
       height: 3,
     })
@@ -36,21 +36,21 @@ describe('useKeypress', () => {
 
   it('when return arrives, advances the step', async () => {
     const installData = {
-      repoDirectory: signal(emptyBuffer()),
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
-    const Probe = () => {
+    const Reader = () => {
       useKeypress(installData)
-      return <text>probe</text>
+      return <text>reader</text>
     }
-    const { renderer, mockInput } = await testRender(<Probe />, {
+    const { renderer, mockInput } = await testRender(<Reader />, {
       width: 20,
       height: 3,
     })
@@ -64,22 +64,22 @@ describe('useKeypress', () => {
 
   it('when ctrl-c arrives, destroys the renderer', async () => {
     const installData = {
-      repoDirectory: signal(emptyBuffer()),
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
     const onDestroy = mock(() => {})
-    const Probe = () => {
+    const Reader = () => {
       useKeypress(installData)
-      return <text>probe</text>
+      return <text>reader</text>
     }
-    const { mockInput } = await testRender(<Probe />, {
+    const { mockInput } = await testRender(<Reader />, {
       width: 20,
       height: 3,
       onDestroy,
@@ -92,22 +92,22 @@ describe('useKeypress', () => {
 
   it('when escape arrives, destroys the renderer', async () => {
     const installData = {
-      repoDirectory: signal(emptyBuffer()),
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
     const onDestroy = mock(() => {})
-    const Probe = () => {
+    const Reader = () => {
       useKeypress(installData)
-      return <text>probe</text>
+      return <text>reader</text>
     }
-    const { mockInput } = await testRender(<Probe />, {
+    const { mockInput } = await testRender(<Reader />, {
       width: 20,
       height: 3,
       onDestroy,
@@ -121,22 +121,22 @@ describe('useKeypress', () => {
 
   it('when n then return arrive on the confirm step, declines and exits without writing', async () => {
     const installData = {
-      repoDirectory: signal(emptyBuffer()),
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('confirm'),
       confirmation: signal(true),
     }
     const onDestroy = mock(() => {})
-    const Probe = () => {
+    const Reader = () => {
       useKeypress(installData)
-      return <text>probe</text>
+      return <text>reader</text>
     }
-    const { mockInput } = await testRender(<Probe />, {
+    const { mockInput } = await testRender(<Reader />, {
       width: 20,
       height: 3,
       onDestroy,

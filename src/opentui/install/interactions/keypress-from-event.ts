@@ -1,5 +1,5 @@
 import type { KeyEvent } from '@opentui/core'
-import type { KeyFlags } from '../../../tui/types.ts'
+import type { KeyFlags } from '../../types.ts'
 
 const namedKeys: Record<string, string> = {
   return: 'return',
@@ -12,27 +12,38 @@ const namedKeys: Record<string, string> = {
   end: 'end',
 }
 
-const modifiers = (event: KeyEvent) => {
-  return { ctrl: event.ctrl, shift: event.shift, meta: event.meta }
+class Keypress {
+  private readonly event: KeyEvent
+
+  constructor(event: KeyEvent) {
+    this.event = event
+  }
+
+  keypress(): { input: string; key: KeyFlags } {
+    if (!Object.hasOwn(namedKeys, this.event.name)) {
+      return { input: this.input(), key: this.modifiers() }
+    }
+
+    return {
+      input: '',
+      key: { ...this.modifiers(), [namedKeys[this.event.name]]: true },
+    }
+  }
+
+  private modifiers() {
+    const { ctrl, shift, meta } = this.event
+    return { ctrl, shift, meta }
+  }
+
+  private input() {
+    if (this.event.ctrl || this.event.meta) {
+      return this.event.name
+    }
+
+    return this.event.sequence
+  }
 }
 
-const inputFor = (event: KeyEvent) => {
-  if (event.ctrl || event.meta) {
-    return event.name
-  }
-
-  return event.sequence
-}
-
-export const keypressFromEvent = (
-  event: KeyEvent,
-): { input: string; key: KeyFlags } => {
-  if (!Object.hasOwn(namedKeys, event.name)) {
-    return { input: inputFor(event), key: modifiers(event) }
-  }
-
-  return {
-    input: '',
-    key: { ...modifiers(event), [namedKeys[event.name]]: true },
-  }
+export const keypressFromEvent = (event: KeyEvent) => {
+  return new Keypress(event).keypress()
 }

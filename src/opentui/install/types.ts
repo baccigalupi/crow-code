@@ -1,5 +1,58 @@
+import type { Signal } from '@preact/signals-core'
 import type { FunctionComponent, ReactElement } from 'react'
-import type { InstallStore, StepValues } from '../../tui/install/types.ts'
+import type { Filesystem } from '../../application-data/filesystem.ts'
+import type { ExitApp, InputText, KeyFlags } from '../types.ts'
+import type { CrowPermissionsConfig } from '../../types.ts'
+
+export type InstallStep =
+  | 'repo'
+  | 'crowGlobalDirectory'
+  | 'envFile'
+  | 'additionalRead'
+  | 'escalateRead'
+  | 'escalateWrite'
+  | 'allowedLocalScripts'
+  | 'confirm'
+  | 'write'
+  | 'done'
+
+export type CrowConfig = {
+  readonly crowGlobalDirectory: string
+  readonly envFile: string
+  readonly permissions: CrowPermissionsConfig
+}
+
+export type BuiltCrowConfig = {
+  readonly crowRepoDirectory: string
+  readonly crowGlobalDirectory: string
+  readonly crowConfigPath: string
+  readonly config: CrowConfig
+  readonly crowConfigJson: string
+}
+
+export type BuildCrowConfigArguments = {
+  readonly globalDirectory: InputText
+  readonly repoDirectory: InputText
+  readonly envFile: InputText
+  readonly additionalRead: InputText
+  readonly escalateRead: InputText
+  readonly escalateWrite: InputText
+  readonly allowedLocalScripts: InputText
+}
+
+export type PermissionInputs = Pick<
+  BuildCrowConfigArguments,
+  'additionalRead' | 'escalateRead' | 'escalateWrite' | 'allowedLocalScripts'
+>
+
+export type ConfigPanelProps = BuildCrowConfigArguments & {
+  readonly step: InstallStep
+}
+
+export type StepValues = BuildCrowConfigArguments & {
+  readonly crowConfigPath: string
+  readonly confirmation: boolean
+}
 
 export type StepViews = Record<string, FunctionComponent<StepValues>>
 
@@ -8,4 +61,25 @@ export type StepView = (values: StepValues) => ReactElement | null
 export type InstallAppProps = {
   readonly installStore?: InstallStore
   readonly views?: StepViews
+}
+
+export type InstallState = BuildCrowConfigArguments & {
+  readonly step: InstallStep
+  readonly confirmation: boolean
+}
+
+export type InstallStore = {
+  readonly [Key in keyof InstallState]: Signal<InstallState[Key]>
+}
+
+export type WriteCrowConfigArguments = {
+  readonly installData: InstallStore
+  readonly filesystem: Filesystem
+}
+
+export type KeypressArguments = {
+  readonly installData: InstallStore
+  readonly exit: ExitApp
+  readonly input: string
+  readonly key: KeyFlags
 }

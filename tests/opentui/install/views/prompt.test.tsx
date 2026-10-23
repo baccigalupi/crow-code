@@ -3,12 +3,12 @@ import { describe, expect, it } from 'bun:test'
 import { TextAttributes } from '@opentui/core'
 import { testRender } from '@opentui/react/test-utils'
 import { Prompt } from '../../../../src/opentui/install/views/prompt.tsx'
-import { emptyBuffer, insertText } from '../../../../src/tui/input-buffer.ts'
+import { emptyText, insertText } from '../../../../src/opentui/input-text.ts'
 
 describe('Prompt', () => {
   it('when the input is empty, shows the label and the default', async () => {
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <Prompt label="Where" input={emptyBuffer()} defaultValue=".crow" />,
+      <Prompt label="Where" input={emptyText()} defaultValue=".crow" />,
       { width: 40, height: 3 },
     )
 
@@ -19,7 +19,7 @@ describe('Prompt', () => {
   })
 
   it('when the input has text, shows the text and hides the default', async () => {
-    const input = insertText(emptyBuffer(), './lib')
+    const input = insertText(emptyText(), './lib')
     const { renderer, renderOnce, captureCharFrame } = await testRender(
       <Prompt label="Where" input={input} defaultValue=".crow" />,
       { width: 40, height: 3 },

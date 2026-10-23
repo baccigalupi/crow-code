@@ -3,26 +3,26 @@ import { describe, expect, it, mock } from 'bun:test'
 import { signal } from '@preact/signals-core'
 import { KeyCodes } from '@opentui/core/testing'
 import { testRender } from '@opentui/react/test-utils'
-import { installStore as sharedInstallStore } from '../../../../src/tui/install/interactions/state/config-buffer.ts'
+import { installStore as sharedInstallStore } from '../../../../src/opentui/install/interactions/state/config-text.ts'
 import { InstallApp } from '../../../../src/opentui/install/views/install-app.tsx'
 import { Prompt } from '../../../../src/opentui/install/views/prompt.tsx'
-import { emptyBuffer } from '../../../../src/tui/input-buffer.ts'
+import { emptyText } from '../../../../src/opentui/input-text.ts'
 import { inputSignal } from '../../../support/input-signal.ts'
 import type {
   InstallStep,
   StepValues,
-} from '../../../../src/tui/install/types.ts'
+} from '../../../../src/opentui/install/types.ts'
 
 describe('InstallApp', () => {
   it('when rendered, shows the header and the repo directory question', async () => {
     const installStore = {
-      repoDirectory: signal(emptyBuffer()),
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -56,12 +56,12 @@ describe('InstallApp', () => {
     const repoDirectory = inputSignal('')
     const installStore = {
       repoDirectory,
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -92,13 +92,13 @@ describe('InstallApp', () => {
 
   it('when return arrives, advances to the global directory question', async () => {
     const installStore = {
-      repoDirectory: signal(emptyBuffer()),
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -137,12 +137,12 @@ describe('InstallApp', () => {
     const repoDirectory = inputSignal('~/x')
     const installStore = {
       repoDirectory,
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -172,12 +172,12 @@ describe('InstallApp', () => {
     const repoDirectory = inputSignal('~/x')
     const installStore = {
       repoDirectory,
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -208,12 +208,12 @@ describe('InstallApp', () => {
     const repoDirectory = inputSignal('~/x')
     const installStore = {
       repoDirectory,
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -245,12 +245,12 @@ describe('InstallApp', () => {
     const repoDirectory = inputSignal('~/x')
     const installStore = {
       repoDirectory,
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -280,13 +280,13 @@ describe('InstallApp', () => {
 
   it('when right arrives on the confirm step, confirmation becomes false', async () => {
     const installStore = {
-      repoDirectory: signal(emptyBuffer()),
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('confirm'),
       confirmation: signal(true),
     }
@@ -303,13 +303,13 @@ describe('InstallApp', () => {
 
   it('when left arrives on the confirm step, confirmation becomes true', async () => {
     const installStore = {
-      repoDirectory: signal(emptyBuffer()),
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('confirm'),
       confirmation: signal(false),
     }
@@ -326,13 +326,13 @@ describe('InstallApp', () => {
 
   it('when return arrives on the confirm step with yes, moves to the write step', async () => {
     const installStore = {
-      repoDirectory: signal(emptyBuffer()),
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('confirm'),
       confirmation: signal(true),
     }
@@ -349,13 +349,13 @@ describe('InstallApp', () => {
 
   it('when return arrives on the confirm step with no, exits without writing', async () => {
     const installStore = {
-      repoDirectory: signal(emptyBuffer()),
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('confirm'),
       confirmation: signal(false),
     }
@@ -373,13 +373,13 @@ describe('InstallApp', () => {
 
   it('when any key arrives on the done step, exits', async () => {
     const installStore = {
-      repoDirectory: signal(emptyBuffer()),
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('done'),
       confirmation: signal(true),
     }
@@ -396,13 +396,13 @@ describe('InstallApp', () => {
 
   it('when ctrl-c arrives, exits', async () => {
     const installStore = {
-      repoDirectory: signal(emptyBuffer()),
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -419,13 +419,13 @@ describe('InstallApp', () => {
 
   it('when escape arrives, exits', async () => {
     const installStore = {
-      repoDirectory: signal(emptyBuffer()),
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -443,13 +443,13 @@ describe('InstallApp', () => {
 
   it('when the terminal is taller than the content, the question sits on the last row', async () => {
     const installStore = {
-      repoDirectory: signal(emptyBuffer()),
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }

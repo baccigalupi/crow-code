@@ -4,19 +4,19 @@ import {
   noView,
   stepPromptsViewModel,
 } from '../../../../src/opentui/install/views/step-prompts-view-model.ts'
-import { emptyBuffer } from '../../../../src/tui/input-buffer.ts'
-import type { InstallStep } from '../../../../src/tui/install/types.ts'
+import { emptyText } from '../../../../src/opentui/input-text.ts'
+import type { InstallStep } from '../../../../src/opentui/install/types.ts'
 
 describe('stepPromptsViewModel', () => {
   it('when the step has a registered view, the view is that view', () => {
     const installStore = {
-      repoDirectory: signal(emptyBuffer()),
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -29,13 +29,13 @@ describe('stepPromptsViewModel', () => {
 
   it('when the step has no registered view, the view renders nothing', () => {
     const installStore = {
-      repoDirectory: signal(emptyBuffer()),
-      globalDirectory: signal(emptyBuffer()),
-      envFile: signal(emptyBuffer()),
-      escalateRead: signal(emptyBuffer()),
-      additionalRead: signal(emptyBuffer()),
-      escalateWrite: signal(emptyBuffer()),
-      allowedLocalScripts: signal(emptyBuffer()),
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
       step: signal<InstallStep>('write'),
       confirmation: signal(true),
     }

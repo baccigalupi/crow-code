@@ -1,7 +1,6 @@
 /** @jsxImportSource @opentui/react */
 import { stepPromptsViewModel } from './step-prompts-view-model.ts'
-import type { InstallStore, StepValues } from '../../../tui/install/types.ts'
-import type { StepViews } from '../types.ts'
+import type { InstallStore, StepValues, StepViews } from '../types.ts'
 
 type StepPromptsProps = {
   readonly installStore: InstallStore

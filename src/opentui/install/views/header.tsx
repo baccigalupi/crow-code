@@ -1,6 +1,6 @@
 /** @jsxImportSource @opentui/react */
 import type { PropsWithChildren } from 'react'
-import { chrome } from '../../../tui/themes/chrome.ts'
+import { chrome } from '../../themes/chrome.ts'
 
 const Bar = ({ children }: PropsWithChildren) => (
   <box
