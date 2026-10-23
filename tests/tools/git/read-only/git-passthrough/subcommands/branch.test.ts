@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'bun:test'
 import { GitBranchSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/branch.ts'
+import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
 
 describe('GitBranchSubcommand', () => {
   it('when given nothing, does not refuse', () => {
-    const subcommand = new GitBranchSubcommand({ args: [] })
+    const subcommand = new GitBranchSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: [] },
+    })
 
     const refusal = subcommand.refusal()
     const gitArguments = subcommand.gitArguments()
@@ -13,7 +17,10 @@ describe('GitBranchSubcommand', () => {
   })
 
   it('when given -a, does not refuse', () => {
-    const subcommand = new GitBranchSubcommand({ args: ['-a'] })
+    const subcommand = new GitBranchSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-a'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -21,7 +28,10 @@ describe('GitBranchSubcommand', () => {
   })
 
   it('when given -r, does not refuse', () => {
-    const subcommand = new GitBranchSubcommand({ args: ['-r'] })
+    const subcommand = new GitBranchSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-r'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -29,7 +39,10 @@ describe('GitBranchSubcommand', () => {
   })
 
   it('when given -v, does not refuse', () => {
-    const subcommand = new GitBranchSubcommand({ args: ['-v'] })
+    const subcommand = new GitBranchSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-v'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -37,7 +50,10 @@ describe('GitBranchSubcommand', () => {
   })
 
   it('when given --list, does not refuse', () => {
-    const subcommand = new GitBranchSubcommand({ args: ['--list'] })
+    const subcommand = new GitBranchSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--list'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -45,7 +61,10 @@ describe('GitBranchSubcommand', () => {
   })
 
   it('when given --show-current, does not refuse', () => {
-    const subcommand = new GitBranchSubcommand({ args: ['--show-current'] })
+    const subcommand = new GitBranchSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--show-current'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -54,7 +73,8 @@ describe('GitBranchSubcommand', () => {
 
   it('when given --contains and a revision, does not refuse', () => {
     const subcommand = new GitBranchSubcommand({
-      args: ['--contains', 'HEAD'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--contains', 'HEAD'] },
     })
 
     const refusal = subcommand.refusal()
@@ -63,7 +83,10 @@ describe('GitBranchSubcommand', () => {
   })
 
   it('when given --merged and a revision, does not refuse', () => {
-    const subcommand = new GitBranchSubcommand({ args: ['--merged', 'main'] })
+    const subcommand = new GitBranchSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--merged', 'main'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -71,7 +94,10 @@ describe('GitBranchSubcommand', () => {
   })
 
   it('when given -d, refuses the flag', () => {
-    const subcommand = new GitBranchSubcommand({ args: ['-d', 'x'] })
+    const subcommand = new GitBranchSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-d', 'x'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -81,7 +107,10 @@ describe('GitBranchSubcommand', () => {
   })
 
   it('when given -D, refuses the flag', () => {
-    const subcommand = new GitBranchSubcommand({ args: ['-D', 'x'] })
+    const subcommand = new GitBranchSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-D', 'x'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -91,7 +120,10 @@ describe('GitBranchSubcommand', () => {
   })
 
   it('when given -m, refuses the flag', () => {
-    const subcommand = new GitBranchSubcommand({ args: ['-m', 'x'] })
+    const subcommand = new GitBranchSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-m', 'x'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -101,7 +133,10 @@ describe('GitBranchSubcommand', () => {
   })
 
   it('when given -M, refuses the flag', () => {
-    const subcommand = new GitBranchSubcommand({ args: ['-M', 'x'] })
+    const subcommand = new GitBranchSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-M', 'x'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -111,7 +146,10 @@ describe('GitBranchSubcommand', () => {
   })
 
   it('when given -c, refuses the flag', () => {
-    const subcommand = new GitBranchSubcommand({ args: ['-c', 'x'] })
+    const subcommand = new GitBranchSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-c', 'x'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -121,7 +159,10 @@ describe('GitBranchSubcommand', () => {
   })
 
   it('when given -C, refuses the flag', () => {
-    const subcommand = new GitBranchSubcommand({ args: ['-C', 'x'] })
+    const subcommand = new GitBranchSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-C', 'x'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -131,7 +172,10 @@ describe('GitBranchSubcommand', () => {
   })
 
   it('when given -f, refuses the flag', () => {
-    const subcommand = new GitBranchSubcommand({ args: ['-f', 'x'] })
+    const subcommand = new GitBranchSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-f', 'x'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -142,7 +186,8 @@ describe('GitBranchSubcommand', () => {
 
   it('when given --set-upstream-to, refuses the flag', () => {
     const subcommand = new GitBranchSubcommand({
-      args: ['--set-upstream-to=o/x'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--set-upstream-to=o/x'] },
     })
 
     const refusal = subcommand.refusal()
@@ -153,7 +198,10 @@ describe('GitBranchSubcommand', () => {
   })
 
   it('when given --unset-upstream, refuses the flag', () => {
-    const subcommand = new GitBranchSubcommand({ args: ['--unset-upstream'] })
+    const subcommand = new GitBranchSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--unset-upstream'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -164,7 +212,8 @@ describe('GitBranchSubcommand', () => {
 
   it('when given --edit-description, refuses the flag', () => {
     const subcommand = new GitBranchSubcommand({
-      args: ['--edit-description'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--edit-description'] },
     })
 
     const refusal = subcommand.refusal()
@@ -175,7 +224,10 @@ describe('GitBranchSubcommand', () => {
   })
 
   it('when given a bare name, refuses the argument', () => {
-    const subcommand = new GitBranchSubcommand({ args: ['foo'] })
+    const subcommand = new GitBranchSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['foo'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -183,7 +235,10 @@ describe('GitBranchSubcommand', () => {
   })
 
   it('when given -a and a bare name, refuses the argument', () => {
-    const subcommand = new GitBranchSubcommand({ args: ['-a', 'foo'] })
+    const subcommand = new GitBranchSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-a', 'foo'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -191,7 +246,10 @@ describe('GitBranchSubcommand', () => {
   })
 
   it('when given a name after a separator, refuses the argument', () => {
-    const subcommand = new GitBranchSubcommand({ args: ['--', 'foo'] })
+    const subcommand = new GitBranchSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--', 'foo'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -199,7 +257,10 @@ describe('GitBranchSubcommand', () => {
   })
 
   it('when given grouped short flags, refuses them', () => {
-    const subcommand = new GitBranchSubcommand({ args: ['-vv'] })
+    const subcommand = new GitBranchSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-vv'] },
+    })
 
     const refusal = subcommand.refusal()
 

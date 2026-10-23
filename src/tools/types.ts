@@ -1,14 +1,34 @@
+import type { ApplicationOperationArguments } from '../types.ts'
 import type { GitSubcommand } from './git/read-only/git-passthrough/git-subcommand.ts'
 
-export type GitSubcommandClass = new (arguments_: {
-  args: string[]
-}) => GitSubcommand
+export type GitSubcommandClass = new (
+  arguments_: ApplicationOperationArguments<{ args: string[] }>,
+) => GitSubcommand
 
 export type GitLogEntry = {
   sha: string
   author: string
   date: string
   subject: string
+}
+
+export type GitLogFile = {
+  path: string
+  status?: string
+}
+
+export type GitLogStat = {
+  summary: { changed: number; insertions: number; deletions: number }
+  paths: { path: string; changes: string }[]
+}
+
+export type GitLogShape =
+  'none' | 'name-status' | 'name-only' | 'stat' | 'patch' | 'stat-patch'
+
+export type GitLogCommit = GitLogEntry & {
+  files?: GitLogFile[]
+  stat?: GitLogStat
+  patch?: string
 }
 
 export type GitBlameLine = {
@@ -52,7 +72,8 @@ export type EditInstruction = {
 }
 
 export type GitOutput = {
-  stdout: string
+  stdout?: string
+  commits?: GitLogCommit[]
 }
 
 export type GitFlagKind = 'boolean' | 'number' | 'text' | 'path'

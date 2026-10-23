@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'bun:test'
 import { GitShowRefSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/show-ref.ts'
+import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
 
 describe('GitShowRefSubcommand', () => {
   it('when given --heads, --tags and a pattern, does not refuse', () => {
     const subcommand = new GitShowRefSubcommand({
-      args: ['--heads', '--tags', '--', 'refs/heads/main'],
+      applicationData: mockApplicationData(),
+      operationArguments: {
+        args: ['--heads', '--tags', '--', 'refs/heads/main'],
+      },
     })
 
     const refusal = subcommand.refusal()
@@ -24,7 +28,10 @@ describe('GitShowRefSubcommand', () => {
 
   it('when given the output and verification flags, does not refuse', () => {
     const subcommand = new GitShowRefSubcommand({
-      args: ['--verify', '--head', '-d', '-s', '--abbrev', '-q', 'HEAD'],
+      applicationData: mockApplicationData(),
+      operationArguments: {
+        args: ['--verify', '--head', '-d', '-s', '--abbrev', '-q', 'HEAD'],
+      },
     })
 
     const refusal = subcommand.refusal()
@@ -34,7 +41,8 @@ describe('GitShowRefSubcommand', () => {
 
   it('when given --exclude-existing, refuses naming the allowed flags', () => {
     const subcommand = new GitShowRefSubcommand({
-      args: ['--exclude-existing'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--exclude-existing'] },
     })
 
     const refusal = subcommand.refusal()

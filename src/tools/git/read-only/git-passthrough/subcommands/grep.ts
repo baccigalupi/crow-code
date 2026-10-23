@@ -1,6 +1,7 @@
 import { GitSubcommand } from '../git-subcommand.ts'
 
 export class GitGrepSubcommand extends GitSubcommand {
+  protected override logPrefix = 'Git grep: '
   readonly name = 'grep'
   readonly flags = {
     '-n': 'boolean',

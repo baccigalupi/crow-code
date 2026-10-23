@@ -1,19 +1,23 @@
 import { describe, expect, it } from 'bun:test'
 import { GitLsFilesSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/ls-files.ts'
+import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
 
 describe('GitLsFilesSubcommand', () => {
   it('when given its allowed flags and a pathspec, does not refuse', () => {
     const subcommand = new GitLsFilesSubcommand({
-      args: [
-        '-s',
-        '-m',
-        '-o',
-        '--others',
-        '--exclude-standard',
-        '-z',
-        '--',
-        'src/a.ts',
-      ],
+      applicationData: mockApplicationData(),
+      operationArguments: {
+        args: [
+          '-s',
+          '-m',
+          '-o',
+          '--others',
+          '--exclude-standard',
+          '-z',
+          '--',
+          'src/a.ts',
+        ],
+      },
     })
 
     const refusal = subcommand.refusal()
@@ -34,7 +38,10 @@ describe('GitLsFilesSubcommand', () => {
   })
 
   it('when given --with-tree, refuses naming the allowed flags', () => {
-    const subcommand = new GitLsFilesSubcommand({ args: ['--with-tree=HEAD'] })
+    const subcommand = new GitLsFilesSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--with-tree=HEAD'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -44,7 +51,10 @@ describe('GitLsFilesSubcommand', () => {
   })
 
   it('when given --exclude-from, refuses naming the allowed flags', () => {
-    const subcommand = new GitLsFilesSubcommand({ args: ['--exclude-from=f'] })
+    const subcommand = new GitLsFilesSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--exclude-from=f'] },
+    })
 
     const refusal = subcommand.refusal()
 

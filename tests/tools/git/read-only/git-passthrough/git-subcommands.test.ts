@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { GitSubcommands } from '../../../../../src/tools/git/read-only/git-passthrough/git-subcommands.ts'
+import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 import { GitCatFileSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/cat-file.ts'
 import { GitCheckAttrSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/check-attr.ts'
 import { GitCheckIgnoreSubcommand } from '../../../../../src/tools/git/read-only/git-passthrough/subcommands/check-ignore.ts'
@@ -214,7 +215,12 @@ describe('GitSubcommands#classFor', () => {
 
     const Subcommand = subcommands.classFor('push')
 
-    expect(new Subcommand({ args: [] }).refusal()).toBe(
+    expect(
+      new Subcommand({
+        applicationData: mockApplicationData(),
+        operationArguments: { args: [] },
+      }).refusal(),
+    ).toBe(
       'subcommand not allowed: push; allowed subcommands: blame, branch, cat-file, check-attr, check-ignore, config, count-objects, describe, diff, for-each-ref, grep, log, ls-files, ls-tree, merge-base, name-rev, reflog, remote, rev-list, rev-parse, show, show-ref, stash, status, tag, worktree',
     )
   })
@@ -224,7 +230,12 @@ describe('GitSubcommands#classFor', () => {
 
     const Subcommand = subcommands.classFor('constructor')
 
-    expect(new Subcommand({ args: [] }).refusal()).toBe(
+    expect(
+      new Subcommand({
+        applicationData: mockApplicationData(),
+        operationArguments: { args: [] },
+      }).refusal(),
+    ).toBe(
       'subcommand not allowed: constructor; allowed subcommands: blame, branch, cat-file, check-attr, check-ignore, config, count-objects, describe, diff, for-each-ref, grep, log, ls-files, ls-tree, merge-base, name-rev, reflog, remote, rev-list, rev-parse, show, show-ref, stash, status, tag, worktree',
     )
   })

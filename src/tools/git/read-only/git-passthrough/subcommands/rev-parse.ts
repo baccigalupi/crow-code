@@ -1,6 +1,7 @@
 import { GitSubcommand } from '../git-subcommand.ts'
 
 export class GitRevParseSubcommand extends GitSubcommand {
+  protected override logPrefix = 'Git rev-parse: '
   readonly name = 'rev-parse'
   readonly flags = {
     '--show-toplevel': 'boolean',

@@ -1,8 +1,9 @@
 import { gitParsedArguments } from '../cli-options/parsed-arguments.ts'
-import { GitRefusals } from '../git-refusals.ts'
+import { GitRefusals } from '../git-subcommands/git-refusals.ts'
 import { GitSubcommand } from '../git-subcommand.ts'
 
 export class GitTagSubcommand extends GitSubcommand {
+  protected override logPrefix = 'Git tag: '
   readonly name = 'tag'
   readonly flags = {
     '-l': 'boolean',

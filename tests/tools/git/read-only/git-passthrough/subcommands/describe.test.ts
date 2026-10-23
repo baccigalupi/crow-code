@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'bun:test'
 import { GitDescribeSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/describe.ts'
+import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
 
 describe('GitDescribeSubcommand', () => {
   it('when given a commit-ish, does not refuse', () => {
-    const subcommand = new GitDescribeSubcommand({ args: ['HEAD'] })
+    const subcommand = new GitDescribeSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['HEAD'] },
+    })
 
     const refusal = subcommand.refusal()
     const gitArguments = subcommand.gitArguments()
@@ -15,7 +19,10 @@ describe('GitDescribeSubcommand', () => {
   })
 
   it('when given --dirty, refuses naming that no flags are allowed', () => {
-    const subcommand = new GitDescribeSubcommand({ args: ['--dirty'] })
+    const subcommand = new GitDescribeSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--dirty'] },
+    })
 
     const refusal = subcommand.refusal()
 

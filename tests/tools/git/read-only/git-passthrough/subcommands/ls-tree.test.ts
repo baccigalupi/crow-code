@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'bun:test'
 import { GitLsTreeSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/ls-tree.ts'
+import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
 
 describe('GitLsTreeSubcommand', () => {
   it('when given its allowed flags, a tree and a pathspec, does not refuse', () => {
     const subcommand = new GitLsTreeSubcommand({
-      args: ['-r', '--name-only', 'HEAD', '--', 'src'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-r', '--name-only', 'HEAD', '--', 'src'] },
     })
 
     const refusal = subcommand.refusal()
@@ -24,7 +26,10 @@ describe('GitLsTreeSubcommand', () => {
   })
 
   it('when given --full-tree, refuses naming the allowed flags', () => {
-    const subcommand = new GitLsTreeSubcommand({ args: ['--full-tree'] })
+    const subcommand = new GitLsTreeSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--full-tree'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -34,7 +39,10 @@ describe('GitLsTreeSubcommand', () => {
   })
 
   it('when given -z, refuses naming the allowed flags', () => {
-    const subcommand = new GitLsTreeSubcommand({ args: ['-z'] })
+    const subcommand = new GitLsTreeSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-z'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -44,7 +52,10 @@ describe('GitLsTreeSubcommand', () => {
   })
 
   it('when given --abbrev, refuses naming the allowed flags', () => {
-    const subcommand = new GitLsTreeSubcommand({ args: ['--abbrev'] })
+    const subcommand = new GitLsTreeSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--abbrev'] },
+    })
 
     const refusal = subcommand.refusal()
 

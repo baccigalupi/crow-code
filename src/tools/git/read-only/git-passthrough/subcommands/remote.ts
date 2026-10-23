@@ -1,8 +1,9 @@
 import { gitParsedArguments } from '../cli-options/parsed-arguments.ts'
-import { GitRefusals } from '../git-refusals.ts'
+import { GitRefusals } from '../git-subcommands/git-refusals.ts'
 import { GitSubcommand } from '../git-subcommand.ts'
 
 export class GitRemoteSubcommand extends GitSubcommand {
+  protected override logPrefix = 'Git remote: '
   readonly name = 'remote'
   override readonly forms = ['-v', 'get-url']
   readonly flags = {}

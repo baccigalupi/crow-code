@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'bun:test'
 import { GitTagSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/tag.ts'
+import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
 
 describe('GitTagSubcommand', () => {
   it('when given nothing, does not refuse', () => {
-    const subcommand = new GitTagSubcommand({ args: [] })
+    const subcommand = new GitTagSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: [] },
+    })
 
     const refusal = subcommand.refusal()
     const gitArguments = subcommand.gitArguments()
@@ -13,7 +17,10 @@ describe('GitTagSubcommand', () => {
   })
 
   it('when given -l, does not refuse', () => {
-    const subcommand = new GitTagSubcommand({ args: ['-l'] })
+    const subcommand = new GitTagSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-l'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -21,7 +28,10 @@ describe('GitTagSubcommand', () => {
   })
 
   it('when given --list, does not refuse', () => {
-    const subcommand = new GitTagSubcommand({ args: ['--list'] })
+    const subcommand = new GitTagSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--list'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -29,7 +39,10 @@ describe('GitTagSubcommand', () => {
   })
 
   it('when given -n, does not refuse', () => {
-    const subcommand = new GitTagSubcommand({ args: ['-n'] })
+    const subcommand = new GitTagSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-n'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -37,7 +50,10 @@ describe('GitTagSubcommand', () => {
   })
 
   it('when given --points-at and a revision, does not refuse', () => {
-    const subcommand = new GitTagSubcommand({ args: ['--points-at', 'HEAD'] })
+    const subcommand = new GitTagSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--points-at', 'HEAD'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -45,7 +61,10 @@ describe('GitTagSubcommand', () => {
   })
 
   it('when given --contains and a revision, does not refuse', () => {
-    const subcommand = new GitTagSubcommand({ args: ['--contains', 'HEAD'] })
+    const subcommand = new GitTagSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--contains', 'HEAD'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -53,7 +72,10 @@ describe('GitTagSubcommand', () => {
   })
 
   it('when given -d, refuses the flag', () => {
-    const subcommand = new GitTagSubcommand({ args: ['-d', 'x'] })
+    const subcommand = new GitTagSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-d', 'x'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -63,7 +85,10 @@ describe('GitTagSubcommand', () => {
   })
 
   it('when given -a, refuses the flag', () => {
-    const subcommand = new GitTagSubcommand({ args: ['-a', 'x'] })
+    const subcommand = new GitTagSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-a', 'x'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -73,7 +98,10 @@ describe('GitTagSubcommand', () => {
   })
 
   it('when given -s, refuses the flag', () => {
-    const subcommand = new GitTagSubcommand({ args: ['-s', 'x'] })
+    const subcommand = new GitTagSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-s', 'x'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -83,7 +111,10 @@ describe('GitTagSubcommand', () => {
   })
 
   it('when given -f, refuses the flag', () => {
-    const subcommand = new GitTagSubcommand({ args: ['-f', 'x'] })
+    const subcommand = new GitTagSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-f', 'x'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -93,7 +124,10 @@ describe('GitTagSubcommand', () => {
   })
 
   it('when given -u, refuses the flag', () => {
-    const subcommand = new GitTagSubcommand({ args: ['-u', 'x'] })
+    const subcommand = new GitTagSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-u', 'x'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -103,7 +137,10 @@ describe('GitTagSubcommand', () => {
   })
 
   it('when given -m, refuses the flag', () => {
-    const subcommand = new GitTagSubcommand({ args: ['-m', 'x'] })
+    const subcommand = new GitTagSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-m', 'x'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -113,7 +150,10 @@ describe('GitTagSubcommand', () => {
   })
 
   it('when given a bare name, refuses the argument', () => {
-    const subcommand = new GitTagSubcommand({ args: ['v1'] })
+    const subcommand = new GitTagSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['v1'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -121,7 +161,10 @@ describe('GitTagSubcommand', () => {
   })
 
   it('when given -l and a pattern, refuses the argument', () => {
-    const subcommand = new GitTagSubcommand({ args: ['-l', 'v*'] })
+    const subcommand = new GitTagSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-l', 'v*'] },
+    })
 
     const refusal = subcommand.refusal()
 

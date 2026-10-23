@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'bun:test'
 import { GitCheckIgnoreSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/check-ignore.ts'
+import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
 
 describe('GitCheckIgnoreSubcommand', () => {
   it('when given -v and a path, does not refuse', () => {
-    const subcommand = new GitCheckIgnoreSubcommand({ args: ['-v', 'a.log'] })
+    const subcommand = new GitCheckIgnoreSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-v', 'a.log'] },
+    })
 
     const refusal = subcommand.refusal()
     const gitArguments = subcommand.gitArguments()
@@ -15,7 +19,10 @@ describe('GitCheckIgnoreSubcommand', () => {
   })
 
   it('when given --stdin, refuses naming the allowed flags', () => {
-    const subcommand = new GitCheckIgnoreSubcommand({ args: ['--stdin'] })
+    const subcommand = new GitCheckIgnoreSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--stdin'] },
+    })
 
     const refusal = subcommand.refusal()
 

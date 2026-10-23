@@ -1,8 +1,9 @@
 import { gitParsedArguments } from '../cli-options/parsed-arguments.ts'
-import { GitRefusals } from '../git-refusals.ts'
+import { GitRefusals } from '../git-subcommands/git-refusals.ts'
 import { GitSubcommand } from '../git-subcommand.ts'
 
 export class GitReflogSubcommand extends GitSubcommand {
+  protected override logPrefix = 'Git reflog: '
   readonly name = 'reflog'
   override readonly forms = ['show']
   readonly flags = {}

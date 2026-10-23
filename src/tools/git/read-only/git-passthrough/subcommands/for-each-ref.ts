@@ -1,6 +1,7 @@
 import { GitSubcommand } from '../git-subcommand.ts'
 
 export class GitForEachRefSubcommand extends GitSubcommand {
+  protected override logPrefix = 'Git for-each-ref: '
   readonly name = 'for-each-ref'
   readonly flags = {
     '--format': 'text',

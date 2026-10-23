@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'bun:test'
 import { GitStashSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/stash.ts'
+import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
 
 describe('GitStashSubcommand', () => {
   it('when given list, does not refuse', () => {
-    const subcommand = new GitStashSubcommand({ args: ['list'] })
+    const subcommand = new GitStashSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['list'] },
+    })
 
     const refusal = subcommand.refusal()
     const gitArguments = subcommand.gitArguments()
@@ -13,7 +17,10 @@ describe('GitStashSubcommand', () => {
   })
 
   it('when given pop, refuses naming the allowed forms', () => {
-    const subcommand = new GitStashSubcommand({ args: ['pop'] })
+    const subcommand = new GitStashSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['pop'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -23,7 +30,10 @@ describe('GitStashSubcommand', () => {
   })
 
   it('when given nothing, refuses naming the allowed forms', () => {
-    const subcommand = new GitStashSubcommand({ args: [] })
+    const subcommand = new GitStashSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: [] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -33,7 +43,10 @@ describe('GitStashSubcommand', () => {
   })
 
   it('when given push, refuses naming the allowed forms', () => {
-    const subcommand = new GitStashSubcommand({ args: ['push'] })
+    const subcommand = new GitStashSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['push'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -43,7 +56,10 @@ describe('GitStashSubcommand', () => {
   })
 
   it('when list is given an argument, refuses the argument', () => {
-    const subcommand = new GitStashSubcommand({ args: ['list', 'foo'] })
+    const subcommand = new GitStashSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['list', 'foo'] },
+    })
 
     const refusal = subcommand.refusal()
 

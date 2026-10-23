@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'bun:test'
 import { GitRevParseSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/rev-parse.ts'
+import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
 
 describe('GitRevParseSubcommand', () => {
   it('when given --verify, --short and a revision, does not refuse', () => {
     const subcommand = new GitRevParseSubcommand({
-      args: ['--verify', '--short', 'HEAD'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--verify', '--short', 'HEAD'] },
     })
 
     const refusal = subcommand.refusal()
@@ -18,7 +20,8 @@ describe('GitRevParseSubcommand', () => {
 
   it('when given --abbrev-ref, does not refuse', () => {
     const subcommand = new GitRevParseSubcommand({
-      args: ['--abbrev-ref', 'HEAD'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--abbrev-ref', 'HEAD'] },
     })
 
     const refusal = subcommand.refusal()
@@ -28,7 +31,10 @@ describe('GitRevParseSubcommand', () => {
 
   it('when given --show-toplevel and --is-inside-work-tree, does not refuse', () => {
     const subcommand = new GitRevParseSubcommand({
-      args: ['--show-toplevel', '--is-inside-work-tree'],
+      applicationData: mockApplicationData(),
+      operationArguments: {
+        args: ['--show-toplevel', '--is-inside-work-tree'],
+      },
     })
 
     const refusal = subcommand.refusal()
@@ -37,7 +43,10 @@ describe('GitRevParseSubcommand', () => {
   })
 
   it('when given --git-dir, refuses naming the allowed flags', () => {
-    const subcommand = new GitRevParseSubcommand({ args: ['--git-dir'] })
+    const subcommand = new GitRevParseSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--git-dir'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -48,7 +57,8 @@ describe('GitRevParseSubcommand', () => {
 
   it('when given --git-path, refuses naming the allowed flags', () => {
     const subcommand = new GitRevParseSubcommand({
-      args: ['--git-path', 'hooks'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--git-path', 'hooks'] },
     })
 
     const refusal = subcommand.refusal()

@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'bun:test'
 import { GitNameRevSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/name-rev.ts'
+import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
 
 describe('GitNameRevSubcommand', () => {
   it('when given --name-only, --tags and a revision, does not refuse', () => {
     const subcommand = new GitNameRevSubcommand({
-      args: ['--name-only', '--tags', 'HEAD'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--name-only', '--tags', 'HEAD'] },
     })
 
     const refusal = subcommand.refusal()
@@ -17,7 +19,10 @@ describe('GitNameRevSubcommand', () => {
   })
 
   it('when given --annotate-stdin, refuses naming the allowed flags', () => {
-    const subcommand = new GitNameRevSubcommand({ args: ['--annotate-stdin'] })
+    const subcommand = new GitNameRevSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--annotate-stdin'] },
+    })
 
     const refusal = subcommand.refusal()
 

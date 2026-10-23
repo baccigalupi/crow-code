@@ -1,16 +1,20 @@
 import { describe, expect, it } from 'bun:test'
 import { GitForEachRefSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/for-each-ref.ts'
+import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
 
 describe('GitForEachRefSubcommand', () => {
   it('when given --format, --sort, --count and a pattern, does not refuse', () => {
     const subcommand = new GitForEachRefSubcommand({
-      args: [
-        '--format=%(refname)',
-        '--sort=-committerdate',
-        '--count',
-        '5',
-        'refs/heads',
-      ],
+      applicationData: mockApplicationData(),
+      operationArguments: {
+        args: [
+          '--format=%(refname)',
+          '--sort=-committerdate',
+          '--count',
+          '5',
+          'refs/heads',
+        ],
+      },
     })
 
     const refusal = subcommand.refusal()
@@ -29,7 +33,8 @@ describe('GitForEachRefSubcommand', () => {
 
   it('when given --contains and --merged, does not refuse', () => {
     const subcommand = new GitForEachRefSubcommand({
-      args: ['--contains', 'HEAD', '--merged', 'main'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--contains', 'HEAD', '--merged', 'main'] },
     })
 
     const refusal = subcommand.refusal()
@@ -38,7 +43,10 @@ describe('GitForEachRefSubcommand', () => {
   })
 
   it('when --count is not a number, refuses naming the value', () => {
-    const subcommand = new GitForEachRefSubcommand({ args: ['--count', 'x'] })
+    const subcommand = new GitForEachRefSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--count', 'x'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -47,7 +55,8 @@ describe('GitForEachRefSubcommand', () => {
 
   it('when given --color, refuses naming the allowed flags', () => {
     const subcommand = new GitForEachRefSubcommand({
-      args: ['--color=always'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--color=always'] },
     })
 
     const refusal = subcommand.refusal()

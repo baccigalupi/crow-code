@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'bun:test'
 import { GitConfigSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/config.ts'
+import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
 
 describe('GitConfigSubcommand', () => {
   it('when given --get and a key, does not refuse', () => {
     const subcommand = new GitConfigSubcommand({
-      args: ['--get', 'user.name'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--get', 'user.name'] },
     })
 
     const refusal = subcommand.refusal()
@@ -16,7 +18,8 @@ describe('GitConfigSubcommand', () => {
 
   it('when given --get-all and a key, does not refuse', () => {
     const subcommand = new GitConfigSubcommand({
-      args: ['--get-all', 'remote.origin.url'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--get-all', 'remote.origin.url'] },
     })
 
     const refusal = subcommand.refusal()
@@ -26,7 +29,8 @@ describe('GitConfigSubcommand', () => {
 
   it('when given --get-regexp and a pattern, does not refuse', () => {
     const subcommand = new GitConfigSubcommand({
-      args: ['--get-regexp', '^remote'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--get-regexp', '^remote'] },
     })
 
     const refusal = subcommand.refusal()
@@ -35,7 +39,10 @@ describe('GitConfigSubcommand', () => {
   })
 
   it('when given --list, does not refuse', () => {
-    const subcommand = new GitConfigSubcommand({ args: ['--list'] })
+    const subcommand = new GitConfigSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--list'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -43,7 +50,10 @@ describe('GitConfigSubcommand', () => {
   })
 
   it('when given -l, does not refuse', () => {
-    const subcommand = new GitConfigSubcommand({ args: ['-l'] })
+    const subcommand = new GitConfigSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-l'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -51,7 +61,10 @@ describe('GitConfigSubcommand', () => {
   })
 
   it('when given a key and a value, refuses naming the allowed forms', () => {
-    const subcommand = new GitConfigSubcommand({ args: ['user.name', 'x'] })
+    const subcommand = new GitConfigSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['user.name', 'x'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -61,7 +74,10 @@ describe('GitConfigSubcommand', () => {
   })
 
   it('when given --add, refuses naming the allowed forms', () => {
-    const subcommand = new GitConfigSubcommand({ args: ['--add', 'a', 'b'] })
+    const subcommand = new GitConfigSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--add', 'a', 'b'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -71,7 +87,10 @@ describe('GitConfigSubcommand', () => {
   })
 
   it('when given --unset, refuses naming the allowed forms', () => {
-    const subcommand = new GitConfigSubcommand({ args: ['--unset', 'a'] })
+    const subcommand = new GitConfigSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--unset', 'a'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -81,7 +100,10 @@ describe('GitConfigSubcommand', () => {
   })
 
   it('when given -e, refuses naming the allowed forms', () => {
-    const subcommand = new GitConfigSubcommand({ args: ['-e'] })
+    const subcommand = new GitConfigSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-e'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -92,7 +114,8 @@ describe('GitConfigSubcommand', () => {
 
   it('when given --replace-all, refuses naming the allowed forms', () => {
     const subcommand = new GitConfigSubcommand({
-      args: ['--replace-all', 'a', 'b'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--replace-all', 'a', 'b'] },
     })
 
     const refusal = subcommand.refusal()
@@ -104,7 +127,8 @@ describe('GitConfigSubcommand', () => {
 
   it('when given --rename-section, refuses naming the allowed forms', () => {
     const subcommand = new GitConfigSubcommand({
-      args: ['--rename-section', 'a', 'b'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--rename-section', 'a', 'b'] },
     })
 
     const refusal = subcommand.refusal()
@@ -116,7 +140,8 @@ describe('GitConfigSubcommand', () => {
 
   it('when given --remove-section, refuses naming the allowed forms', () => {
     const subcommand = new GitConfigSubcommand({
-      args: ['--remove-section', 'a'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--remove-section', 'a'] },
     })
 
     const refusal = subcommand.refusal()
@@ -128,7 +153,8 @@ describe('GitConfigSubcommand', () => {
 
   it('when --get is followed by --add, refuses the flag', () => {
     const subcommand = new GitConfigSubcommand({
-      args: ['--get', 'a', '--add'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--get', 'a', '--add'] },
     })
 
     const refusal = subcommand.refusal()
@@ -139,7 +165,10 @@ describe('GitConfigSubcommand', () => {
   })
 
   it('when --list is given an argument, refuses the argument', () => {
-    const subcommand = new GitConfigSubcommand({ args: ['--list', 'foo'] })
+    const subcommand = new GitConfigSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--list', 'foo'] },
+    })
 
     const refusal = subcommand.refusal()
 

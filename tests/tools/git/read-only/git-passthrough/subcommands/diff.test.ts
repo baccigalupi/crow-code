@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'bun:test'
 import { GitDiffSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/diff.ts'
+import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
 
 describe('GitDiffSubcommand', () => {
   it('when given a range and a pathspec, puts no-ext-diff and no-textconv right after the subcommand', () => {
     const subcommand = new GitDiffSubcommand({
-      args: ['a..b', '--', 'src/a.ts'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['a..b', '--', 'src/a.ts'] },
     })
 
     const refusal = subcommand.refusal()
@@ -23,7 +25,10 @@ describe('GitDiffSubcommand', () => {
 
   it('when given its allowed flags, does not refuse', () => {
     const subcommand = new GitDiffSubcommand({
-      args: ['--cached', '--stat', '--name-only', '--name-status', '-U3'],
+      applicationData: mockApplicationData(),
+      operationArguments: {
+        args: ['--cached', '--stat', '--name-only', '--name-status', '-U3'],
+      },
     })
 
     const refusal = subcommand.refusal()
@@ -33,7 +38,8 @@ describe('GitDiffSubcommand', () => {
 
   it('when given --no-index, refuses naming the allowed flags', () => {
     const subcommand = new GitDiffSubcommand({
-      args: ['--no-index', '/etc/passwd', '/etc/hosts'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--no-index', '/etc/passwd', '/etc/hosts'] },
     })
 
     const refusal = subcommand.refusal()
@@ -44,7 +50,10 @@ describe('GitDiffSubcommand', () => {
   })
 
   it('when given --output, refuses naming the allowed flags', () => {
-    const subcommand = new GitDiffSubcommand({ args: ['--output=f'] })
+    const subcommand = new GitDiffSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--output=f'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -54,7 +63,10 @@ describe('GitDiffSubcommand', () => {
   })
 
   it('when given --ext-diff, refuses naming the allowed flags', () => {
-    const subcommand = new GitDiffSubcommand({ args: ['--ext-diff'] })
+    const subcommand = new GitDiffSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--ext-diff'] },
+    })
 
     const refusal = subcommand.refusal()
 

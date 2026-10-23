@@ -1,6 +1,7 @@
 import { GitSubcommand } from '../git-subcommand.ts'
 
 export class GitShowRefSubcommand extends GitSubcommand {
+  protected override logPrefix = 'Git show-ref: '
   readonly name = 'show-ref'
   readonly flags = {
     '--tags': 'boolean',

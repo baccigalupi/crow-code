@@ -1,5 +1,5 @@
 import type { GitFlagReason } from '../../../../types.ts'
-import { GitRefusals } from '../git-refusals.ts'
+import { GitRefusals } from '../git-subcommands/git-refusals.ts'
 import type { GitFlag } from './flag.ts'
 
 type GitFlagValidatorArguments = {

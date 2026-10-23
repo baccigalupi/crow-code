@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'bun:test'
 import { GitRemoteSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/remote.ts'
+import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
 
 describe('GitRemoteSubcommand', () => {
   it('when given nothing, does not refuse', () => {
-    const subcommand = new GitRemoteSubcommand({ args: [] })
+    const subcommand = new GitRemoteSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: [] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -11,7 +15,10 @@ describe('GitRemoteSubcommand', () => {
   })
 
   it('when given -v, does not refuse', () => {
-    const subcommand = new GitRemoteSubcommand({ args: ['-v'] })
+    const subcommand = new GitRemoteSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-v'] },
+    })
 
     const refusal = subcommand.refusal()
     const gitArguments = subcommand.gitArguments()
@@ -22,7 +29,8 @@ describe('GitRemoteSubcommand', () => {
 
   it('when given get-url and a name, does not refuse', () => {
     const subcommand = new GitRemoteSubcommand({
-      args: ['get-url', 'origin'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['get-url', 'origin'] },
     })
 
     const refusal = subcommand.refusal()
@@ -31,7 +39,10 @@ describe('GitRemoteSubcommand', () => {
   })
 
   it('when given add, refuses naming the allowed forms', () => {
-    const subcommand = new GitRemoteSubcommand({ args: ['add', 'x', 'u'] })
+    const subcommand = new GitRemoteSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['add', 'x', 'u'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -41,7 +52,10 @@ describe('GitRemoteSubcommand', () => {
   })
 
   it('when given remove, refuses naming the allowed forms', () => {
-    const subcommand = new GitRemoteSubcommand({ args: ['remove', 'x'] })
+    const subcommand = new GitRemoteSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['remove', 'x'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -51,7 +65,10 @@ describe('GitRemoteSubcommand', () => {
   })
 
   it('when given rename, refuses naming the allowed forms', () => {
-    const subcommand = new GitRemoteSubcommand({ args: ['rename', 'a', 'b'] })
+    const subcommand = new GitRemoteSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['rename', 'a', 'b'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -61,7 +78,10 @@ describe('GitRemoteSubcommand', () => {
   })
 
   it('when given set-url, refuses naming the allowed forms', () => {
-    const subcommand = new GitRemoteSubcommand({ args: ['set-url', 'a', 'b'] })
+    const subcommand = new GitRemoteSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['set-url', 'a', 'b'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -71,7 +91,10 @@ describe('GitRemoteSubcommand', () => {
   })
 
   it('when given set-head, refuses naming the allowed forms', () => {
-    const subcommand = new GitRemoteSubcommand({ args: ['set-head', 'a'] })
+    const subcommand = new GitRemoteSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['set-head', 'a'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -81,7 +104,10 @@ describe('GitRemoteSubcommand', () => {
   })
 
   it('when given prune, refuses naming the allowed forms', () => {
-    const subcommand = new GitRemoteSubcommand({ args: ['prune', 'a'] })
+    const subcommand = new GitRemoteSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['prune', 'a'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -91,7 +117,10 @@ describe('GitRemoteSubcommand', () => {
   })
 
   it('when given update, refuses naming the allowed forms', () => {
-    const subcommand = new GitRemoteSubcommand({ args: ['update'] })
+    const subcommand = new GitRemoteSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['update'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -101,7 +130,10 @@ describe('GitRemoteSubcommand', () => {
   })
 
   it('when given show, refuses naming the allowed forms', () => {
-    const subcommand = new GitRemoteSubcommand({ args: ['show', 'origin'] })
+    const subcommand = new GitRemoteSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['show', 'origin'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -112,7 +144,8 @@ describe('GitRemoteSubcommand', () => {
 
   it('when -v is followed by add, refuses the arguments', () => {
     const subcommand = new GitRemoteSubcommand({
-      args: ['-v', 'add', 'x', 'u'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-v', 'add', 'x', 'u'] },
     })
 
     const refusal = subcommand.refusal()

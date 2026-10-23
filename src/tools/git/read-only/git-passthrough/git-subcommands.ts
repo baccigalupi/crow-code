@@ -1,6 +1,6 @@
 import type { GitSubcommandClass } from '../../../types.ts'
-import { GitRefusals } from './git-refusals.ts'
-import { nullSubcommand } from './null-subcommand.ts'
+import { GitRefusals } from './git-subcommands/git-refusals.ts'
+import { nullSubcommand } from './subcommands/null-subcommand.ts'
 import { GitBlameSubcommand } from './subcommands/blame.ts'
 import { GitBranchSubcommand } from './subcommands/branch.ts'
 import { GitCatFileSubcommand } from './subcommands/cat-file.ts'

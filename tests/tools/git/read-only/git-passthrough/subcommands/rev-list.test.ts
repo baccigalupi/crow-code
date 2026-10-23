@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'bun:test'
 import { GitRevListSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/rev-list.ts'
+import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
 
 describe('GitRevListSubcommand', () => {
   it('when given --count and a revision, does not refuse', () => {
-    const subcommand = new GitRevListSubcommand({ args: ['--count', 'HEAD'] })
+    const subcommand = new GitRevListSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--count', 'HEAD'] },
+    })
 
     const refusal = subcommand.refusal()
     const gitArguments = subcommand.gitArguments()
@@ -16,7 +20,8 @@ describe('GitRevListSubcommand', () => {
 
   it('when given --objects and --all, does not refuse', () => {
     const subcommand = new GitRevListSubcommand({
-      args: ['--objects', '--all'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--objects', '--all'] },
     })
 
     const refusal = subcommand.refusal()
@@ -25,7 +30,10 @@ describe('GitRevListSubcommand', () => {
   })
 
   it('when given --stdin, refuses naming the allowed flags', () => {
-    const subcommand = new GitRevListSubcommand({ args: ['--stdin'] })
+    const subcommand = new GitRevListSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--stdin'] },
+    })
 
     const refusal = subcommand.refusal()
 

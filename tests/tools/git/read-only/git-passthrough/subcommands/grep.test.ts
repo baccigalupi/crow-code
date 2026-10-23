@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'bun:test'
 import { GitGrepSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/grep.ts'
+import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
 
 describe('GitGrepSubcommand', () => {
   it('when given allowed flags, a pattern, a revision and a path, does not refuse', () => {
     const subcommand = new GitGrepSubcommand({
-      args: ['-n', '-i', '-efoo', 'HEAD', '--', 'src'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-n', '-i', '-efoo', 'HEAD', '--', 'src'] },
     })
 
     const refusal = subcommand.refusal()
@@ -25,7 +27,10 @@ describe('GitGrepSubcommand', () => {
   })
 
   it('when given -O, refuses naming the allowed flags', () => {
-    const subcommand = new GitGrepSubcommand({ args: ['-O'] })
+    const subcommand = new GitGrepSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-O'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -36,7 +41,8 @@ describe('GitGrepSubcommand', () => {
 
   it('when given --open-files-in-pager, refuses naming the allowed flags', () => {
     const subcommand = new GitGrepSubcommand({
-      args: ['--open-files-in-pager'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--open-files-in-pager'] },
     })
 
     const refusal = subcommand.refusal()
@@ -47,7 +53,10 @@ describe('GitGrepSubcommand', () => {
   })
 
   it('when given --no-index, refuses naming the allowed flags', () => {
-    const subcommand = new GitGrepSubcommand({ args: ['--no-index'] })
+    const subcommand = new GitGrepSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--no-index'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -57,7 +66,10 @@ describe('GitGrepSubcommand', () => {
   })
 
   it('when given -f, refuses naming the allowed flags', () => {
-    const subcommand = new GitGrepSubcommand({ args: ['-f'] })
+    const subcommand = new GitGrepSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['-f'] },
+    })
 
     const refusal = subcommand.refusal()
 

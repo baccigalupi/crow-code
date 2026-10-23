@@ -4,7 +4,7 @@ import { mockApplicationData } from '../../../support/mock-application-data.ts'
 import { mockCommand } from '../../../support/mock-command.ts'
 
 describe('GitReadOnlyPassthrough', () => {
-  it('when log is requested, runs git log with the safe prefix and returns stdout', async () => {
+  it('when log is requested, runs git log with the safe prefix and returns the log result', async () => {
     const commandSpy = mock()
     const applicationData = mockApplicationData({
       command: mockCommand({ stdout: 'abc\n', commandSpy }),
@@ -34,9 +34,10 @@ describe('GitReadOnlyPassthrough', () => {
       '-c',
       'diff.autoRefreshIndex=false',
       'log',
+      '--format=%H%x1f%an%x1f%aI%x1f%s',
     ])
     expect(commandSpy.mock.calls[0][1].env.GIT_PAGER).toBe('cat')
-    expect(passthrough.result()).toEqual({ stdout: 'abc\n' })
+    expect(passthrough.result()).toEqual({ commits: [] })
   })
 
   it('when log is requested, runs git in the runtime cwd', async () => {
@@ -596,7 +597,7 @@ describe('GitReadOnlyPassthrough', () => {
     expect(passthrough.success()).toBe(false)
     expect(passthrough.reason).toBe('path not allowed: ../x')
     expect(loggerErrorSpy.mock.calls[0][0]).toBe(
-      'Git read only passthrough: path not allowed: ../x',
+      'Git log: path not allowed: ../x',
     )
   })
 
@@ -614,10 +615,11 @@ describe('GitReadOnlyPassthrough', () => {
     })
     await passthrough.run()
 
-    expect(commandSpy.mock.calls[0][1].args.slice(-5)).toEqual([
+    expect(commandSpy.mock.calls[0][1].args.slice(-6)).toEqual([
       'log',
       'HEAD~3',
       'origin/main',
+      '--format=%H%x1f%an%x1f%aI%x1f%s',
       '--',
       'src/a.ts',
     ])
@@ -772,14 +774,14 @@ describe('GitReadOnlyPassthrough', () => {
 
     const passthrough = new GitReadOnlyPassthrough({
       applicationData,
-      operationArguments: { args: ['log'] },
+      operationArguments: { args: ['status'] },
     })
     await passthrough.run()
 
     expect(passthrough.success()).toBe(false)
     expect(passthrough.result()).toEqual({ stdout: '' })
     expect(loggerErrorSpy.mock.calls[0][0]).toBe(
-      'Git read only passthrough: fatal: bad revision',
+      'Git status: fatal: bad revision',
     )
   })
 
@@ -797,7 +799,7 @@ describe('GitReadOnlyPassthrough', () => {
 
     expect(passthrough.reason).toBe('git exited with code 1: log')
     expect(loggerErrorSpy.mock.calls[0][0]).toBe(
-      'Git read only passthrough: git exited with code 1: log',
+      'Git log: git exited with code 1: log',
     )
   })
 

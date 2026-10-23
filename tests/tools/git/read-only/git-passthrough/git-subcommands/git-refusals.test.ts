@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { GitRefusals } from '../../../../../src/tools/git/read-only/git-passthrough/git-refusals.ts'
+import { GitRefusals } from '../../../../../../src/tools/git/read-only/git-passthrough/git-subcommands/git-refusals.ts'
 
 describe('GitRefusals', () => {
   it('when a subcommand is unknown, names it and lists the allowed ones sorted', () => {

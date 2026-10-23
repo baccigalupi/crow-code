@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'bun:test'
 import { GitReflogSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/reflog.ts'
+import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
 
 describe('GitReflogSubcommand', () => {
   it('when given nothing, does not refuse', () => {
-    const subcommand = new GitReflogSubcommand({ args: [] })
+    const subcommand = new GitReflogSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: [] },
+    })
 
     const refusal = subcommand.refusal()
     const gitArguments = subcommand.gitArguments()
@@ -13,7 +17,10 @@ describe('GitReflogSubcommand', () => {
   })
 
   it('when given show and a revision, does not refuse and requests the revision', () => {
-    const subcommand = new GitReflogSubcommand({ args: ['show', 'HEAD'] })
+    const subcommand = new GitReflogSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['show', 'HEAD'] },
+    })
 
     const refusal = subcommand.refusal()
     const requestedPaths = subcommand.requestedPaths()
@@ -23,7 +30,10 @@ describe('GitReflogSubcommand', () => {
   })
 
   it('when given expire, refuses naming the allowed forms', () => {
-    const subcommand = new GitReflogSubcommand({ args: ['expire'] })
+    const subcommand = new GitReflogSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['expire'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -33,7 +43,10 @@ describe('GitReflogSubcommand', () => {
   })
 
   it('when given delete, refuses naming the allowed forms', () => {
-    const subcommand = new GitReflogSubcommand({ args: ['delete'] })
+    const subcommand = new GitReflogSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['delete'] },
+    })
 
     const refusal = subcommand.refusal()
 
@@ -44,7 +57,8 @@ describe('GitReflogSubcommand', () => {
 
   it('when show is given --expire, refuses the flag', () => {
     const subcommand = new GitReflogSubcommand({
-      args: ['show', '--expire=now'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['show', '--expire=now'] },
     })
 
     const refusal = subcommand.refusal()

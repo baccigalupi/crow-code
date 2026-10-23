@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'bun:test'
 import { GitShowSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/show.ts'
+import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
 
 describe('GitShowSubcommand', () => {
   it('when given a revision, builds git show arguments with it', () => {
-    const subcommand = new GitShowSubcommand({ args: ['abc123'] })
+    const subcommand = new GitShowSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['abc123'] },
+    })
 
     const refusal = subcommand.refusal()
     const gitArguments = subcommand.gitArguments()
@@ -14,7 +18,10 @@ describe('GitShowSubcommand', () => {
 
   it('when given --stat, --name-only and --format, builds git show arguments with them', () => {
     const subcommand = new GitShowSubcommand({
-      args: ['--stat', '--name-only', '--format=%H', 'abc123'],
+      applicationData: mockApplicationData(),
+      operationArguments: {
+        args: ['--stat', '--name-only', '--format=%H', 'abc123'],
+      },
     })
 
     const refusal = subcommand.refusal()
@@ -31,7 +38,10 @@ describe('GitShowSubcommand', () => {
   })
 
   it('when given rev:path, requests the path', () => {
-    const subcommand = new GitShowSubcommand({ args: ['abc123:src/a.ts'] })
+    const subcommand = new GitShowSubcommand({
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['abc123:src/a.ts'] },
+    })
 
     const paths = subcommand.requestedPaths()
 
@@ -40,7 +50,8 @@ describe('GitShowSubcommand', () => {
 
   it('when given --output, refuses naming the allowed flags', () => {
     const subcommand = new GitShowSubcommand({
-      args: ['--output=f', 'abc123'],
+      applicationData: mockApplicationData(),
+      operationArguments: { args: ['--output=f', 'abc123'] },
     })
 
     const refusal = subcommand.refusal()
