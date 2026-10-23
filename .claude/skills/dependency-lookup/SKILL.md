@@ -3,15 +3,15 @@ name: dependency-lookup
 description: >-
   Look up Bun runtime APIs (and crow-code's own code) in indexed dependency
   graphs instead of guessing signatures. Triggers on: Bun.* API, bun:test
-  imports, Ink/React TUI components, Signal, "which component", "how do I
+  imports, OpenTUI/React TUI components, Signal, "which component", "how do I
   draw", dependency API questions.
 ---
 
 # Dependency lookup
 
-Note on the TUI: the TUI (`src/tui/*`) is built on **Ink + React** with
+Note on the TUI: the TUI (`src/opentui/*`) is built on **OpenTUI + React** with
 **`@preact/signals-core`** for state. No indexed dependency project covers it.
-Read `src/tui/*` source directly for TUI questions instead.
+Read `src/opentui/*` source directly for TUI questions instead.
 
 Bun runtime types are indexed as a `codebase-memory-mcp` project, backed by
 `node_modules/bun-types`. Verify dependency signatures against the graph — never
@@ -29,7 +29,7 @@ write `Bun.*` API calls from memory.
 The file's imports pick the project:
 
 - `Bun.` globals, `bun:*` imports, runtime APIs → `bun-types`
-- crow-code's own code (including `src/tui/*`) →
+- crow-code's own code (including `src/opentui/*`) →
   `Users-kane-Projects-rho-crow-code`
 
 ## Query loop

@@ -72,4 +72,28 @@ describe('ConfigPanel', () => {
     expect(captureCharFrame()).toContain('"envFile": "/secrets/crow.env"')
     renderer.destroy()
   })
+
+  it('when a line is highlighted, draws it dark on gold', async () => {
+    const { renderer, renderOnce, captureSpans } = await testRender(
+      <ConfigPanel
+        globalDirectory={emptyText()}
+        repoDirectory={emptyText()}
+        envFile={emptyText()}
+        additionalRead={emptyText()}
+        escalateRead={emptyText()}
+        escalateWrite={emptyText()}
+        allowedLocalScripts={emptyText()}
+        step="envFile"
+      />,
+      { width: 70, height: 24 },
+    )
+
+    await renderOnce()
+
+    const highlighted = captureSpans().lines[5].spans[2]
+    expect(highlighted.text).toBe('"envFile": "~/.crow/.env",')
+    expect(highlighted.fg.toInts()).toEqual([10, 15, 30, 255])
+    expect(highlighted.bg.toInts()).toEqual([230, 202, 108, 255])
+    renderer.destroy()
+  })
 })

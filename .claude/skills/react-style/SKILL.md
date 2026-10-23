@@ -1,20 +1,20 @@
 ---
 name: react-style
 description: >-
-  Conventions for Ink/React TSX views in src/tui. Use when writing or
-  reviewing any .tsx file under src/tui/.
+  Conventions for OpenTUI/React TSX views in src/opentui. Use when writing or
+  reviewing any .tsx file under src/opentui/.
 ---
 
 # React style
 
-Conventions for TSX views under `src/tui/`, derived from `src/tui/install/views/`.
-Follow these when writing or reviewing any `.tsx` file.
+Conventions for OpenTUI TSX views under `src/opentui/`, derived from
+`src/opentui/install/views/`. Follow these when writing or reviewing any `.tsx`
+file.
 
 The mechanically checkable rules are enforced by `agents/style-check`
 (`agents/style-checks/tsx-plugin.ts`): arrow-function components, no
-`useState`/`useReducer`, no inline `useInput` outside `hooks/`, no `&&`
-conditionals in JSX, no `split('\n')` line-mapping (multi-line text renders in a
-single `<Text wrap='wrap'>`). The rules below are the ones a reviewer must still
+`useState`/`useReducer`, no `&&` conditionals in JSX, no `split('\n')`
+line-mapping (multi-line text renders in a single `<text>`). The rules below are the ones a reviewer must still
 apply by hand.
 
 Keep this skill to enforceable conventions only. Terminal sizing, flexGrow
@@ -46,7 +46,7 @@ rules to assert here.
 
 - A view computes nothing. Every derived value (sizes, splits, lists,
   visibility) comes from a `*ViewModel` function: `configViewModel`,
-  `bufferViewModel`.
+  `inputTextViewModel`.
 - The component body is: read signals → call view model(s) → return JSX. Inline
   conditionals for derived data are a smell; push them into the view model where
   they are unit-testable.
@@ -56,10 +56,10 @@ rules to assert here.
 
 - State is `@preact/signals-core` signals read via `useSignalValue` — React
   state hooks are banned (scripted).
-- Input handling lives in dedicated hooks (`useInstallState`, `useKeypress`), not
-  inline `useInput` in a view (scripted).
-- Signal updates go through the shared buffer/session functions (`insertText`,
-  `deleteBackward`, `moveCursor`, …) — never mutate `InputBuffer` fields in
+- Input handling lives in dedicated hooks under `hooks/` (`useKeypress`), not
+  inline `useKeyboard` in a view.
+- Signal updates go through the shared input-text functions (`insertText`,
+  `deleteBackward`, `moveCursor`, …) — never mutate `InputText` fields in
   place.
 
 ## Conditional rendering

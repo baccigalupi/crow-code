@@ -1,5 +1,4 @@
 /** @jsxImportSource @opentui/react */
-import { TextAttributes } from '@opentui/core'
 import { configViewModel } from './config-view-model.ts'
 import { configPanel } from '../../../themes/config-panel.ts'
 import type { ConfigPanelProps } from '../../types.ts'
@@ -20,7 +19,12 @@ const Config = (configPanelProps: ConfigPanelProps) => {
       >
         <text>
           {before}
-          <span attributes={TextAttributes.INVERSE}>{highlighted}</span>
+          <span
+            fg={configPanel.highlightTextColor}
+            bg={configPanel.highlightBackground}
+          >
+            {highlighted}
+          </span>
           {after}
         </text>
       </box>

@@ -141,8 +141,7 @@ Codebase-memory-mcp graph first — it's the first resort, not a fallback:
    natural-language discovery) on the project that owns the code — this repo's
    own project, or a dependency project per `AGENTS.md` § Dependency lookup.
    Treat that table, not memory, as the source of truth for which project covers
-   what — it drifts (e.g. `CLAUDE.md` flags the `terminal-ui` dependency project
-   checkout as stale since the TUI is actually built on Ink + React).
+   what — it drifts.
 3. `trace_path` for callers/callees, `get_code_snippet` for source — use the
    exact `qn` `search_graph` returns.
 4. `check_index_coverage` on every path the research cites; read source directly

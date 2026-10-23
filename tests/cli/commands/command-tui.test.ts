@@ -1,7 +1,7 @@
 import { describe, expect, it, mock } from 'bun:test'
 import { CommandTui } from '../../../src/cli/commands/command-tui.ts'
 import type { RunTui } from '../../../src/cli/types.ts'
-import type { ReplStatus } from '../../../src/tui/types.ts'
+import type { ReplStatus } from '../../../src/opentui/runner/types.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('CommandTui', () => {

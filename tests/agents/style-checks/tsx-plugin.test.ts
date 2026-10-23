@@ -3,19 +3,18 @@ import { checkSource } from '../../../agents/style-checks/engine/check-source.ts
 import { tsxPlugin } from '../../../agents/style-checks/tsx-plugin.ts'
 
 describe('tsxPlugin', () => {
-  it('when the plugin is built, lists the six rules in order', () => {
+  it('when the plugin is built, lists the five rules in order', () => {
     const plugin = tsxPlugin
 
     const rules = plugin.rules
 
     expect(plugin.name).toBe('crow-style-tsx')
-    expect(rules).toHaveLength(6)
+    expect(rules).toHaveLength(5)
     expect(rules[0].name).toBe('arrow-function-components')
     expect(rules[1].name).toBe('no-react-state')
-    expect(rules[2].name).toBe('no-inline-use-input')
-    expect(rules[3].name).toBe('views-only-call-view-models')
-    expect(rules[4].name).toBe('no-inline-props-type')
-    expect(rules[5].name).toBe('no-jsx-logical-and')
+    expect(rules[2].name).toBe('views-only-call-view-models')
+    expect(rules[3].name).toBe('no-inline-props-type')
+    expect(rules[4].name).toBe('no-jsx-logical-and')
   })
 
   it('when a tsx file uses a function declaration, reports it', () => {
@@ -115,43 +114,6 @@ describe('tsxPlugin', () => {
     const diagnostics = checkSource(
       tsxPlugin,
       'src/tui/install/example.tsx',
-      source,
-    )
-
-    expect(diagnostics).toHaveLength(0)
-  })
-
-  it('when a view calls useInput, reports it', () => {
-    const source = 'const App = () => { useInput((i, k) => {}); return null }'
-
-    const diagnostics = checkSource(
-      tsxPlugin,
-      'src/tui/install/example.tsx',
-      source,
-    )
-
-    expect(diagnostics).toHaveLength(1)
-    expect(diagnostics[0].message).toContain('hooks')
-  })
-
-  it('when a hooks file calls useInput, ignores it', () => {
-    const source = 'export const useKeys = () => { useInput((i, k) => {}) }'
-
-    const diagnostics = checkSource(
-      tsxPlugin,
-      'src/tui/install/hooks/use-keys.ts',
-      source,
-    )
-
-    expect(diagnostics).toHaveLength(0)
-  })
-
-  it('when a hooks tsx file calls useInput, ignores it', () => {
-    const source = 'export const useKeys = () => { useInput((i, k) => {}) }'
-
-    const diagnostics = checkSource(
-      tsxPlugin,
-      'src/tui/app/interactions/hooks/use-keys.tsx',
       source,
     )
 
@@ -410,15 +372,6 @@ describe('tsxPlugin', () => {
 
     expect(diagnostics).toHaveLength(1)
     expect(diagnostics[0].message).toContain('signals')
-  })
-
-  it('when a tsx test component calls useInput, reports it', () => {
-    const source = 'const App = () => { useInput((i, k) => {}); return null }'
-
-    const diagnostics = checkSource(tsxPlugin, 'tests/example.test.tsx', source)
-
-    expect(diagnostics).toHaveLength(1)
-    expect(diagnostics[0].message).toContain('hooks')
   })
 
   it('when a tsx test calls a plain function, ignores it', () => {

@@ -1,5 +1,5 @@
 import type { ApplicationData } from '../application-data/application-data.ts'
-import type { ReplIo, ReplStatus } from '../tui/types.ts'
+import type { ReplIo, ReplStatus } from '../opentui/runner/types.ts'
 
 export type ParsedArgumentsOptions = Record<string, string | boolean>
 

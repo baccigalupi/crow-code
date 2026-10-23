@@ -1,4 +1,4 @@
-import type { ReplStatus } from '../../tui/types.ts'
+import type { ReplStatus } from '../../opentui/runner/types.ts'
 import type { RunTui } from '../types.ts'
 import { Command } from './command.ts'
 
