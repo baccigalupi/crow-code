@@ -4,8 +4,7 @@ description: >-
   Create and revise implementation plans with an immutable Goal, verified
   research, Open decisions/Decisions, strict TDD, and regression
   protection. Use whenever creating, researching, or revising an
-  implementation plan — including every time EnterPlanMode is used, and
-  before every ExitPlanMode call.
+  implementation plan — including every time EnterPlanMode is used.
 ---
 
 # Planning
@@ -38,9 +37,9 @@ fallbacks and record what you tried:
 - Resume the subagent (`SendMessage`) or launch another with a different
   approach and the exact paths or commands to try; never accept its "not found"
   unverified.
-- If every fallback is exhausted, ask with `AskUserQuestion` for the missing
-  input only (a file path, a name, access) — a request for input, not a
-  decision row. Do not write the plan around the gap.
+- If every fallback is exhausted, record the missing input (a file path, a name,
+  access) as a `D<n>` row in Open decisions that names what was tried and what
+  is needed. Do not ask in chat, and do not write the plan around the gap.
 
 Your own tool limits are never a reason to move work to the user's Open
 decisions table.
@@ -67,9 +66,11 @@ chat response — not the Goal quote, not a section, not a summary of what
 changed. The chat response is the plan file's path and nothing else — no
 greeting, no recap, no follow-up text. Give the path every time the plan file is
 written or edited, not just the first time. `ExitPlanMode` is denied in
-`.claude/settings.json`; never call it. End the turn with the plan file path, or
-with `AskUserQuestion` — a genuine decision only the user can make (never "is
-this plan okay?").
+`.claude/settings.json`; never call it. Never call `AskUserQuestion` while
+planning, and never ask a question in chat text — a decision only the user can
+make is a `D<n>` row in the plan's Open decisions table, nothing else. The turn
+always ends with the plan file path. The user reads the table and answers in
+their next message.
 
 If the plan write itself failed (e.g. a blocked edit), say so in under two
 sentences and name the failure — don't retry silently, per `compliant-answer`.
@@ -121,8 +122,7 @@ order.
 Stable anchor, first content section.
 
 - If a Beads issue was provided, quote its complete contents verbatim
-  (`bd
-show <id>`).
+  (`bd show <id>`).
 - Otherwise, quote the user's complete prompt verbatim.
 - Add a concise outcome statement below the quote without replacing or
   paraphrasing the source text.
@@ -161,7 +161,8 @@ Named artifacts: when the issue, goal, or user prompt refers to a specific
 artifact ("the mapping table in the plan", "the approved design", "the spec"),
 locating and quoting it is a required research item. Never substitute your own
 version of it and never write the plan with it missing. If it cannot be found
-after the fallbacks in the Interaction rule, stop and ask for it.
+after the fallbacks in the Interaction rule, record it as an Open decisions row
+per Blocked research is not finished research.
 
 Pre-write check: before writing or revising the plan, list every fact the plan
 depends on and the source of each (file, command output, issue text). Any fact
