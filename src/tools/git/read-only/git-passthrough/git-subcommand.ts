@@ -68,7 +68,7 @@ export abstract class GitSubcommand extends OperationWithResult<
     }
   }
 
-  private runCommand() {
+  protected runCommand() {
     return this.applicationData.runtime.runCommand('git', {
       args: gitSafeReadSubcommand(this.gitArguments()),
       env: gitSafeReadEnv(this.applicationData.runtime.env()),

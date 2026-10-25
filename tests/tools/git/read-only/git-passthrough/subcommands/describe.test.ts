@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { GitDescribeSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/describe.ts'
 import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
+import { mockCommand } from '../../../../../support/mock-command.ts'
 
 describe('GitDescribeSubcommand', () => {
   it('when given a commit-ish, does not refuse', () => {
@@ -29,5 +30,20 @@ describe('GitDescribeSubcommand', () => {
     expect(refusal).toBe(
       'flag not allowed: --dirty; allowed flags for describe: none',
     )
+  })
+
+  it('when git describe runs, returns a typed name', async () => {
+    const applicationData = mockApplicationData({
+      command: mockCommand({ stdout: '569b637\n' }),
+    })
+    const subcommand = new GitDescribeSubcommand({
+      applicationData,
+      operationArguments: { args: ['HEAD'] },
+    })
+
+    await subcommand.run()
+    const result = subcommand.result()
+
+    expect(result).toEqual({ name: '569b637' })
   })
 })

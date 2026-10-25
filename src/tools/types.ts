@@ -130,6 +130,18 @@ export type GitOutput = {
   entries?: GitLsFilesEntry[] | GitLsTreeEntry[]
   path?: string
   text?: string
+  values?: string[]
+  shas?: string[]
+  count?: number
+  objects?: GitRevListObject[]
+  sha?: string
+  isAncestor?: boolean
+  name?: string
+}
+
+export type GitRevListObject = {
+  sha: string
+  path?: string
 }
 
 export type GitFlagKind = 'boolean' | 'number' | 'text' | 'path'

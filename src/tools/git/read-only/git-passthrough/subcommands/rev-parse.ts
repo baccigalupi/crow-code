@@ -10,4 +10,10 @@ export class GitRevParseSubcommand extends GitSubcommand {
     '--verify': 'boolean',
     '--is-inside-work-tree': 'boolean',
   } as const
+
+  protected override parse() {
+    return {
+      values: this.rawResponse.split('\n').filter((line) => line !== ''),
+    }
+  }
 }

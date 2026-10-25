@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { GitRevParseSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/rev-parse.ts'
 import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
+import { mockCommand } from '../../../../../support/mock-command.ts'
 
 describe('GitRevParseSubcommand', () => {
   it('when given --verify, --short and a revision, does not refuse', () => {
@@ -66,5 +67,22 @@ describe('GitRevParseSubcommand', () => {
     expect(refusal).toBe(
       'flag not allowed: --git-path; allowed flags for rev-parse: --abbrev-ref, --is-inside-work-tree, --short, --show-toplevel, --verify',
     )
+  })
+
+  it('when git rev-parse runs, returns typed values', async () => {
+    const applicationData = mockApplicationData({
+      command: mockCommand({ stdout: 'true\nmain\n' }),
+    })
+    const subcommand = new GitRevParseSubcommand({
+      applicationData,
+      operationArguments: {
+        args: ['--is-inside-work-tree', '--abbrev-ref', 'HEAD'],
+      },
+    })
+
+    await subcommand.run()
+    const result = subcommand.result()
+
+    expect(result).toEqual({ values: ['true', 'main'] })
   })
 })
