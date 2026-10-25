@@ -174,6 +174,16 @@ classifies files by path (`src/**/*.ts(x)` = code, `tests/**/*.test.ts(x)` =
 test, other `tests/**/*.ts(x)` = support) to decide which checks are blocking
 vs. advisory.
 
+## Skills
+
+Match the task against the skill descriptions before acting and load every
+match first. In particular: invoke `/planning` whenever creating, researching,
+or revising a plan (any request for a plan, including "plan", "build the plan",
+or EnterPlanMode) — never write a plan without it. Before editing `src/**`,
+load `code-style` (plus `react-style` for `.tsx` under `src/tui/`); before
+editing `tests/**`, load `unit-tests` and `testing-pyramid`. `AGENTS.md` holds
+the full rules.
+
 ## Git / worktree / issue workflow
 
 See `AGENTS.md` for the full, authoritative rules — summary:
