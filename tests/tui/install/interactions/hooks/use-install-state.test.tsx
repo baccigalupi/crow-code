@@ -1,34 +1,17 @@
 /** @jsxImportSource @opentui/react */
 import { describe, expect, it } from 'bun:test'
-import { signal } from '@preact/signals-core'
 import { testRender } from '@opentui/react/test-utils'
 import { useInstallState } from '../../../../../src/tui/install/interactions/hooks/use-install-state.ts'
 import { emptyText, insertText } from '../../../../../src/tui/input-text.ts'
-import type {
-  InstallState,
-  InstallStep,
-} from '../../../../../src/tui/install/types.ts'
+import type { InstallState } from '../../../../../src/tui/install/types.ts'
+import { buildInstallStore } from '../../../../support/install-store.ts'
 
 describe('useInstallState', () => {
   it('when rendered, returns the current value of every install signal', async () => {
-    const installStore = {
-      repoDirectory: signal(insertText(emptyText(), './lib')),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('envFile'),
-      confirmation: signal(false),
-    }
+    const installStore = buildInstallStore()
+    installStore.repoDirectory.value = insertText(emptyText(), './lib')
+    installStore.step.value = 'envFile'
+    installStore.confirmation.value = false
     const result: { current: InstallState | null } = { current: null }
     const Reader = () => {
       result.current = useInstallState(installStore)
@@ -47,24 +30,7 @@ describe('useInstallState', () => {
   })
 
   it('when any signal changes, re-renders with the new values', async () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('repo'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
     const result: { current: InstallState | null } = { current: null }
     const Reader = () => {
       result.current = useInstallState(installStore)

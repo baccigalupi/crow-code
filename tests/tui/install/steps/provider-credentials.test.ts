@@ -1,29 +1,11 @@
 import { describe, expect, it } from 'bun:test'
-import { signal } from '@preact/signals-core'
-import { emptyText } from '../../../../src/tui/input-text.ts'
 import { ProviderCredentialsStep } from '../../../../src/tui/install/steps/provider-credentials.ts'
-import type { InstallStep } from '../../../../src/tui/install/types.ts'
+import { buildInstallStore } from '../../../support/install-store.ts'
 
 describe('ProviderCredentialsStep', () => {
   it('when asked for its state, returns the provider credentials input', () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('providerCredentials'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'providerCredentials'
 
     const step = new ProviderCredentialsStep(installStore)
 
@@ -33,24 +15,11 @@ describe('ProviderCredentialsStep', () => {
   })
 
   it('when cancelled, drops the typed credential and moves to confirm', () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal({ text: 'nous', cursor: 4 }),
-      providerUrl: signal({ text: 'https://n', cursor: 9 }),
-      providerCredentials: signal({ text: 'sk-1', cursor: 4 }),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('providerCredentials'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.providerName.value = { text: 'nous', cursor: 4 }
+    installStore.providerUrl.value = { text: 'https://n', cursor: 9 }
+    installStore.providerCredentials.value = { text: 'sk-1', cursor: 4 }
+    installStore.step.value = 'providerCredentials'
     const step = new ProviderCredentialsStep(installStore)
 
     step.cancel()

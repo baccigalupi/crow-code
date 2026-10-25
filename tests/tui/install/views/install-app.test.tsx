@@ -1,34 +1,15 @@
 /** @jsxImportSource @opentui/react */
 import { describe, expect, it, mock } from 'bun:test'
-import { signal } from '@preact/signals-core'
 import { KeyCodes } from '@opentui/core/testing'
 import { testRender } from '@opentui/react/test-utils'
 import { installStore as sharedInstallStore } from '../../../../src/tui/install/interactions/state/config-text.ts'
 import { InstallApp } from '../../../../src/tui/install/views/install-app.tsx'
-import { emptyText } from '../../../../src/tui/input-text.ts'
-import { inputSignal } from '../../../support/input-signal.ts'
-import type { InstallStep } from '../../../../src/tui/install/types.ts'
+import { emptyText, insertText } from '../../../../src/tui/input-text.ts'
+import { buildInstallStore } from '../../../support/install-store.ts'
 
 describe('InstallApp', () => {
   it('when rendered, shows the header and the repo directory question', async () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('repo'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
     const { renderer, renderOnce, captureCharFrame } = await testRender(
       <InstallApp installStore={installStore} />,
       { width: 70, height: 8 },
@@ -45,24 +26,8 @@ describe('InstallApp', () => {
   })
 
   it('when the step is past repo, shows the config preview', async () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('crowGlobalDirectory'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'crowGlobalDirectory'
     const { renderer, renderOnce, captureCharFrame } = await testRender(
       <InstallApp installStore={installStore} />,
       { width: 70, height: 24 },
@@ -78,25 +43,8 @@ describe('InstallApp', () => {
   })
 
   it('when text is typed, it becomes the repo directory and shows in the frame', async () => {
-    const repoDirectory = inputSignal('')
-    const installStore = {
-      repoDirectory,
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('repo'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    const repoDirectory = installStore.repoDirectory
     const { renderer, renderOnce, captureCharFrame, mockInput } =
       await testRender(<InstallApp installStore={installStore} />, {
         width: 70,
@@ -112,24 +60,7 @@ describe('InstallApp', () => {
   })
 
   it('when return arrives, advances to the global directory question', async () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('repo'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
     const { renderer, renderOnce, captureCharFrame, mockInput } =
       await testRender(<InstallApp installStore={installStore} />, {
         width: 70,
@@ -145,24 +76,8 @@ describe('InstallApp', () => {
   })
 
   it('when return arrives on the env file step, asks for ignored paths', async () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('envFile'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'envFile'
     const { renderer, renderOnce, captureCharFrame, mockInput } =
       await testRender(<InstallApp installStore={installStore} />, {
         width: 70,
@@ -178,25 +93,9 @@ describe('InstallApp', () => {
   })
 
   it('when text is typed on the ignore step, it shows in the frame', async () => {
-    const ignore = inputSignal('')
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore,
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('ignore'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    const ignore = installStore.ignore
+    installStore.step.value = 'ignore'
     const { renderer, renderOnce, captureCharFrame, mockInput } =
       await testRender(<InstallApp installStore={installStore} />, {
         width: 70,
@@ -212,24 +111,8 @@ describe('InstallApp', () => {
   })
 
   it('when return arrives on the additional read step, asks for additional write directories', async () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('additionalRead'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'additionalRead'
     const { renderer, renderOnce, captureCharFrame, mockInput } =
       await testRender(<InstallApp installStore={installStore} />, {
         width: 70,
@@ -245,25 +128,9 @@ describe('InstallApp', () => {
   })
 
   it('when text is typed on the additional write step, it shows in the frame', async () => {
-    const additionalWrite = inputSignal('')
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite,
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('additionalWrite'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    const additionalWrite = installStore.additionalWrite
+    installStore.step.value = 'additionalWrite'
     const { renderer, renderOnce, captureCharFrame, mockInput } =
       await testRender(<InstallApp installStore={installStore} />, {
         width: 70,
@@ -279,25 +146,9 @@ describe('InstallApp', () => {
   })
 
   it('when backspace arrives, the previous char is deleted', async () => {
-    const repoDirectory = inputSignal('~/x')
-    const installStore = {
-      repoDirectory,
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('repo'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    const repoDirectory = installStore.repoDirectory
+    repoDirectory.value = insertText(emptyText(), '~/x')
     const { renderer, mockInput } = await testRender(
       <InstallApp installStore={installStore} />,
       { width: 70, height: 8 },
@@ -310,25 +161,9 @@ describe('InstallApp', () => {
   })
 
   it('when home then delete arrive, the first char is removed', async () => {
-    const repoDirectory = inputSignal('~/x')
-    const installStore = {
-      repoDirectory,
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('repo'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    const repoDirectory = installStore.repoDirectory
+    repoDirectory.value = insertText(emptyText(), '~/x')
     const { renderer, mockInput } = await testRender(
       <InstallApp installStore={installStore} />,
       { width: 70, height: 8 },
@@ -342,25 +177,9 @@ describe('InstallApp', () => {
   })
 
   it('when left arrows arrive, typing inserts at the cursor', async () => {
-    const repoDirectory = inputSignal('~/x')
-    const installStore = {
-      repoDirectory,
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('repo'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    const repoDirectory = installStore.repoDirectory
+    repoDirectory.value = insertText(emptyText(), '~/x')
     const { renderer, mockInput } = await testRender(
       <InstallApp installStore={installStore} />,
       { width: 70, height: 8 },
@@ -375,25 +194,9 @@ describe('InstallApp', () => {
   })
 
   it('when home, end and right arrive, the cursor stays at the end', async () => {
-    const repoDirectory = inputSignal('~/x')
-    const installStore = {
-      repoDirectory,
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('repo'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    const repoDirectory = installStore.repoDirectory
+    repoDirectory.value = insertText(emptyText(), '~/x')
     const { renderer, mockInput } = await testRender(
       <InstallApp installStore={installStore} />,
       { width: 70, height: 8 },
@@ -408,24 +211,8 @@ describe('InstallApp', () => {
   })
 
   it('when right arrives on the confirm step, confirmation becomes false', async () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('confirm'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'confirm'
     const { renderer, mockInput } = await testRender(
       <InstallApp installStore={installStore} />,
       { width: 70, height: 8 },
@@ -438,24 +225,9 @@ describe('InstallApp', () => {
   })
 
   it('when left arrives on the confirm step, confirmation becomes true', async () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('confirm'),
-      confirmation: signal(false),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'confirm'
+    installStore.confirmation.value = false
     const { renderer, mockInput } = await testRender(
       <InstallApp installStore={installStore} />,
       { width: 70, height: 8 },
@@ -468,24 +240,8 @@ describe('InstallApp', () => {
   })
 
   it('when return arrives on the confirm step with yes, moves to the write step', async () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('confirm'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'confirm'
     const { renderer, mockInput } = await testRender(
       <InstallApp installStore={installStore} />,
       { width: 70, height: 8 },
@@ -498,24 +254,9 @@ describe('InstallApp', () => {
   })
 
   it('when return arrives on the confirm step with no, exits without writing', async () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('confirm'),
-      confirmation: signal(false),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'confirm'
+    installStore.confirmation.value = false
     const onDestroy = mock(() => {})
     const { mockInput } = await testRender(
       <InstallApp installStore={installStore} />,
@@ -529,24 +270,8 @@ describe('InstallApp', () => {
   })
 
   it('when any key arrives on the done step, exits', async () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('done'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'done'
     const onDestroy = mock(() => {})
     const { mockInput } = await testRender(
       <InstallApp installStore={installStore} />,
@@ -559,24 +284,7 @@ describe('InstallApp', () => {
   })
 
   it('when ctrl-c arrives, exits', async () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('repo'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
     const onDestroy = mock(() => {})
     const { mockInput } = await testRender(
       <InstallApp installStore={installStore} />,
@@ -589,24 +297,8 @@ describe('InstallApp', () => {
   })
 
   it('when a provider is added and escape finishes the loop, previews it and asks to confirm', async () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('allowedLocalScripts'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'allowedLocalScripts'
     const { renderer, renderOnce, captureCharFrame, mockInput } =
       await testRender(<InstallApp installStore={installStore} />, {
         width: 70,
@@ -634,24 +326,7 @@ describe('InstallApp', () => {
   })
 
   it('when escape arrives outside the provider loop, keeps running', async () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('repo'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
     const onDestroy = mock(() => {})
     const { mockInput } = await testRender(
       <InstallApp installStore={installStore} />,
@@ -666,24 +341,7 @@ describe('InstallApp', () => {
   })
 
   it('when the terminal is taller than the content, the question sits on the last row', async () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('repo'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
     const { renderer, renderOnce, captureCharFrame } = await testRender(
       <InstallApp installStore={installStore} />,
       { width: 70, height: 8 },
@@ -697,24 +355,8 @@ describe('InstallApp', () => {
   })
 
   it('when the panel is tall, the question still sits on the last row', async () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('crowGlobalDirectory'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'crowGlobalDirectory'
     const { renderer, renderOnce, captureCharFrame } = await testRender(
       <InstallApp installStore={installStore} />,
       { width: 70, height: 24 },
@@ -728,24 +370,8 @@ describe('InstallApp', () => {
   })
 
   it('when down arrives on the confirm step, the select shows No', async () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('confirm'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'confirm'
     const { renderer, renderOnce, captureCharFrame, mockInput } =
       await testRender(<InstallApp installStore={installStore} />, {
         width: 70,

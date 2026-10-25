@@ -1,6 +1,7 @@
 import { effect } from '@preact/signals-core'
 import type { Filesystem } from '../../../application-data/filesystem.ts'
 import type { InstallStore, WriteCrowConfigArguments } from '../types.ts'
+import { readInstallState } from '../interactions/state/read-install-state.ts'
 import { buildCrowConfig } from './build.ts'
 
 // WRITE side: watches the install step and, once the user has confirmed
@@ -36,45 +37,7 @@ export class CrowConfigWrite {
   }
 
   private config() {
-    return buildCrowConfig({
-      ...this.pathInputs(),
-      ...this.readInputs(),
-      ...this.writeInputs(),
-      ...this.providerInputs(),
-    }).all()
-  }
-
-  private providerInputs() {
-    return {
-      providerName: this.installData.providerName.peek(),
-      providerUrl: this.installData.providerUrl.peek(),
-      providerCredentials: this.installData.providerCredentials.peek(),
-      providers: this.installData.providers.peek(),
-    }
-  }
-
-  private pathInputs() {
-    return {
-      repoDirectory: this.installData.repoDirectory.peek(),
-      globalDirectory: this.installData.globalDirectory.peek(),
-      envFile: this.installData.envFile.peek(),
-    }
-  }
-
-  private readInputs() {
-    return {
-      ignore: this.installData.ignore.peek(),
-      additionalRead: this.installData.additionalRead.peek(),
-      escalateRead: this.installData.escalateRead.peek(),
-    }
-  }
-
-  private writeInputs() {
-    return {
-      additionalWrite: this.installData.additionalWrite.peek(),
-      escalateWrite: this.installData.escalateWrite.peek(),
-      allowedLocalScripts: this.installData.allowedLocalScripts.peek(),
-    }
+    return buildCrowConfig(readInstallState(this.installData)).all()
   }
 }
 

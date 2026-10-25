@@ -1,33 +1,12 @@
 import { describe, expect, it, mock } from 'bun:test'
-import { signal } from '@preact/signals-core'
-import { emptyText } from '../../../../src/tui/input-text.ts'
 import { keypress } from '../../../../src/tui/install/interactions/keypress.ts'
-import type {
-  InstallProvider,
-  InstallStep,
-} from '../../../../src/tui/install/types.ts'
+import { buildInstallStore } from '../../../support/install-store.ts'
 
 describe('keypress', () => {
   it('when escape arrives on a step without cancel, stays put', () => {
     const exit = mock(() => {})
-    const installData = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('ignore'),
-      confirmation: signal(true),
-    }
+    const installData = buildInstallStore()
+    installData.step.value = 'ignore'
 
     keypress({ installData, exit, input: '', key: { escape: true } }).handle()
 
@@ -37,24 +16,8 @@ describe('keypress', () => {
 
   it('when a raw escape character arrives, stays put without editing', () => {
     const exit = mock(() => {})
-    const installData = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('ignore'),
-      confirmation: signal(true),
-    }
+    const installData = buildInstallStore()
+    installData.step.value = 'ignore'
 
     keypress({ installData, exit, input: '\x1b', key: {} }).handle()
 
@@ -64,24 +27,10 @@ describe('keypress', () => {
 
   it('when escape arrives on a provider step, drops the draft and moves to confirm', () => {
     const exit = mock(() => {})
-    const installData = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal({ text: 'or', cursor: 2 }),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([{ name: 'nous', url: 'https://n' }]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('providerUrl'),
-      confirmation: signal(true),
-    }
+    const installData = buildInstallStore()
+    installData.providerName.value = { text: 'or', cursor: 2 }
+    installData.providers.value = [{ name: 'nous', url: 'https://n' }]
+    installData.step.value = 'providerUrl'
 
     keypress({ installData, exit, input: '', key: { escape: true } }).handle()
 
@@ -94,24 +43,9 @@ describe('keypress', () => {
 
   it('when tab arrives on a provider step, moves to the next field', () => {
     const exit = mock(() => {})
-    const installData = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal({ text: 'nous', cursor: 4 }),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal<readonly InstallProvider[]>([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('providerName'),
-      confirmation: signal(true),
-    }
+    const installData = buildInstallStore()
+    installData.providerName.value = { text: 'nous', cursor: 4 }
+    installData.step.value = 'providerName'
 
     keypress({ installData, exit, input: '', key: { tab: true } }).handle()
 
@@ -121,24 +55,8 @@ describe('keypress', () => {
 
   it('when shift+tab arrives on the first provider field, stays put', () => {
     const exit = mock(() => {})
-    const installData = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal<readonly InstallProvider[]>([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('providerName'),
-      confirmation: signal(true),
-    }
+    const installData = buildInstallStore()
+    installData.step.value = 'providerName'
 
     keypress({
       installData,
@@ -152,24 +70,8 @@ describe('keypress', () => {
 
   it('when tab arrives on the last provider field, stays put', () => {
     const exit = mock(() => {})
-    const installData = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal<readonly InstallProvider[]>([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('providerCredentials'),
-      confirmation: signal(true),
-    }
+    const installData = buildInstallStore()
+    installData.step.value = 'providerCredentials'
 
     keypress({ installData, exit, input: '', key: { tab: true } }).handle()
 
@@ -178,24 +80,8 @@ describe('keypress', () => {
 
   it('when tab arrives on a step without fields, stays put', () => {
     const exit = mock(() => {})
-    const installData = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal<readonly InstallProvider[]>([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('ignore'),
-      confirmation: signal(true),
-    }
+    const installData = buildInstallStore()
+    installData.step.value = 'ignore'
 
     keypress({ installData, exit, input: '', key: { tab: true } }).handle()
 
@@ -204,24 +90,11 @@ describe('keypress', () => {
 
   it('when return arrives on the credentials step, commits the provider and starts another', () => {
     const exit = mock(() => {})
-    const installData = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal({ text: 'nous', cursor: 4 }),
-      providerUrl: signal({ text: 'https://n', cursor: 9 }),
-      providerCredentials: signal({ text: 'sk-1', cursor: 4 }),
-      providers: signal<readonly InstallProvider[]>([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('providerCredentials'),
-      confirmation: signal(true),
-    }
+    const installData = buildInstallStore()
+    installData.providerName.value = { text: 'nous', cursor: 4 }
+    installData.providerUrl.value = { text: 'https://n', cursor: 9 }
+    installData.providerCredentials.value = { text: 'sk-1', cursor: 4 }
+    installData.step.value = 'providerCredentials'
 
     keypress({ installData, exit, input: '', key: { return: true } }).handle()
 
@@ -240,24 +113,10 @@ describe('keypress', () => {
 
   it('when return arrives on the credentials step with no credential, buffers nothing', () => {
     const exit = mock(() => {})
-    const installData = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal({ text: 'ollama', cursor: 6 }),
-      providerUrl: signal({ text: 'http://o', cursor: 8 }),
-      providerCredentials: signal(emptyText()),
-      providers: signal<readonly InstallProvider[]>([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('providerCredentials'),
-      confirmation: signal(true),
-    }
+    const installData = buildInstallStore()
+    installData.providerName.value = { text: 'ollama', cursor: 6 }
+    installData.providerUrl.value = { text: 'http://o', cursor: 8 }
+    installData.step.value = 'providerCredentials'
 
     keypress({ installData, exit, input: '', key: { return: true } }).handle()
 
@@ -269,24 +128,7 @@ describe('keypress', () => {
 
   it('when ctrl-c arrives, exits', () => {
     const exit = mock(() => {})
-    const installData = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('repo'),
-      confirmation: signal(true),
-    }
+    const installData = buildInstallStore()
 
     keypress({ installData, exit, input: 'c', key: { ctrl: true } }).handle()
 
@@ -295,24 +137,8 @@ describe('keypress', () => {
 
   it('when any key arrives on the done step, exits', () => {
     const exit = mock(() => {})
-    const installData = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('done'),
-      confirmation: signal(true),
-    }
+    const installData = buildInstallStore()
+    installData.step.value = 'done'
 
     keypress({ installData, exit, input: 'x', key: {} }).handle()
 
@@ -321,24 +147,7 @@ describe('keypress', () => {
 
   it('when return arrives on the repo step, advances to the global directory step', () => {
     const exit = mock(() => {})
-    const installData = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('repo'),
-      confirmation: signal(true),
-    }
+    const installData = buildInstallStore()
 
     keypress({ installData, exit, input: '', key: { return: true } }).handle()
 
@@ -347,24 +156,8 @@ describe('keypress', () => {
 
   it('when a letter arrives on the env file step, edits the env file text', () => {
     const exit = mock(() => {})
-    const installData = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('envFile'),
-      confirmation: signal(true),
-    }
+    const installData = buildInstallStore()
+    installData.step.value = 'envFile'
 
     keypress({ installData, exit, input: 'x', key: {} }).handle()
 
@@ -374,24 +167,9 @@ describe('keypress', () => {
   describe('on the confirm step', () => {
     it('when left arrives, confirmation becomes true', () => {
       const exit = mock(() => {})
-      const installData = {
-        repoDirectory: signal(emptyText()),
-        globalDirectory: signal(emptyText()),
-        envFile: signal(emptyText()),
-        escalateRead: signal(emptyText()),
-        ignore: signal(emptyText()),
-        additionalRead: signal(emptyText()),
-        additionalWrite: signal(emptyText()),
-        escalateWrite: signal(emptyText()),
-        allowedLocalScripts: signal(emptyText()),
-        providerName: signal(emptyText()),
-        providerUrl: signal(emptyText()),
-        providerCredentials: signal(emptyText()),
-        providers: signal([]),
-        envBuffer: signal({}),
-        step: signal<InstallStep>('confirm'),
-        confirmation: signal(false),
-      }
+      const installData = buildInstallStore()
+      installData.step.value = 'confirm'
+      installData.confirmation.value = false
 
       keypress({
         installData,
@@ -405,24 +183,8 @@ describe('keypress', () => {
 
     it('when n arrives, confirmation becomes false', () => {
       const exit = mock(() => {})
-      const installData = {
-        repoDirectory: signal(emptyText()),
-        globalDirectory: signal(emptyText()),
-        envFile: signal(emptyText()),
-        escalateRead: signal(emptyText()),
-        ignore: signal(emptyText()),
-        additionalRead: signal(emptyText()),
-        additionalWrite: signal(emptyText()),
-        escalateWrite: signal(emptyText()),
-        allowedLocalScripts: signal(emptyText()),
-        providerName: signal(emptyText()),
-        providerUrl: signal(emptyText()),
-        providerCredentials: signal(emptyText()),
-        providers: signal([]),
-        envBuffer: signal({}),
-        step: signal<InstallStep>('confirm'),
-        confirmation: signal(true),
-      }
+      const installData = buildInstallStore()
+      installData.step.value = 'confirm'
 
       keypress({ installData, exit, input: 'n', key: {} }).handle()
 
@@ -431,24 +193,8 @@ describe('keypress', () => {
 
     it('when down arrives, confirmation becomes false', () => {
       const exit = mock(() => {})
-      const installData = {
-        repoDirectory: signal(emptyText()),
-        globalDirectory: signal(emptyText()),
-        envFile: signal(emptyText()),
-        escalateRead: signal(emptyText()),
-        ignore: signal(emptyText()),
-        additionalRead: signal(emptyText()),
-        additionalWrite: signal(emptyText()),
-        escalateWrite: signal(emptyText()),
-        allowedLocalScripts: signal(emptyText()),
-        providerName: signal(emptyText()),
-        providerUrl: signal(emptyText()),
-        providerCredentials: signal(emptyText()),
-        providers: signal([]),
-        envBuffer: signal({}),
-        step: signal<InstallStep>('confirm'),
-        confirmation: signal(true),
-      }
+      const installData = buildInstallStore()
+      installData.step.value = 'confirm'
 
       keypress({
         installData,
@@ -462,24 +208,8 @@ describe('keypress', () => {
 
     it('when j arrives, confirmation becomes false', () => {
       const exit = mock(() => {})
-      const installData = {
-        repoDirectory: signal(emptyText()),
-        globalDirectory: signal(emptyText()),
-        envFile: signal(emptyText()),
-        escalateRead: signal(emptyText()),
-        ignore: signal(emptyText()),
-        additionalRead: signal(emptyText()),
-        additionalWrite: signal(emptyText()),
-        escalateWrite: signal(emptyText()),
-        allowedLocalScripts: signal(emptyText()),
-        providerName: signal(emptyText()),
-        providerUrl: signal(emptyText()),
-        providerCredentials: signal(emptyText()),
-        providers: signal([]),
-        envBuffer: signal({}),
-        step: signal<InstallStep>('confirm'),
-        confirmation: signal(true),
-      }
+      const installData = buildInstallStore()
+      installData.step.value = 'confirm'
 
       keypress({ installData, exit, input: 'j', key: {} }).handle()
 
@@ -488,24 +218,9 @@ describe('keypress', () => {
 
     it('when up arrives, confirmation becomes true', () => {
       const exit = mock(() => {})
-      const installData = {
-        repoDirectory: signal(emptyText()),
-        globalDirectory: signal(emptyText()),
-        envFile: signal(emptyText()),
-        escalateRead: signal(emptyText()),
-        ignore: signal(emptyText()),
-        additionalRead: signal(emptyText()),
-        additionalWrite: signal(emptyText()),
-        escalateWrite: signal(emptyText()),
-        allowedLocalScripts: signal(emptyText()),
-        providerName: signal(emptyText()),
-        providerUrl: signal(emptyText()),
-        providerCredentials: signal(emptyText()),
-        providers: signal([]),
-        envBuffer: signal({}),
-        step: signal<InstallStep>('confirm'),
-        confirmation: signal(false),
-      }
+      const installData = buildInstallStore()
+      installData.step.value = 'confirm'
+      installData.confirmation.value = false
 
       keypress({
         installData,
@@ -519,24 +234,9 @@ describe('keypress', () => {
 
     it('when k arrives, confirmation becomes true', () => {
       const exit = mock(() => {})
-      const installData = {
-        repoDirectory: signal(emptyText()),
-        globalDirectory: signal(emptyText()),
-        envFile: signal(emptyText()),
-        escalateRead: signal(emptyText()),
-        ignore: signal(emptyText()),
-        additionalRead: signal(emptyText()),
-        additionalWrite: signal(emptyText()),
-        escalateWrite: signal(emptyText()),
-        allowedLocalScripts: signal(emptyText()),
-        providerName: signal(emptyText()),
-        providerUrl: signal(emptyText()),
-        providerCredentials: signal(emptyText()),
-        providers: signal([]),
-        envBuffer: signal({}),
-        step: signal<InstallStep>('confirm'),
-        confirmation: signal(false),
-      }
+      const installData = buildInstallStore()
+      installData.step.value = 'confirm'
+      installData.confirmation.value = false
 
       keypress({ installData, exit, input: 'k', key: {} }).handle()
 
@@ -545,24 +245,8 @@ describe('keypress', () => {
 
     it('when return arrives while confirmed, moves to the write step', () => {
       const exit = mock(() => {})
-      const installData = {
-        repoDirectory: signal(emptyText()),
-        globalDirectory: signal(emptyText()),
-        envFile: signal(emptyText()),
-        escalateRead: signal(emptyText()),
-        ignore: signal(emptyText()),
-        additionalRead: signal(emptyText()),
-        additionalWrite: signal(emptyText()),
-        escalateWrite: signal(emptyText()),
-        allowedLocalScripts: signal(emptyText()),
-        providerName: signal(emptyText()),
-        providerUrl: signal(emptyText()),
-        providerCredentials: signal(emptyText()),
-        providers: signal([]),
-        envBuffer: signal({}),
-        step: signal<InstallStep>('confirm'),
-        confirmation: signal(true),
-      }
+      const installData = buildInstallStore()
+      installData.step.value = 'confirm'
 
       keypress({ installData, exit, input: '', key: { return: true } }).handle()
 
@@ -571,24 +255,9 @@ describe('keypress', () => {
 
     it('when return arrives while declined, exits and stays on confirm', () => {
       const exit = mock(() => {})
-      const installData = {
-        repoDirectory: signal(emptyText()),
-        globalDirectory: signal(emptyText()),
-        envFile: signal(emptyText()),
-        escalateRead: signal(emptyText()),
-        ignore: signal(emptyText()),
-        additionalRead: signal(emptyText()),
-        additionalWrite: signal(emptyText()),
-        escalateWrite: signal(emptyText()),
-        allowedLocalScripts: signal(emptyText()),
-        providerName: signal(emptyText()),
-        providerUrl: signal(emptyText()),
-        providerCredentials: signal(emptyText()),
-        providers: signal([]),
-        envBuffer: signal({}),
-        step: signal<InstallStep>('confirm'),
-        confirmation: signal(false),
-      }
+      const installData = buildInstallStore()
+      installData.step.value = 'confirm'
+      installData.confirmation.value = false
 
       keypress({ installData, exit, input: '', key: { return: true } }).handle()
 

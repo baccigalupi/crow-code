@@ -1,41 +1,24 @@
 import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { effect, signal } from '@preact/signals-core'
+import { effect } from '@preact/signals-core'
 import { writeCrowConfig } from '../../../../src/tui/install/crow-config/write.ts'
 import { defaultFilesystem } from '../../../../src/application-data/filesystem.ts'
 import { emptyText, insertText } from '../../../../src/tui/input-text.ts'
-import type { InstallStep } from '../../../../src/tui/install/types.ts'
 import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
+import { buildInstallStore } from '../../../support/install-store.ts'
 
 describe('write', () => {
   beforeEach(() => clearDirectory(join(fixturesDirectory, 'write-crow-config')))
   afterEach(() => clearDirectory(join(fixturesDirectory, 'write-crow-config')))
 
   it('when the step becomes write, saves the json to the repo config path and finishes', async () => {
-    const installData = {
-      repoDirectory: signal(
-        insertText(
-          emptyText(),
-          join(fixturesDirectory, 'write-crow-config', 'crow'),
-        ),
-      ),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('confirm'),
-      confirmation: signal(true),
-    }
+    const installData = buildInstallStore()
+    installData.repoDirectory.value = insertText(
+      emptyText(),
+      join(fixturesDirectory, 'write-crow-config', 'crow'),
+    )
+    installData.step.value = 'confirm'
     const dispose = writeCrowConfig({
       installData,
       filesystem: defaultFilesystem(),
@@ -62,29 +45,13 @@ describe('write', () => {
   })
 
   it('when additional read directories are typed, writes them to the config', async () => {
-    const installData = {
-      repoDirectory: signal(
-        insertText(
-          emptyText(),
-          join(fixturesDirectory, 'write-crow-config', 'crow'),
-        ),
-      ),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(insertText(emptyText(), '/docs')),
-      additionalWrite: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('confirm'),
-      confirmation: signal(true),
-    }
+    const installData = buildInstallStore()
+    installData.repoDirectory.value = insertText(
+      emptyText(),
+      join(fixturesDirectory, 'write-crow-config', 'crow'),
+    )
+    installData.additionalRead.value = insertText(emptyText(), '/docs')
+    installData.step.value = 'confirm'
     const dispose = writeCrowConfig({
       installData,
       filesystem: defaultFilesystem(),
@@ -109,29 +76,13 @@ describe('write', () => {
   })
 
   it('when additional write directories are typed, writes them to the config', async () => {
-    const installData = {
-      repoDirectory: signal(
-        insertText(
-          emptyText(),
-          join(fixturesDirectory, 'write-crow-config', 'crow'),
-        ),
-      ),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(insertText(emptyText(), '/work')),
-      escalateRead: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('confirm'),
-      confirmation: signal(true),
-    }
+    const installData = buildInstallStore()
+    installData.repoDirectory.value = insertText(
+      emptyText(),
+      join(fixturesDirectory, 'write-crow-config', 'crow'),
+    )
+    installData.additionalWrite.value = insertText(emptyText(), '/work')
+    installData.step.value = 'confirm'
     const dispose = writeCrowConfig({
       installData,
       filesystem: defaultFilesystem(),
@@ -156,29 +107,13 @@ describe('write', () => {
   })
 
   it('when ignore paths are typed, writes them to the config', async () => {
-    const installData = {
-      repoDirectory: signal(
-        insertText(
-          emptyText(),
-          join(fixturesDirectory, 'write-crow-config', 'crow'),
-        ),
-      ),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      ignore: signal(insertText(emptyText(), '.env')),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('confirm'),
-      confirmation: signal(true),
-    }
+    const installData = buildInstallStore()
+    installData.repoDirectory.value = insertText(
+      emptyText(),
+      join(fixturesDirectory, 'write-crow-config', 'crow'),
+    )
+    installData.ignore.value = insertText(emptyText(), '.env')
+    installData.step.value = 'confirm'
     const dispose = writeCrowConfig({
       installData,
       filesystem: defaultFilesystem(),
@@ -205,29 +140,12 @@ describe('write', () => {
   it('when the step is not write, writes nothing', () => {
     const filesystem = defaultFilesystem()
     const mkdir = spyOn(filesystem, 'mkdirWithParents')
-    const installData = {
-      repoDirectory: signal(
-        insertText(
-          emptyText(),
-          join(fixturesDirectory, 'write-crow-config', 'crow'),
-        ),
-      ),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('envFile'),
-      confirmation: signal(true),
-    }
+    const installData = buildInstallStore()
+    installData.repoDirectory.value = insertText(
+      emptyText(),
+      join(fixturesDirectory, 'write-crow-config', 'crow'),
+    )
+    installData.step.value = 'envFile'
     const dispose = writeCrowConfig({ installData, filesystem }).subscribe()
 
     installData.step.value = 'confirm'

@@ -1,32 +1,14 @@
 import { describe, expect, it } from 'bun:test'
-import { signal } from '@preact/signals-core'
-import { emptyText } from '../../../../src/tui/input-text.ts'
 import {
   CurrentStep,
   currentStep,
 } from '../../../../src/tui/install/steps/current.ts'
-import type { InstallStep } from '../../../../src/tui/install/types.ts'
+import { buildInstallStore } from '../../../support/install-store.ts'
 
 describe('current', () => {
   it('when asked for the step name, step returns the installStore step', () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('envFile'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'envFile'
 
     const step = new CurrentStep(installStore).step()
 
@@ -34,24 +16,7 @@ describe('current', () => {
   })
 
   it('when all is called, returns the steps in order', () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('repo'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
 
     const steps = new CurrentStep(installStore).all()
 
@@ -73,24 +38,8 @@ describe('current', () => {
   })
 
   it('when the installStore step is ignore, current returns that step', () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('ignore'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'ignore'
 
     const step = new CurrentStep(installStore).current()
 
@@ -100,24 +49,8 @@ describe('current', () => {
   })
 
   it('when the installStore step is additionalRead, current returns that step', () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('additionalRead'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'additionalRead'
 
     const step = new CurrentStep(installStore).current()
 
@@ -127,24 +60,8 @@ describe('current', () => {
   })
 
   it('when the installStore step is additionalWrite, current returns that step', () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('additionalWrite'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'additionalWrite'
 
     const step = new CurrentStep(installStore).current()
 
@@ -154,24 +71,8 @@ describe('current', () => {
   })
 
   it('when the installStore step is escalateRead, current returns that step', () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('escalateRead'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'escalateRead'
 
     const step = new CurrentStep(installStore).current()
 
@@ -181,24 +82,8 @@ describe('current', () => {
   })
 
   it('when the installStore step has no step class, current returns the default step', () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('write'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'write'
 
     const step = new CurrentStep(installStore).current()
 
@@ -206,24 +91,8 @@ describe('current', () => {
   })
 
   it('when currentStep is called, returns the current step', () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('allowedLocalScripts'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'allowedLocalScripts'
 
     const step = currentStep(installStore)
 

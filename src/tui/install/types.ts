@@ -53,7 +53,7 @@ export type BuiltCrowConfig = {
   readonly crowConfigJson: string
 }
 
-export type BuildCrowConfigArguments = {
+export type InstallState = {
   readonly globalDirectory: InputText
   readonly repoDirectory: InputText
   readonly envFile: InputText
@@ -67,8 +67,16 @@ export type BuildCrowConfigArguments = {
   readonly providerUrl: InputText
   readonly providerCredentials: InputText
   readonly providers: readonly InstallProvider[]
-  readonly step?: InstallStep
+  readonly step: InstallStep
+  readonly confirmation: boolean
+  readonly envBuffer: EnvBuffer
 }
+
+export type BuildCrowConfigArguments = Omit<
+  InstallState,
+  'step' | 'confirmation' | 'envBuffer'
+> &
+  Partial<Pick<InstallState, 'step'>>
 
 export type ProviderInputs = Pick<
   BuildCrowConfigArguments,
@@ -102,12 +110,6 @@ export type ProviderPromptProps = Pick<
 
 export type InstallAppProps = {
   readonly installStore?: InstallStore
-}
-
-export type InstallState = BuildCrowConfigArguments & {
-  readonly step: InstallStep
-  readonly confirmation: boolean
-  readonly envBuffer: EnvBuffer
 }
 
 export type InstallStore = {

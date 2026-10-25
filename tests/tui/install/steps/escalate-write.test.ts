@@ -1,29 +1,11 @@
 import { describe, expect, it } from 'bun:test'
-import { signal } from '@preact/signals-core'
-import { emptyText } from '../../../../src/tui/input-text.ts'
 import { EscalateWriteStep } from '../../../../src/tui/install/steps/escalate-write.ts'
-import type { InstallStep } from '../../../../src/tui/install/types.ts'
+import { buildInstallStore } from '../../../support/install-store.ts'
 
 describe('EscalateWriteStep', () => {
   it('when asked for its state, returns the escalate write input', () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('escalateWrite'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'escalateWrite'
 
     const state = new EscalateWriteStep(installStore).state()
 

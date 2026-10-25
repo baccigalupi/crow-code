@@ -1,29 +1,11 @@
 import { describe, expect, it } from 'bun:test'
-import { signal } from '@preact/signals-core'
-import { emptyText } from '../../../../src/tui/input-text.ts'
 import { CrowGlobalDirectoryStep } from '../../../../src/tui/install/steps/crow-global-directory.ts'
-import type { InstallStep } from '../../../../src/tui/install/types.ts'
+import { buildInstallStore } from '../../../support/install-store.ts'
 
 describe('CrowGlobalDirectoryStep', () => {
   it('when asked for its state, returns the global directory input', () => {
-    const installStore = {
-      repoDirectory: signal(emptyText()),
-      globalDirectory: signal(emptyText()),
-      envFile: signal(emptyText()),
-      escalateRead: signal(emptyText()),
-      ignore: signal(emptyText()),
-      additionalRead: signal(emptyText()),
-      additionalWrite: signal(emptyText()),
-      escalateWrite: signal(emptyText()),
-      allowedLocalScripts: signal(emptyText()),
-      providerName: signal(emptyText()),
-      providerUrl: signal(emptyText()),
-      providerCredentials: signal(emptyText()),
-      providers: signal([]),
-      envBuffer: signal({}),
-      step: signal<InstallStep>('crowGlobalDirectory'),
-      confirmation: signal(true),
-    }
+    const installStore = buildInstallStore()
+    installStore.step.value = 'crowGlobalDirectory'
 
     const state = new CrowGlobalDirectoryStep(installStore).state()
 
