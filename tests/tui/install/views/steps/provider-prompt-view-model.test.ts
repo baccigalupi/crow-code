@@ -28,28 +28,8 @@ describe('providerPromptViewModel', () => {
 
     const view = providerPromptViewModel(props)
 
-    expect(view.fields).toEqual([
-      {
-        id: 'providerName',
-        label: 'Name',
-        input: { text: 'or', cursor: 2 },
-        status: 'done',
-        masked: false,
-      },
-      {
-        id: 'providerUrl',
-        label: 'Url',
-        input: { text: '', cursor: 0 },
-        status: 'active',
-        masked: false,
-      },
-      {
-        id: 'providerCredentials',
-        label: 'API key',
-        input: { text: '', cursor: 0 },
-        status: 'pending',
-        masked: true,
-      },
-    ])
+    expect(view.nameStatus).toBe('done')
+    expect(view.urlStatus).toBe('active')
+    expect(view.credentialsStatus).toBe('pending')
   })
 })

@@ -67,4 +67,5 @@ rules to assert here.
 - Guard with early `return null` in a helper component (`Prompt`), not
   `cond && <Text>` inside JSX (scripted).
 - Lists render via `.map` with an entity id as `key` — never array indexes
-  or derived string content as keys.
+  or derived string content as keys. There should be a single simple component
+  in the map, and that mapping should be it's own component.
