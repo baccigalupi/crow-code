@@ -16,7 +16,7 @@ describe('runInstallTui', () => {
     installStore.repoDirectory.value = insertText(emptyText(), '/repo/shared')
 
     runInstallTui(applicationData, {})
-    installStore.step.value = 'write'
+    installStore.step.value = 'completeSetup'
     installStore.step.value = 'repo'
     installStore.repoDirectory.value = emptyText()
 
@@ -35,7 +35,7 @@ describe('runInstallTui', () => {
     store.step.value = 'confirm'
 
     runInstallTui(applicationData, {}, store)
-    store.step.value = 'write'
+    store.step.value = 'completeSetup'
 
     expect(mkdir.mock.calls).toEqual([['/repo/injected']])
   })

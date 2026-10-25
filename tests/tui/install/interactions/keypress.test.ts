@@ -243,14 +243,14 @@ describe('keypress', () => {
       expect(installData.confirmation.peek()).toBe(true)
     })
 
-    it('when return arrives while confirmed, moves to the write step', () => {
+    it('when return arrives while confirmed, moves to the completeSetup step', () => {
       const exit = mock(() => {})
       const installData = buildInstallStore()
       installData.step.value = 'confirm'
 
       keypress({ installData, exit, input: '', key: { return: true } }).handle()
 
-      expect(installData.step.peek()).toBe('write')
+      expect(installData.step.peek()).toBe('completeSetup')
     })
 
     it('when return arrives while declined, exits and stays on confirm', () => {

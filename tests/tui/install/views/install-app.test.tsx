@@ -239,17 +239,20 @@ describe('InstallApp', () => {
     renderer.destroy()
   })
 
-  it('when return arrives on the confirm step with yes, moves to the write step', async () => {
+  it('when return arrives on the confirm step with yes, moves to the completeSetup step', async () => {
     const installStore = buildInstallStore()
     installStore.step.value = 'confirm'
-    const { renderer, mockInput } = await testRender(
-      <InstallApp installStore={installStore} />,
-      { width: 70, height: 8 },
-    )
+    const { renderer, renderOnce, captureCharFrame, mockInput } =
+      await testRender(<InstallApp installStore={installStore} />, {
+        width: 70,
+        height: 8,
+      })
 
     mockInput.pressEnter()
+    await renderOnce()
 
-    expect(installStore.step.peek()).toBe('write')
+    expect(installStore.step.peek()).toBe('completeSetup')
+    expect(captureCharFrame()).toContain('Writing config to .crow/config.json')
     renderer.destroy()
   })
 

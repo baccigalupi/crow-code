@@ -4,13 +4,13 @@ import { ConfirmPrompt } from '../../../../src/tui/install/views/steps/confirm-p
 import { buildInstallStore } from '../../../support/install-store.ts'
 
 describe('ConfirmStep', () => {
-  it('when asked for the next step, returns write', () => {
+  it('when asked for the next step, returns completeSetup', () => {
     const installStore = buildInstallStore()
     installStore.step.value = 'confirm'
 
     const step = new ConfirmStep(installStore)
 
-    expect(step.nextStep).toBe('write')
+    expect(step.nextStep).toBe('completeSetup')
   })
 
   it('when asked for its view, returns the confirm prompt', () => {

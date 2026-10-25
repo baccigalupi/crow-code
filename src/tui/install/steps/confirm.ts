@@ -4,7 +4,7 @@ import { ConfirmPrompt } from '../views/steps/confirm-prompt.tsx'
 export class ConfirmStep {
   private installStore: InstallStore
   readonly name = 'confirm'
-  readonly nextStep = 'write'
+  readonly nextStep = 'completeSetup'
   readonly View = ConfirmPrompt
 
   constructor(installStore: InstallStore) {

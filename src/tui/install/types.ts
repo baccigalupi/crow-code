@@ -17,7 +17,7 @@ export type InstallStep =
   | 'providerUrl'
   | 'providerCredentials'
   | 'confirm'
-  | 'write'
+  | 'completeSetup'
   | 'done'
 
 export type InstallProvider = {
@@ -116,9 +116,18 @@ export type InstallStore = {
   readonly [Key in keyof InstallState]: Signal<InstallState[Key]>
 }
 
-export type WriteCrowConfigArguments = {
+export type LocalConfigTaskArguments = {
   readonly installData: InstallStore
   readonly filesystem: Filesystem
+}
+
+export type SetupTask = {
+  run(): Promise<void>
+}
+
+export type CompleteSetupArguments = {
+  readonly installData: InstallStore
+  readonly tasks: readonly SetupTask[]
 }
 
 export type KeypressArguments = {

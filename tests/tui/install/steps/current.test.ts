@@ -3,6 +3,7 @@ import {
   CurrentStep,
   currentStep,
 } from '../../../../src/tui/install/steps/current.ts'
+import type { InstallStep } from '../../../../src/tui/install/types.ts'
 import { buildInstallStore } from '../../../support/install-store.ts'
 
 describe('current', () => {
@@ -20,7 +21,7 @@ describe('current', () => {
 
     const steps = new CurrentStep(installStore).all()
 
-    expect(steps).toHaveLength(14)
+    expect(steps).toHaveLength(15)
     expect(steps[0].name).toBe('repo')
     expect(steps[1].name).toBe('crowGlobalDirectory')
     expect(steps[2].name).toBe('envFile')
@@ -34,7 +35,8 @@ describe('current', () => {
     expect(steps[10].name).toBe('providerUrl')
     expect(steps[11].name).toBe('providerCredentials')
     expect(steps[12].name).toBe('confirm')
-    expect(steps[13].name).toBe('done')
+    expect(steps[13].name).toBe('completeSetup')
+    expect(steps[14].name).toBe('done')
   })
 
   it('when the installStore step is ignore, current returns that step', () => {
@@ -83,11 +85,21 @@ describe('current', () => {
 
   it('when the installStore step has no step class, current returns the default step', () => {
     const installStore = buildInstallStore()
-    installStore.step.value = 'write'
+    installStore.step.value = 'unknown' as InstallStep
 
     const step = new CurrentStep(installStore).current()
 
     expect(step.name).toBe('default')
+  })
+
+  it('when the installStore step is completeSetup, current returns that step', () => {
+    const installStore = buildInstallStore()
+    installStore.step.value = 'completeSetup'
+
+    const step = new CurrentStep(installStore).current()
+
+    expect(step.name).toBe('completeSetup')
+    expect(step.nextStep).toBe('completeSetup')
   })
 
   it('when currentStep is called, returns the current step', () => {

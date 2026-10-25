@@ -12,6 +12,7 @@ import { ProviderNameStep } from './provider-name.ts'
 import { ProviderUrlStep } from './provider-url.ts'
 import { ProviderCredentialsStep } from './provider-credentials.ts'
 import { ConfirmStep } from './confirm.ts'
+import { CompleteSetupStep } from './complete-setup.ts'
 import { DoneStep } from './done.ts'
 import { DefaultStep } from './default.ts'
 
@@ -29,6 +30,7 @@ const stepClasses = [
   ProviderUrlStep,
   ProviderCredentialsStep,
   ConfirmStep,
+  CompleteSetupStep,
   DoneStep,
 ]
 

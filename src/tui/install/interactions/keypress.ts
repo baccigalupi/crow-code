@@ -66,12 +66,12 @@ export class Keypress {
   }
 
   private decide() {
-    if (this.installData.confirmation.peek() === true) this.write()
+    if (this.installData.confirmation.peek() === true) this.completeSetup()
     else this.exit()
   }
 
-  private write() {
-    this.installData.step.value = 'write'
+  private completeSetup() {
+    this.installData.step.value = 'completeSetup'
   }
 
   private activeEdit() {
