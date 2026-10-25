@@ -54,6 +54,24 @@ export type GitDiffFile = {
   hunks: GitDiffHunk[]
 }
 
+export type GitStatusState =
+  | 'unmodified'
+  | 'modified'
+  | 'typeChanged'
+  | 'added'
+  | 'deleted'
+  | 'renamed'
+  | 'copied'
+  | 'unmerged'
+  | 'untracked'
+
+export type GitStatusFile = {
+  path: string
+  index: GitStatusState
+  worktree: GitStatusState
+  oldPath?: string
+}
+
 export type GitFileDiff = {
   path: string
   diff: string
@@ -92,6 +110,7 @@ export type GitOutput = {
   diffs?: GitDiffFile[]
   stat?: GitLogStat
   files?: GitLogFile[]
+  changes?: GitStatusFile[]
   path?: string
   text?: string
 }
