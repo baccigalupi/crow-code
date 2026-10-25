@@ -22,6 +22,64 @@ describe('useKeypress', () => {
     renderer.destroy()
   })
 
+  it('when text is pasted, inserts it into the active field', async () => {
+    const installData = buildInstallStore()
+    installData.step.value = 'providerCredentials'
+    const Reader = () => {
+      useKeypress(installData)
+      return <text>reader</text>
+    }
+    const { renderer, mockInput } = await testRender(<Reader />, {
+      width: 20,
+      height: 3,
+    })
+
+    await mockInput.pasteBracketedText('sk-123')
+    await renderer.idle()
+
+    expect(installData.providerCredentials.peek().text).toBe('sk-123')
+    renderer.destroy()
+  })
+
+  it('when pasted text has newlines, removes them without advancing', async () => {
+    const installData = buildInstallStore()
+    installData.step.value = 'providerCredentials'
+    const Reader = () => {
+      useKeypress(installData)
+      return <text>reader</text>
+    }
+    const { renderer, mockInput } = await testRender(<Reader />, {
+      width: 20,
+      height: 3,
+    })
+
+    await mockInput.pasteBracketedText('sk-123\r\n')
+    await renderer.idle()
+
+    expect(installData.providerCredentials.peek().text).toBe('sk-123')
+    expect(installData.step.peek()).toBe('providerCredentials')
+    renderer.destroy()
+  })
+
+  it('when text is pasted on confirm, leaves the env file alone', async () => {
+    const installData = buildInstallStore()
+    installData.step.value = 'confirm'
+    const Reader = () => {
+      useKeypress(installData)
+      return <text>reader</text>
+    }
+    const { renderer, mockInput } = await testRender(<Reader />, {
+      width: 20,
+      height: 3,
+    })
+
+    await mockInput.pasteBracketedText('xyz')
+    await renderer.idle()
+
+    expect(installData.envFile.peek().text).toBe('')
+    renderer.destroy()
+  })
+
   it('when return arrives, advances the step', async () => {
     const installData = buildInstallStore()
     const Reader = () => {
