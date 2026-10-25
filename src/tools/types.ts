@@ -92,6 +92,8 @@ export type GitOutput = {
   diffs?: GitDiffFile[]
   stat?: GitLogStat
   files?: GitLogFile[]
+  path?: string
+  text?: string
 }
 
 export type GitFlagKind = 'boolean' | 'number' | 'text' | 'path'

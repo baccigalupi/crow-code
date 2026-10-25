@@ -68,8 +68,10 @@ describe('GitReadOnlyPassthrough', () => {
     })
     await passthrough.run()
 
-    expect(commandSpy.mock.calls[0][1].args.slice(-3)).toEqual([
+    expect(commandSpy.mock.calls[0][1].args.slice(-5)).toEqual([
       'show',
+      '--no-ext-diff',
+      '--no-textconv',
       '--stat',
       'abc123',
     ])
