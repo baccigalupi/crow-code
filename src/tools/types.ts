@@ -72,6 +72,22 @@ export type GitStatusFile = {
   oldPath?: string
 }
 
+export type GitLsFilesEntry = {
+  path: string
+  mode?: string
+  sha?: string
+  stage?: number
+}
+
+export type GitLsTreeKind = 'blob' | 'tree' | 'commit'
+
+export type GitLsTreeEntry = {
+  path: string
+  mode?: string
+  kind?: GitLsTreeKind
+  sha?: string
+}
+
 export type GitFileDiff = {
   path: string
   diff: string
@@ -111,6 +127,7 @@ export type GitOutput = {
   stat?: GitLogStat
   files?: GitLogFile[]
   changes?: GitStatusFile[]
+  entries?: GitLsFilesEntry[] | GitLsTreeEntry[]
   path?: string
   text?: string
 }

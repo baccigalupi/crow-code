@@ -1,3 +1,4 @@
+import { gitOptionFlags } from '../cli-options/option-flags.ts'
 import { GitSubcommand } from '../git-subcommand.ts'
 import { GitDiffNameOnlyParser } from './diff/name-only-parser.ts'
 import { GitDiffNameStatusParser } from './diff/name-status-parser.ts'
@@ -35,6 +36,6 @@ export class GitDiffSubcommand extends GitSubcommand {
   }
 
   private options() {
-    return this.args.slice(0, [...this.args, '--'].indexOf('--'))
+    return gitOptionFlags(this.args)
   }
 }

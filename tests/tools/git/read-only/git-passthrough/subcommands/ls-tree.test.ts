@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { GitLsTreeSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/ls-tree.ts'
 import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
+import { mockCommand } from '../../../../../support/mock-command.ts'
 
 describe('GitLsTreeSubcommand', () => {
   it('when given its allowed flags, a tree and a pathspec, does not refuse', () => {
@@ -62,5 +63,47 @@ describe('GitLsTreeSubcommand', () => {
     expect(refusal).toBe(
       'flag not allowed: --abbrev; allowed flags for ls-tree: --name-only, -r',
     )
+  })
+
+  it('when git ls-tree runs, returns typed entries', async () => {
+    const applicationData = mockApplicationData({
+      command: mockCommand({
+        stdout:
+          '100644 blob fe4e0926999e7629315c1e020561a5025c67b41b\tallowed.txt\n',
+      }),
+    })
+    const subcommand = new GitLsTreeSubcommand({
+      applicationData,
+      operationArguments: { args: ['HEAD'] },
+    })
+
+    await subcommand.run()
+    const result = subcommand.result()
+
+    expect(result).toEqual({
+      entries: [
+        {
+          path: 'allowed.txt',
+          mode: '100644',
+          kind: 'blob',
+          sha: 'fe4e0926999e7629315c1e020561a5025c67b41b',
+        },
+      ],
+    })
+  })
+
+  it('when git ls-tree --name-only runs, returns path entries', async () => {
+    const applicationData = mockApplicationData({
+      command: mockCommand({ stdout: 'allowed.txt\n' }),
+    })
+    const subcommand = new GitLsTreeSubcommand({
+      applicationData,
+      operationArguments: { args: ['--name-only', 'HEAD'] },
+    })
+
+    await subcommand.run()
+    const result = subcommand.result()
+
+    expect(result).toEqual({ entries: [{ path: 'allowed.txt' }] })
   })
 })

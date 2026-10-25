@@ -1,3 +1,4 @@
+import { gitOptionFlags } from '../cli-options/option-flags.ts'
 import { GitSubcommand } from '../git-subcommand.ts'
 import { GitLogNameOnlyParser } from './log/name-only-parser.ts'
 import { GitLogNameStatusParser } from './log/name-status-parser.ts'
@@ -48,6 +49,6 @@ export class GitLogSubcommand extends GitSubcommand {
   }
 
   private options() {
-    return this.args.slice(0, [...this.args, '--'].indexOf('--'))
+    return gitOptionFlags(this.args)
   }
 }

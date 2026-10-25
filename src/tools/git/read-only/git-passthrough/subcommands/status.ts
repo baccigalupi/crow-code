@@ -1,3 +1,4 @@
+import { gitOptionFlags } from '../cli-options/option-flags.ts'
 import { GitSubcommand } from '../git-subcommand.ts'
 import { GitStatusPorcelainParser } from './status/porcelain-parser.ts'
 
@@ -21,6 +22,6 @@ export class GitStatusSubcommand extends GitSubcommand {
   }
 
   private options() {
-    return this.args.slice(0, [...this.args, '--'].indexOf('--'))
+    return gitOptionFlags(this.args)
   }
 }
