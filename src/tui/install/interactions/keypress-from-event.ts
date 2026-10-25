@@ -3,6 +3,7 @@ import type { KeyFlags } from '../../types.ts'
 
 const namedKeys: Record<string, string> = {
   return: 'return',
+  tab: 'tab',
   backspace: 'backspace',
   delete: 'delete',
   escape: 'escape',

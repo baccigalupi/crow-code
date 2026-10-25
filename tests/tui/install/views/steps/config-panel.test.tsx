@@ -18,6 +18,10 @@ describe('ConfigPanel', () => {
         escalateRead={emptyText()}
         escalateWrite={emptyText()}
         allowedLocalScripts={emptyText()}
+        providerName={emptyText()}
+        providerUrl={emptyText()}
+        providerCredentials={emptyText()}
+        providers={[]}
         step="repo"
       />,
       { width: 70, height: 24 },
@@ -41,6 +45,10 @@ describe('ConfigPanel', () => {
         escalateRead={emptyText()}
         escalateWrite={emptyText()}
         allowedLocalScripts={emptyText()}
+        providerName={emptyText()}
+        providerUrl={emptyText()}
+        providerCredentials={emptyText()}
+        providers={[]}
         step="crowGlobalDirectory"
       />,
       { width: 70, height: 24 },
@@ -69,6 +77,10 @@ describe('ConfigPanel', () => {
         escalateRead={emptyText()}
         escalateWrite={emptyText()}
         allowedLocalScripts={emptyText()}
+        providerName={emptyText()}
+        providerUrl={emptyText()}
+        providerCredentials={emptyText()}
+        providers={[]}
         step="envFile"
       />,
       { width: 70, height: 24 },
@@ -92,6 +104,10 @@ describe('ConfigPanel', () => {
         escalateRead={emptyText()}
         escalateWrite={emptyText()}
         allowedLocalScripts={emptyText()}
+        providerName={emptyText()}
+        providerUrl={emptyText()}
+        providerCredentials={emptyText()}
+        providers={[]}
         step="envFile"
       />,
       { width: 70, height: 24 },

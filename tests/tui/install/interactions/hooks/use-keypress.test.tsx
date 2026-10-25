@@ -18,6 +18,11 @@ describe('useKeypress', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -47,6 +52,11 @@ describe('useKeypress', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -77,6 +87,11 @@ describe('useKeypress', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -96,7 +111,7 @@ describe('useKeypress', () => {
     expect(onDestroy).toHaveBeenCalledTimes(1)
   })
 
-  it('when escape arrives, destroys the renderer', async () => {
+  it('when escape arrives, keeps the renderer', async () => {
     const installData = {
       repoDirectory: signal(emptyText()),
       globalDirectory: signal(emptyText()),
@@ -107,6 +122,11 @@ describe('useKeypress', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -124,7 +144,7 @@ describe('useKeypress', () => {
     mockInput.pressEscape()
     await new Promise((resolve) => setTimeout(resolve, 100))
 
-    expect(onDestroy).toHaveBeenCalledTimes(1)
+    expect(onDestroy).not.toHaveBeenCalled()
   })
 
   it('when n then return arrive on the confirm step, declines and exits without writing', async () => {
@@ -138,6 +158,11 @@ describe('useKeypress', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('confirm'),
       confirmation: signal(true),
     }

@@ -19,13 +19,34 @@ export class Keypress {
   handle() {
     if (this.isQuit()) this.exit()
     else if (this.installData.step.peek() === 'done') this.exit()
+    else if (this.isCancel()) this.cancel()
     else if (this.installData.step.peek() === 'confirm') this.confirm()
     else if (this.key.return === true) this.advance()
+    else if (this.key.tab === true) this.tab()
     else this.activeEdit()
   }
 
+  // Tab walks the fields of a grouped step; shift+tab walks back.
+  private tab() {
+    const step = currentStep(this.installData)
+    if ('focus' in step) step.focus(this.tabDirection())
+  }
+
+  private tabDirection() {
+    if (this.key.shift === true) return -1
+    return 1
+  }
+
   private advance() {
-    this.installData.step.value = currentStep(this.installData).nextStep
+    const step = currentStep(this.installData)
+    if ('advance' in step) step.advance()
+    else this.installData.step.value = step.nextStep
+  }
+
+  // Escape opts out of the current prompt; steps without cancel ignore it.
+  private cancel() {
+    const step = currentStep(this.installData)
+    if ('cancel' in step) step.cancel()
   }
 
   private confirm() {
@@ -66,11 +87,11 @@ export class Keypress {
   }
 
   private isQuit() {
-    return (
-      this.key.escape === true ||
-      (this.key.ctrl === true && this.input === 'c') ||
-      this.input === '\x1b'
-    )
+    return this.key.ctrl === true && this.input === 'c'
+  }
+
+  private isCancel() {
+    return this.key.escape === true || this.input === '\x1b'
   }
 }
 

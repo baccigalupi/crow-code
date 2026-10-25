@@ -1,6 +1,6 @@
 /** @jsxImportSource @opentui/react */
 import { TextAttributes } from '@opentui/core'
-import { inputTextViewModel } from '../../input-text-view-model.ts'
+import { promptViewModel } from './prompt-view-model.ts'
 import type { InputText } from '../../types.ts'
 
 const DefaultValue = ({
@@ -24,10 +24,17 @@ type PromptProps = {
   readonly input: InputText
   readonly defaultValue: string
   readonly bare?: boolean
+  readonly masked?: boolean
 }
 
-export const Prompt = ({ label, input, defaultValue, bare }: PromptProps) => {
-  const { before, cursor, after } = inputTextViewModel(input)
+export const Prompt = ({
+  label,
+  input,
+  defaultValue,
+  bare,
+  masked,
+}: PromptProps) => {
+  const { before, cursor, after } = promptViewModel({ input, masked })
   return (
     <box paddingX={1}>
       <text>

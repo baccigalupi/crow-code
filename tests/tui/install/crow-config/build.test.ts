@@ -3,6 +3,77 @@ import { buildCrowConfig } from '../../../../src/tui/install/crow-config/build.t
 import { emptyText, insertText } from '../../../../src/tui/input-text.ts'
 
 describe('build', () => {
+  it('includes finished providers', () => {
+    const inputs = {
+      repoDirectory: emptyText(),
+      globalDirectory: emptyText(),
+      envFile: emptyText(),
+      escalateRead: emptyText(),
+      ignore: emptyText(),
+      additionalRead: emptyText(),
+      additionalWrite: emptyText(),
+      escalateWrite: emptyText(),
+      allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [{ name: 'nous', url: 'https://n' }],
+    }
+
+    const { config } = buildCrowConfig(inputs).all()
+
+    expect(config.providers).toEqual([{ name: 'nous', baseUrl: 'https://n' }])
+  })
+
+  it('previews the draft provider', () => {
+    const inputs = {
+      repoDirectory: emptyText(),
+      globalDirectory: emptyText(),
+      envFile: emptyText(),
+      escalateRead: emptyText(),
+      ignore: emptyText(),
+      additionalRead: emptyText(),
+      additionalWrite: emptyText(),
+      escalateWrite: emptyText(),
+      allowedLocalScripts: emptyText(),
+      providerName: insertText(emptyText(), 'or'),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
+      step: 'providerUrl' as const,
+    }
+
+    const { config } = buildCrowConfig(inputs).all()
+
+    expect(config.providers).toEqual([{ name: 'or', baseUrl: '' }])
+  })
+
+  it('opens a blank record after a finished provider on a provider step', () => {
+    const inputs = {
+      repoDirectory: emptyText(),
+      globalDirectory: emptyText(),
+      envFile: emptyText(),
+      escalateRead: emptyText(),
+      ignore: emptyText(),
+      additionalRead: emptyText(),
+      additionalWrite: emptyText(),
+      escalateWrite: emptyText(),
+      allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [{ name: 'nous', url: 'https://n' }],
+      step: 'providerName' as const,
+    }
+
+    const { config } = buildCrowConfig(inputs).all()
+
+    expect(config.providers).toEqual([
+      { name: 'nous', baseUrl: 'https://n' },
+      { name: '', baseUrl: '' },
+    ])
+  })
+
   it('when no directories are given, resolves the defaults', () => {
     const repoDirectory = emptyText()
     const globalDirectory = emptyText()
@@ -17,6 +88,10 @@ describe('build', () => {
       additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     }).all()
 
     expect(config.crowRepoDirectory).toBe('.crow')
@@ -38,6 +113,10 @@ describe('build', () => {
       additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     }).all()
 
     expect(config.crowRepoDirectory).toBe('./lib')
@@ -60,6 +139,10 @@ describe('build', () => {
       additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     }).all()
 
     expect(config.envFile).toBe('~/.crow/.env')
@@ -80,6 +163,10 @@ describe('build', () => {
       additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     }).all()
 
     expect(config.envFile).toBe('/opt/crow/.env')
@@ -100,6 +187,10 @@ describe('build', () => {
       additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     }).all()
 
     expect(config.envFile).toBe('/secrets/crow.env')
@@ -119,6 +210,10 @@ describe('build', () => {
       additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     }).all()
 
     expect(config.permissions.ignore).toEqual([])
@@ -139,6 +234,10 @@ describe('build', () => {
       escalateRead: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     }).all()
 
     expect(config.permissions.additionalRead).toEqual(['/docs', '~/notes'])
@@ -157,6 +256,10 @@ describe('build', () => {
       escalateRead: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     }).all()
 
     expect(config.permissions.ignore).toEqual(['.env'])
@@ -177,6 +280,10 @@ describe('build', () => {
       escalateRead,
       escalateWrite,
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     }).all()
 
     expect(config.permissions.escalateRead).toEqual([])
@@ -197,6 +304,10 @@ describe('build', () => {
       escalateRead,
       escalateWrite,
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     }).all()
 
     expect(config.permissions.escalateRead).toEqual(['/docs', '~/notes'])
@@ -216,6 +327,10 @@ describe('build', () => {
       escalateRead: emptyText(),
       escalateWrite,
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     }).all()
 
     expect(config.permissions.escalateWrite).toEqual(['./dev', './agent'])
@@ -235,6 +350,10 @@ describe('build', () => {
       additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     }).all()
 
     expect(JSON.parse(crowConfigJson)).toEqual(config)

@@ -45,6 +45,20 @@ describe('Prompt', () => {
     renderer.destroy()
   })
 
+  it('when masked, hides the typed characters', async () => {
+    const input = insertText(emptyText(), 'sk-12')
+    const { renderer, renderOnce, captureCharFrame } = await testRender(
+      <Prompt label="API key" input={input} defaultValue="" bare masked />,
+      { width: 40, height: 3 },
+    )
+
+    await renderOnce()
+
+    expect(captureCharFrame()).toContain('API key: •••••')
+    expect(captureCharFrame()).not.toContain('sk-12')
+    renderer.destroy()
+  })
+
   it('when the cursor is inside the text, the character under it is inverse', async () => {
     const input = { text: 'abc', cursor: 1 }
     const { renderer, renderOnce, captureSpans } = await testRender(

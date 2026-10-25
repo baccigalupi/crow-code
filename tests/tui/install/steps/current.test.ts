@@ -19,6 +19,11 @@ describe('current', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('envFile'),
       confirmation: signal(true),
     }
@@ -39,13 +44,18 @@ describe('current', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
 
     const steps = new CurrentStep(installStore).all()
 
-    expect(steps).toHaveLength(11)
+    expect(steps).toHaveLength(14)
     expect(steps[0].name).toBe('repo')
     expect(steps[1].name).toBe('crowGlobalDirectory')
     expect(steps[2].name).toBe('envFile')
@@ -55,8 +65,11 @@ describe('current', () => {
     expect(steps[6].name).toBe('escalateRead')
     expect(steps[7].name).toBe('escalateWrite')
     expect(steps[8].name).toBe('allowedLocalScripts')
-    expect(steps[9].name).toBe('confirm')
-    expect(steps[10].name).toBe('done')
+    expect(steps[9].name).toBe('providerName')
+    expect(steps[10].name).toBe('providerUrl')
+    expect(steps[11].name).toBe('providerCredentials')
+    expect(steps[12].name).toBe('confirm')
+    expect(steps[13].name).toBe('done')
   })
 
   it('when the installStore step is ignore, current returns that step', () => {
@@ -70,6 +83,11 @@ describe('current', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('ignore'),
       confirmation: signal(true),
     }
@@ -92,6 +110,11 @@ describe('current', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('additionalRead'),
       confirmation: signal(true),
     }
@@ -114,6 +137,11 @@ describe('current', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('additionalWrite'),
       confirmation: signal(true),
     }
@@ -136,6 +164,11 @@ describe('current', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('escalateRead'),
       confirmation: signal(true),
     }
@@ -158,6 +191,11 @@ describe('current', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('write'),
       confirmation: signal(true),
     }
@@ -178,6 +216,11 @@ describe('current', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('allowedLocalScripts'),
       confirmation: signal(true),
     }

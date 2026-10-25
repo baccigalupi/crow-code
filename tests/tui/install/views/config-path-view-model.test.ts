@@ -14,6 +14,10 @@ describe('config-path-view-model', () => {
       additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     }
 
     const { crowConfigPath } = configPathViewModel(inputs)
@@ -32,6 +36,10 @@ describe('config-path-view-model', () => {
       additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     }
 
     const { crowConfigPath } = configPathViewModel(inputs)

@@ -21,6 +21,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -50,6 +55,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('crowGlobalDirectory'),
       confirmation: signal(true),
     }
@@ -79,6 +89,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -107,6 +122,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -135,6 +155,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('envFile'),
       confirmation: signal(true),
     }
@@ -164,6 +189,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('ignore'),
       confirmation: signal(true),
     }
@@ -192,6 +222,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('additionalRead'),
       confirmation: signal(true),
     }
@@ -221,6 +256,11 @@ describe('InstallApp', () => {
       additionalWrite,
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('additionalWrite'),
       confirmation: signal(true),
     }
@@ -250,6 +290,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -276,6 +321,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -303,6 +353,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -331,6 +386,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -358,6 +418,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('confirm'),
       confirmation: signal(true),
     }
@@ -383,6 +448,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('confirm'),
       confirmation: signal(false),
     }
@@ -408,6 +478,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('confirm'),
       confirmation: signal(true),
     }
@@ -433,6 +508,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('confirm'),
       confirmation: signal(false),
     }
@@ -459,6 +539,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('done'),
       confirmation: signal(true),
     }
@@ -484,6 +569,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -498,7 +588,7 @@ describe('InstallApp', () => {
     expect(onDestroy).toHaveBeenCalledTimes(1)
   })
 
-  it('when escape arrives, exits', async () => {
+  it('when a provider is added and escape finishes the loop, previews it and asks to confirm', async () => {
     const installStore = {
       repoDirectory: signal(emptyText()),
       globalDirectory: signal(emptyText()),
@@ -509,6 +599,56 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
+      step: signal<InstallStep>('allowedLocalScripts'),
+      confirmation: signal(true),
+    }
+    const { renderer, renderOnce, captureCharFrame, mockInput } =
+      await testRender(<InstallApp installStore={installStore} />, {
+        width: 70,
+        height: 40,
+      })
+
+    mockInput.pressEnter()
+    await mockInput.typeText('nous')
+    mockInput.pressEnter()
+    await mockInput.typeText('https://n')
+    mockInput.pressEnter()
+    await mockInput.typeText('sk-1')
+    mockInput.pressEnter()
+    mockInput.pressEscape()
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    await renderOnce()
+
+    const frame = captureCharFrame()
+    expect(installStore.step.peek()).toBe('confirm')
+    expect(frame).toContain('"providers": [')
+    expect(frame).toContain('"name": "nous",')
+    expect(frame).toContain('Write config to .crow/config.json?')
+    expect(frame).not.toContain('sk-1')
+    renderer.destroy()
+  })
+
+  it('when escape arrives outside the provider loop, keeps running', async () => {
+    const installStore = {
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -521,7 +661,8 @@ describe('InstallApp', () => {
     mockInput.pressEscape()
     await new Promise((resolve) => setTimeout(resolve, 100))
 
-    expect(onDestroy).toHaveBeenCalledTimes(1)
+    expect(onDestroy).not.toHaveBeenCalled()
+    expect(installStore.step.peek()).toBe('repo')
   })
 
   it('when the terminal is taller than the content, the question sits on the last row', async () => {
@@ -535,6 +676,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -561,6 +707,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('crowGlobalDirectory'),
       confirmation: signal(true),
     }
@@ -587,6 +738,11 @@ describe('InstallApp', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('confirm'),
       confirmation: signal(true),
     }

@@ -1,11 +1,16 @@
 import { join } from 'node:path'
 import { buildPermissions } from './permissions.ts'
+import { buildProviders } from './providers.ts'
 import {
   defaultCrowGlobalDirectory,
   defaultCrowRepoDirectory,
 } from '../interactions/state/config-text.ts'
 import type { InputText } from '../../types.ts'
-import type { BuildCrowConfigArguments, PermissionInputs } from '../types.ts'
+import type {
+  BuildCrowConfigArguments,
+  PermissionInputs,
+  ProviderInputs,
+} from '../types.ts'
 
 // READ side: builds the config the installer would write from the typed
 // inputs. Pure; touches no files. Writing lives in write.ts.
@@ -13,18 +18,18 @@ export class CrowConfigBuilder {
   private globalDirectoryInput: InputText
   private repoDirectoryInput: InputText
   private envFileInput: InputText
-  private permissionInputs: PermissionInputs
+  private sectionInputs: PermissionInputs & ProviderInputs
 
   constructor({
     globalDirectory,
     repoDirectory,
     envFile,
-    ...permissionInputs
+    ...sectionInputs
   }: BuildCrowConfigArguments) {
     this.globalDirectoryInput = globalDirectory
     this.repoDirectoryInput = repoDirectory
     this.envFileInput = envFile
-    this.permissionInputs = permissionInputs
+    this.sectionInputs = sectionInputs
   }
 
   all() {
@@ -70,11 +75,16 @@ export class CrowConfigBuilder {
       crowGlobalDirectory: this.crowGlobalDirectory(),
       envFile: this.envFile(),
       permissions: this.permissions(),
+      providers: this.providers(),
     }
   }
 
   private permissions() {
-    return buildPermissions(this.permissionInputs)
+    return buildPermissions(this.sectionInputs)
+  }
+
+  private providers() {
+    return buildProviders(this.sectionInputs)
   }
 }
 

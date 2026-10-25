@@ -15,6 +15,10 @@ const blankInputs = {
   escalateRead: emptyText(),
   escalateWrite: emptyText(),
   allowedLocalScripts: emptyText(),
+  providerName: emptyText(),
+  providerUrl: emptyText(),
+  providerCredentials: emptyText(),
+  providers: [],
 }
 
 export const envPromptViewModel = ({

@@ -52,6 +52,15 @@ describe('highlightJson', () => {
     expect(split.highlighted).toBe('"i": [],')
   })
 
+  it('when asked for the last occurrence, highlights the last matching line', () => {
+    const json =
+      '[\n  {\n    "name": "a",\n    "u": 1\n  },\n  {\n    "name": "b",\n    "u": 2\n  }\n]'
+
+    const split = highlightJson({ json, key: 'name', occurrence: 'last' })
+
+    expect(split.highlighted).toBe('"name": "b",')
+  })
+
   it('when the key is empty, highlights nothing', () => {
     const json = '{\n  "a": 1\n}'
 

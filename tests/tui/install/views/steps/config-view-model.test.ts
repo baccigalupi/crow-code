@@ -3,6 +3,52 @@ import { configViewModel } from '../../../../../src/tui/install/views/steps/conf
 import { emptyText, insertText } from '../../../../../src/tui/input-text.ts'
 
 describe('configViewModel', () => {
+  it('when the step is providerUrl, highlights the draft provider baseUrl', () => {
+    const props = {
+      step: 'providerUrl' as const,
+      repoDirectory: emptyText(),
+      globalDirectory: emptyText(),
+      envFile: emptyText(),
+      escalateRead: emptyText(),
+      ignore: emptyText(),
+      additionalRead: emptyText(),
+      additionalWrite: emptyText(),
+      escalateWrite: emptyText(),
+      allowedLocalScripts: emptyText(),
+      providerName: insertText(emptyText(), 'd'),
+      providerUrl: insertText(emptyText(), 'https://d'),
+      providerCredentials: emptyText(),
+      providers: [{ name: 'nous', url: 'https://n' }],
+    }
+
+    const viewModel = configViewModel(props)
+
+    expect(viewModel.highlighted).toBe('"baseUrl": "https://d"')
+  })
+
+  it('when the step is providerName, highlights the draft provider name', () => {
+    const props = {
+      step: 'providerName' as const,
+      repoDirectory: emptyText(),
+      globalDirectory: emptyText(),
+      envFile: emptyText(),
+      escalateRead: emptyText(),
+      ignore: emptyText(),
+      additionalRead: emptyText(),
+      additionalWrite: emptyText(),
+      escalateWrite: emptyText(),
+      allowedLocalScripts: emptyText(),
+      providerName: insertText(emptyText(), 'd'),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [{ name: 'nous', url: 'https://n' }],
+    }
+
+    const viewModel = configViewModel(props)
+
+    expect(viewModel.highlighted).toBe('"name": "d",')
+  })
+
   it('when the step is crowGlobalDirectory, highlights the crowGlobalDirectory line', () => {
     const repoDirectory = emptyText()
     const globalDirectory = emptyText()
@@ -19,6 +65,10 @@ describe('configViewModel', () => {
       additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     })
 
     expect(viewModel.before).toBe('{\n  ')
@@ -41,6 +91,10 @@ describe('configViewModel', () => {
       additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     })
 
     expect(viewModel.highlighted).toBe('"envFile": "~/.crow/.env",')
@@ -60,6 +114,10 @@ describe('configViewModel', () => {
       additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     })
 
     expect(viewModel.highlighted).toBe('"ignore": [],')
@@ -79,6 +137,10 @@ describe('configViewModel', () => {
       additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     })
 
     expect(viewModel.highlighted).toBe('"ignore": [\n      ".env"\n    ],')
@@ -99,6 +161,10 @@ describe('configViewModel', () => {
       additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     })
 
     expect(viewModel.highlighted).toBe('"additionalRead": [],')
@@ -118,6 +184,10 @@ describe('configViewModel', () => {
       additionalWrite,
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     })
 
     expect(viewModel.highlighted).toBe(
@@ -140,6 +210,10 @@ describe('configViewModel', () => {
       additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     })
 
     expect(viewModel.highlighted).toBe('"escalateRead": [],')
@@ -160,6 +234,10 @@ describe('configViewModel', () => {
       additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     })
 
     expect(viewModel.highlighted).toBe(
@@ -183,6 +261,10 @@ describe('configViewModel', () => {
       additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
     })
 
     expect(viewModel.highlighted).toBe('')

@@ -40,7 +40,17 @@ export class CrowConfigWrite {
       ...this.pathInputs(),
       ...this.readInputs(),
       ...this.writeInputs(),
+      ...this.providerInputs(),
     }).all()
+  }
+
+  private providerInputs() {
+    return {
+      providerName: this.installData.providerName.peek(),
+      providerUrl: this.installData.providerUrl.peek(),
+      providerCredentials: this.installData.providerCredentials.peek(),
+      providers: this.installData.providers.peek(),
+    }
   }
 
   private pathInputs() {

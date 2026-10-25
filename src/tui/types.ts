@@ -12,6 +12,7 @@ export type KeyFlags = {
   readonly shift?: boolean
   readonly meta?: boolean
   readonly return?: boolean
+  readonly tab?: boolean
   readonly backspace?: boolean
   readonly delete?: boolean
   readonly escape?: boolean

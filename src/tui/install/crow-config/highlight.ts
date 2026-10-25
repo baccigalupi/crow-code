@@ -1,7 +1,4 @@
-type HighlightJsonArguments = {
-  readonly json: string
-  readonly key: string
-}
+import type { HighlightJsonArguments } from '../types.ts'
 
 // Splits `JSON.stringify(_, null, 2)` output around the line(s) of one
 // key, top-level or nested. A key that is not found highlights nothing.
@@ -9,11 +6,13 @@ export class JsonHighlighter {
   private json: string
   private lines: string[]
   private key: string
+  private occurrence: 'first' | 'last'
 
-  constructor({ json, key }: HighlightJsonArguments) {
+  constructor({ json, key, occurrence = 'first' }: HighlightJsonArguments) {
     this.json = json
     this.lines = json.split('\n')
     this.key = key
+    this.occurrence = occurrence
   }
 
   split() {
@@ -21,9 +20,12 @@ export class JsonHighlighter {
   }
 
   private keyIndex() {
-    return this.lines.findIndex((line) =>
-      line.trimStart().startsWith(`"${this.key}":`),
-    )
+    if (this.occurrence === 'last') return this.lines.findLastIndex(this.isKey)
+    return this.lines.findIndex(this.isKey)
+  }
+
+  private isKey = (line: string) => {
+    return line.trimStart().startsWith(`"${this.key}":`)
   }
 
   private indentation(index: number) {

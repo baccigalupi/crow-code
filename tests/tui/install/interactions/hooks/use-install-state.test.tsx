@@ -21,6 +21,11 @@ describe('useInstallState', () => {
       escalateRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('envFile'),
       confirmation: signal(false),
     }
@@ -52,6 +57,11 @@ describe('useInstallState', () => {
       escalateRead: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }

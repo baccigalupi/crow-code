@@ -18,6 +18,11 @@ describe('StepPrompts', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -31,6 +36,11 @@ describe('StepPrompts', () => {
       additionalWrite: emptyText(),
       escalateWrite: emptyText(),
       allowedLocalScripts: emptyText(),
+      providerName: emptyText(),
+      providerUrl: emptyText(),
+      providerCredentials: emptyText(),
+      providers: [],
+      step: 'repo' as const,
       crowConfigPath: '.crow/config.json',
       confirmation: true,
     }

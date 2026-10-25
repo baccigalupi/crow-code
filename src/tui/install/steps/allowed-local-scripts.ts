@@ -4,7 +4,7 @@ import { AllowedLocalScriptsPrompt } from '../views/steps/allowed-local-scripts-
 export class AllowedLocalScriptsStep {
   private installStore: InstallStore
   readonly name = 'allowedLocalScripts'
-  readonly nextStep = 'confirm'
+  readonly nextStep = 'providerName'
   readonly View = AllowedLocalScriptsPrompt
 
   constructor(installStore: InstallStore) {

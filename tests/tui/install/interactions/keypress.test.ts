@@ -2,10 +2,13 @@ import { describe, expect, it, mock } from 'bun:test'
 import { signal } from '@preact/signals-core'
 import { emptyText } from '../../../../src/tui/input-text.ts'
 import { keypress } from '../../../../src/tui/install/interactions/keypress.ts'
-import type { InstallStep } from '../../../../src/tui/install/types.ts'
+import type {
+  InstallProvider,
+  InstallStep,
+} from '../../../../src/tui/install/types.ts'
 
 describe('keypress', () => {
-  it('when escape arrives, exits', () => {
+  it('when escape arrives on a step without cancel, stays put', () => {
     const exit = mock(() => {})
     const installData = {
       repoDirectory: signal(emptyText()),
@@ -17,13 +20,251 @@ describe('keypress', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
-      step: signal<InstallStep>('repo'),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
+      step: signal<InstallStep>('ignore'),
       confirmation: signal(true),
     }
 
     keypress({ installData, exit, input: '', key: { escape: true } }).handle()
 
-    expect(exit).toHaveBeenCalledTimes(1)
+    expect(exit).not.toHaveBeenCalled()
+    expect(installData.step.peek()).toBe('ignore')
+  })
+
+  it('when a raw escape character arrives, stays put without editing', () => {
+    const exit = mock(() => {})
+    const installData = {
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
+      step: signal<InstallStep>('ignore'),
+      confirmation: signal(true),
+    }
+
+    keypress({ installData, exit, input: '\x1b', key: {} }).handle()
+
+    expect(exit).not.toHaveBeenCalled()
+    expect(installData.ignore.peek()).toEqual({ text: '', cursor: 0 })
+  })
+
+  it('when escape arrives on a provider step, drops the draft and moves to confirm', () => {
+    const exit = mock(() => {})
+    const installData = {
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
+      providerName: signal({ text: 'or', cursor: 2 }),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([{ name: 'nous', url: 'https://n' }]),
+      envBuffer: signal({}),
+      step: signal<InstallStep>('providerUrl'),
+      confirmation: signal(true),
+    }
+
+    keypress({ installData, exit, input: '', key: { escape: true } }).handle()
+
+    expect(installData.step.peek()).toBe('confirm')
+    expect(installData.providerName.peek()).toEqual({ text: '', cursor: 0 })
+    expect(installData.providers.peek()).toEqual([
+      { name: 'nous', url: 'https://n' },
+    ])
+  })
+
+  it('when tab arrives on a provider step, moves to the next field', () => {
+    const exit = mock(() => {})
+    const installData = {
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
+      providerName: signal({ text: 'nous', cursor: 4 }),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal<readonly InstallProvider[]>([]),
+      envBuffer: signal({}),
+      step: signal<InstallStep>('providerName'),
+      confirmation: signal(true),
+    }
+
+    keypress({ installData, exit, input: '', key: { tab: true } }).handle()
+
+    expect(installData.step.peek()).toBe('providerUrl')
+    expect(installData.providerName.peek()).toEqual({ text: 'nous', cursor: 4 })
+  })
+
+  it('when shift+tab arrives on the first provider field, stays put', () => {
+    const exit = mock(() => {})
+    const installData = {
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal<readonly InstallProvider[]>([]),
+      envBuffer: signal({}),
+      step: signal<InstallStep>('providerName'),
+      confirmation: signal(true),
+    }
+
+    keypress({
+      installData,
+      exit,
+      input: '',
+      key: { tab: true, shift: true },
+    }).handle()
+
+    expect(installData.step.peek()).toBe('providerName')
+  })
+
+  it('when tab arrives on the last provider field, stays put', () => {
+    const exit = mock(() => {})
+    const installData = {
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal<readonly InstallProvider[]>([]),
+      envBuffer: signal({}),
+      step: signal<InstallStep>('providerCredentials'),
+      confirmation: signal(true),
+    }
+
+    keypress({ installData, exit, input: '', key: { tab: true } }).handle()
+
+    expect(installData.step.peek()).toBe('providerCredentials')
+  })
+
+  it('when tab arrives on a step without fields, stays put', () => {
+    const exit = mock(() => {})
+    const installData = {
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal<readonly InstallProvider[]>([]),
+      envBuffer: signal({}),
+      step: signal<InstallStep>('ignore'),
+      confirmation: signal(true),
+    }
+
+    keypress({ installData, exit, input: '', key: { tab: true } }).handle()
+
+    expect(installData.step.peek()).toBe('ignore')
+  })
+
+  it('when return arrives on the credentials step, commits the provider and starts another', () => {
+    const exit = mock(() => {})
+    const installData = {
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
+      providerName: signal({ text: 'nous', cursor: 4 }),
+      providerUrl: signal({ text: 'https://n', cursor: 9 }),
+      providerCredentials: signal({ text: 'sk-1', cursor: 4 }),
+      providers: signal<readonly InstallProvider[]>([]),
+      envBuffer: signal({}),
+      step: signal<InstallStep>('providerCredentials'),
+      confirmation: signal(true),
+    }
+
+    keypress({ installData, exit, input: '', key: { return: true } }).handle()
+
+    expect(installData.providers.peek()).toEqual([
+      { name: 'nous', url: 'https://n' },
+    ])
+    expect(installData.envBuffer.peek()).toEqual({ NOUS_API_KEY: 'sk-1' })
+    expect(installData.providerName.peek()).toEqual({ text: '', cursor: 0 })
+    expect(installData.providerUrl.peek()).toEqual({ text: '', cursor: 0 })
+    expect(installData.providerCredentials.peek()).toEqual({
+      text: '',
+      cursor: 0,
+    })
+    expect(installData.step.peek()).toBe('providerName')
+  })
+
+  it('when return arrives on the credentials step with no credential, buffers nothing', () => {
+    const exit = mock(() => {})
+    const installData = {
+      repoDirectory: signal(emptyText()),
+      globalDirectory: signal(emptyText()),
+      envFile: signal(emptyText()),
+      escalateRead: signal(emptyText()),
+      ignore: signal(emptyText()),
+      additionalRead: signal(emptyText()),
+      additionalWrite: signal(emptyText()),
+      escalateWrite: signal(emptyText()),
+      allowedLocalScripts: signal(emptyText()),
+      providerName: signal({ text: 'ollama', cursor: 6 }),
+      providerUrl: signal({ text: 'http://o', cursor: 8 }),
+      providerCredentials: signal(emptyText()),
+      providers: signal<readonly InstallProvider[]>([]),
+      envBuffer: signal({}),
+      step: signal<InstallStep>('providerCredentials'),
+      confirmation: signal(true),
+    }
+
+    keypress({ installData, exit, input: '', key: { return: true } }).handle()
+
+    expect(installData.providers.peek()).toEqual([
+      { name: 'ollama', url: 'http://o' },
+    ])
+    expect(installData.envBuffer.peek()).toEqual({})
   })
 
   it('when ctrl-c arrives, exits', () => {
@@ -38,6 +279,11 @@ describe('keypress', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -59,6 +305,11 @@ describe('keypress', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('done'),
       confirmation: signal(true),
     }
@@ -80,6 +331,11 @@ describe('keypress', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('repo'),
       confirmation: signal(true),
     }
@@ -101,6 +357,11 @@ describe('keypress', () => {
       additionalWrite: signal(emptyText()),
       escalateWrite: signal(emptyText()),
       allowedLocalScripts: signal(emptyText()),
+      providerName: signal(emptyText()),
+      providerUrl: signal(emptyText()),
+      providerCredentials: signal(emptyText()),
+      providers: signal([]),
+      envBuffer: signal({}),
       step: signal<InstallStep>('envFile'),
       confirmation: signal(true),
     }
@@ -123,6 +384,11 @@ describe('keypress', () => {
         additionalWrite: signal(emptyText()),
         escalateWrite: signal(emptyText()),
         allowedLocalScripts: signal(emptyText()),
+        providerName: signal(emptyText()),
+        providerUrl: signal(emptyText()),
+        providerCredentials: signal(emptyText()),
+        providers: signal([]),
+        envBuffer: signal({}),
         step: signal<InstallStep>('confirm'),
         confirmation: signal(false),
       }
@@ -149,6 +415,11 @@ describe('keypress', () => {
         additionalWrite: signal(emptyText()),
         escalateWrite: signal(emptyText()),
         allowedLocalScripts: signal(emptyText()),
+        providerName: signal(emptyText()),
+        providerUrl: signal(emptyText()),
+        providerCredentials: signal(emptyText()),
+        providers: signal([]),
+        envBuffer: signal({}),
         step: signal<InstallStep>('confirm'),
         confirmation: signal(true),
       }
@@ -170,6 +441,11 @@ describe('keypress', () => {
         additionalWrite: signal(emptyText()),
         escalateWrite: signal(emptyText()),
         allowedLocalScripts: signal(emptyText()),
+        providerName: signal(emptyText()),
+        providerUrl: signal(emptyText()),
+        providerCredentials: signal(emptyText()),
+        providers: signal([]),
+        envBuffer: signal({}),
         step: signal<InstallStep>('confirm'),
         confirmation: signal(true),
       }
@@ -196,6 +472,11 @@ describe('keypress', () => {
         additionalWrite: signal(emptyText()),
         escalateWrite: signal(emptyText()),
         allowedLocalScripts: signal(emptyText()),
+        providerName: signal(emptyText()),
+        providerUrl: signal(emptyText()),
+        providerCredentials: signal(emptyText()),
+        providers: signal([]),
+        envBuffer: signal({}),
         step: signal<InstallStep>('confirm'),
         confirmation: signal(true),
       }
@@ -217,6 +498,11 @@ describe('keypress', () => {
         additionalWrite: signal(emptyText()),
         escalateWrite: signal(emptyText()),
         allowedLocalScripts: signal(emptyText()),
+        providerName: signal(emptyText()),
+        providerUrl: signal(emptyText()),
+        providerCredentials: signal(emptyText()),
+        providers: signal([]),
+        envBuffer: signal({}),
         step: signal<InstallStep>('confirm'),
         confirmation: signal(false),
       }
@@ -243,6 +529,11 @@ describe('keypress', () => {
         additionalWrite: signal(emptyText()),
         escalateWrite: signal(emptyText()),
         allowedLocalScripts: signal(emptyText()),
+        providerName: signal(emptyText()),
+        providerUrl: signal(emptyText()),
+        providerCredentials: signal(emptyText()),
+        providers: signal([]),
+        envBuffer: signal({}),
         step: signal<InstallStep>('confirm'),
         confirmation: signal(false),
       }
@@ -264,6 +555,11 @@ describe('keypress', () => {
         additionalWrite: signal(emptyText()),
         escalateWrite: signal(emptyText()),
         allowedLocalScripts: signal(emptyText()),
+        providerName: signal(emptyText()),
+        providerUrl: signal(emptyText()),
+        providerCredentials: signal(emptyText()),
+        providers: signal([]),
+        envBuffer: signal({}),
         step: signal<InstallStep>('confirm'),
         confirmation: signal(true),
       }
@@ -285,6 +581,11 @@ describe('keypress', () => {
         additionalWrite: signal(emptyText()),
         escalateWrite: signal(emptyText()),
         allowedLocalScripts: signal(emptyText()),
+        providerName: signal(emptyText()),
+        providerUrl: signal(emptyText()),
+        providerCredentials: signal(emptyText()),
+        providers: signal([]),
+        envBuffer: signal({}),
         step: signal<InstallStep>('confirm'),
         confirmation: signal(false),
       }

@@ -13,14 +13,36 @@ export type InstallStep =
   | 'escalateRead'
   | 'escalateWrite'
   | 'allowedLocalScripts'
+  | 'providerName'
+  | 'providerUrl'
+  | 'providerCredentials'
   | 'confirm'
   | 'write'
   | 'done'
+
+export type InstallProvider = {
+  readonly name: string
+  readonly url: string
+}
+
+export type CrowProviderConfig = {
+  readonly name: string
+  readonly baseUrl: string
+}
+
+export type HighlightJsonArguments = {
+  readonly json: string
+  readonly key: string
+  readonly occurrence?: 'first' | 'last'
+}
+
+export type EnvBuffer = Readonly<Record<string, string>>
 
 export type CrowConfig = {
   readonly crowGlobalDirectory: string
   readonly envFile: string
   readonly permissions: CrowPermissionsConfig
+  readonly providers: readonly CrowProviderConfig[]
 }
 
 export type BuiltCrowConfig = {
@@ -41,7 +63,17 @@ export type BuildCrowConfigArguments = {
   readonly escalateRead: InputText
   readonly escalateWrite: InputText
   readonly allowedLocalScripts: InputText
+  readonly providerName: InputText
+  readonly providerUrl: InputText
+  readonly providerCredentials: InputText
+  readonly providers: readonly InstallProvider[]
+  readonly step?: InstallStep
 }
+
+export type ProviderInputs = Pick<
+  BuildCrowConfigArguments,
+  'providerName' | 'providerUrl' | 'providerCredentials' | 'providers' | 'step'
+>
 
 export type PermissionInputs = Pick<
   BuildCrowConfigArguments,
@@ -58,9 +90,15 @@ export type ConfigPanelProps = BuildCrowConfigArguments & {
 }
 
 export type StepValues = BuildCrowConfigArguments & {
+  readonly step: InstallStep
   readonly crowConfigPath: string
   readonly confirmation: boolean
 }
+
+export type ProviderPromptProps = Pick<
+  InstallState,
+  'step' | 'providers' | 'providerName' | 'providerUrl' | 'providerCredentials'
+>
 
 export type InstallAppProps = {
   readonly installStore?: InstallStore
@@ -69,6 +107,7 @@ export type InstallAppProps = {
 export type InstallState = BuildCrowConfigArguments & {
   readonly step: InstallStep
   readonly confirmation: boolean
+  readonly envBuffer: EnvBuffer
 }
 
 export type InstallStore = {
