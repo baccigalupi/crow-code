@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { GitCatFileSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/cat-file.ts'
 import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
+import { mockCommand } from '../../../../../support/mock-command.ts'
 
 describe('GitCatFileSubcommand', () => {
   it('when given -p and a rev:path object, does not refuse and checks the path', () => {
@@ -127,5 +128,65 @@ describe('GitCatFileSubcommand', () => {
     expect(refusal).toBe(
       'flag not allowed: --batch=%(objectname); allowed flags for cat-file: -e, -p, -s, -t',
     )
+  })
+
+  it('when git cat-file -t runs, returns typed kind', async () => {
+    const applicationData = mockApplicationData({
+      command: mockCommand({ stdout: 'blob\n' }),
+    })
+    const subcommand = new GitCatFileSubcommand({
+      applicationData,
+      operationArguments: { args: ['-t', 'HEAD:allowed.txt'] },
+    })
+
+    await subcommand.run()
+    const result = subcommand.result()
+
+    expect(result).toEqual({ kind: 'blob' })
+  })
+
+  it('when git cat-file -s runs, returns typed size', async () => {
+    const applicationData = mockApplicationData({
+      command: mockCommand({ stdout: '12\n' }),
+    })
+    const subcommand = new GitCatFileSubcommand({
+      applicationData,
+      operationArguments: { args: ['-s', 'HEAD:allowed.txt'] },
+    })
+
+    await subcommand.run()
+    const result = subcommand.result()
+
+    expect(result).toEqual({ size: 12 })
+  })
+
+  it('when git cat-file -p runs, returns path-less text', async () => {
+    const applicationData = mockApplicationData({
+      command: mockCommand({ stdout: 'allowed two\n' }),
+    })
+    const subcommand = new GitCatFileSubcommand({
+      applicationData,
+      operationArguments: { args: ['-p', 'HEAD:allowed.txt'] },
+    })
+
+    await subcommand.run()
+    const result = subcommand.result()
+
+    expect(result).toEqual({ text: 'allowed two\n' })
+  })
+
+  it('when git cat-file -e runs, returns raw stdout', async () => {
+    const applicationData = mockApplicationData({
+      command: mockCommand({ stdout: '' }),
+    })
+    const subcommand = new GitCatFileSubcommand({
+      applicationData,
+      operationArguments: { args: ['-e', 'HEAD:allowed.txt'] },
+    })
+
+    await subcommand.run()
+    const result = subcommand.result()
+
+    expect(result).toEqual({ stdout: '' })
   })
 })

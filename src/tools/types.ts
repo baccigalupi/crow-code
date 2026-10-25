@@ -137,7 +137,11 @@ export type GitOutput = {
   sha?: string
   isAncestor?: boolean
   name?: string
+  kind?: GitObjectKind
+  size?: number
 }
+
+export type GitObjectKind = 'blob' | 'tree' | 'commit' | 'tag'
 
 export type GitRevListObject = {
   sha: string
