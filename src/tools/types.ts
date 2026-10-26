@@ -139,6 +139,21 @@ export type GitOutput = {
   name?: string
   kind?: GitObjectKind
   size?: number
+  matches?: GitGrepMatch[]
+  counts?: GitGrepCount[]
+}
+
+export type GitGrepMatch = {
+  revision?: string
+  path: string
+  line?: number
+  text: string
+}
+
+export type GitGrepCount = {
+  revision?: string
+  path: string
+  count: number
 }
 
 export type GitObjectKind = 'blob' | 'tree' | 'commit' | 'tag'
