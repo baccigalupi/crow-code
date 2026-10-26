@@ -1,3 +1,4 @@
+import { join } from 'node:path'
 import pino from 'pino'
 import type { Knex } from 'knex'
 import type OpenAI from 'openai'
@@ -17,6 +18,7 @@ import type {
   Logger,
 } from '../../src/types.ts'
 import type { OpenAiClientOptions } from '../../src/model-requests/types.ts'
+import { fixturesDirectory } from './fixtures.ts'
 import { mockFetchSuccess } from './mock-fetch.ts'
 import { mockOpenAiClient } from './mock-openai-client.ts'
 import { createTestDatabase } from './test-database.ts'
@@ -42,7 +44,7 @@ export const mockApplicationData = (
   const args = overrides.args || []
   data.runtime = new Runtime(process, overrides.cwd)
   data.filesystem = defaultFilesystem()
-  data.io = new Io('')
+  data.io = new Io(join(fixturesDirectory, 'logger'))
   data.parsedArguments = parseArguments(args)
   data.repositoryRoot = data.runtime.cwd
   data.config = overrides.config || new CrowConfig('.', defaultCrowConfig())
