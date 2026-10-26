@@ -6,13 +6,12 @@ import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { buildInstallStore } from '../../support/install-store.ts'
 
 describe('runInstallTui', () => {
-  it('when no store is given, writes the shared install data', () => {
+  it('when no store is given, starts setup from the shared install data', () => {
     const applicationData = mockApplicationData()
     const mkdir = spyOn(
       applicationData.filesystem,
       'mkdirWithParents',
-    ).mockResolvedValue()
-    spyOn(applicationData.filesystem, 'writeTextFile').mockResolvedValue()
+    ).mockImplementation(() => new Promise<void>(() => {}))
     installStore.repoDirectory.value = insertText(emptyText(), '/repo/shared')
 
     runInstallTui(applicationData, {})
@@ -23,13 +22,12 @@ describe('runInstallTui', () => {
     expect(mkdir.mock.calls).toEqual([['/repo/shared']])
   })
 
-  it('when a store is given, writes that store install data', () => {
+  it('when a store is given, starts setup from that store', () => {
     const applicationData = mockApplicationData()
     const mkdir = spyOn(
       applicationData.filesystem,
       'mkdirWithParents',
-    ).mockResolvedValue()
-    spyOn(applicationData.filesystem, 'writeTextFile').mockResolvedValue()
+    ).mockImplementation(() => new Promise<void>(() => {}))
     const store = buildInstallStore()
     store.repoDirectory.value = insertText(emptyText(), '/repo/injected')
     store.step.value = 'confirm'

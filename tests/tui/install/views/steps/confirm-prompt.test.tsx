@@ -4,15 +4,15 @@ import { testRender } from '@opentui/react/test-utils'
 import { ConfirmPrompt } from '../../../../../src/tui/install/views/steps/confirm-prompt.tsx'
 
 describe('ConfirmPrompt', () => {
-  it('when confirmed, asks to write the config with Yes selected', async () => {
+  it('when confirmed, asks to complete setup with Yes selected', async () => {
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <ConfirmPrompt crowConfigPath=".crow/config.json" confirmation />,
+      <ConfirmPrompt confirmation />,
       { width: 70, height: 4 },
     )
 
     await renderOnce()
 
-    expect(captureCharFrame()).toContain('Write config to .crow/config.json?')
+    expect(captureCharFrame()).toContain('Complete setup?')
     expect(captureCharFrame()).toContain('▶ Yes')
     expect(captureCharFrame()).toContain('No')
     renderer.destroy()
@@ -20,7 +20,7 @@ describe('ConfirmPrompt', () => {
 
   it('when declined, selects No', async () => {
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <ConfirmPrompt crowConfigPath=".crow/config.json" confirmation={false} />,
+      <ConfirmPrompt confirmation={false} />,
       { width: 70, height: 4 },
     )
 

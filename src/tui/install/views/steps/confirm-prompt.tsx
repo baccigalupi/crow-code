@@ -2,16 +2,13 @@
 import { confirmPromptViewModel } from './confirm-prompt-view-model.ts'
 import type { StepValues } from '../../types.ts'
 
-type ConfirmPromptProps = Pick<StepValues, 'crowConfigPath' | 'confirmation'>
+type ConfirmPromptProps = Pick<StepValues, 'confirmation'>
 
-export const ConfirmPrompt = ({
-  crowConfigPath,
-  confirmation,
-}: ConfirmPromptProps) => {
+export const ConfirmPrompt = ({ confirmation }: ConfirmPromptProps) => {
   const { options, selectedIndex } = confirmPromptViewModel({ confirmation })
   return (
     <box paddingX={1} flexDirection="column">
-      <text>Write config to {crowConfigPath}?</text>
+      <text>Complete setup?</text>
       <select
         focused
         options={options}

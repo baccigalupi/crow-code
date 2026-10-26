@@ -1,12 +1,45 @@
 /** @jsxImportSource @opentui/react */
-import type { StepValues } from '../../types.ts'
+import { TextAttributes } from '@opentui/core'
+import { theme } from '../../../theme.ts'
+import type { SetupProgressProps, SetupProgressRow } from '../../types.ts'
+import { setupProgressViewModel } from './setup-progress-view-model.ts'
 
-type SetupProgressProps = Pick<StepValues, 'crowConfigPath'>
+const DoneRow = ({ row }: { readonly row: SetupProgressRow }) => {
+  if (!row.done) return null
 
-export const SetupProgress = ({ crowConfigPath }: SetupProgressProps) => {
   return (
-    <box paddingX={1}>
-      <text>Writing config to {crowConfigPath}</text>
+    <text>
+      <span fg={theme.setupProgress.completeColor}>{row.indicator}</span>
+      <span attributes={TextAttributes.DIM}> {row.label}</span>
+    </text>
+  )
+}
+
+const PendingRow = ({ row }: { readonly row: SetupProgressRow }) => {
+  if (row.done) return null
+
+  return (
+    <text>
+      {row.indicator} {row.label}
+    </text>
+  )
+}
+
+const Row = ({ row }: { readonly row: SetupProgressRow }) => (
+  <>
+    <DoneRow row={row} />
+    <PendingRow row={row} />
+  </>
+)
+
+const Rows = ({ rows }: { readonly rows: readonly SetupProgressRow[] }) =>
+  rows.map((row) => <Row key={row.id} row={row} />)
+
+export const SetupProgress = (props: SetupProgressProps) => {
+  const rows = setupProgressViewModel(props)
+  return (
+    <box flexDirection="column" paddingX={1}>
+      <Rows rows={rows} />
     </box>
   )
 }

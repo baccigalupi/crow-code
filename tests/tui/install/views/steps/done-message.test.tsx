@@ -5,19 +5,30 @@ import { testRender } from '@opentui/react/test-utils'
 import { DoneMessage } from '../../../../../src/tui/install/views/steps/done-message.tsx'
 
 describe('DoneMessage', () => {
-  it('when rendered, names the written config and dims the exit hint', async () => {
+  it('when rendered, keeps the finished tasks and dims the exit hint', async () => {
+    const setupTasks = [
+      {
+        id: 'LocalConfigTask',
+        label: 'Writing config to .crow/config.json',
+        done: true,
+      },
+      { id: 'GlobalDirectoryTask', label: 'Creating ~/.crow', done: true },
+    ]
     const { renderer, renderOnce, captureCharFrame, captureSpans } =
-      await testRender(<DoneMessage crowConfigPath=".crow/config.json" />, {
+      await testRender(<DoneMessage setupTasks={setupTasks} />, {
         width: 40,
-        height: 2,
+        height: 4,
       })
 
     await renderOnce()
 
-    expect(captureCharFrame()).toContain('Wrote config to .crow/config.json')
-    expect(captureCharFrame()).toContain('press any key to exit')
-    const { spans } = captureSpans().lines[1]
-    expect(spans[1].text).toBe('press any key to exit')
+    expect(captureCharFrame()).toContain(
+      '✓ Writing config to .crow/config.json',
+    )
+    expect(captureCharFrame()).toContain('✓ Creating ~/.crow')
+    expect(captureCharFrame()).not.toContain('Wrote config')
+    const { spans } = captureSpans().lines[2]
+    expect(spans[1].text).toBe('Done! Press any key to exit')
     expect(spans[1].attributes).toBe(TextAttributes.DIM)
     renderer.destroy()
   })

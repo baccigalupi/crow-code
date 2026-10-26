@@ -1,6 +1,6 @@
 /** @jsxImportSource @opentui/react */
 import { configViewModel } from './config-view-model.ts'
-import { configPanel } from '../../../themes/config-panel.ts'
+import { theme } from '../../../theme.ts'
 import type { ConfigPanelProps } from '../../types.ts'
 
 const Config = (configPanelProps: ConfigPanelProps) => {
@@ -12,7 +12,7 @@ const Config = (configPanelProps: ConfigPanelProps) => {
       <box
         flexDirection="column"
         alignSelf="flex-start"
-        backgroundColor={configPanel.background}
+        backgroundColor={theme.configPanel.background}
         paddingX={2}
         paddingY={1}
         marginTop={1}
@@ -20,8 +20,8 @@ const Config = (configPanelProps: ConfigPanelProps) => {
         <text>
           {before}
           <span
-            fg={configPanel.highlightTextColor}
-            bg={configPanel.highlightBackground}
+            fg={theme.configPanel.highlightTextColor}
+            bg={theme.configPanel.highlightBackground}
           >
             {highlighted}
           </span>

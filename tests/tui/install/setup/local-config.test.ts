@@ -1,15 +1,26 @@
-import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { LocalConfigTask } from '../../../../src/tui/install/setup/local-config.ts'
-import { defaultFilesystem } from '../../../../src/application-data/filesystem.ts'
 import { emptyText, insertText } from '../../../../src/tui/input-text.ts'
 import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
 import { buildInstallStore } from '../../../support/install-store.ts'
+import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('LocalConfigTask', () => {
   beforeEach(() => clearDirectory(join(fixturesDirectory, 'write-crow-config')))
   afterEach(() => clearDirectory(join(fixturesDirectory, 'write-crow-config')))
+
+  it('when labelled, names the config path being written', () => {
+    const installData = buildInstallStore()
+
+    const label = new LocalConfigTask({
+      applicationData: mockApplicationData(),
+      operationArguments: { installData },
+    }).label()
+
+    expect(label).toBe('Writing config to .crow/config.json')
+  })
 
   it('when run, saves the json to the repo config path', async () => {
     const installData = buildInstallStore()
@@ -18,9 +29,9 @@ describe('LocalConfigTask', () => {
       join(fixturesDirectory, 'write-crow-config', 'crow'),
     )
 
-    await new LocalConfigTask({
-      installData,
-      filesystem: defaultFilesystem(),
+    const task = await new LocalConfigTask({
+      applicationData: mockApplicationData(),
+      operationArguments: { installData },
     }).run()
 
     const written = JSON.parse(
@@ -29,8 +40,27 @@ describe('LocalConfigTask', () => {
         'utf8',
       ),
     )
+    expect(task.success()).toBe(true)
     expect(written.crowGlobalDirectory).toBe('~/.crow')
     expect(written.envFile).toBe('~/.crow/.env')
+  })
+
+  it('when the config cannot be written, fails naming the config path', async () => {
+    const installData = buildInstallStore()
+    const applicationData = mockApplicationData()
+    spyOn(applicationData.filesystem, 'mkdirWithParents').mockRejectedValue(
+      new Error('permission denied'),
+    )
+
+    const task = await new LocalConfigTask({
+      applicationData,
+      operationArguments: { installData },
+    }).run()
+
+    expect(task.success()).toBe(false)
+    expect(task.reason).toBe(
+      'could not write .crow/config.json: permission denied',
+    )
   })
 
   it('when additional read directories are typed, writes them to the config', async () => {
@@ -42,8 +72,8 @@ describe('LocalConfigTask', () => {
     installData.additionalRead.value = insertText(emptyText(), '/docs')
 
     await new LocalConfigTask({
-      installData,
-      filesystem: defaultFilesystem(),
+      applicationData: mockApplicationData(),
+      operationArguments: { installData },
     }).run()
 
     const written = JSON.parse(
@@ -64,8 +94,8 @@ describe('LocalConfigTask', () => {
     installData.additionalWrite.value = insertText(emptyText(), '/work')
 
     await new LocalConfigTask({
-      installData,
-      filesystem: defaultFilesystem(),
+      applicationData: mockApplicationData(),
+      operationArguments: { installData },
     }).run()
 
     const written = JSON.parse(
@@ -86,8 +116,8 @@ describe('LocalConfigTask', () => {
     installData.ignore.value = insertText(emptyText(), '.env')
 
     await new LocalConfigTask({
-      installData,
-      filesystem: defaultFilesystem(),
+      applicationData: mockApplicationData(),
+      operationArguments: { installData },
     }).run()
 
     const written = JSON.parse(

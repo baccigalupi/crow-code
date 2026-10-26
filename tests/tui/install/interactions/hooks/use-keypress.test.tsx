@@ -127,10 +127,10 @@ describe('useKeypress', () => {
       width: 20,
       height: 3,
       onDestroy,
+      kittyKeyboard: true,
     })
 
     mockInput.pressEscape()
-    await new Promise((resolve) => setTimeout(resolve, 100))
 
     expect(onDestroy).not.toHaveBeenCalled()
   })

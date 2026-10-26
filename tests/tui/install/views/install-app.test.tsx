@@ -242,17 +242,28 @@ describe('InstallApp', () => {
   it('when return arrives on the confirm step with yes, moves to the completeSetup step', async () => {
     const installStore = buildInstallStore()
     installStore.step.value = 'confirm'
+    installStore.setupTasks.value = [
+      {
+        id: 'LocalConfigTask',
+        label: 'Writing config to .crow/config.json',
+        done: false,
+      },
+      { id: 'GlobalDirectoryTask', label: 'Creating ~/.crow', done: false },
+    ]
     const { renderer, renderOnce, captureCharFrame, mockInput } =
       await testRender(<InstallApp installStore={installStore} />, {
         width: 70,
-        height: 8,
+        height: 10,
       })
 
     mockInput.pressEnter()
     await renderOnce()
 
     expect(installStore.step.peek()).toBe('completeSetup')
-    expect(captureCharFrame()).toContain('Writing config to .crow/config.json')
+    expect(captureCharFrame()).toContain(
+      '› Writing config to .crow/config.json',
+    )
+    expect(captureCharFrame()).toContain('  Creating ~/.crow')
     renderer.destroy()
   })
 
@@ -306,6 +317,7 @@ describe('InstallApp', () => {
       await testRender(<InstallApp installStore={installStore} />, {
         width: 70,
         height: 40,
+        kittyKeyboard: true,
       })
 
     mockInput.pressEnter()
@@ -316,14 +328,13 @@ describe('InstallApp', () => {
     await mockInput.typeText('sk-1')
     mockInput.pressEnter()
     mockInput.pressEscape()
-    await new Promise((resolve) => setTimeout(resolve, 100))
     await renderOnce()
 
     const frame = captureCharFrame()
     expect(installStore.step.peek()).toBe('confirm')
     expect(frame).toContain('"providers": [')
     expect(frame).toContain('"name": "nous",')
-    expect(frame).toContain('Write config to .crow/config.json?')
+    expect(frame).toContain('Complete setup?')
     expect(frame).not.toContain('sk-1')
     renderer.destroy()
   })
@@ -333,11 +344,10 @@ describe('InstallApp', () => {
     const onDestroy = mock(() => {})
     const { mockInput } = await testRender(
       <InstallApp installStore={installStore} />,
-      { width: 70, height: 8, onDestroy },
+      { width: 70, height: 8, onDestroy, kittyKeyboard: true },
     )
 
     mockInput.pressEscape()
-    await new Promise((resolve) => setTimeout(resolve, 100))
 
     expect(onDestroy).not.toHaveBeenCalled()
     expect(installStore.step.peek()).toBe('repo')

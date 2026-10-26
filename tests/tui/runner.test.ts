@@ -5,36 +5,42 @@ import { mockApplicationData } from '../support/mock-application-data.ts'
 import { mockStdin, mockStdout } from '../support/mock-streams.ts'
 
 describe('createOpenTuiRunner', () => {
-  it('when exit is called, status resolves completed', async () => {
+  it('when exit is called once mounted, status resolves completed', async () => {
     const view = () => null
+    const { renderer } = await createTestRenderer({})
     const runner = createOpenTuiRunner(
       mockApplicationData(),
       { stdin: mockStdin(), stdout: mockStdout() },
       view,
-      async () => (await createTestRenderer({})).renderer,
+      () => Promise.resolve(renderer),
     )
+    spyOn(renderer, 'idle').mockImplementation(() => {
+      runner.exit()
+      return Promise.resolve()
+    })
 
-    const pending = runner.status()
-    await new Promise((resolve) => setTimeout(resolve, 0))
-    runner.exit()
+    const status = await runner.status()
 
-    expect(await pending).toBe('completed')
+    expect(status).toBe('completed')
   })
 
-  it('when interrupted, status resolves interrupted', async () => {
+  it('when interrupted once mounted, status resolves interrupted', async () => {
     const view = () => null
+    const { renderer } = await createTestRenderer({})
     const runner = createOpenTuiRunner(
       mockApplicationData(),
       { stdin: mockStdin(), stdout: mockStdout() },
       view,
-      async () => (await createTestRenderer({})).renderer,
+      () => Promise.resolve(renderer),
     )
+    spyOn(renderer, 'idle').mockImplementation(() => {
+      runner.interrupt()
+      return Promise.resolve()
+    })
 
-    const pending = runner.status()
-    await new Promise((resolve) => setTimeout(resolve, 0))
-    runner.interrupt()
+    const status = await runner.status()
 
-    expect(await pending).toBe('interrupted')
+    expect(status).toBe('interrupted')
   })
 
   it('when interrupted during startup, destroys the renderer once created', async () => {
@@ -67,7 +73,6 @@ describe('createOpenTuiRunner', () => {
     )
 
     const pending = runner.status()
-    await new Promise((resolve) => setTimeout(resolve, 0))
     add.mock.calls[0][1]()
 
     expect(await pending).toBe('interrupted')

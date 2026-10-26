@@ -4,6 +4,7 @@ import type {
   InstallProvider,
   InstallStep,
   InstallStore,
+  SetupTaskStatus,
 } from '../../src/tui/install/types.ts'
 
 export const buildInstallStore = (): InstallStore => ({
@@ -21,6 +22,7 @@ export const buildInstallStore = (): InstallStore => ({
   providerCredentials: signal(emptyText()),
   providers: signal<readonly InstallProvider[]>([]),
   envBuffer: signal({}),
+  setupTasks: signal<readonly SetupTaskStatus[]>([]),
   step: signal<InstallStep>('repo'),
   confirmation: signal(true),
 })

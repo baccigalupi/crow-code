@@ -22,6 +22,7 @@ describe('StepPrompts', () => {
       providerUrl: emptyText(),
       providerCredentials: emptyText(),
       providers: [],
+      setupTasks: [],
       step: 'repo' as const,
       crowConfigPath: '.crow/config.json',
       confirmation: true,

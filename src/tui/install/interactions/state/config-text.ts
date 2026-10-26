@@ -20,6 +20,7 @@ export const initialInstallState = (): InstallState => ({
   providerCredentials: emptyText(),
   providers: [],
   envBuffer: {},
+  setupTasks: [],
   step: 'repo',
   confirmation: true,
 })
