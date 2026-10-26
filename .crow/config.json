@@ -4,6 +4,29 @@
   "permissions": {
     "ignore": [],
     "additionalRead": [],
-    "additionalWrite": []
-  }
+    "additionalWrite": [],
+    "escalateRead": [],
+    "escalateWrite": [
+      "./dev",
+      "./agent"
+    ],
+    "allowedLocalScripts": [
+      "./dev/*",
+      "./agent/*"
+    ]
+  },
+  "providers": [
+    {
+      "name": "ollama",
+      "baseUrl": "http://pile-driver.local:11434"
+    },
+    {
+      "name": "openrouter",
+      "baseUrl": "https://openrouter.ai/api"
+    },
+    {
+      "name": "nous",
+      "baseUrl": "https://inference-api.nousresearch.com/v1"
+    }
+  ]
 }
