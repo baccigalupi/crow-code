@@ -4,17 +4,33 @@ import { setupProgressViewModel } from '../../../../../src/tui/install/views/ste
 describe('setupProgressViewModel', () => {
   it('when some tasks are done, marks done, active and pending rows', () => {
     const setupTasks = [
-      { id: 'a', label: 'A', done: true },
-      { id: 'b', label: 'B', done: false },
-      { id: 'c', label: 'C', done: false },
+      { id: 'a', label: 'A', done: true, error: '' },
+      { id: 'b', label: 'B', done: false, error: '' },
+      { id: 'c', label: 'C', done: false, error: '' },
     ]
 
     const rows = setupProgressViewModel({ setupTasks })
 
     expect(rows).toEqual([
-      { id: 'a', label: 'A', indicator: '✓', done: true },
-      { id: 'b', label: 'B', indicator: '›', done: false },
-      { id: 'c', label: 'C', indicator: ' ', done: false },
+      { id: 'a', label: 'A', indicator: '✓', done: true, error: '' },
+      { id: 'b', label: 'B', indicator: '›', done: false, error: '' },
+      { id: 'c', label: 'C', indicator: ' ', done: false, error: '' },
+    ])
+  })
+
+  it('when a task failed, marks it failed and no row active', () => {
+    const setupTasks = [
+      { id: 'a', label: 'A', done: true, error: '' },
+      { id: 'b', label: 'B', done: true, error: 'boom' },
+      { id: 'c', label: 'C', done: false, error: '' },
+    ]
+
+    const rows = setupProgressViewModel({ setupTasks })
+
+    expect(rows).toEqual([
+      { id: 'a', label: 'A', indicator: '✓', done: true, error: '' },
+      { id: 'b', label: 'B', indicator: '✗', done: true, error: 'boom' },
+      { id: 'c', label: 'C', indicator: ' ', done: false, error: '' },
     ])
   })
 

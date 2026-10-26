@@ -1,34 +1,34 @@
 import { describe, expect, it } from 'bun:test'
 import { ProviderUrlStep } from '../../../../src/tui/install/steps/provider-url.ts'
-import { buildInstallStore } from '../../../support/install-store.ts'
+import { buildUserInputStore } from '../../../support/user-input-store.ts'
 
 describe('ProviderUrlStep', () => {
   it('when asked for its state, returns the provider url input', () => {
-    const installStore = buildInstallStore()
-    installStore.step.value = 'providerUrl'
+    const userInputStore = buildUserInputStore()
+    userInputStore.step.value = 'providerUrl'
 
-    const step = new ProviderUrlStep(installStore)
+    const step = new ProviderUrlStep(userInputStore)
 
     expect(step.name).toBe('providerUrl')
     expect(step.nextStep).toBe('providerCredentials')
-    expect(step.state()).toBe(installStore.providerUrl)
+    expect(step.state()).toBe(userInputStore.providerUrl)
   })
 
   it('when focused forward, moves to the credentials step', () => {
-    const installStore = buildInstallStore()
-    installStore.step.value = 'providerUrl'
+    const userInputStore = buildUserInputStore()
+    userInputStore.step.value = 'providerUrl'
 
-    new ProviderUrlStep(installStore).focus(1)
+    new ProviderUrlStep(userInputStore).focus(1)
 
-    expect(installStore.step.peek()).toBe('providerCredentials')
+    expect(userInputStore.step.peek()).toBe('providerCredentials')
   })
 
   it('when cancelled, leaves the provider loop for confirm', () => {
-    const installStore = buildInstallStore()
-    installStore.step.value = 'providerUrl'
+    const userInputStore = buildUserInputStore()
+    userInputStore.step.value = 'providerUrl'
 
-    new ProviderUrlStep(installStore).cancel()
+    new ProviderUrlStep(userInputStore).cancel()
 
-    expect(installStore.step.peek()).toBe('confirm')
+    expect(userInputStore.step.peek()).toBe('confirm')
   })
 })

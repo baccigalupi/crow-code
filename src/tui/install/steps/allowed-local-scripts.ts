@@ -1,17 +1,17 @@
-import type { InstallStore } from '../types.ts'
+import type { UserInputStore } from '../types.ts'
 import { AllowedLocalScriptsPrompt } from '../views/steps/allowed-local-scripts-prompt.tsx'
 
 export class AllowedLocalScriptsStep {
-  private installStore: InstallStore
+  private userInputStore: UserInputStore
   readonly name = 'allowedLocalScripts'
   readonly nextStep = 'providerName'
   readonly View = AllowedLocalScriptsPrompt
 
-  constructor(installStore: InstallStore) {
-    this.installStore = installStore
+  constructor(userInputStore: UserInputStore) {
+    this.userInputStore = userInputStore
   }
 
   state() {
-    return this.installStore.allowedLocalScripts
+    return this.userInputStore.allowedLocalScripts
   }
 }

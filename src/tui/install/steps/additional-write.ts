@@ -1,17 +1,17 @@
-import type { InstallStore } from '../types.ts'
+import type { UserInputStore } from '../types.ts'
 import { AdditionalWritePrompt } from '../views/steps/additional-write-prompt.tsx'
 
 export class AdditionalWriteStep {
-  private installStore: InstallStore
+  private userInputStore: UserInputStore
   readonly name = 'additionalWrite'
   readonly nextStep = 'escalateRead'
   readonly View = AdditionalWritePrompt
 
-  constructor(installStore: InstallStore) {
-    this.installStore = installStore
+  constructor(userInputStore: UserInputStore) {
+    this.userInputStore = userInputStore
   }
 
   state() {
-    return this.installStore.additionalWrite
+    return this.userInputStore.additionalWrite
   }
 }

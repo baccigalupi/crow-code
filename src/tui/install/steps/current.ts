@@ -1,4 +1,4 @@
-import type { InstallStore } from '../types.ts'
+import type { UserInputStore } from '../types.ts'
 import { RepoStep } from './repo.ts'
 import { CrowGlobalDirectoryStep } from './crow-global-directory.ts'
 import { EnvFileStep } from './env-file.ts'
@@ -35,28 +35,28 @@ const stepClasses = [
 ]
 
 export class CurrentStep {
-  private installStore: InstallStore
+  private userInputStore: UserInputStore
 
-  constructor(installStore: InstallStore) {
-    this.installStore = installStore
+  constructor(userInputStore: UserInputStore) {
+    this.userInputStore = userInputStore
   }
 
   step() {
-    return this.installStore.step.peek()
+    return this.userInputStore.step.peek()
   }
 
   current() {
     return (
       this.all().find((step) => step.name === this.step()) ||
-      new DefaultStep(this.installStore)
+      new DefaultStep(this.userInputStore)
     )
   }
 
   all() {
-    return stepClasses.map((Step) => new Step(this.installStore))
+    return stepClasses.map((Step) => new Step(this.userInputStore))
   }
 }
 
-export const currentStep = (installStore: InstallStore) => {
-  return new CurrentStep(installStore).current()
+export const currentStep = (userInputStore: UserInputStore) => {
+  return new CurrentStep(userInputStore).current()
 }

@@ -11,8 +11,14 @@ describe('DoneMessage', () => {
         id: 'LocalConfigTask',
         label: 'Writing config to .crow/config.json',
         done: true,
+        error: '',
       },
-      { id: 'GlobalDirectoryTask', label: 'Creating ~/.crow', done: true },
+      {
+        id: 'GlobalDirectoryTask',
+        label: 'Creating ~/.crow',
+        done: true,
+        error: '',
+      },
     ]
     const { renderer, renderOnce, captureCharFrame, captureSpans } =
       await testRender(<DoneMessage setupTasks={setupTasks} />, {

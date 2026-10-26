@@ -1,17 +1,17 @@
-import type { InstallStore } from '../types.ts'
+import type { UserInputStore } from '../types.ts'
 import { DoneMessage } from '../views/steps/done-message.tsx'
 
 export class DoneStep {
-  private installStore: InstallStore
+  private userInputStore: UserInputStore
   readonly name = 'done'
   readonly nextStep = 'done'
   readonly View = DoneMessage
 
-  constructor(installStore: InstallStore) {
-    this.installStore = installStore
+  constructor(userInputStore: UserInputStore) {
+    this.userInputStore = userInputStore
   }
 
   state() {
-    return this.installStore.envFile
+    return this.userInputStore.envFile
   }
 }

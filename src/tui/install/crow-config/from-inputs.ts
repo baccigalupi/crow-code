@@ -1,20 +1,20 @@
 import { join } from 'node:path'
-import { buildPermissions } from './permissions.ts'
-import { buildProviders } from './providers.ts'
+import { buildPermissions } from './from-inputs/permissions.ts'
+import { buildProviders } from './from-inputs/providers.ts'
 import {
   defaultCrowGlobalDirectory,
   defaultCrowRepoDirectory,
 } from '../interactions/state/config-text.ts'
 import type { InputText } from '../../types.ts'
 import type {
-  BuildCrowConfigArguments,
+  CrowConfigInputs,
   PermissionInputs,
   ProviderInputs,
 } from '../types.ts'
 
 // READ side: builds the config the installer would write from the typed
 // inputs. Pure; touches no files. Writing lives in write.ts.
-export class CrowConfigBuilder {
+export class CrowConfigFromInputs {
   private globalDirectoryInput: InputText
   private repoDirectoryInput: InputText
   private envFileInput: InputText
@@ -25,33 +25,36 @@ export class CrowConfigBuilder {
     repoDirectory,
     envFile,
     ...sectionInputs
-  }: BuildCrowConfigArguments) {
+  }: CrowConfigInputs) {
     this.globalDirectoryInput = globalDirectory
     this.repoDirectoryInput = repoDirectory
     this.envFileInput = envFile
     this.sectionInputs = sectionInputs
   }
 
-  all() {
-    return {
-      crowRepoDirectory: this.crowRepoDirectory(),
-      crowGlobalDirectory: this.crowGlobalDirectory(),
-      crowConfigPath: this.crowConfigPath(),
-      config: this.crowConfig(),
-      crowConfigJson: this.crowConfigJson(),
-    }
-  }
-
-  private crowConfigPath() {
+  crowConfigPath() {
     return `${this.crowRepoDirectory()}/config.json`
   }
 
-  private crowConfigJson() {
+  crowConfigJson() {
     return JSON.stringify(this.crowConfig(), null, 2)
   }
 
-  private crowGlobalDirectory() {
+  crowGlobalDirectory() {
     return this.directory(this.globalDirectoryInput, defaultCrowGlobalDirectory)
+  }
+
+  crowRepoDirectory() {
+    return this.directory(this.repoDirectoryInput, defaultCrowRepoDirectory)
+  }
+
+  crowConfig() {
+    return {
+      crowGlobalDirectory: this.crowGlobalDirectory(),
+      envFile: this.envFile(),
+      permissions: this.permissions(),
+      providers: this.providers(),
+    }
   }
 
   private envFile() {
@@ -61,22 +64,9 @@ export class CrowConfigBuilder {
     )
   }
 
-  private crowRepoDirectory() {
-    return this.directory(this.repoDirectoryInput, defaultCrowRepoDirectory)
-  }
-
   private directory(input: InputText, defaultValue: string) {
     if (input.text.length === 0) return defaultValue
     return input.text
-  }
-
-  private crowConfig() {
-    return {
-      crowGlobalDirectory: this.crowGlobalDirectory(),
-      envFile: this.envFile(),
-      permissions: this.permissions(),
-      providers: this.providers(),
-    }
   }
 
   private permissions() {
@@ -88,8 +78,6 @@ export class CrowConfigBuilder {
   }
 }
 
-export const buildCrowConfig = (
-  buildCrowConfigArguments: BuildCrowConfigArguments,
-) => {
-  return new CrowConfigBuilder(buildCrowConfigArguments)
+export const crowConfigFromInputs = (crowConfigInputs: CrowConfigInputs) => {
+  return new CrowConfigFromInputs(crowConfigInputs)
 }

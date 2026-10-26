@@ -1,6 +1,6 @@
-import { defaultCrowConfig } from '../../../domain/config.ts'
-import type { InputText } from '../../types.ts'
-import type { PermissionInputs } from '../types.ts'
+import { defaultCrowConfig } from '../../../../domain/config.ts'
+import type { InputText } from '../../../types.ts'
+import type { PermissionInputs } from '../../types.ts'
 
 const entries = (text: string) => {
   return text

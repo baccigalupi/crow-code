@@ -1,5 +1,5 @@
-import { buildCrowConfig } from '../../crow-config/build.ts'
-import { initialInstallState } from '../../interactions/state/config-text.ts'
+import { crowConfigFromInputs } from '../../crow-config/from-inputs.ts'
+import { initialUserInputState } from '../../interactions/state/config-text.ts'
 import type { InputText } from '../../../types.ts'
 
 type EnvPromptViewModelArguments = {
@@ -9,9 +9,9 @@ type EnvPromptViewModelArguments = {
 export const envPromptViewModel = ({
   globalDirectory,
 }: EnvPromptViewModelArguments) => {
-  const { config } = buildCrowConfig({
-    ...initialInstallState(),
+  const builder = crowConfigFromInputs({
+    ...initialUserInputState(),
     globalDirectory,
-  }).all()
-  return { defaultValue: config.envFile }
+  })
+  return { defaultValue: builder.crowConfig().envFile }
 }

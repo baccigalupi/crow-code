@@ -10,5 +10,6 @@ export const theme = {
   },
   setupProgress: {
     completeColor: '#4caf50',
+    failedColor: '#e05252',
   },
 }

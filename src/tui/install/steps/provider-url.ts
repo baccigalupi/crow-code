@@ -1,26 +1,26 @@
-import type { InstallStore } from '../types.ts'
+import type { UserInputStore } from '../types.ts'
 import { ProviderPrompt } from '../views/steps/provider-prompt.tsx'
 import { providerDraft } from './provider-draft.ts'
 
 export class ProviderUrlStep {
-  private installStore: InstallStore
+  private userInputStore: UserInputStore
   readonly name = 'providerUrl'
   readonly nextStep = 'providerCredentials'
   readonly View = ProviderPrompt
 
-  constructor(installStore: InstallStore) {
-    this.installStore = installStore
+  constructor(userInputStore: UserInputStore) {
+    this.userInputStore = userInputStore
   }
 
   state() {
-    return this.installStore.providerUrl
+    return this.userInputStore.providerUrl
   }
 
   focus(offset: number) {
-    providerDraft(this.installStore).focus(offset)
+    providerDraft(this.userInputStore).focus(offset)
   }
 
   cancel() {
-    providerDraft(this.installStore).cancel()
+    providerDraft(this.userInputStore).cancel()
   }
 }

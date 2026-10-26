@@ -1,13 +1,15 @@
 import type { SetupTaskArguments } from '../types.ts'
 import { Operation } from '../../../operation.ts'
 import { expandHome } from '../../../application-data/allowed-paths/expand-home.ts'
-import { buildCrowConfig } from '../crow-config/build.ts'
-import { readInstallState } from '../interactions/state/read-install-state.ts'
+import { crowConfigFromInputs } from '../crow-config/from-inputs.ts'
+import { GlobalDirectoryTaskState } from '../interactions/state/global-directory-state.ts'
+import { readUserInputState } from '../interactions/state/read-user-input-state.ts'
 
 // Setup task: creates the global crow directory that holds the database and
 // the .env file.
 export class GlobalDirectoryTask extends Operation<SetupTaskArguments> {
   protected override logPrefix = 'Global directory: '
+  state = new GlobalDirectoryTaskState(this)
 
   label() {
     return `Creating ${this.directory()}`
@@ -19,6 +21,7 @@ export class GlobalDirectoryTask extends Operation<SetupTaskArguments> {
     } catch (error) {
       this.fail(this.failure(error as Error))
     }
+    this.state.complete()
     return this
   }
 
@@ -33,8 +36,8 @@ export class GlobalDirectoryTask extends Operation<SetupTaskArguments> {
   }
 
   private directory() {
-    const { installData } = this.operationArguments
-    return buildCrowConfig(readInstallState(installData)).all()
-      .crowGlobalDirectory
+    const { userInputStore } = this.operationArguments
+    const inputs = readUserInputState(userInputStore)
+    return crowConfigFromInputs(inputs).crowGlobalDirectory()
   }
 }

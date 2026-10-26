@@ -1,11 +1,11 @@
 import { signal } from '@preact/signals-core'
 import { emptyText } from '../../../input-text.ts'
-import type { InstallState, InstallStore } from '../../types.ts'
+import type { UserInputData, UserInputStore } from '../../types.ts'
 
 export const defaultCrowRepoDirectory = '.crow'
 export const defaultCrowGlobalDirectory = '~/.crow'
 
-export const initialInstallState = (): InstallState => ({
+export const initialUserInputState = (): UserInputData => ({
   repoDirectory: emptyText(),
   globalDirectory: emptyText(),
   envFile: emptyText(),
@@ -20,17 +20,16 @@ export const initialInstallState = (): InstallState => ({
   providerCredentials: emptyText(),
   providers: [],
   envBuffer: {},
-  setupTasks: [],
   step: 'repo',
   confirmation: true,
 })
 
-const signals = (state: InstallState) => {
+const signals = (state: UserInputData) => {
   const entries = Object.entries(state).map(([key, value]) => [
     key,
     signal(value),
   ])
-  return Object.fromEntries(entries) as InstallStore
+  return Object.fromEntries(entries) as UserInputStore
 }
 
-export const installStore = signals(initialInstallState())
+export const userInputStore = signals(initialUserInputState())

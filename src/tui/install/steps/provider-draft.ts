@@ -1,7 +1,6 @@
 import { batch } from '@preact/signals-core'
 import { emptyText } from '../../input-text.ts'
-import { providerEnvVar } from '../crow-config/providers.ts'
-import type { InstallStep, InstallStore } from '../types.ts'
+import type { InstallStep, UserInputStore } from '../types.ts'
 
 const fieldSteps: readonly InstallStep[] = [
   'providerName',
@@ -12,10 +11,10 @@ const fieldSteps: readonly InstallStep[] = [
 // The provider being typed across the name/url/credentials steps. Commit
 // keeps it and starts another; cancel drops it and leaves the loop.
 export class ProviderDraft {
-  private installStore: InstallStore
+  private userInputStore: UserInputStore
 
-  constructor(installStore: InstallStore) {
-    this.installStore = installStore
+  constructor(userInputStore: UserInputStore) {
+    this.userInputStore = userInputStore
   }
 
   commit() {
@@ -23,25 +22,25 @@ export class ProviderDraft {
       this.saveProvider()
       this.saveCredential()
       this.clear()
-      this.installStore.step.value = 'providerName'
+      this.userInputStore.step.value = 'providerName'
     })
   }
 
   cancel() {
     batch(() => {
       this.clear()
-      this.installStore.step.value = 'confirm'
+      this.userInputStore.step.value = 'confirm'
     })
   }
 
   focus(offset: number) {
-    const { step } = this.installStore
+    const { step } = this.userInputStore
     const index = fieldSteps.indexOf(step.peek()) + offset
     step.value = fieldSteps[Math.min(Math.max(index, 0), fieldSteps.length - 1)]
   }
 
   private saveProvider() {
-    const { providers, providerName, providerUrl } = this.installStore
+    const { providers, providerName, providerUrl } = this.userInputStore
     providers.value = [
       ...providers.peek(),
       { name: providerName.peek().text, url: providerUrl.peek().text },
@@ -54,24 +53,36 @@ export class ProviderDraft {
   }
 
   private bufferCredential() {
-    const { envBuffer, providerName } = this.installStore
+    const { envBuffer } = this.userInputStore
     envBuffer.value = {
       ...envBuffer.peek(),
-      [providerEnvVar(providerName.peek().text)]: this.credential(),
+      [this.envVar()]: this.credential(),
     }
   }
 
+  // The env var holding a provider's credential is derived from its name, so
+  // config never stores it: `Open Router` -> `OPEN_ROUTER_API_KEY`.
+  private envVar() {
+    const snake = this.userInputStore.providerName
+      .peek()
+      .text.trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9]+/g, '_')
+      .replace(/^_+|_+$/g, '')
+    return `${snake}_API_KEY`
+  }
+
   private credential() {
-    return this.installStore.providerCredentials.peek().text
+    return this.userInputStore.providerCredentials.peek().text
   }
 
   private clear() {
-    this.installStore.providerName.value = emptyText()
-    this.installStore.providerUrl.value = emptyText()
-    this.installStore.providerCredentials.value = emptyText()
+    this.userInputStore.providerName.value = emptyText()
+    this.userInputStore.providerUrl.value = emptyText()
+    this.userInputStore.providerCredentials.value = emptyText()
   }
 }
 
-export const providerDraft = (installStore: InstallStore) => {
-  return new ProviderDraft(installStore)
+export const providerDraft = (userInputStore: UserInputStore) => {
+  return new ProviderDraft(userInputStore)
 }

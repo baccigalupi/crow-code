@@ -5,13 +5,29 @@ import type { SetupProgressProps, SetupProgressRow } from '../../types.ts'
 import { setupProgressViewModel } from './setup-progress-view-model.ts'
 
 const DoneRow = ({ row }: { readonly row: SetupProgressRow }) => {
-  if (!row.done) return null
+  if (!row.done || row.error) return null
 
   return (
     <text>
       <span fg={theme.setupProgress.completeColor}>{row.indicator}</span>
       <span attributes={TextAttributes.DIM}> {row.label}</span>
     </text>
+  )
+}
+
+const FailedRow = ({ row }: { readonly row: SetupProgressRow }) => {
+  if (!row.error) return null
+
+  return (
+    <>
+      <text>
+        <span fg={theme.setupProgress.failedColor}>{row.indicator}</span>
+        <span> {row.label}</span>
+      </text>
+      <box paddingLeft={2}>
+        <text attributes={TextAttributes.DIM}>{row.error}</text>
+      </box>
+    </>
   )
 }
 
@@ -28,6 +44,7 @@ const PendingRow = ({ row }: { readonly row: SetupProgressRow }) => {
 const Row = ({ row }: { readonly row: SetupProgressRow }) => (
   <>
     <DoneRow row={row} />
+    <FailedRow row={row} />
     <PendingRow row={row} />
   </>
 )

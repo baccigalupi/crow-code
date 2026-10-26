@@ -1,16 +1,16 @@
 import type { ExitApp, KeyFlags } from '../../types.ts'
-import type { InstallStore, KeypressArguments } from '../types.ts'
+import type { UserInputStore, KeypressArguments } from '../types.ts'
 import { currentStep } from '../steps/current.ts'
 import { textInput } from './text-input.ts'
 
 export class Keypress {
-  private installData: InstallStore
+  private userInputStore: UserInputStore
   private exit: ExitApp
   private input: string
   private key: KeyFlags
 
-  constructor({ installData, exit, input, key }: KeypressArguments) {
-    this.installData = installData
+  constructor({ userInputStore, exit, input, key }: KeypressArguments) {
+    this.userInputStore = userInputStore
     this.exit = exit
     this.input = input
     this.key = key
@@ -18,9 +18,9 @@ export class Keypress {
 
   handle() {
     if (this.isQuit()) this.exit()
-    else if (this.installData.step.peek() === 'done') this.exit()
+    else if (this.userInputStore.step.peek() === 'done') this.exit()
     else if (this.isCancel()) this.cancel()
-    else if (this.installData.step.peek() === 'confirm') this.confirm()
+    else if (this.userInputStore.step.peek() === 'confirm') this.confirm()
     else if (this.key.return === true) this.advance()
     else if (this.key.tab === true) this.tab()
     else this.activeEdit()
@@ -28,7 +28,7 @@ export class Keypress {
 
   // Tab walks the fields of a grouped step; shift+tab walks back.
   private tab() {
-    const step = currentStep(this.installData)
+    const step = currentStep(this.userInputStore)
     if ('focus' in step) step.focus(this.tabDirection())
   }
 
@@ -38,20 +38,20 @@ export class Keypress {
   }
 
   private advance() {
-    const step = currentStep(this.installData)
+    const step = currentStep(this.userInputStore)
     if ('advance' in step) step.advance()
-    else this.installData.step.value = step.nextStep
+    else this.userInputStore.step.value = step.nextStep
   }
 
   // Escape opts out of the current prompt; steps without cancel ignore it.
   private cancel() {
-    const step = currentStep(this.installData)
+    const step = currentStep(this.userInputStore)
     if ('cancel' in step) step.cancel()
   }
 
   private confirm() {
-    if (this.choosesYes()) this.installData.confirmation.value = true
-    else if (this.choosesNo()) this.installData.confirmation.value = false
+    if (this.choosesYes()) this.userInputStore.confirmation.value = true
+    else if (this.choosesNo()) this.userInputStore.confirmation.value = false
     else if (this.key.return === true) this.decide()
   }
 
@@ -66,12 +66,12 @@ export class Keypress {
   }
 
   private decide() {
-    if (this.installData.confirmation.peek() === true) this.completeSetup()
+    if (this.userInputStore.confirmation.peek() === true) this.completeSetup()
     else this.exit()
   }
 
   private completeSetup() {
-    this.installData.step.value = 'completeSetup'
+    this.userInputStore.step.value = 'completeSetup'
   }
 
   private activeEdit() {
@@ -83,7 +83,7 @@ export class Keypress {
   }
 
   private activeText() {
-    return currentStep(this.installData).state()
+    return currentStep(this.userInputStore).state()
   }
 
   private isQuit() {

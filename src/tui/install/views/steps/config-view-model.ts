@@ -1,4 +1,4 @@
-import { buildCrowConfig } from '../../crow-config/build.ts'
+import { crowConfigFromInputs } from '../../crow-config/from-inputs.ts'
 import { highlightJson } from '../../crow-config/highlight.ts'
 import type { ConfigPanelProps, InstallStep } from '../../types.ts'
 
@@ -19,12 +19,11 @@ export class ConfigViewModel {
   }
 
   view() {
-    const { crowConfigPath, crowConfigJson } = this.built()
-    return { crowConfigPath, ...this.highlightedJson(crowConfigJson) }
-  }
-
-  private built() {
-    return buildCrowConfig(this.configPanelProps).all()
+    const builder = crowConfigFromInputs(this.configPanelProps)
+    return {
+      crowConfigPath: builder.crowConfigPath(),
+      ...this.highlightedJson(builder.crowConfigJson()),
+    }
   }
 
   private highlightedJson(json: string) {

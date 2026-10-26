@@ -1,16 +1,16 @@
 /** @jsxImportSource @opentui/react */
 import { TextAttributes } from '@opentui/core'
-import type { StepValues } from '../../types.ts'
+import type { SetupProgressProps } from '../../types.ts'
+import { doneMessageViewModel } from './done-message-view-model.ts'
 import { SetupProgress } from './setup-progress.tsx'
 
-type DoneMessageProps = Pick<StepValues, 'setupTasks'>
-
-export const DoneMessage = ({ setupTasks }: DoneMessageProps) => {
+export const DoneMessage = ({ setupTasks }: SetupProgressProps) => {
+  const { exitMessage } = doneMessageViewModel({ setupTasks })
   return (
     <box flexDirection="column">
       <SetupProgress setupTasks={setupTasks} />
       <box paddingX={1}>
-        <text attributes={TextAttributes.DIM}>Done! Press any key to exit</text>
+        <text attributes={TextAttributes.DIM}>{exitMessage}</text>
       </box>
     </box>
   )

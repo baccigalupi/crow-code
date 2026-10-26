@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
-import { buildPermissions } from '../../../../src/tui/install/crow-config/permissions.ts'
-import { emptyText, insertText } from '../../../../src/tui/input-text.ts'
+import { buildPermissions } from '../../../../../src/tui/install/crow-config/from-inputs/permissions.ts'
+import { emptyText, insertText } from '../../../../../src/tui/input-text.ts'
 
 describe('buildPermissions', () => {
   it('when the inputs are empty, escalate directories default', () => {

@@ -1,17 +1,17 @@
-import type { InstallStore } from '../types.ts'
+import type { UserInputStore } from '../types.ts'
 import { EscalateReadPrompt } from '../views/steps/escalate-read-prompt.tsx'
 
 export class EscalateReadStep {
-  private installStore: InstallStore
+  private userInputStore: UserInputStore
   readonly name = 'escalateRead'
   readonly nextStep = 'escalateWrite'
   readonly View = EscalateReadPrompt
 
-  constructor(installStore: InstallStore) {
-    this.installStore = installStore
+  constructor(userInputStore: UserInputStore) {
+    this.userInputStore = userInputStore
   }
 
   state() {
-    return this.installStore.escalateRead
+    return this.userInputStore.escalateRead
   }
 }

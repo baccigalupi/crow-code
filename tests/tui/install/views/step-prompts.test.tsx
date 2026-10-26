@@ -3,11 +3,11 @@ import { describe, expect, it } from 'bun:test'
 import { testRender } from '@opentui/react/test-utils'
 import { StepPrompts } from '../../../../src/tui/install/views/step-prompts.tsx'
 import { emptyText } from '../../../../src/tui/input-text.ts'
-import { buildInstallStore } from '../../../support/install-store.ts'
+import { buildUserInputStore } from '../../../support/user-input-store.ts'
 
 describe('StepPrompts', () => {
   it('when the step is repo, renders the repo question on the bottom row', async () => {
-    const installStore = buildInstallStore()
+    const userInputStore = buildUserInputStore()
     const values = {
       repoDirectory: emptyText(),
       globalDirectory: emptyText(),
@@ -28,7 +28,7 @@ describe('StepPrompts', () => {
       confirmation: true,
     }
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <StepPrompts installStore={installStore} values={values} />,
+      <StepPrompts userInputStore={userInputStore} values={values} />,
       { width: 70, height: 6 },
     )
 

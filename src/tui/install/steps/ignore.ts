@@ -1,17 +1,17 @@
-import type { InstallStore } from '../types.ts'
+import type { UserInputStore } from '../types.ts'
 import { IgnorePrompt } from '../views/steps/ignore-prompt.tsx'
 
 export class IgnoreStep {
-  private installStore: InstallStore
+  private userInputStore: UserInputStore
   readonly name = 'ignore'
   readonly nextStep = 'additionalRead'
   readonly View = IgnorePrompt
 
-  constructor(installStore: InstallStore) {
-    this.installStore = installStore
+  constructor(userInputStore: UserInputStore) {
+    this.userInputStore = userInputStore
   }
 
   state() {
-    return this.installStore.ignore
+    return this.userInputStore.ignore
   }
 }

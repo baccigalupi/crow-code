@@ -1,14 +1,14 @@
 /** @jsxImportSource @opentui/react */
 import { stepPromptsViewModel } from './step-prompts-view-model.ts'
-import type { InstallStore, StepValues } from '../types.ts'
+import type { UserInputStore, StepValues } from '../types.ts'
 
 type StepPromptsProps = {
-  readonly installStore: InstallStore
+  readonly userInputStore: UserInputStore
   readonly values: StepValues
 }
 
-export const StepPrompts = ({ installStore, values }: StepPromptsProps) => {
-  const { View } = stepPromptsViewModel(installStore)
+export const StepPrompts = ({ userInputStore, values }: StepPromptsProps) => {
+  const { View } = stepPromptsViewModel(userInputStore)
 
   return (
     <box
