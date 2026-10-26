@@ -127,7 +127,9 @@ export type GitOutput = {
   stat?: GitLogStat
   files?: GitLogFile[]
   changes?: GitStatusFile[]
-  entries?: GitLsFilesEntry[] | GitLsTreeEntry[]
+  entries?:
+    GitLsFilesEntry[] | GitLsTreeEntry[] | GitReflogEntry[] | GitStashEntry[]
+  worktrees?: GitWorktree[]
   path?: string
   text?: string
   values?: string[]
@@ -154,6 +156,23 @@ export type GitGrepCount = {
   revision?: string
   path: string
   count: number
+}
+
+export type GitReflogEntry = {
+  hash: string
+  selector: string
+  message: string
+}
+
+export type GitStashEntry = {
+  selector: string
+  message: string
+}
+
+export type GitWorktree = {
+  path: string
+  head: string
+  branch?: string
 }
 
 export type GitObjectKind = 'blob' | 'tree' | 'commit' | 'tag'

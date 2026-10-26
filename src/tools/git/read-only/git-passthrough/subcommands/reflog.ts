@@ -1,6 +1,7 @@
 import { gitParsedArguments } from '../cli-options/parsed-arguments.ts'
 import { GitRefusals } from '../git-subcommands/git-refusals.ts'
 import { GitSubcommand } from '../git-subcommand.ts'
+import { GitReflogParser } from './reflog/parser.ts'
 
 export class GitReflogSubcommand extends GitSubcommand {
   protected override logPrefix = 'Git reflog: '
@@ -12,6 +13,10 @@ export class GitReflogSubcommand extends GitSubcommand {
   override refusal() {
     if (this.given().length === 0) return ''
     return this.formsRefusal() || this.parsed().refusal()
+  }
+
+  protected override parse() {
+    return new GitReflogParser(this.rawResponse).parse()
   }
 
   private given() {

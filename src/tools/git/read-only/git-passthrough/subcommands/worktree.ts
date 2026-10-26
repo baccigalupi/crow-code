@@ -1,6 +1,7 @@
 import { gitParsedArguments } from '../cli-options/parsed-arguments.ts'
 import { GitRefusals } from '../git-subcommands/git-refusals.ts'
 import { GitSubcommand } from '../git-subcommand.ts'
+import { GitWorktreeParser } from './worktree/parser.ts'
 
 export class GitWorktreeSubcommand extends GitSubcommand {
   protected override logPrefix = 'Git worktree: '
@@ -13,6 +14,10 @@ export class GitWorktreeSubcommand extends GitSubcommand {
     return (
       this.formsRefusal() || this.parsed().refusal() || this.extrasRefusal()
     )
+  }
+
+  protected override parse() {
+    return new GitWorktreeParser(this.rawResponse).parse()
   }
 
   private given() {

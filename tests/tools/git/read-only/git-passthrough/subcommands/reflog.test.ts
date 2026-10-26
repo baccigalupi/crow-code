@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { GitReflogSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/reflog.ts'
 import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
+import { mockCommand } from '../../../../../support/mock-command.ts'
 
 describe('GitReflogSubcommand', () => {
   it('when given nothing, does not refuse', () => {
@@ -66,5 +67,24 @@ describe('GitReflogSubcommand', () => {
     expect(refusal).toBe(
       'flag not allowed: --expire=now; allowed flags for reflog: none',
     )
+  })
+
+  it('when git reflog runs, returns typed entries', async () => {
+    const applicationData = mockApplicationData({
+      command: mockCommand({ stdout: '7f2203f HEAD@{0}: commit: second\n' }),
+    })
+    const subcommand = new GitReflogSubcommand({
+      applicationData,
+      operationArguments: { args: [] },
+    })
+
+    await subcommand.run()
+    const result = subcommand.result()
+
+    expect(result).toEqual({
+      entries: [
+        { hash: '7f2203f', selector: 'HEAD@{0}', message: 'commit: second' },
+      ],
+    })
   })
 })

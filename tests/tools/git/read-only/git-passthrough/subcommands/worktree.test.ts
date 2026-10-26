@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { GitWorktreeSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/worktree.ts'
 import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
+import { mockCommand } from '../../../../../support/mock-command.ts'
 
 describe('GitWorktreeSubcommand', () => {
   it('when given list, does not refuse', () => {
@@ -38,5 +39,22 @@ describe('GitWorktreeSubcommand', () => {
     const refusal = subcommand.refusal()
 
     expect(refusal).toBe('argument not allowed: foo')
+  })
+
+  it('when git worktree list runs, returns typed worktrees', async () => {
+    const applicationData = mockApplicationData({
+      command: mockCommand({ stdout: '/repo  7f2203f [main]\n' }),
+    })
+    const subcommand = new GitWorktreeSubcommand({
+      applicationData,
+      operationArguments: { args: ['list'] },
+    })
+
+    await subcommand.run()
+    const result = subcommand.result()
+
+    expect(result).toEqual({
+      worktrees: [{ path: '/repo', head: '7f2203f', branch: 'main' }],
+    })
   })
 })
