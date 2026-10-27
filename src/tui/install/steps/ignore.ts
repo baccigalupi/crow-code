@@ -1,17 +1,17 @@
-import type { UserInputStore } from '../types.ts'
+import type { DataStore } from '../data-store.ts'
 import { IgnorePrompt } from '../views/steps/ignore-prompt.tsx'
 
 export class IgnoreStep {
-  private userInputStore: UserInputStore
+  private model: DataStore
   readonly name = 'ignore'
   readonly nextStep = 'additionalRead'
   readonly View = IgnorePrompt
 
-  constructor(userInputStore: UserInputStore) {
-    this.userInputStore = userInputStore
+  constructor(model: DataStore) {
+    this.model = model
   }
 
-  state() {
-    return this.userInputStore.ignore
+  field() {
+    return this.model.permissions.ignore
   }
 }

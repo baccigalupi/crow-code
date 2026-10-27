@@ -1,40 +1,39 @@
 import { describe, expect, it } from 'bun:test'
 import { CompleteSetupStep } from '../../../../src/tui/install/steps/complete-setup.ts'
 import { SetupProgress } from '../../../../src/tui/install/views/steps/setup-progress.tsx'
-import { buildUserInputStore } from '../../../support/user-input-store.ts'
+import { DataStore } from '../../../../src/tui/install/data-store.ts'
+import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('CompleteSetupStep', () => {
   it('when asked for its name, returns completeSetup', () => {
-    const userInputStore = buildUserInputStore()
+    const model = new DataStore({ applicationData: mockApplicationData() })
 
-    const step = new CompleteSetupStep(userInputStore)
+    const step = new CompleteSetupStep(model)
 
     expect(step.name).toBe('completeSetup')
   })
 
   it('when asked for the next step, stays on completeSetup', () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.step.value = 'completeSetup'
+    const model = new DataStore({ applicationData: mockApplicationData() })
 
-    const step = new CompleteSetupStep(userInputStore)
+    const step = new CompleteSetupStep(model)
 
     expect(step.nextStep).toBe('completeSetup')
   })
 
   it('when asked for its view, returns the setup progress', () => {
-    const userInputStore = buildUserInputStore()
+    const model = new DataStore({ applicationData: mockApplicationData() })
 
-    const step = new CompleteSetupStep(userInputStore)
+    const step = new CompleteSetupStep(model)
 
     expect(step.View).toBe(SetupProgress)
   })
 
-  it('when asked for its state, returns the env file input', () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.step.value = 'completeSetup'
+  it('when asked for its field, returns the env file input', () => {
+    const model = new DataStore({ applicationData: mockApplicationData() })
 
-    const state = new CompleteSetupStep(userInputStore).state()
+    const field = new CompleteSetupStep(model).field()
 
-    expect(state).toBe(userInputStore.envFile)
+    expect(field).toBe(model.directories.envFile)
   })
 })

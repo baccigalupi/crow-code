@@ -1,26 +1,25 @@
-import type { UserInputStore } from '../types.ts'
+import type { DataStore } from '../data-store.ts'
 import { ProviderPrompt } from '../views/steps/provider-prompt.tsx'
-import { providerDraft } from './provider-draft.ts'
 
 export class ProviderNameStep {
-  private userInputStore: UserInputStore
+  private model: DataStore
   readonly name = 'providerName'
   readonly nextStep = 'providerUrl'
   readonly View = ProviderPrompt
 
-  constructor(userInputStore: UserInputStore) {
-    this.userInputStore = userInputStore
+  constructor(model: DataStore) {
+    this.model = model
   }
 
-  state() {
-    return this.userInputStore.providerName
+  field() {
+    return this.model.providers.providerName
   }
 
   focus(offset: number) {
-    providerDraft(this.userInputStore).focus(offset)
+    this.model.providers.focus(offset)
   }
 
   cancel() {
-    providerDraft(this.userInputStore).cancel()
+    this.model.providers.cancel()
   }
 }

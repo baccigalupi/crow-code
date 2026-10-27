@@ -1,7 +1,10 @@
-import type { Signal } from '@preact/signals-core'
+import type { ReadonlySignal } from '@preact/signals-core'
 import type { ExitApp, InputText, KeyFlags } from '../types.ts'
-import type { CrowPermissionsConfig } from '../../types.ts'
-import type { TaskState } from './interactions/state/task-state.ts'
+import type { AsyncOperation, CrowPermissionsConfig } from '../../types.ts'
+import type { ApplicationData } from '../../application-data/application-data.ts'
+import type { DataStore } from './data-store.ts'
+import type { SetupProgressStore } from './data-stores/setup-progress-store.ts'
+import type { StepStore } from './data-stores/step-store.ts'
 
 export type InstallStep =
   | 'repo'
@@ -119,26 +122,33 @@ export type ProviderPromptProps = Pick<
 >
 
 export type InstallAppProps = {
-  readonly userInputStore?: UserInputStore
-  readonly taskStates?: TaskStates
+  readonly model: DataStore
 }
-
-export type TaskStates = readonly TaskState[]
 
 export type StatefulTask = {
   readonly reason: string
   label(): string
 }
 
-export type UserInputStore = {
-  readonly [Key in keyof UserInputData]: Signal<UserInputData[Key]>
+export type SetupTask = AsyncOperation & StatefulTask
+
+export type DataStoreArguments = {
+  readonly applicationData: ApplicationData
 }
 
 export type SetupTaskArguments = {
-  readonly userInputStore: UserInputStore
+  readonly inputs: ReadonlySignal<UserInputData>
+  readonly step: StepStore
 }
+
+export type RunAllArguments = SetupTaskArguments & {
+  readonly progress: SetupProgressStore
+}
+
+export type SetupStoreArguments = DataStoreArguments & SetupTaskArguments
+
 export type KeypressArguments = {
-  readonly userInputStore: UserInputStore
+  readonly model: DataStore
   readonly exit: ExitApp
   readonly input: string
   readonly key: KeyFlags

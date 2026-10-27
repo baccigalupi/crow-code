@@ -1,14 +1,15 @@
 import { describe, expect, it } from 'bun:test'
 import { EscalateWriteStep } from '../../../../src/tui/install/steps/escalate-write.ts'
-import { buildUserInputStore } from '../../../support/user-input-store.ts'
+import { DataStore } from '../../../../src/tui/install/data-store.ts'
+import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('EscalateWriteStep', () => {
-  it('when asked for its state, returns the escalate write input', () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.step.value = 'escalateWrite'
+  it('when asked for its field, returns the escalate write input', () => {
+    const model = new DataStore({ applicationData: mockApplicationData() })
+    model.step.goTo('escalateWrite')
 
-    const state = new EscalateWriteStep(userInputStore).state()
+    const field = new EscalateWriteStep(model).field()
 
-    expect(state).toBe(userInputStore.escalateWrite)
+    expect(field).toBe(model.permissions.escalateWrite)
   })
 })

@@ -1,33 +1,34 @@
 import { describe, expect, it } from 'bun:test'
 import { ConfirmStep } from '../../../../src/tui/install/steps/confirm.ts'
 import { ConfirmPrompt } from '../../../../src/tui/install/views/steps/confirm-prompt.tsx'
-import { buildUserInputStore } from '../../../support/user-input-store.ts'
+import { DataStore } from '../../../../src/tui/install/data-store.ts'
+import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('ConfirmStep', () => {
   it('when asked for the next step, returns completeSetup', () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.step.value = 'confirm'
+    const model = new DataStore({ applicationData: mockApplicationData() })
+    model.step.goTo('confirm')
 
-    const step = new ConfirmStep(userInputStore)
+    const step = new ConfirmStep(model)
 
     expect(step.nextStep).toBe('completeSetup')
   })
 
   it('when asked for its view, returns the confirm prompt', () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.step.value = 'confirm'
+    const model = new DataStore({ applicationData: mockApplicationData() })
+    model.step.goTo('confirm')
 
-    const step = new ConfirmStep(userInputStore)
+    const step = new ConfirmStep(model)
 
     expect(step.View).toBe(ConfirmPrompt)
   })
 
-  it('when asked for its state, returns the env file input', () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.step.value = 'confirm'
+  it('when asked for its field, returns the env file input', () => {
+    const model = new DataStore({ applicationData: mockApplicationData() })
+    model.step.goTo('confirm')
 
-    const state = new ConfirmStep(userInputStore).state()
+    const field = new ConfirmStep(model).field()
 
-    expect(state).toBe(userInputStore.envFile)
+    expect(field).toBe(model.directories.envFile)
   })
 })

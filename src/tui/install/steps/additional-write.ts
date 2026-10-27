@@ -1,17 +1,17 @@
-import type { UserInputStore } from '../types.ts'
+import type { DataStore } from '../data-store.ts'
 import { AdditionalWritePrompt } from '../views/steps/additional-write-prompt.tsx'
 
 export class AdditionalWriteStep {
-  private userInputStore: UserInputStore
+  private model: DataStore
   readonly name = 'additionalWrite'
   readonly nextStep = 'escalateRead'
   readonly View = AdditionalWritePrompt
 
-  constructor(userInputStore: UserInputStore) {
-    this.userInputStore = userInputStore
+  constructor(model: DataStore) {
+    this.model = model
   }
 
-  state() {
-    return this.userInputStore.additionalWrite
+  field() {
+    return this.model.permissions.additionalWrite
   }
 }

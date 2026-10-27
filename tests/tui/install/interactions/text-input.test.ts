@@ -1,84 +1,79 @@
 import { describe, expect, it } from 'bun:test'
-import { signal } from '@preact/signals-core'
-import {
-  TextInput,
-  textInput,
-} from '../../../../src/tui/install/interactions/text-input.ts'
-import { emptyText, insertText } from '../../../../src/tui/input-text.ts'
+import { TextInput } from '../../../../src/tui/install/interactions/text-input.ts'
+import { TextFieldStore } from '../../../../src/tui/install/data-stores/text-field-store.ts'
 
 describe('TextInput', () => {
   it('when text is inserted, appends at the cursor', () => {
-    const text = signal(emptyText())
+    const field = new TextFieldStore()
 
-    new TextInput({ text, input: 'ab', key: {} }).edit()
+    new TextInput({ field, input: 'ab', key: {} }).edit()
 
-    expect(text.peek().text).toBe('ab')
+    expect(field.text.peek().text).toBe('ab')
   })
 
   it('when backspace arrives, deletes the previous char', () => {
-    const text = signal(insertText(emptyText(), 'ab'))
+    const field = new TextFieldStore()
+    field.insert('ab')
 
-    new TextInput({ text, input: '', key: { backspace: true } }).edit()
+    new TextInput({ field, input: '', key: { backspace: true } }).edit()
 
-    expect(text.peek().text).toBe('a')
+    expect(field.text.peek().text).toBe('a')
   })
 
   it('when delete arrives, removes the char under the cursor', () => {
-    const text = signal(insertText(emptyText(), 'ab'))
+    const field = new TextFieldStore()
+    field.insert('ab')
 
-    new TextInput({ text, input: '', key: { leftArrow: true } }).edit()
-    new TextInput({ text, input: '', key: { delete: true } }).edit()
+    new TextInput({ field, input: '', key: { leftArrow: true } }).edit()
+    new TextInput({ field, input: '', key: { delete: true } }).edit()
 
-    expect(text.peek().text).toBe('a')
+    expect(field.text.peek().text).toBe('a')
   })
 
   it('when a ctrl-modified char arrives, does not insert', () => {
-    const text = signal(insertText(emptyText(), 'a'))
+    const field = new TextFieldStore()
+    field.insert('a')
 
-    new TextInput({ text, input: 'x', key: { ctrl: true } }).edit()
+    new TextInput({ field, input: 'x', key: { ctrl: true } }).edit()
 
-    expect(text.peek().text).toBe('a')
+    expect(field.text.peek().text).toBe('a')
   })
 
   it('when a meta-modified char arrives, does not insert', () => {
-    const text = signal(insertText(emptyText(), 'a'))
+    const field = new TextFieldStore()
+    field.insert('a')
 
-    new TextInput({ text, input: 'x', key: { meta: true } }).edit()
+    new TextInput({ field, input: 'x', key: { meta: true } }).edit()
 
-    expect(text.peek().text).toBe('a')
+    expect(field.text.peek().text).toBe('a')
   })
 
   it('when a key arrives with no input, nothing changes', () => {
-    const text = signal(insertText(emptyText(), 'a'))
+    const field = new TextFieldStore()
+    field.insert('a')
 
-    new TextInput({ text, input: '', key: {} }).edit()
+    new TextInput({ field, input: '', key: {} }).edit()
 
-    expect(text.peek().text).toBe('a')
+    expect(field.text.peek().text).toBe('a')
   })
 
   it('when arrows arrive, moves the cursor', () => {
-    const text = signal(insertText(emptyText(), 'ab'))
+    const field = new TextFieldStore()
+    field.insert('ab')
 
-    new TextInput({ text, input: '', key: { leftArrow: true } }).edit()
-    new TextInput({ text, input: '', key: { rightArrow: true } }).edit()
+    new TextInput({ field, input: '', key: { leftArrow: true } }).edit()
+    new TextInput({ field, input: '', key: { rightArrow: true } }).edit()
 
-    expect(text.peek().cursor).toBe(2)
+    expect(field.text.peek().cursor).toBe(2)
   })
 
   it('when home and end arrive, moves the cursor to the edges', () => {
-    const text = signal(insertText(emptyText(), 'ab'))
+    const field = new TextFieldStore()
+    field.insert('ab')
 
-    new TextInput({ text, input: '', key: { home: true } }).edit()
-    new TextInput({ text, input: '', key: { end: true } }).edit()
+    new TextInput({ field, input: '', key: { home: true } }).edit()
+    new TextInput({ field, input: '', key: { end: true } }).edit()
 
-    expect(text.peek().cursor).toBe(2)
-  })
-
-  it('when edited through textInput, inserts the input', () => {
-    const text = signal(emptyText())
-
-    textInput({ text, input: 'x', key: {} }).edit()
-
-    expect(text.peek().text).toBe('x')
+    expect(field.text.peek().cursor).toBe(2)
   })
 })

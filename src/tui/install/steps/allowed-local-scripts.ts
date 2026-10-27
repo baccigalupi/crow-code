@@ -1,17 +1,17 @@
-import type { UserInputStore } from '../types.ts'
+import type { DataStore } from '../data-store.ts'
 import { AllowedLocalScriptsPrompt } from '../views/steps/allowed-local-scripts-prompt.tsx'
 
 export class AllowedLocalScriptsStep {
-  private userInputStore: UserInputStore
+  private model: DataStore
   readonly name = 'allowedLocalScripts'
   readonly nextStep = 'providerName'
   readonly View = AllowedLocalScriptsPrompt
 
-  constructor(userInputStore: UserInputStore) {
-    this.userInputStore = userInputStore
+  constructor(model: DataStore) {
+    this.model = model
   }
 
-  state() {
-    return this.userInputStore.allowedLocalScripts
+  field() {
+    return this.model.permissions.allowedLocalScripts
   }
 }

@@ -1,16 +1,16 @@
-import type { UserInputStore } from '../types.ts'
+import type { DataStore } from '../data-store.ts'
 
 export class DefaultStep {
-  private userInputStore: UserInputStore
+  private model: DataStore
   readonly name = 'default'
   readonly nextStep = 'confirm'
   readonly View = () => null
 
-  constructor(userInputStore: UserInputStore) {
-    this.userInputStore = userInputStore
+  constructor(model: DataStore) {
+    this.model = model
   }
 
-  state() {
-    return this.userInputStore.envFile
+  field() {
+    return this.model.directories.envFile
   }
 }

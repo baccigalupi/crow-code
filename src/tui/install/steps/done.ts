@@ -1,17 +1,17 @@
-import type { UserInputStore } from '../types.ts'
+import type { DataStore } from '../data-store.ts'
 import { DoneMessage } from '../views/steps/done-message.tsx'
 
 export class DoneStep {
-  private userInputStore: UserInputStore
+  private model: DataStore
   readonly name = 'done'
   readonly nextStep = 'done'
   readonly View = DoneMessage
 
-  constructor(userInputStore: UserInputStore) {
-    this.userInputStore = userInputStore
+  constructor(model: DataStore) {
+    this.model = model
   }
 
-  state() {
-    return this.userInputStore.envFile
+  field() {
+    return this.model.directories.envFile
   }
 }

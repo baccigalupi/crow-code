@@ -1,14 +1,15 @@
 import { describe, expect, it } from 'bun:test'
 import { CrowGlobalDirectoryStep } from '../../../../src/tui/install/steps/crow-global-directory.ts'
-import { buildUserInputStore } from '../../../support/user-input-store.ts'
+import { DataStore } from '../../../../src/tui/install/data-store.ts'
+import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('CrowGlobalDirectoryStep', () => {
-  it('when asked for its state, returns the global directory input', () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.step.value = 'crowGlobalDirectory'
+  it('when asked for its field, returns the global directory input', () => {
+    const model = new DataStore({ applicationData: mockApplicationData() })
+    model.step.goTo('crowGlobalDirectory')
 
-    const state = new CrowGlobalDirectoryStep(userInputStore).state()
+    const field = new CrowGlobalDirectoryStep(model).field()
 
-    expect(state).toBe(userInputStore.globalDirectory)
+    expect(field).toBe(model.directories.globalDirectory)
   })
 })

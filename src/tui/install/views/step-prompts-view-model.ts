@@ -1,6 +1,6 @@
-import { currentStep } from '../steps/current.ts'
-import type { UserInputStore } from '../types.ts'
+import { CurrentStep } from '../steps/current.ts'
+import type { DataStore } from '../data-store.ts'
 
-export const stepPromptsViewModel = (userInputStore: UserInputStore) => {
-  return { View: currentStep(userInputStore).View }
+export const stepPromptsViewModel = (model: DataStore) => {
+  return { View: new CurrentStep(model).current().View }
 }

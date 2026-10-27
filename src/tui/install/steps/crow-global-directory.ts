@@ -1,17 +1,17 @@
-import type { UserInputStore } from '../types.ts'
+import type { DataStore } from '../data-store.ts'
 import { GlobalPathPrompt } from '../views/steps/global-path-prompt.tsx'
 
 export class CrowGlobalDirectoryStep {
-  private userInputStore: UserInputStore
+  private model: DataStore
   readonly name = 'crowGlobalDirectory'
   readonly nextStep = 'envFile'
   readonly View = GlobalPathPrompt
 
-  constructor(userInputStore: UserInputStore) {
-    this.userInputStore = userInputStore
+  constructor(model: DataStore) {
+    this.model = model
   }
 
-  state() {
-    return this.userInputStore.globalDirectory
+  field() {
+    return this.model.directories.globalDirectory
   }
 }

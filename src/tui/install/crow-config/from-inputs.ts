@@ -4,7 +4,7 @@ import { buildProviders } from './from-inputs/providers.ts'
 import {
   defaultCrowGlobalDirectory,
   defaultCrowRepoDirectory,
-} from '../interactions/state/config-text.ts'
+} from '../data-stores/directories-store.ts'
 import type { InputText } from '../../types.ts'
 import type {
   CrowConfigInputs,

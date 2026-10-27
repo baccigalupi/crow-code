@@ -2,9 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { LocalConfigTask } from '../../../../src/tui/install/complete-setup-operations/local-config.ts'
-import { emptyText, insertText } from '../../../../src/tui/input-text.ts'
+import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
-import { buildUserInputStore } from '../../../support/user-input-store.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('LocalConfigTask', () => {
@@ -12,26 +11,27 @@ describe('LocalConfigTask', () => {
   afterEach(() => clearDirectory(join(fixturesDirectory, 'write-crow-config')))
 
   it('when labelled, names the config path being written', () => {
-    const userInputStore = buildUserInputStore()
+    const applicationData = mockApplicationData()
+    const store = new DataStore({ applicationData })
 
     const label = new LocalConfigTask({
-      applicationData: mockApplicationData(),
-      operationArguments: { userInputStore },
+      applicationData,
+      operationArguments: { inputs: store.inputs, step: store.step },
     }).label()
 
     expect(label).toBe('Writing config to .crow/config.json')
   })
 
   it('when run, saves the json to the repo config path', async () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.repoDirectory.value = insertText(
-      emptyText(),
+    const applicationData = mockApplicationData()
+    const store = new DataStore({ applicationData })
+    store.directories.repoDirectory.insert(
       join(fixturesDirectory, 'write-crow-config', 'crow'),
     )
 
     const task = await new LocalConfigTask({
-      applicationData: mockApplicationData(),
-      operationArguments: { userInputStore },
+      applicationData,
+      operationArguments: { inputs: store.inputs, step: store.step },
     }).run()
 
     const written = JSON.parse(
@@ -46,15 +46,15 @@ describe('LocalConfigTask', () => {
   })
 
   it('when the config cannot be written, fails naming the config path', async () => {
-    const userInputStore = buildUserInputStore()
     const applicationData = mockApplicationData()
+    const store = new DataStore({ applicationData })
     spyOn(applicationData.filesystem, 'mkdirWithParents').mockRejectedValue(
       new Error('permission denied'),
     )
 
     const task = await new LocalConfigTask({
       applicationData,
-      operationArguments: { userInputStore },
+      operationArguments: { inputs: store.inputs, step: store.step },
     }).run()
 
     expect(task.success()).toBe(false)
@@ -64,16 +64,16 @@ describe('LocalConfigTask', () => {
   })
 
   it('when additional read directories are typed, writes them to the config', async () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.repoDirectory.value = insertText(
-      emptyText(),
+    const applicationData = mockApplicationData()
+    const store = new DataStore({ applicationData })
+    store.directories.repoDirectory.insert(
       join(fixturesDirectory, 'write-crow-config', 'crow'),
     )
-    userInputStore.additionalRead.value = insertText(emptyText(), '/docs')
+    store.permissions.additionalRead.insert('/docs')
 
     await new LocalConfigTask({
-      applicationData: mockApplicationData(),
-      operationArguments: { userInputStore },
+      applicationData,
+      operationArguments: { inputs: store.inputs, step: store.step },
     }).run()
 
     const written = JSON.parse(
@@ -86,16 +86,16 @@ describe('LocalConfigTask', () => {
   })
 
   it('when additional write directories are typed, writes them to the config', async () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.repoDirectory.value = insertText(
-      emptyText(),
+    const applicationData = mockApplicationData()
+    const store = new DataStore({ applicationData })
+    store.directories.repoDirectory.insert(
       join(fixturesDirectory, 'write-crow-config', 'crow'),
     )
-    userInputStore.additionalWrite.value = insertText(emptyText(), '/work')
+    store.permissions.additionalWrite.insert('/work')
 
     await new LocalConfigTask({
-      applicationData: mockApplicationData(),
-      operationArguments: { userInputStore },
+      applicationData,
+      operationArguments: { inputs: store.inputs, step: store.step },
     }).run()
 
     const written = JSON.parse(
@@ -108,16 +108,16 @@ describe('LocalConfigTask', () => {
   })
 
   it('when ignore paths are typed, writes them to the config', async () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.repoDirectory.value = insertText(
-      emptyText(),
+    const applicationData = mockApplicationData()
+    const store = new DataStore({ applicationData })
+    store.directories.repoDirectory.insert(
       join(fixturesDirectory, 'write-crow-config', 'crow'),
     )
-    userInputStore.ignore.value = insertText(emptyText(), '.env')
+    store.permissions.ignore.insert('.env')
 
     await new LocalConfigTask({
-      applicationData: mockApplicationData(),
-      operationArguments: { userInputStore },
+      applicationData,
+      operationArguments: { inputs: store.inputs, step: store.step },
     }).run()
 
     const written = JSON.parse(

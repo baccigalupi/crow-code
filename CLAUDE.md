@@ -157,7 +157,14 @@ per-path.
 (view-models in `*-view-model.ts` paired with `.tsx` views, plus interactions),
 launched by `crow install` via `install/runner.ts`. The agent app is not built
 yet: `crow` with no args prints a coming-soon message. State uses
-`@preact/signals-core` (see `use-signal-value.ts`).
+`@preact/signals-core` (see `use-signal-value.ts`) through plain store classes
+in `install/data-stores/`: one class per concern (`TextFieldStore`, `StepStore`,
+`ProvidersStore`, `SetupStore`, …), built as fields of `DataStore`
+(`install/data-store.ts`), the entry point the runner creates once and passes to the views. Signals are private
+fields exposed through `ReadonlySignal` getters; derived values are `computed`
+fields created once on the class that owns their signals; multi-write methods
+wrap their writes in `batch`; a store that needs an effect starts it in
+`listen()` (constructors do no work) and releases it in `dispose()`.
 
 OpenTUI `.tsx` files start with the pragma `/** @jsxImportSource @opentui/react */`;
 `tsconfig.json` stays `jsxImportSource: react`. OpenTUI runners are `.ts` files

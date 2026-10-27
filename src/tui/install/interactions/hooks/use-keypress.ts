@@ -1,29 +1,25 @@
 import { decodePasteBytes, stripAnsiSequences } from '@opentui/core'
 import { useKeyboard, usePaste, useRenderer } from '@opentui/react'
-import { keypress } from '../keypress.ts'
 import type { ExitApp } from '../../../types.ts'
-import type { UserInputStore } from '../../types.ts'
+import type { DataStore } from '../../data-store.ts'
 import { keypressFromEvent } from '../keypress-from-event.ts'
 
-const useTyped = (userInputStore: UserInputStore, exit: ExitApp) => {
+const useTyped = (model: DataStore, exit: ExitApp) => {
   useKeyboard((event) => {
     const { input, key } = keypressFromEvent(event)
-    keypress({ userInputStore, exit, input, key }).handle()
+    model.press(input, key, exit)
   })
 }
 
-// A paste is typed input that arrives all at once, with newlines dropped.
-const usePasted = (userInputStore: UserInputStore, exit: ExitApp) => {
+const usePasted = (model: DataStore, exit: ExitApp) => {
   usePaste((event) => {
-    const text = stripAnsiSequences(decodePasteBytes(event.bytes))
-    const input = text.replace(/[\r\n]/g, '')
-    keypress({ userInputStore, exit, input, key: {} }).handle()
+    model.paste(stripAnsiSequences(decodePasteBytes(event.bytes)), exit)
   })
 }
 
-export const useKeypress = (userInputStore: UserInputStore) => {
+export const useKeypress = (model: DataStore) => {
   const renderer = useRenderer()
   const exit = () => renderer.destroy()
-  useTyped(userInputStore, exit)
-  usePasted(userInputStore, exit)
+  useTyped(model, exit)
+  usePasted(model, exit)
 }

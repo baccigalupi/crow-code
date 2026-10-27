@@ -1,17 +1,6 @@
 import { crowConfigFromInputs } from '../../crow-config/from-inputs.ts'
-import { initialUserInputState } from '../../interactions/state/config-text.ts'
-import type { InputText } from '../../../types.ts'
+import type { CrowConfigInputs } from '../../types.ts'
 
-type EnvPromptViewModelArguments = {
-  readonly globalDirectory: InputText
-}
-
-export const envPromptViewModel = ({
-  globalDirectory,
-}: EnvPromptViewModelArguments) => {
-  const builder = crowConfigFromInputs({
-    ...initialUserInputState(),
-    globalDirectory,
-  })
-  return { defaultValue: builder.crowConfig().envFile }
+export const envPromptViewModel = (inputs: CrowConfigInputs) => {
+  return { defaultValue: crowConfigFromInputs(inputs).crowConfig().envFile }
 }

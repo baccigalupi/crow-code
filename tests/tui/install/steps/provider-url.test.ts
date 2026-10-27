@@ -1,34 +1,35 @@
 import { describe, expect, it } from 'bun:test'
 import { ProviderUrlStep } from '../../../../src/tui/install/steps/provider-url.ts'
-import { buildUserInputStore } from '../../../support/user-input-store.ts'
+import { DataStore } from '../../../../src/tui/install/data-store.ts'
+import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('ProviderUrlStep', () => {
-  it('when asked for its state, returns the provider url input', () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.step.value = 'providerUrl'
+  it('when asked for its field, returns the provider url input', () => {
+    const model = new DataStore({ applicationData: mockApplicationData() })
+    model.step.goTo('providerUrl')
 
-    const step = new ProviderUrlStep(userInputStore)
+    const step = new ProviderUrlStep(model)
 
     expect(step.name).toBe('providerUrl')
     expect(step.nextStep).toBe('providerCredentials')
-    expect(step.state()).toBe(userInputStore.providerUrl)
+    expect(step.field()).toBe(model.providers.providerUrl)
   })
 
   it('when focused forward, moves to the credentials step', () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.step.value = 'providerUrl'
+    const model = new DataStore({ applicationData: mockApplicationData() })
+    model.step.goTo('providerUrl')
 
-    new ProviderUrlStep(userInputStore).focus(1)
+    new ProviderUrlStep(model).focus(1)
 
-    expect(userInputStore.step.peek()).toBe('providerCredentials')
+    expect(model.step.current.peek()).toBe('providerCredentials')
   })
 
   it('when cancelled, leaves the provider loop for confirm', () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.step.value = 'providerUrl'
+    const model = new DataStore({ applicationData: mockApplicationData() })
+    model.step.goTo('providerUrl')
 
-    new ProviderUrlStep(userInputStore).cancel()
+    new ProviderUrlStep(model).cancel()
 
-    expect(userInputStore.step.peek()).toBe('confirm')
+    expect(model.step.current.peek()).toBe('confirm')
   })
 })

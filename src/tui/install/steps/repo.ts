@@ -1,17 +1,17 @@
-import type { UserInputStore } from '../types.ts'
+import type { DataStore } from '../data-store.ts'
 import { RepoPathPrompt } from '../views/steps/repo-path-prompt.tsx'
 
 export class RepoStep {
-  private userInputStore: UserInputStore
+  private model: DataStore
   readonly name = 'repo'
   readonly nextStep = 'crowGlobalDirectory'
   readonly View = RepoPathPrompt
 
-  constructor(userInputStore: UserInputStore) {
-    this.userInputStore = userInputStore
+  constructor(model: DataStore) {
+    this.model = model
   }
 
-  state() {
-    return this.userInputStore.repoDirectory
+  field() {
+    return this.model.directories.repoDirectory
   }
 }

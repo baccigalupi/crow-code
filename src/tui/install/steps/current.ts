@@ -1,4 +1,4 @@
-import type { UserInputStore } from '../types.ts'
+import type { DataStore } from '../data-store.ts'
 import { RepoStep } from './repo.ts'
 import { CrowGlobalDirectoryStep } from './crow-global-directory.ts'
 import { EnvFileStep } from './env-file.ts'
@@ -35,28 +35,24 @@ const stepClasses = [
 ]
 
 export class CurrentStep {
-  private userInputStore: UserInputStore
+  private model: DataStore
 
-  constructor(userInputStore: UserInputStore) {
-    this.userInputStore = userInputStore
+  constructor(model: DataStore) {
+    this.model = model
   }
 
   step() {
-    return this.userInputStore.step.peek()
+    return this.model.step.current.peek()
   }
 
   current() {
     return (
       this.all().find((step) => step.name === this.step()) ||
-      new DefaultStep(this.userInputStore)
+      new DefaultStep(this.model)
     )
   }
 
   all() {
-    return stepClasses.map((Step) => new Step(this.userInputStore))
+    return stepClasses.map((Step) => new Step(this.model))
   }
-}
-
-export const currentStep = (userInputStore: UserInputStore) => {
-  return new CurrentStep(userInputStore).current()
 }

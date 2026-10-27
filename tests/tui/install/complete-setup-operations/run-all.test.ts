@@ -1,158 +1,131 @@
 import { describe, expect, it, spyOn } from 'bun:test'
 import { RunAll } from '../../../../src/tui/install/complete-setup-operations/run-all.ts'
-import { buildUserInputStore } from '../../../support/user-input-store.ts'
+import { DataStore } from '../../../../src/tui/install/data-store.ts'
+import { SetupProgressStore } from '../../../../src/tui/install/data-stores/setup-progress-store.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('RunAll', () => {
-  it('when the step becomes completeSetup, starts the first task', () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.step.value = 'confirm'
+  it('when started, runs the first task', () => {
     const applicationData = mockApplicationData()
     const mkdir = spyOn(
       applicationData.filesystem,
       'mkdirWithParents',
     ).mockImplementation(() => new Promise<void>(() => {}))
-    const dispose = new RunAll({
+    const store = new DataStore({ applicationData })
+    const setup = new RunAll({
       applicationData,
-      operationArguments: { userInputStore },
-    }).subscribe()
+      operationArguments: {
+        inputs: store.inputs,
+        step: store.step,
+        progress: new SetupProgressStore(),
+      },
+    })
 
-    userInputStore.step.value = 'completeSetup'
+    setup.start()
 
     expect(mkdir).toHaveBeenCalledTimes(1)
-    dispose()
   })
 
-  it('when asked for task states, returns every task as pending', () => {
-    const userInputStore = buildUserInputStore()
-    const setup = new RunAll({
-      applicationData: mockApplicationData(),
-      operationArguments: { userInputStore },
-    })
-
-    const taskStates = setup.taskStates()
-
-    expect(taskStates[0].status()).toEqual({
-      id: 'LocalConfigTaskState',
-      label: 'Writing config to .crow/config.json',
-      done: false,
-      error: '',
-    })
-    expect(taskStates[1].status()).toEqual({
-      id: 'GlobalDirectoryTaskState',
-      label: 'Creating ~/.crow',
-      done: false,
-      error: '',
-    })
-  })
-
-  it('when a task finishes, completes it before the next one starts', async () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.step.value = 'confirm'
+  it('when asked for its tasks, labels each one', () => {
     const applicationData = mockApplicationData()
-    const firstDoneAtStart: boolean[] = []
+    const store = new DataStore({ applicationData })
     const setup = new RunAll({
       applicationData,
-      operationArguments: { userInputStore },
+      operationArguments: {
+        inputs: store.inputs,
+        step: store.step,
+        progress: new SetupProgressStore(),
+      },
+    })
+
+    const tasks = setup.tasks()
+
+    expect(tasks[0].label()).toBe('Writing config to .crow/config.json')
+    expect(tasks[1].label()).toBe('Creating ~/.crow')
+  })
+
+  it('when a task finishes, records it before the next one starts', async () => {
+    const applicationData = mockApplicationData()
+    const store = new DataStore({ applicationData })
+    const progress = new SetupProgressStore()
+    const finishedAtStart: number[] = []
+    const setup = new RunAll({
+      applicationData,
+      operationArguments: { inputs: store.inputs, step: store.step, progress },
     })
     spyOn(applicationData.filesystem, 'mkdirWithParents').mockImplementation(
       () => {
-        firstDoneAtStart.push(setup.taskStates()[0].done.peek())
+        finishedAtStart.push(progress.finished.peek().length)
         return Promise.resolve()
       },
     )
     spyOn(applicationData.filesystem, 'writeTextFile').mockResolvedValue()
-    const dispose = setup.subscribe()
+    setup.start()
 
-    userInputStore.step.value = 'completeSetup'
     await setup.finished()
 
-    expect(firstDoneAtStart).toEqual([false, true])
-    expect(setup.taskStates()[1].done.peek()).toBe(true)
-    dispose()
+    expect(finishedAtStart).toEqual([0, 1])
+    expect(progress.finished.peek()).toHaveLength(2)
+    expect(progress.finished.peek()[1]).toBe(setup.tasks()[1])
   })
 
   it('when every task finishes, moves to done', async () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.step.value = 'confirm'
     const applicationData = mockApplicationData()
     spyOn(applicationData.filesystem, 'mkdirWithParents').mockResolvedValue()
     spyOn(applicationData.filesystem, 'writeTextFile').mockResolvedValue()
+    const store = new DataStore({ applicationData })
     const setup = new RunAll({
       applicationData,
-      operationArguments: { userInputStore },
+      operationArguments: {
+        inputs: store.inputs,
+        step: store.step,
+        progress: new SetupProgressStore(),
+      },
     })
-    const dispose = setup.subscribe()
 
-    userInputStore.step.value = 'completeSetup'
-    await setup.finished()
+    await setup.run()
 
-    expect(userInputStore.step.peek()).toBe('done')
-    dispose()
+    expect(store.step.current.peek()).toBe('done')
   })
 
   it('when a task fails, skips the rest and moves to done', async () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.step.value = 'confirm'
     const applicationData = mockApplicationData()
     const mkdir = spyOn(
       applicationData.filesystem,
       'mkdirWithParents',
     ).mockRejectedValue(new Error('permission denied'))
     spyOn(applicationData.filesystem, 'writeTextFile').mockResolvedValue()
+    const store = new DataStore({ applicationData })
     const setup = new RunAll({
       applicationData,
-      operationArguments: { userInputStore },
+      operationArguments: {
+        inputs: store.inputs,
+        step: store.step,
+        progress: new SetupProgressStore(),
+      },
     })
-    const dispose = setup.subscribe()
 
-    userInputStore.step.value = 'completeSetup'
-    await setup.finished()
+    await setup.run()
 
     expect(mkdir).toHaveBeenCalledTimes(1)
-    expect(userInputStore.step.peek()).toBe('done')
-    dispose()
+    expect(store.step.current.peek()).toBe('done')
   })
 
-  it('when a task fails, completes its state with the error', async () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.step.value = 'confirm'
+  it('when a task fails, records only the failed task as finished', async () => {
     const applicationData = mockApplicationData()
     spyOn(applicationData.filesystem, 'mkdirWithParents').mockRejectedValue(
       new Error('permission denied'),
     )
+    const store = new DataStore({ applicationData })
+    const progress = new SetupProgressStore()
     const setup = new RunAll({
       applicationData,
-      operationArguments: { userInputStore },
+      operationArguments: { inputs: store.inputs, step: store.step, progress },
     })
-    const dispose = setup.subscribe()
 
-    userInputStore.step.value = 'completeSetup'
-    await setup.finished()
+    await setup.run()
 
-    expect(setup.taskStates()[0].status()).toEqual({
-      id: 'LocalConfigTaskState',
-      label: 'Writing config to .crow/config.json',
-      done: true,
-      error: 'could not write .crow/config.json: permission denied',
-    })
-    dispose()
-  })
-
-  it('when the step is not completeSetup, starts no task', () => {
-    const userInputStore = buildUserInputStore()
-    userInputStore.step.value = 'envFile'
-    const applicationData = mockApplicationData()
-    const mkdir = spyOn(applicationData.filesystem, 'mkdirWithParents')
-    const dispose = new RunAll({
-      applicationData,
-      operationArguments: { userInputStore },
-    }).subscribe()
-
-    userInputStore.step.value = 'confirm'
-
-    expect(mkdir).not.toHaveBeenCalled()
-    expect(userInputStore.step.peek()).toBe('confirm')
-    dispose()
+    expect(progress.finished.peek()).toHaveLength(1)
+    expect(progress.finished.peek()[0]).toBe(setup.tasks()[0])
   })
 })
