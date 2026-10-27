@@ -281,6 +281,12 @@ export type DeleteResult = {
   deleted: boolean
 }
 
+export type DeleteDirectoryResult = {
+  path: string
+  deleted: boolean
+  kept: string[]
+}
+
 export type PathExistsResult = {
   path: string
   exists: boolean

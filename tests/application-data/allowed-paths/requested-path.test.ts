@@ -188,6 +188,26 @@ describe('requested-path', () => {
     expect(allowed).toBe(false)
   })
 
+  it('when asked for enclosed paths, returns only those at or under the path', () => {
+    const applicationData = mockApplicationData()
+    const requested = requestedPath({
+      path: '/abs/dir',
+      allowedDirectories: ['/abs'],
+      ignoredPaths: [],
+      cwd: applicationData.runtime.cwd,
+      filesystem: applicationData.filesystem,
+    })
+
+    const enclosed = requested.enclosed([
+      '/abs/dir',
+      '/abs/dir/inner',
+      '/abs/other',
+      '/abs',
+    ])
+
+    expect(enclosed).toEqual(['/abs/dir', '/abs/dir/inner'])
+  })
+
   it('when called through requestedPath, returns a RequestedPath', () => {
     const applicationData = mockApplicationData()
     const directory = join(fixturesDirectory, 'tools', 'git')

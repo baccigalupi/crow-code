@@ -434,4 +434,28 @@ describe('path-permissions', () => {
 
     expect(ignored).toEqual(['/abs/dir', '/other', join(process.cwd(), '.git')])
   })
+
+  it('when asked for protected paths within a path, returns the allowed roots and ignored paths it contains', () => {
+    const applicationData = mockApplicationData({
+      config: new CrowConfig('.', {
+        ...defaultCrowConfig(),
+        permissions: {
+          ignore: ['/abs/dir/ignored'],
+          additionalRead: [],
+          additionalWrite: [],
+          escalateRead: [],
+          escalateWrite: [],
+          allowedLocalScripts: [],
+        },
+      }),
+    })
+    const permissions = pathPermissions({
+      applicationData,
+      allowedDirectories: ['/abs/dir/root'],
+    })
+
+    const protectedPaths = permissions.protectedPathsWithin('/abs/dir')
+
+    expect(protectedPaths).toEqual(['/abs/dir/root', '/abs/dir/ignored'])
+  })
 })

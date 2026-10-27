@@ -1,13 +1,16 @@
 import {
   lstat,
   mkdir,
+  readdir,
   readFile,
   realpath,
   rename,
+  rm,
   rmdir,
   unlink,
   writeFile,
 } from 'node:fs/promises'
+import { join } from 'node:path'
 
 export class Filesystem {
   readTextFile(path: string) {
@@ -33,6 +36,20 @@ export class Filesystem {
     } else {
       await unlink(path)
     }
+  }
+
+  removeTree(path: string) {
+    return rm(path, { recursive: true })
+  }
+
+  async isDirectory(path: string) {
+    const stats = await lstat(path)
+    return stats.isDirectory()
+  }
+
+  async directoryEntries(path: string) {
+    const names = await readdir(path)
+    return names.sort().map((name) => join(path, name))
   }
 
   async assertExists(path: string) {

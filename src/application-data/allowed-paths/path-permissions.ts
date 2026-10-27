@@ -52,6 +52,13 @@ export class PathPermissions {
     ]
   }
 
+  protectedPathsWithin(path: string) {
+    return this.requested(path).enclosed([
+      ...this.absoluteDirectories(),
+      ...this.ignoredPaths(),
+    ])
+  }
+
   protected absoluteDirectories() {
     return this.absolute([this.runtime().cwd, ...this.allowedDirectories])
   }

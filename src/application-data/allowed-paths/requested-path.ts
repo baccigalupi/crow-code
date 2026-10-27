@@ -36,6 +36,10 @@ export class RequestedPath {
     return this.permitted(await this.followingSymlinks())
   }
 
+  enclosed(paths: string[]) {
+    return paths.filter((path) => this.within(this.absolutePath(), path))
+  }
+
   private permitted(path: string) {
     return this.inAllowedDirectory(path) && !this.inIgnoredPath(path)
   }

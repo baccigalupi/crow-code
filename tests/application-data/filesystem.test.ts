@@ -82,6 +82,54 @@ describe('filesystem', () => {
     ).toThrow()
   })
 
+  it('removes a directory tree', async () => {
+    mkdirSync(`${fixturesDirectory}/filesystem/tree/one`, { recursive: true })
+    writeFileSync(`${fixturesDirectory}/filesystem/tree/one/alpha.txt`, 'one\n')
+    const filesystem = new Filesystem()
+
+    await filesystem.removeTree(`${fixturesDirectory}/filesystem/tree`)
+
+    expect(() => statSync(`${fixturesDirectory}/filesystem/tree`)).toThrow()
+  })
+
+  it('when the path is a file, isDirectory is false', async () => {
+    mkdirSync(`${fixturesDirectory}/filesystem`, { recursive: true })
+    writeFileSync(`${fixturesDirectory}/filesystem/alpha.txt`, 'one\n')
+    const filesystem = new Filesystem()
+
+    const directory = await filesystem.isDirectory(
+      `${fixturesDirectory}/filesystem/alpha.txt`,
+    )
+
+    expect(directory).toBe(false)
+  })
+
+  it('when the path is a directory, isDirectory is true', async () => {
+    mkdirSync(`${fixturesDirectory}/filesystem`, { recursive: true })
+    const filesystem = new Filesystem()
+
+    const directory = await filesystem.isDirectory(
+      `${fixturesDirectory}/filesystem`,
+    )
+
+    expect(directory).toBe(true)
+  })
+
+  it('lists the child paths of a directory', async () => {
+    mkdirSync(`${fixturesDirectory}/filesystem/alpha`, { recursive: true })
+    writeFileSync(`${fixturesDirectory}/filesystem/beta.txt`, 'one\n')
+    const filesystem = new Filesystem()
+
+    const entries = await filesystem.directoryEntries(
+      `${fixturesDirectory}/filesystem`,
+    )
+
+    expect(entries).toEqual([
+      `${fixturesDirectory}/filesystem/alpha`,
+      `${fixturesDirectory}/filesystem/beta.txt`,
+    ])
+  })
+
   it('when the path exists, assertExists resolves', async () => {
     mkdirSync(`${fixturesDirectory}/filesystem`, { recursive: true })
     const filesystem = new Filesystem()
