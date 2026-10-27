@@ -224,3 +224,5 @@
 {"id":"int-4aad5e7a","kind":"field_change","created_at":"2026-10-27T19:14:54.121443Z","actor":"Kane Baccigalupi","issue_id":"crow-code-7em","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Closed"}}
 {"id":"int-7eed48db","kind":"field_change","created_at":"2026-10-27T19:15:34.148109Z","actor":"Kane Baccigalupi","issue_id":"crow-code-au8.12","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Closed"}}
 {"id":"int-90a89893","kind":"field_change","created_at":"2026-10-27T21:40:22.386729Z","actor":"Kane Baccigalupi","issue_id":"crow-code-au8.13","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Closed"}}
+{"id":"int-821c828c","kind":"field_change","created_at":"2026-10-27T21:54:05.707701Z","actor":"Kane Baccigalupi","issue_id":"crow-code-au8.15","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Closed"}}
+{"id":"int-53ef53c3","kind":"field_change","created_at":"2026-10-27T21:54:09.77835Z","actor":"Kane Baccigalupi","issue_id":"crow-code-au8","extra":{"field":"status","new_value":"closed","old_value":"open","reason":"Closed"}}
