@@ -1,15 +1,17 @@
 export class GitRevListCountParser {
   private options: string[]
+  private output: string
 
-  constructor(options: string[]) {
+  constructor(options: string[], output: string) {
     this.options = options
+    this.output = output
   }
 
   isMatch() {
     return this.options.includes('--count')
   }
 
-  parse(stdout: string) {
-    return { count: Number(stdout.trim()) }
+  parse() {
+    return { count: Number(this.output.trim()) }
   }
 }

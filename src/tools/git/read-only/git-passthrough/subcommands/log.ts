@@ -36,16 +36,19 @@ export class GitLogSubcommand extends GitSubcommand {
   }
 
   protected override parse() {
-    return this.parser().parse(this.rawResponse)
+    return this.parser().parse()
   }
 
   private parser() {
     const match = this.parsers().find((parser) => parser.isMatch())
-    return match || new GitLogPlainParser()
+    return match || new GitLogPlainParser(this.rawResponse)
   }
 
   private parsers() {
-    return this.parserClasses.map((Parser) => new Parser(this.options()))
+    const options = this.options()
+    return this.parserClasses.map(
+      (Parser) => new Parser(options, this.rawResponse),
+    )
   }
 
   private options() {

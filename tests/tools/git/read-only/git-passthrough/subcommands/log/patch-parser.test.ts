@@ -3,7 +3,7 @@ import { GitLogPatchParser } from '../../../../../../../src/tools/git/read-only/
 
 describe('GitLogPatchParser', () => {
   it('when options include -p, matches', () => {
-    const parser = new GitLogPatchParser(['-p'])
+    const parser = new GitLogPatchParser(['-p'], '')
 
     const match = parser.isMatch()
 
@@ -11,7 +11,7 @@ describe('GitLogPatchParser', () => {
   })
 
   it('when options do not include -p, does not match', () => {
-    const parser = new GitLogPatchParser(['--oneline'])
+    const parser = new GitLogPatchParser(['--oneline'], '')
 
     const match = parser.isMatch()
 
@@ -19,11 +19,12 @@ describe('GitLogPatchParser', () => {
   })
 
   it('when a commit has patch lines, joins them into its patch', () => {
-    const parser = new GitLogPatchParser(['-p'])
-
-    const result = parser.parse(
+    const parser = new GitLogPatchParser(
+      ['-p'],
       '7f2203f286226e6c29da25b8edb35b13a7efa7c6\x1fAda\x1f2026-10-02T11:00:00+00:00\x1fFix tests\n\ndiff --git a/allowed.txt b/allowed.txt\n@@ -1 +1 @@\n',
     )
+
+    const result = parser.parse()
 
     expect(result.commits).toEqual([
       {

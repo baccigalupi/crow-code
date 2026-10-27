@@ -1,5 +1,11 @@
 export class GitRevListParser {
-  parse(stdout: string) {
-    return { shas: stdout.split('\n').filter((line) => line !== '') }
+  private output: string
+
+  constructor(output: string) {
+    this.output = output
+  }
+
+  parse() {
+    return { shas: this.output.split('\n').filter((line) => line !== '') }
   }
 }

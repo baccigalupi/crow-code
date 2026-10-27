@@ -14,19 +14,19 @@ export class GitRevListSubcommand extends GitSubcommand {
   } as const
 
   protected override parse() {
-    return this.parser().parse(this.rawResponse)
+    return this.parser().parse()
   }
 
   private parser() {
     const matched = this.flagParsers().find((parser) => parser.isMatch())
-    return matched || new GitRevListParser()
+    return matched || new GitRevListParser(this.rawResponse)
   }
 
   private flagParsers() {
     const options = this.options()
     return [
-      new GitRevListCountParser(options),
-      new GitRevListObjectsParser(options),
+      new GitRevListCountParser(options, this.rawResponse),
+      new GitRevListObjectsParser(options, this.rawResponse),
     ]
   }
 

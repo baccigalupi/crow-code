@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import { GitLogRecords } from '../../../../../../../src/tools/git/read-only/git-passthrough/subcommands/log/records.ts'
 
 describe('GitLogRecords', () => {
-  it('when stdout is empty, has no records', () => {
+  it('when output is empty, has no records', () => {
     const records = new GitLogRecords('')
 
     const result = records.records()
@@ -20,7 +20,7 @@ describe('GitLogRecords', () => {
     expect(result).toHaveLength(0)
   })
 
-  it('when stdout has two headers, splits a record at each', () => {
+  it('when output has two headers, splits a record at each', () => {
     const records = new GitLogRecords(
       '7f2203f286226e6c29da25b8edb35b13a7efa7c6\x1fAda\x1f2026-10-02T11:00:00+00:00\x1fFix tests\n\nallowed.txt\n\nffd175847ab5c34abf8e3a66c4bab26b9ef87939\x1fGrace\x1f2026-10-01T10:00:00+00:00\x1fAdd login\n',
     )

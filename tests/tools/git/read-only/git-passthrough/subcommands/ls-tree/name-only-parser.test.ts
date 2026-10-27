@@ -3,7 +3,7 @@ import { GitLsTreeNameOnlyParser } from '../../../../../../../src/tools/git/read
 
 describe('GitLsTreeNameOnlyParser', () => {
   it('when options include --name-only, matches', () => {
-    const parser = new GitLsTreeNameOnlyParser(['-r', '--name-only'])
+    const parser = new GitLsTreeNameOnlyParser(['-r', '--name-only'], '')
 
     const match = parser.isMatch()
 
@@ -11,7 +11,7 @@ describe('GitLsTreeNameOnlyParser', () => {
   })
 
   it('when options do not include --name-only, does not match', () => {
-    const parser = new GitLsTreeNameOnlyParser(['-r'])
+    const parser = new GitLsTreeNameOnlyParser(['-r'], '')
 
     const match = parser.isMatch()
 
@@ -19,9 +19,12 @@ describe('GitLsTreeNameOnlyParser', () => {
   })
 
   it('when --name-only, returns path entries', () => {
-    const parser = new GitLsTreeNameOnlyParser(['--name-only'])
+    const parser = new GitLsTreeNameOnlyParser(
+      ['--name-only'],
+      'package.json\nsrc\n',
+    )
 
-    const result = parser.parse('package.json\nsrc\n')
+    const result = parser.parse()
 
     expect(result).toEqual({
       entries: [{ path: 'package.json' }, { path: 'src' }],

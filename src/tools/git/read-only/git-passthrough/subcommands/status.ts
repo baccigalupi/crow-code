@@ -14,11 +14,11 @@ export class GitStatusSubcommand extends GitSubcommand {
 
   protected override parse() {
     if (!this.porcelainParser().isMatch()) return
-    return this.porcelainParser().parse(this.rawResponse)
+    return this.porcelainParser().parse()
   }
 
   private porcelainParser() {
-    return new GitStatusPorcelainParser(this.options())
+    return new GitStatusPorcelainParser(this.options(), this.rawResponse)
   }
 
   private options() {

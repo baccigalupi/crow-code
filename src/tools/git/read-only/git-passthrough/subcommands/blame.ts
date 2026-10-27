@@ -13,6 +13,6 @@ export class GitBlameSubcommand extends GitSubcommand {
   } as const
 
   protected override parse() {
-    return new GitBlameParser().parse(this.rawResponse)
+    return new GitBlameParser(this.rawResponse).parse()
   }
 }

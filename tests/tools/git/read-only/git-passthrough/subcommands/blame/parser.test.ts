@@ -3,7 +3,7 @@ import { GitBlameParser } from '../../../../../../../src/tools/git/read-only/git
 
 describe('GitBlameParser', () => {
   it('when given one line-porcelain record, returns a typed line', () => {
-    const stdout = [
+    const output = [
       'ffd175847ab5c34abf8e3a66c4bab26b9ef87939 1 1 1',
       'author Fixture Author',
       'author-mail <fixture@example.com>',
@@ -17,7 +17,7 @@ describe('GitBlameParser', () => {
       '',
     ].join('\n')
 
-    const result = new GitBlameParser().parse(stdout)
+    const result = new GitBlameParser(output).parse()
 
     expect(result).toEqual({
       lines: [
@@ -34,7 +34,7 @@ describe('GitBlameParser', () => {
   })
 
   it('when given several records, strips a leading ^ and keeps spaces and empty content', () => {
-    const stdout = [
+    const output = [
       '7f2203f286226e6c29da25b8edb35b13a7efa7c6 1 1 1',
       'author Ada Lovelace',
       'author-time 1767312000',
@@ -50,7 +50,7 @@ describe('GitBlameParser', () => {
       '',
     ].join('\n')
 
-    const result = new GitBlameParser().parse(stdout)
+    const result = new GitBlameParser(output).parse()
 
     expect(result).toEqual({
       lines: [
@@ -75,9 +75,9 @@ describe('GitBlameParser', () => {
   })
 
   it('when given empty output, returns no lines', () => {
-    const stdout = ''
+    const output = ''
 
-    const result = new GitBlameParser().parse(stdout)
+    const result = new GitBlameParser(output).parse()
 
     expect(result).toEqual({ lines: [] })
   })

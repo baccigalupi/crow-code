@@ -1,13 +1,18 @@
 import type { GitBlameLine } from '../../../../../types.ts'
 
 export class GitBlameParser {
+  private output: string
   private lines: GitBlameLine[] = []
   private current: Partial<GitBlameLine> = {}
 
-  parse(stdout: string) {
+  constructor(output: string) {
+    this.output = output
+  }
+
+  parse() {
     this.lines = []
     this.current = {}
-    stdout.split('\n').forEach((line) => this.parseLine(line))
+    this.output.split('\n').forEach((line) => this.parseLine(line))
     return { lines: this.lines }
   }
 

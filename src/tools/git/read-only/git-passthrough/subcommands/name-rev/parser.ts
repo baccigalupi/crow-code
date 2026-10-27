@@ -1,17 +1,19 @@
 export class GitNameRevParser {
   private options: string[]
+  private output: string
 
-  constructor(options: string[]) {
+  constructor(options: string[], output: string) {
     this.options = options
+    this.output = output
   }
 
-  parse(stdout: string) {
-    if (this.nameText(stdout) === 'undefined') return {}
-    return { name: this.nameText(stdout) }
+  parse() {
+    if (this.nameText() === 'undefined') return {}
+    return { name: this.nameText() }
   }
 
-  private nameText(stdout: string) {
-    if (this.options.includes('--name-only')) return stdout.trim()
-    return stdout.trim().split(' ').slice(1).join(' ')
+  private nameText() {
+    if (this.options.includes('--name-only')) return this.output.trim()
+    return this.output.trim().split(' ').slice(1).join(' ')
   }
 }

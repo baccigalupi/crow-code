@@ -1,8 +1,10 @@
 export class GitShowContentParser {
   private options: string[]
+  private output: string
 
-  constructor(options: string[]) {
+  constructor(options: string[], output: string) {
     this.options = options
+    this.output = output
   }
 
   isMatch() {
@@ -10,10 +12,10 @@ export class GitShowContentParser {
     return positionals.length === 1 && this.isRevisionPath(positionals[0])
   }
 
-  parse(stdout: string) {
+  parse() {
     const revisionPath = this.positionals()[0]
     const path = revisionPath.slice(revisionPath.indexOf(':') + 1)
-    return { path, text: stdout }
+    return { path, text: this.output }
   }
 
   private positionals() {

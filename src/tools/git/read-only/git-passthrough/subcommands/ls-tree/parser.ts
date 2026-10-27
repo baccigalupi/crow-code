@@ -1,8 +1,14 @@
 import type { GitLsTreeKind } from '../../../../../types.ts'
 
 export class GitLsTreeParser {
-  parse(stdout: string) {
-    const lines = stdout.split('\n').filter((line) => line !== '')
+  private output: string
+
+  constructor(output: string) {
+    this.output = output
+  }
+
+  parse() {
+    const lines = this.output.split('\n').filter((line) => line !== '')
     return { entries: lines.map((line) => this.parseLine(line)) }
   }
 

@@ -11,8 +11,7 @@ export class GitNameRevSubcommand extends GitSubcommand {
   } as const
 
   protected override parse() {
-    return new GitNameRevParser(gitOptionFlags(this.args)).parse(
-      this.rawResponse,
-    )
+    const options = gitOptionFlags(this.args)
+    return new GitNameRevParser(options, this.rawResponse).parse()
   }
 }

@@ -3,7 +3,7 @@ import { GitRevListCountParser } from '../../../../../../../src/tools/git/read-o
 
 describe('GitRevListCountParser', () => {
   it('when options include --count, matches', () => {
-    const parser = new GitRevListCountParser(['--count', 'HEAD'])
+    const parser = new GitRevListCountParser(['--count', 'HEAD'], '')
 
     const match = parser.isMatch()
 
@@ -11,7 +11,7 @@ describe('GitRevListCountParser', () => {
   })
 
   it('when options lack --count, does not match', () => {
-    const parser = new GitRevListCountParser(['HEAD'])
+    const parser = new GitRevListCountParser(['HEAD'], '')
 
     const match = parser.isMatch()
 
@@ -19,9 +19,9 @@ describe('GitRevListCountParser', () => {
   })
 
   it('when given count output, returns the number', () => {
-    const parser = new GitRevListCountParser(['--count', 'HEAD'])
+    const parser = new GitRevListCountParser(['--count', 'HEAD'], '2\n')
 
-    const result = parser.parse('2\n')
+    const result = parser.parse()
 
     expect(result).toEqual({ count: 2 })
   })

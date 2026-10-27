@@ -1,8 +1,14 @@
 import { GitLogRecords } from './records.ts'
 
 export class GitLogPlainParser {
-  parse(stdout: string) {
-    const records = new GitLogRecords(stdout).records()
+  private output: string
+
+  constructor(output: string) {
+    this.output = output
+  }
+
+  parse() {
+    const records = new GitLogRecords(this.output).records()
     return { commits: records.map((record) => record.entry()) }
   }
 }

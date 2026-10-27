@@ -15,9 +15,11 @@ const fieldsBeforePath: Record<string, number> = { '1': 8, '2': 9, u: 10 }
 
 export class GitStatusPorcelainParser {
   private options: string[]
+  private output: string
 
-  constructor(options: string[]) {
+  constructor(options: string[], output: string) {
     this.options = options
+    this.output = output
   }
 
   isMatch() {
@@ -26,8 +28,8 @@ export class GitStatusPorcelainParser {
     )
   }
 
-  parse(stdout: string) {
-    const lines = stdout
+  parse() {
+    const lines = this.output
       .split('\n')
       .filter((line) => line !== '' && !line.startsWith('#'))
     return { changes: lines.map((line) => this.parseLine(line)) }

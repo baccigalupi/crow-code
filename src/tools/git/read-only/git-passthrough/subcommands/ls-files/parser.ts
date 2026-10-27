@@ -1,12 +1,16 @@
 export class GitLsFilesParser {
   private options: string[]
+  private output: string
 
-  constructor(options: string[]) {
+  constructor(options: string[], output: string) {
     this.options = options
+    this.output = output
   }
 
-  parse(stdout: string) {
-    const lines = stdout.split(this.separator()).filter((line) => line !== '')
+  parse() {
+    const lines = this.output
+      .split(this.separator())
+      .filter((line) => line !== '')
     return { entries: lines.map((line) => this.parseLine(line)) }
   }
 

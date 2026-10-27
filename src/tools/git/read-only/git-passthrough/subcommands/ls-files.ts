@@ -15,7 +15,7 @@ export class GitLsFilesSubcommand extends GitSubcommand {
   } as const
 
   protected override parse() {
-    return new GitLsFilesParser(this.options()).parse(this.rawResponse)
+    return new GitLsFilesParser(this.options(), this.rawResponse).parse()
   }
 
   private options() {

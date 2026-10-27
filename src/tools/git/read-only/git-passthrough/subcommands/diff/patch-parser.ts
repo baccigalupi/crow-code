@@ -62,9 +62,15 @@ const hunksOf = (lines: string[]) => {
 }
 
 export class GitDiffPatchParser {
-  parse(stdout: string) {
-    const diffs = trackedChangeParser(stdout).map((change) => this.file(change))
-    return { diffs }
+  private output: string
+
+  constructor(output: string) {
+    this.output = output
+  }
+
+  parse() {
+    const changes = trackedChangeParser(this.output)
+    return { diffs: changes.map((change) => this.file(change)) }
   }
 
   private file(change: { path: string; diff: string }): GitDiffFile {

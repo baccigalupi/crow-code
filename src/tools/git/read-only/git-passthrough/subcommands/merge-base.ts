@@ -36,10 +36,12 @@ export class GitMergeBaseSubcommand extends GitSubcommand {
   }
 
   protected override parse() {
-    return new GitMergeBaseParser(gitOptionFlags(this.args)).parse(
+    const options = gitOptionFlags(this.args)
+    return new GitMergeBaseParser(
+      options,
       this.rawResponse,
       this.exitCode,
-    )
+    ).parse()
   }
 
   private isAncestorExitOne() {

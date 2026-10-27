@@ -1,17 +1,21 @@
 export class GitMergeBaseParser {
   private options: string[]
+  private output: string
+  private exitCode: number
 
-  constructor(options: string[]) {
+  constructor(options: string[], output: string, exitCode: number) {
     this.options = options
+    this.output = output
+    this.exitCode = exitCode
   }
 
-  parse(stdout: string, exitCode: number) {
+  parse() {
     if (this.options.includes('--is-ancestor')) {
-      return { isAncestor: exitCode === 0 }
+      return { isAncestor: this.exitCode === 0 }
     } else if (this.isList()) {
-      return { shas: stdout.split('\n').filter((line) => line !== '') }
+      return { shas: this.output.split('\n').filter((line) => line !== '') }
     } else {
-      return { sha: stdout.trim() }
+      return { sha: this.output.trim() }
     }
   }
 

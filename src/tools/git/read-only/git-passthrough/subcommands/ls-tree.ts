@@ -12,16 +12,20 @@ export class GitLsTreeSubcommand extends GitSubcommand {
   } as const
 
   protected override parse() {
-    return this.parser().parse(this.rawResponse)
+    return this.parser().parse()
   }
 
   private parser() {
-    const nameOnlyParser = new GitLsTreeNameOnlyParser(this.options())
+    const nameOnlyParser = this.nameOnlyParser()
     if (nameOnlyParser.isMatch()) {
       return nameOnlyParser
     } else {
-      return new GitLsTreeParser()
+      return new GitLsTreeParser(this.rawResponse)
     }
+  }
+
+  private nameOnlyParser() {
+    return new GitLsTreeNameOnlyParser(this.options(), this.rawResponse)
   }
 
   private options() {

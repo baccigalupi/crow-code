@@ -4,17 +4,19 @@ import { parsedStat } from './stat.ts'
 
 export class GitLogStatPatchParser {
   private options: string[]
+  private output: string
 
-  constructor(options: string[]) {
+  constructor(options: string[], output: string) {
     this.options = options
+    this.output = output
   }
 
   isMatch() {
     return this.options.includes('--stat') && this.options.includes('-p')
   }
 
-  parse(stdout: string) {
-    const records = new GitLogRecords(stdout).records()
+  parse() {
+    const records = new GitLogRecords(this.output).records()
     const commits = records.map((record) => ({
       ...record.entry(),
       ...this.statAndPatch(record.body()),

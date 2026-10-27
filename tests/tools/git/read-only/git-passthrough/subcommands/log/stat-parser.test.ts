@@ -3,7 +3,7 @@ import { GitLogStatParser } from '../../../../../../../src/tools/git/read-only/g
 
 describe('GitLogStatParser', () => {
   it('when options include --stat, matches', () => {
-    const parser = new GitLogStatParser(['--stat'])
+    const parser = new GitLogStatParser(['--stat'], '')
 
     const match = parser.isMatch()
 
@@ -11,7 +11,7 @@ describe('GitLogStatParser', () => {
   })
 
   it('when options do not include --stat, does not match', () => {
-    const parser = new GitLogStatParser(['-p'])
+    const parser = new GitLogStatParser(['-p'], '')
 
     const match = parser.isMatch()
 
@@ -19,11 +19,12 @@ describe('GitLogStatParser', () => {
   })
 
   it('when a commit has stat lines, returns its stat', () => {
-    const parser = new GitLogStatParser(['--stat'])
-
-    const result = parser.parse(
+    const parser = new GitLogStatParser(
+      ['--stat'],
       '7f2203f286226e6c29da25b8edb35b13a7efa7c6\x1fAda\x1f2026-10-02T11:00:00+00:00\x1fFix tests\n\n allowed.txt | 2 +-\n 1 file changed, 1 insertion(+), 1 deletion(-)\n',
     )
+
+    const result = parser.parse()
 
     expect(result.commits).toEqual([
       {

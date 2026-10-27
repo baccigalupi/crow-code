@@ -19,11 +19,12 @@ export class GitShowSubcommand extends GitSubcommand {
   }
 
   private parseContent() {
-    const contentParser = new GitShowContentParser(this.options())
+    const output = this.rawResponse
+    const contentParser = new GitShowContentParser(this.options(), output)
     if (contentParser.isMatch()) {
-      return contentParser.parse(this.rawResponse)
+      return contentParser.parse()
     } else {
-      return new GitDiffPatchParser().parse(this.rawResponse)
+      return new GitDiffPatchParser(output).parse()
     }
   }
 

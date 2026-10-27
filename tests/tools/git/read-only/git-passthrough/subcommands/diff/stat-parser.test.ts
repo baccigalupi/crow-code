@@ -3,7 +3,7 @@ import { GitDiffStatParser } from '../../../../../../../src/tools/git/read-only/
 
 describe('GitDiffStatParser', () => {
   it('when options include --stat, matches', () => {
-    const parser = new GitDiffStatParser(['--cached', '--stat'])
+    const parser = new GitDiffStatParser(['--cached', '--stat'], '')
 
     const match = parser.isMatch()
 
@@ -11,7 +11,7 @@ describe('GitDiffStatParser', () => {
   })
 
   it('when options do not include --stat, does not match', () => {
-    const parser = new GitDiffStatParser(['--cached'])
+    const parser = new GitDiffStatParser(['--cached'], '')
 
     const match = parser.isMatch()
 
@@ -19,11 +19,12 @@ describe('GitDiffStatParser', () => {
   })
 
   it('when --stat, returns the summary and paths', () => {
-    const parser = new GitDiffStatParser(['--stat'])
-
-    const result = parser.parse(
+    const parser = new GitDiffStatParser(
+      ['--stat'],
       ' allowed.txt | 2 +-\n 1 file changed, 1 insertion(+), 1 deletion(-)\n',
     )
+
+    const result = parser.parse()
 
     expect(result).toEqual({
       stat: {

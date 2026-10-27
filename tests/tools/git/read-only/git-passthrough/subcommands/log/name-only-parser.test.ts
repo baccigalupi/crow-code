@@ -3,7 +3,7 @@ import { GitLogNameOnlyParser } from '../../../../../../../src/tools/git/read-on
 
 describe('GitLogNameOnlyParser', () => {
   it('when options include --name-only, matches', () => {
-    const parser = new GitLogNameOnlyParser(['--name-only', '--stat'])
+    const parser = new GitLogNameOnlyParser(['--name-only', '--stat'], '')
 
     const match = parser.isMatch()
 
@@ -11,7 +11,7 @@ describe('GitLogNameOnlyParser', () => {
   })
 
   it('when options do not include --name-only, does not match', () => {
-    const parser = new GitLogNameOnlyParser(['--stat'])
+    const parser = new GitLogNameOnlyParser(['--stat'], '')
 
     const match = parser.isMatch()
 
@@ -19,11 +19,12 @@ describe('GitLogNameOnlyParser', () => {
   })
 
   it('when a commit has path lines, returns each as a file', () => {
-    const parser = new GitLogNameOnlyParser(['--name-only'])
-
-    const result = parser.parse(
+    const parser = new GitLogNameOnlyParser(
+      ['--name-only'],
       '7f2203f286226e6c29da25b8edb35b13a7efa7c6\x1fAda\x1f2026-10-02T11:00:00+00:00\x1fFix tests\n\nallowed.txt\nnotes.txt\n',
     )
+
+    const result = parser.parse()
 
     expect(result.commits).toEqual([
       {

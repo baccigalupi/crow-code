@@ -3,25 +3,25 @@ import { GitNameRevParser } from '../../../../../../../src/tools/git/read-only/g
 
 describe('GitNameRevParser', () => {
   it('when name-only output is given, returns the name', () => {
-    const parser = new GitNameRevParser(['--name-only', 'HEAD'])
+    const parser = new GitNameRevParser(['--name-only', 'HEAD'], 'main\n')
 
-    const result = parser.parse('main\n')
+    const result = parser.parse()
 
     expect(result).toEqual({ name: 'main' })
   })
 
   it('when plain output is given, returns the name without the revision', () => {
-    const parser = new GitNameRevParser(['HEAD'])
+    const parser = new GitNameRevParser(['HEAD'], 'HEAD main\n')
 
-    const result = parser.parse('HEAD main\n')
+    const result = parser.parse()
 
     expect(result).toEqual({ name: 'main' })
   })
 
   it('when the commit has no name, leaves the name out', () => {
-    const parser = new GitNameRevParser(['--tags', 'HEAD'])
+    const parser = new GitNameRevParser(['--tags', 'HEAD'], 'HEAD undefined\n')
 
-    const result = parser.parse('HEAD undefined\n')
+    const result = parser.parse()
 
     expect(result).toEqual({})
   })
