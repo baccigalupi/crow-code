@@ -45,12 +45,12 @@ Rules:
   flag edge case.
 - **Integration:** a class that coordinates other classes, tested with its
   collaborators left real.
-  `tests/tools/git/read-only/git-passthrough.test.ts` builds a real
-  `GitReadOnlyPassthrough` with real subcommands and parsers; only `runCommand`
+  `tests/tools/git/read-only.test.ts` builds a real
+  `GitReadOnly` with real subcommands and parsers; only `runCommand`
   is mocked. It proves coordination (dispatch, refusals, permissions, safe
   prefix), not parser detail.
 - **E2E:** as close to end-to-end as bun:test allows, with real IO.
-  `tests/tools/git/read-only/git-passthrough.e2e.test.ts` runs real git against
+  `tests/tools/git/read-only.e2e.test.ts` runs real git against
   the fixture repo and asserts one system property: the repository is
   unchanged. It does not grow with each subcommand or parser feature.
 

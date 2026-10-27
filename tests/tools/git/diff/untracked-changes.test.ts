@@ -1,0 +1,86 @@
+import { describe, expect, it, mock, spyOn } from 'bun:test'
+import { gitUntrackedChanges } from '../../../../src/tools/git/diff/untracked-changes.ts'
+import { mockApplicationData } from '../../../support/mock-application-data.ts'
+import { mockCommand } from '../../../support/mock-command.ts'
+
+describe('gitUntrackedChanges', () => {
+  it('when there are untracked files, returns a diff for each one', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({
+        commandSpy,
+        stdout: [
+          ' M src/tracked.ts\n?? src/a.ts\n?? src/b.ts\n',
+          'diff --git a/src/a.ts b/src/a.ts\nnew file mode 100644\n--- /dev/null\n+++ b/src/a.ts\n@@ -0,0 +1 @@\n+alpha\n',
+          'diff --git a/src/b.ts b/src/b.ts\nnew file mode 100644\n--- /dev/null\n+++ b/src/b.ts\n@@ -0,0 +1 @@\n+beta\n',
+        ],
+      }),
+    })
+
+    const changes = gitUntrackedChanges({ applicationData })
+    await changes.run()
+
+    expect(commandSpy).toHaveBeenNthCalledWith(1, 'git', {
+      args: ['status', '--porcelain', '-uall'],
+    })
+    expect(commandSpy).toHaveBeenNthCalledWith(2, 'git', {
+      args: ['diff', '--no-index', '/dev/null', 'src/a.ts'],
+    })
+    expect(commandSpy).toHaveBeenNthCalledWith(3, 'git', {
+      args: ['diff', '--no-index', '/dev/null', 'src/b.ts'],
+    })
+    expect(changes.success()).toBe(true)
+    expect(changes.result().length).toBe(2)
+    expect(changes.result()[0].path).toBe('src/a.ts')
+    expect(changes.result()[0].diff).toContain('+alpha')
+    expect(changes.result()[1].path).toBe('src/b.ts')
+    expect(changes.result()[1].diff).toContain('+beta')
+  })
+
+  it('when one file diff fails, fails but keeps the diffs that worked', async () => {
+    const applicationData = mockApplicationData({
+      command: mockCommand({
+        stdout: [
+          '?? src/a.ts\n?? src/b.ts\n',
+          'diff --git a/src/a.ts b/src/a.ts\nnew file mode 100644\n--- /dev/null\n+++ b/src/a.ts\n@@ -0,0 +1 @@\n+alpha\n',
+          new Error('No such file or directory (os error 2): git'),
+        ],
+      }),
+    })
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
+
+    const changes = gitUntrackedChanges({ applicationData })
+    await changes.run()
+
+    expect(changes.success()).toBe(false)
+    expect(changes.result().length).toBe(1)
+    expect(changes.result()[0].path).toBe('src/a.ts')
+    expect(changes.result()[0].diff).toContain('+alpha')
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
+      'Git untracked change: No such file or directory (os error 2): git',
+    )
+  })
+
+  it('when git status fails, does not diff any files and returns an empty array', async () => {
+    const commandSpy = mock()
+    const applicationData = mockApplicationData({
+      command: mockCommand({
+        commandSpy,
+        stderr: 'fatal: not a git repository',
+        success: false,
+        code: 128,
+      }),
+    })
+    const loggerErrorSpy = spyOn(applicationData.logger(), 'error')
+
+    const changes = gitUntrackedChanges({ applicationData })
+    await changes.run()
+
+    expect(commandSpy.mock.calls.length).toBe(1)
+    expect(changes.success()).toBe(false)
+    expect(changes.result()).toEqual([])
+    expect(loggerErrorSpy.mock.calls[0][0]).toBe(
+      'Git diff files: fatal: not a git repository',
+    )
+  })
+})

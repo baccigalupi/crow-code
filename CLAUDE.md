@@ -144,11 +144,11 @@ own `get-*-models.ts` fetcher + `parser.ts`, merged by `populate-models.ts` /
 
 `src/tools/*` implements the agent's file and git tools (read-only: `read`,
 `list`, `search`, `find`; mutating: file `edit`/`mkdir`, git `add`/`commit`).
-The agent's read-only git path is the typed passthrough
-(`src/tools/git/read-only/git-passthrough.ts`, one parser-backed class per
-subcommand in `git-passthrough/subcommands/`); the remaining hand-built git
-readers (`diff/*` compare/changes, `log/recent-subjects`) serve the commit
-flow. All path-taking tools are checked against
+The agent's read-only git tool is `GitReadOnly`
+(`src/tools/git/read-only.ts`, one parser-backed class per subcommand in
+`read-only/subcommands/`); the remaining hand-built git readers
+(`src/tools/git/diff/*` compare/changes, `src/tools/git/log/recent-subjects`)
+serve the commit flow. All path-taking tools are checked against
 `ApplicationData#writePathPermissions()`/`readPathPermissions()`/`gitPathPermissions()`
 (`src/application-data/allowed-paths.ts`) before touching the filesystem —
 permissions are resolved against allowed directories (default: cwd) and cached

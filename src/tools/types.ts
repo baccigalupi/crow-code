@@ -1,5 +1,5 @@
 import type { ApplicationOperationArguments } from '../types.ts'
-import type { GitSubcommand } from './git/read-only/git-passthrough/git-subcommand.ts'
+import type { GitSubcommand } from './git/read-only/git-subcommand.ts'
 
 export type GitSubcommandClass = new (
   arguments_: ApplicationOperationArguments<{ args: string[] }>,

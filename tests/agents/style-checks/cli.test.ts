@@ -174,7 +174,7 @@ describe('style-check cli', () => {
   it('when an e2e test file is named, it mirrors the source without the e2e segment', async () => {
     const command = [
       'agents/style-check',
-      'tests/tools/git/read-only/git-passthrough.e2e.test.ts',
+      'tests/tools/git/read-only.e2e.test.ts',
     ]
 
     const child = Bun.spawn(command, { stdout: 'pipe', stderr: 'pipe' })
