@@ -9,6 +9,12 @@ import { theme } from '../../theme.ts'
 // Three chrome-coloured rows; the middle one holds the title and quit hint.
 export class HeaderView {
   private renderer: RenderContext
+  // Keeps its three rows when the panels below need more room.
+  private readonly rootOptions = {
+    flexDirection: 'column',
+    width: '100%',
+    flexShrink: 0,
+  } as const
   private readonly barOptions = {
     flexDirection: 'row',
     height: 1,
@@ -24,8 +30,7 @@ export class HeaderView {
 
   @memoize
   root() {
-    const options = { flexDirection: 'column', width: '100%' } as const
-    const box = new BoxRenderable(this.renderer, options)
+    const box = new BoxRenderable(this.renderer, this.rootOptions)
     box.add(this.bar([]))
     box.add(this.bar(['Installing Crow Code', 'ctrl-c quit']))
     box.add(this.bar([]))

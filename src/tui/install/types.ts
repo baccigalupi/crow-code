@@ -100,6 +100,13 @@ export type ConfigPanelProps = CrowConfigInputs & {
   readonly step: InstallStep
 }
 
+// The config json split around the line the current step edits.
+export type HighlightedJson = {
+  readonly before: string
+  readonly highlighted: string
+  readonly after: string
+}
+
 export type StepValues = CrowConfigInputs & {
   readonly step: InstallStep
   readonly crowConfigPath: string

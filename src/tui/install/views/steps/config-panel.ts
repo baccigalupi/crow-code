@@ -1,28 +1,26 @@
 import {
   BoxRenderable,
   TextRenderable,
-  bg,
-  fg,
-  t,
   type RenderContext,
 } from '@opentui/core'
 import { memoize } from '../../../../decorators.ts'
-import { theme } from '../../../theme.ts'
 import { crowConfigFromInputs } from '../../crow-config/from-inputs.ts'
 import { highlightJson } from '../../crow-config/highlight.ts'
 import type { ConfigPanelProps, InstallStep } from '../../types.ts'
+import { ConfigJsonView } from './config-json.ts'
 
 // Previews the crow config being built, with the line the current step
 // edits highlighted.
 export class ConfigPanelView {
   private renderer: RenderContext
-  private readonly jsonBoxOptions = {
+  private readonly configJson: ConfigJsonView
+  // Shrinks to the rows the step prompt leaves, scrolling the json.
+  private readonly rootOptions = {
     flexDirection: 'column',
-    alignSelf: 'flex-start',
-    backgroundColor: theme.configPanel.background,
-    paddingX: 2,
-    paddingY: 1,
-    marginTop: 1,
+    paddingX: 1,
+    flexGrow: 1,
+    flexShrink: 1,
+    minHeight: 0,
   } as const
   // Provider steps edit the draft, which is always the last provider entry.
   private readonly draftTargets: Partial<
@@ -34,14 +32,14 @@ export class ConfigPanelView {
 
   constructor(renderer: RenderContext) {
     this.renderer = renderer
+    this.configJson = new ConfigJsonView(renderer)
   }
 
   @memoize
   root() {
-    const options = { flexDirection: 'column', paddingX: 1 } as const
-    const box = new BoxRenderable(this.renderer, options)
+    const box = new BoxRenderable(this.renderer, this.rootOptions)
     box.add(this.path())
-    box.add(this.jsonBox())
+    box.add(this.configJson.root())
     return box
   }
 
@@ -49,14 +47,13 @@ export class ConfigPanelView {
     const crowConfigPath = crowConfigFromInputs(values).crowConfigPath()
     this.root().visible = values.step !== 'repo'
     this.path().content = `Installing repo config in: ${crowConfigPath}`
-    this.json().content = this.jsonContent(values)
+    this.configJson.update(this.jsonSections(values))
   }
 
-  private jsonContent(values: ConfigPanelProps) {
+  private jsonSections(values: ConfigPanelProps) {
     const json = crowConfigFromInputs(values).crowConfigJson()
     const target = this.highlightTarget(values.step)
-    const { before, highlighted, after } = highlightJson({ json, ...target })
-    return t`${before}${this.highlight(highlighted)}${after}`
+    return highlightJson({ json, ...target })
   }
 
   // Every other step edits the config key of the same name.
@@ -64,24 +61,8 @@ export class ConfigPanelView {
     return this.draftTargets[step] || { key: step }
   }
 
-  private highlight(text: string) {
-    const { highlightBackground, highlightTextColor } = theme.configPanel
-    return fg(highlightTextColor)(bg(highlightBackground)(text))
-  }
-
   @memoize
   private path() {
-    return new TextRenderable(this.renderer, { content: '' })
-  }
-
-  private jsonBox() {
-    const box = new BoxRenderable(this.renderer, this.jsonBoxOptions)
-    box.add(this.json())
-    return box
-  }
-
-  @memoize
-  private json() {
-    return new TextRenderable(this.renderer, { content: '' })
+    return new TextRenderable(this.renderer, { content: '', flexShrink: 0 })
   }
 }
