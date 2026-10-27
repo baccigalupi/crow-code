@@ -16,26 +16,25 @@ import { CompleteSetupStep } from './complete-setup.ts'
 import { DoneStep } from './done.ts'
 import { DefaultStep } from './default.ts'
 
-const stepClasses = [
-  RepoStep,
-  CrowGlobalDirectoryStep,
-  EnvFileStep,
-  IgnoreStep,
-  AdditionalReadStep,
-  AdditionalWriteStep,
-  EscalateReadStep,
-  EscalateWriteStep,
-  AllowedLocalScriptsStep,
-  ProviderNameStep,
-  ProviderUrlStep,
-  ProviderCredentialsStep,
-  ConfirmStep,
-  CompleteSetupStep,
-  DoneStep,
-]
-
 export class CurrentStep {
   private model: DataStore
+  private readonly stepClasses = [
+    RepoStep,
+    CrowGlobalDirectoryStep,
+    EnvFileStep,
+    IgnoreStep,
+    AdditionalReadStep,
+    AdditionalWriteStep,
+    EscalateReadStep,
+    EscalateWriteStep,
+    AllowedLocalScriptsStep,
+    ProviderNameStep,
+    ProviderUrlStep,
+    ProviderCredentialsStep,
+    ConfirmStep,
+    CompleteSetupStep,
+    DoneStep,
+  ]
 
   constructor(model: DataStore) {
     this.model = model
@@ -53,6 +52,6 @@ export class CurrentStep {
   }
 
   all() {
-    return stepClasses.map((Step) => new Step(this.model))
+    return this.stepClasses.map((Step) => new Step(this.model))
   }
 }

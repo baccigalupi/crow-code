@@ -4,18 +4,17 @@ import { SavedProvidersStore } from './providers-store/saved-providers-store.ts'
 import type { StepStore } from './step-store.ts'
 import { TextFieldStore } from './text-field-store.ts'
 
-const fieldSteps: readonly InstallStep[] = [
-  'providerName',
-  'providerUrl',
-  'providerCredentials',
-]
-
 // The provider being typed across the name/url/credentials steps, plus the
 // ones already saved. Commit saves the draft and starts another; cancel drops
 // it and leaves the loop.
 export class ProvidersStore {
   private step: StepStore
   private saved = new SavedProvidersStore()
+  private readonly fieldSteps: readonly InstallStep[] = [
+    'providerName',
+    'providerUrl',
+    'providerCredentials',
+  ]
   readonly providerName = new TextFieldStore()
   readonly providerUrl = new TextFieldStore()
   readonly providerCredentials = new TextFieldStore()
@@ -49,6 +48,7 @@ export class ProvidersStore {
   }
 
   focus(offset: number) {
+    const { fieldSteps } = this
     const index = fieldSteps.indexOf(this.step.current.peek()) + offset
     this.step.goTo(
       fieldSteps[Math.min(Math.max(index, 0), fieldSteps.length - 1)],

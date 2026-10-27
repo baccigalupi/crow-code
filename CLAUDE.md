@@ -152,23 +152,31 @@ per-path.
 
 ### TUI
 
-`src/tui/*` is an OpenTUI/React terminal UI (`@opentui/core` and
-`@opentui/react`, pinned 0.6.6). `install/` is the first-run config installer
-(view-models in `*-view-model.ts` paired with `.tsx` views, plus interactions),
+`src/tui/*` is a terminal UI on `@opentui/core` (pinned 0.6.6) with no view
+framework. `install/` is the first-run config installer (view classes in
+`views/`, stores in `data-stores/`, plus interactions),
 launched by `crow install` via `install/runner.ts`. The agent app is not built
 yet: `crow` with no args prints a coming-soon message. State uses
-`@preact/signals-core` (see `use-signal-value.ts`) through plain store classes
-in `install/data-stores/`: one class per concern (`TextFieldStore`, `StepStore`,
-`ProvidersStore`, `SetupStore`, …), built as fields of `DataStore`
-(`install/data-store.ts`), the entry point the runner creates once and passes to the views. Signals are private
-fields exposed through `ReadonlySignal` getters; derived values are `computed`
-fields created once on the class that owns their signals; multi-write methods
-wrap their writes in `batch`; a store that needs an effect starts it in
-`listen()` (constructors do no work) and releases it in `dispose()`.
+`@preact/signals-core` through plain store classes in `install/data-stores/`:
+one class per concern (`TextFieldStore`, `StepStore`, `ProvidersStore`,
+`SetupStore`, …), built as fields of `DataStore` (`install/data-store.ts`), the
+entry point the runner creates once. Signals are private fields exposed through
+`ReadonlySignal` getters; derived values are `computed` fields created once on
+the class that owns their signals; multi-write methods wrap their writes in
+`batch`; a store that needs an effect starts it in `listen()` (constructors do
+no work) and releases it in `dispose()`.
 
-OpenTUI `.tsx` files start with the pragma `/** @jsxImportSource @opentui/react */`;
-`tsconfig.json` stays `jsxImportSource: react`. OpenTUI runners are `.ts` files
-using `createElement`.
+Views are classes over imperative core renderables (`BoxRenderable`,
+`TextRenderable` with `StyledText`, `SelectRenderable`): each builds its
+renderables once (memoized `root()`) and redraws them from plain values in
+`update(values)` — a view never sees a store or a signal. `StepPromptsView`
+maps the current step to its view class and swaps views when the step changes.
+`Subscriptions` (`install/subscriptions.ts`) holds the UI's only effects, one
+per view it feeds from the store; `KeyboardListener`
+(`install/interactions/keyboard-listener.ts`) forwards `renderer.keyInput`
+keys and pastes to `DataStore#press`/`paste`. Both follow the
+`listen()`/`dispose()` shape, and the runner disposes them and the store when
+the renderer is destroyed.
 
 ## Style gates
 
@@ -187,7 +195,7 @@ Match the task against the skill descriptions before acting and load every
 match first. In particular: invoke `/planning` whenever creating, researching,
 or revising a plan (any request for a plan, including "plan", "build the plan",
 or EnterPlanMode) — never write a plan without it. Before editing `src/**`,
-load `code-style` (plus `react-style` for `.tsx` under `src/tui/`); before
+load `code-style` (plus `opentui` for `src/tui/`); before
 editing `tests/**`, load `unit-tests` and `testing-pyramid`. `AGENTS.md` holds
 the full rules.
 
@@ -240,6 +248,6 @@ The Bun runtime types (`bun-types`) are indexed as a named
 (`search_graph`/`get_code_snippet`/`trace_path`) rather than writing `Bun.*`
 calls from memory — see `AGENTS.md` § Dependency lookup for the query pattern.
 
-The TUI (`src/tui/*`) is built on **OpenTUI + React**, with
+The TUI (`src/tui/*`) is built on **OpenTUI core**, with
 **`@preact/signals-core`** for state (see the TUI section above and
 `package.json`'s `dependencies`).

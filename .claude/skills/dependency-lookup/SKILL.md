@@ -3,13 +3,13 @@ name: dependency-lookup
 description: >-
   Look up Bun runtime APIs (and crow-code's own code) in indexed dependency
   graphs instead of guessing signatures. Triggers on: Bun.* API, bun:test
-  imports, OpenTUI/React TUI components, Signal, "which component", "how do I
+  imports, OpenTUI TUI renderables, Signal, "which component", "how do I
   draw", dependency API questions.
 ---
 
 # Dependency lookup
 
-Note on the TUI: the TUI (`src/tui/*`) is built on **OpenTUI + React** with
+Note on the TUI: the TUI (`src/tui/*`) is built on **OpenTUI core** with
 **`@preact/signals-core`** for state. No indexed dependency project covers it.
 Read `src/tui/*` source directly for TUI questions instead.
 

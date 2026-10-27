@@ -1,11 +1,9 @@
 import type { DataStore } from '../data-store.ts'
-import { ProviderPrompt } from '../views/steps/provider-prompt.tsx'
 
 export class ProviderUrlStep {
   private model: DataStore
   readonly name = 'providerUrl'
   readonly nextStep = 'providerCredentials'
-  readonly View = ProviderPrompt
 
   constructor(model: DataStore) {
     this.model = model

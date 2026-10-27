@@ -4,7 +4,6 @@ export class DefaultStep {
   private model: DataStore
   readonly name = 'default'
   readonly nextStep = 'confirm'
-  readonly View = () => null
 
   constructor(model: DataStore) {
     this.model = model

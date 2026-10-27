@@ -1,15 +1,16 @@
 import type { ApplicationData } from '../../application-data/application-data.ts'
 import type { ReplIo } from '../runner/types.ts'
-import { createElement } from 'react'
-import { createCliRenderer } from '@opentui/core'
+import { createCliRenderer, type CliRenderer } from '@opentui/core'
 import { memoize } from '../../decorators.ts'
 import { createOpenTuiRunner } from '../runner.ts'
 import { DataStore } from './data-store.ts'
-import { InstallApp } from './views/install-app.tsx'
+import { KeyboardListener } from './interactions/keyboard-listener.ts'
+import { Subscriptions } from './subscriptions.ts'
+import { InstallScreen } from './views/install-screen.ts'
 
 // The install command's only way into the install TUI. The data store is
 // built here, before the view mounts, so setup completion is listening from
-// the start and no view, hook or keypress ever sees the filesystem.
+// the start and no view or keypress ever sees the filesystem.
 export class InstallTuiRunner {
   private applicationData: ApplicationData
   private io: ReplIo
@@ -29,13 +30,30 @@ export class InstallTuiRunner {
     )
   }
 
-  view() {
-    return createElement(InstallApp, { model: this.model() })
+  view(renderer: CliRenderer) {
+    const screen = new InstallScreen(renderer)
+    const listeners = this.listeners(renderer, screen)
+    screen.mount()
+    listeners.forEach((listener) => listener.listen())
+    renderer.once('destroy', () => this.dispose(listeners))
   }
 
   @memoize
   model() {
     return new DataStore({ applicationData: this.applicationData })
+  }
+
+  private listeners(renderer: CliRenderer, screen: InstallScreen) {
+    return [
+      new Subscriptions(this.model(), screen),
+      new KeyboardListener(renderer, this.model()),
+    ]
+  }
+
+  // Once the renderer is gone nothing may redraw, read keys or start setup.
+  private dispose(listeners: readonly { dispose(): void }[]) {
+    listeners.forEach((listener) => listener.dispose())
+    this.model().dispose()
   }
 }
 

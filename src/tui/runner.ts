@@ -1,17 +1,15 @@
 import type { CliRenderer } from '@opentui/core'
-import { createRoot } from '@opentui/react'
-import { createElement, type FunctionComponent } from 'react'
 import type { ApplicationData } from '../application-data/application-data.ts'
 import { memoize } from '../decorators.ts'
 import { ProcessSignalListeners } from './runner/process-signal-listeners.ts'
 import { RendererLifecycle } from './runner/renderer-lifecycle.ts'
 import { tuiRendererConfig } from './runner/tui-renderer-config.ts'
-import type { CreateRenderer, ReplIo } from './runner/types.ts'
+import type { CreateRenderer, MountView, ReplIo } from './runner/types.ts'
 
 export class OpenTuiRunner {
   private applicationData: ApplicationData
   private io: ReplIo
-  private view: FunctionComponent
+  private mountView: MountView
   private createRenderer: CreateRenderer
   private lifecycle = new RendererLifecycle()
   readonly exit = this.lifecycle.exit
@@ -20,12 +18,12 @@ export class OpenTuiRunner {
   constructor(
     applicationData: ApplicationData,
     io: ReplIo,
-    view: FunctionComponent,
+    mountView: MountView,
     createRenderer: CreateRenderer,
   ) {
     this.applicationData = applicationData
     this.io = io
-    this.view = view
+    this.mountView = mountView
     this.createRenderer = createRenderer
   }
 
@@ -73,7 +71,7 @@ export class OpenTuiRunner {
 
   private mount(renderer: CliRenderer) {
     this.lifecycle.attach(renderer)
-    createRoot(renderer).render(createElement(this.view))
+    this.mountView(renderer)
   }
 
   private async failed(error: Error) {
@@ -86,6 +84,6 @@ export class OpenTuiRunner {
 export const createOpenTuiRunner = (
   applicationData: ApplicationData,
   io: ReplIo,
-  view: FunctionComponent,
+  mountView: MountView,
   createRenderer: CreateRenderer,
-) => new OpenTuiRunner(applicationData, io, view, createRenderer)
+) => new OpenTuiRunner(applicationData, io, mountView, createRenderer)

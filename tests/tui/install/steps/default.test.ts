@@ -12,14 +12,6 @@ describe('DefaultStep', () => {
     expect(step.nextStep).toBe('confirm')
   })
 
-  it('when asked for its view, renders nothing', () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-
-    const rendered = new DefaultStep(model).View()
-
-    expect(rendered).toBeNull()
-  })
-
   it('when asked for its field, returns the env file input', () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
 

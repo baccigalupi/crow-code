@@ -2,7 +2,7 @@ import { batch, computed } from '@preact/signals-core'
 import type { ExitApp, KeyFlags } from '../types.ts'
 import type { DataStoreArguments } from './types.ts'
 import { Keypress } from './interactions/keypress.ts'
-import { configPathViewModel } from './views/config-path-view-model.ts'
+import { crowConfigFromInputs } from './crow-config/from-inputs.ts'
 import { ConfirmStore } from './data-stores/confirm-store.ts'
 import { DirectoriesStore } from './data-stores/directories-store.ts'
 import { PermissionsStore } from './data-stores/permissions-store.ts'
@@ -60,7 +60,7 @@ export class DataStore {
   private promptValues() {
     return {
       ...this.inputs.value,
-      ...configPathViewModel(this.inputs.value),
+      crowConfigPath: crowConfigFromInputs(this.inputs.value).crowConfigPath(),
       setupTasks: this.setup.tasks.value,
     }
   }

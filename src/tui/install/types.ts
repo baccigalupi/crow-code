@@ -1,4 +1,5 @@
 import type { ReadonlySignal } from '@preact/signals-core'
+import type { RenderContext, Renderable } from '@opentui/core'
 import type { ExitApp, InputText, KeyFlags } from '../types.ts'
 import type { AsyncOperation, CrowPermissionsConfig } from '../../types.ts'
 import type { ApplicationData } from '../../application-data/application-data.ts'
@@ -121,8 +122,22 @@ export type ProviderPromptProps = Pick<
   'step' | 'providers' | 'providerName' | 'providerUrl' | 'providerCredentials'
 >
 
-export type InstallAppProps = {
-  readonly model: DataStore
+export type ProviderFieldDefinition = {
+  readonly label: string
+  readonly input: 'providerName' | 'providerUrl' | 'providerCredentials'
+  readonly masked: boolean
+}
+
+export type StepView = {
+  root(): Renderable
+  update(values: StepValues): void
+}
+
+export type StepViewClass = new (renderer: RenderContext) => StepView
+
+export type InstallScreenViews = {
+  readonly configPanel: { update(values: ConfigPanelProps): void }
+  readonly stepPrompts: { update(values: StepValues): void }
 }
 
 export type StatefulTask = {

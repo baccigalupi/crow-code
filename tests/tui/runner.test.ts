@@ -6,12 +6,12 @@ import { mockStdin, mockStdout } from '../support/mock-streams.ts'
 
 describe('createOpenTuiRunner', () => {
   it('when exit is called once mounted, status resolves completed', async () => {
-    const view = () => null
+    const mount = mock()
     const { renderer } = await createTestRenderer({})
     const runner = createOpenTuiRunner(
       mockApplicationData(),
       { stdin: mockStdin(), stdout: mockStdout() },
-      view,
+      mount,
       () => Promise.resolve(renderer),
     )
     spyOn(renderer, 'idle').mockImplementation(() => {
@@ -22,15 +22,16 @@ describe('createOpenTuiRunner', () => {
     const status = await runner.status()
 
     expect(status).toBe('completed')
+    expect(mount.mock.calls[0][0]).toBe(renderer)
   })
 
   it('when interrupted once mounted, status resolves interrupted', async () => {
-    const view = () => null
+    const mount = mock()
     const { renderer } = await createTestRenderer({})
     const runner = createOpenTuiRunner(
       mockApplicationData(),
       { stdin: mockStdin(), stdout: mockStdout() },
-      view,
+      mount,
       () => Promise.resolve(renderer),
     )
     spyOn(renderer, 'idle').mockImplementation(() => {
@@ -44,13 +45,13 @@ describe('createOpenTuiRunner', () => {
   })
 
   it('when interrupted during startup, destroys the renderer once created', async () => {
-    const view = () => null
+    const mount = mock()
     const { renderer } = await createTestRenderer({})
     const destroy = spyOn(renderer, 'destroy')
     const runner = createOpenTuiRunner(
       mockApplicationData(),
       { stdin: mockStdin() },
-      view,
+      mount,
       () => Promise.resolve(renderer),
     )
 
@@ -62,13 +63,13 @@ describe('createOpenTuiRunner', () => {
   })
 
   it('when a signal arrives through the runtime listener, status resolves interrupted', async () => {
-    const view = () => null
+    const mount = mock()
     const applicationData = mockApplicationData()
     const add = spyOn(applicationData.runtime, 'addSignalListener')
     const runner = createOpenTuiRunner(
       applicationData,
       { stdin: mockStdin(), stdout: mockStdout() },
-      view,
+      mount,
       async () => (await createTestRenderer({})).renderer,
     )
 
@@ -79,14 +80,14 @@ describe('createOpenTuiRunner', () => {
   })
 
   it('when creating the renderer fails, writes the error through the console error and resolves interrupted', async () => {
-    const view = () => null
+    const mount = mock()
     const consoleError = mock()
     const applicationData = mockApplicationData({ consoleError })
     const remove = spyOn(applicationData.runtime, 'removeSignalListener')
     const runner = createOpenTuiRunner(
       applicationData,
       { stdin: mockStdin() },
-      view,
+      mount,
       () => Promise.reject(new Error('boom')),
     )
 
@@ -98,7 +99,7 @@ describe('createOpenTuiRunner', () => {
   })
 
   it('when failing after the renderer exists, destroys it and writes the error', async () => {
-    const view = () => null
+    const mount = mock()
     const consoleError = mock()
     const { renderer } = await createTestRenderer({})
     spyOn(renderer, 'idle').mockRejectedValue(new Error('idle failed'))
@@ -106,7 +107,7 @@ describe('createOpenTuiRunner', () => {
     const runner = createOpenTuiRunner(
       mockApplicationData({ consoleError }),
       { stdin: mockStdin() },
-      view,
+      mount,
       () => Promise.resolve(renderer),
     )
 
@@ -118,13 +119,13 @@ describe('createOpenTuiRunner', () => {
   })
 
   it('when stdin cannot set raw mode, refuses to start the renderer', async () => {
-    const view = () => null
+    const mount = mock()
     const consoleError = mock()
     const createRenderer = mock()
     const runner = createOpenTuiRunner(
       mockApplicationData({ consoleError }),
       { stdin: mockStdin({ rawMode: false }) },
-      view,
+      mount,
       createRenderer,
     )
 

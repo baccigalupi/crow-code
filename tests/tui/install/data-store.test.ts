@@ -113,4 +113,21 @@ describe('DataStore', () => {
 
     expect(model.inputs.peek().step).toBe('ignore')
   })
+
+  it('when no repo directory is typed, the config path is in the default directory', () => {
+    const model = new DataStore({ applicationData: mockApplicationData() })
+
+    const { crowConfigPath } = model.stepValues.peek()
+
+    expect(crowConfigPath).toBe('.crow/config.json')
+  })
+
+  it('when a repo directory is typed, the config path is inside it', () => {
+    const model = new DataStore({ applicationData: mockApplicationData() })
+    model.directories.repoDirectory.insert('./lib')
+
+    const { crowConfigPath } = model.stepValues.peek()
+
+    expect(crowConfigPath).toBe('./lib/config.json')
+  })
 })
