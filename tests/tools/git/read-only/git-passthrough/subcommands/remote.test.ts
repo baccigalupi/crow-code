@@ -1,8 +1,64 @@
 import { describe, expect, it } from 'bun:test'
 import { GitRemoteSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/remote.ts'
 import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
+import { mockCommand } from '../../../../../support/mock-command.ts'
 
 describe('GitRemoteSubcommand', () => {
+  it('when git remote get-url runs, returns the url', async () => {
+    const applicationData = mockApplicationData({
+      command: mockCommand({ stdout: 'https://example.com/fixture.git\n' }),
+    })
+    const subcommand = new GitRemoteSubcommand({
+      applicationData,
+      operationArguments: { args: ['get-url', 'origin'] },
+    })
+
+    await subcommand.run()
+    const result = subcommand.result()
+
+    expect(result).toEqual({ url: 'https://example.com/fixture.git' })
+  })
+
+  it('when git remote -v runs, returns typed entries', async () => {
+    const applicationData = mockApplicationData({
+      command: mockCommand({
+        stdout: 'origin\thttps://example.com/fixture.git (fetch)\n',
+      }),
+    })
+    const subcommand = new GitRemoteSubcommand({
+      applicationData,
+      operationArguments: { args: ['-v'] },
+    })
+
+    await subcommand.run()
+    const result = subcommand.result()
+
+    expect(result).toEqual({
+      entries: [
+        {
+          name: 'origin',
+          url: 'https://example.com/fixture.git',
+          direction: 'fetch',
+        },
+      ],
+    })
+  })
+
+  it('when git remote runs bare, returns names', async () => {
+    const applicationData = mockApplicationData({
+      command: mockCommand({ stdout: 'origin\n' }),
+    })
+    const subcommand = new GitRemoteSubcommand({
+      applicationData,
+      operationArguments: { args: [] },
+    })
+
+    await subcommand.run()
+    const result = subcommand.result()
+
+    expect(result).toEqual({ entries: [{ name: 'origin' }] })
+  })
+
   it('when given nothing, does not refuse', () => {
     const subcommand = new GitRemoteSubcommand({
       applicationData: mockApplicationData(),

@@ -1,8 +1,43 @@
 import { describe, expect, it } from 'bun:test'
 import { GitBranchSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/branch.ts'
 import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
+import { mockCommand } from '../../../../../support/mock-command.ts'
 
 describe('GitBranchSubcommand', () => {
+  it('when git branch -v runs, returns typed entries', async () => {
+    const applicationData = mockApplicationData({
+      command: mockCommand({ stdout: '* main    7f2203f second\n' }),
+    })
+    const subcommand = new GitBranchSubcommand({
+      applicationData,
+      operationArguments: { args: ['-v'] },
+    })
+
+    await subcommand.run()
+    const result = subcommand.result()
+
+    expect(result).toEqual({
+      entries: [
+        { name: 'main', current: true, sha: '7f2203f', subject: 'second' },
+      ],
+    })
+  })
+
+  it('when git branch --show-current runs, returns the name', async () => {
+    const applicationData = mockApplicationData({
+      command: mockCommand({ stdout: 'main\n' }),
+    })
+    const subcommand = new GitBranchSubcommand({
+      applicationData,
+      operationArguments: { args: ['--show-current'] },
+    })
+
+    await subcommand.run()
+    const result = subcommand.result()
+
+    expect(result).toEqual({ name: 'main' })
+  })
+
   it('when given nothing, does not refuse', () => {
     const subcommand = new GitBranchSubcommand({
       applicationData: mockApplicationData(),

@@ -133,8 +133,12 @@ export type GitOutput = {
     | GitReflogEntry[]
     | GitStashEntry[]
     | GitConfigEntry[]
+    | GitBranchEntry[]
+    | GitTagEntry[]
+    | GitRemoteEntry[]
   worktrees?: GitWorktree[]
   path?: string
+  url?: string
   text?: string
   values?: string[]
   shas?: string[]
@@ -176,6 +180,25 @@ export type GitStashEntry = {
 export type GitConfigEntry = {
   key: string
   value: string
+}
+
+export type GitBranchEntry = {
+  name: string
+  current: boolean
+  sha?: string
+  subject?: string
+  target?: string
+}
+
+export type GitTagEntry = {
+  name: string
+  message?: string
+}
+
+export type GitRemoteEntry = {
+  name: string
+  url?: string
+  direction?: string
 }
 
 export type GitWorktree = {

@@ -1,6 +1,7 @@
 import { gitParsedArguments } from '../cli-options/parsed-arguments.ts'
 import { GitRefusals } from '../git-subcommands/git-refusals.ts'
 import { GitSubcommand } from '../git-subcommand.ts'
+import { GitBranchParser } from './branch/parser.ts'
 
 export class GitBranchSubcommand extends GitSubcommand {
   protected override logPrefix = 'Git branch: '
@@ -18,6 +19,11 @@ export class GitBranchSubcommand extends GitSubcommand {
 
   override refusal() {
     return this.parsed().refusal() || this.extrasRefusal()
+  }
+
+  protected override parse() {
+    const showCurrent = this.args.includes('--show-current')
+    return new GitBranchParser(this.rawResponse, showCurrent).parse()
   }
 
   private parsed() {

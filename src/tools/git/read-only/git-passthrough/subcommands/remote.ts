@@ -1,6 +1,7 @@
 import { gitParsedArguments } from '../cli-options/parsed-arguments.ts'
 import { GitRefusals } from '../git-subcommands/git-refusals.ts'
 import { GitSubcommand } from '../git-subcommand.ts'
+import { GitRemoteParser } from './remote/parser.ts'
 
 export class GitRemoteSubcommand extends GitSubcommand {
   protected override logPrefix = 'Git remote: '
@@ -15,6 +16,10 @@ export class GitRemoteSubcommand extends GitSubcommand {
     return (
       this.formsRefusal() || this.parsed().refusal() || this.argumentRefusal()
     )
+  }
+
+  protected override parse() {
+    return new GitRemoteParser(this.rawResponse, `${this.given()[0]}`).parse()
   }
 
   private given() {

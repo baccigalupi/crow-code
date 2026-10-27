@@ -1,8 +1,26 @@
 import { describe, expect, it } from 'bun:test'
 import { GitTagSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/tag.ts'
 import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
+import { mockCommand } from '../../../../../support/mock-command.ts'
 
 describe('GitTagSubcommand', () => {
+  it('when git tag -n runs, returns typed entries', async () => {
+    const applicationData = mockApplicationData({
+      command: mockCommand({ stdout: 'v1.0            Release one\n' }),
+    })
+    const subcommand = new GitTagSubcommand({
+      applicationData,
+      operationArguments: { args: ['-n'] },
+    })
+
+    await subcommand.run()
+    const result = subcommand.result()
+
+    expect(result).toEqual({
+      entries: [{ name: 'v1.0', message: 'Release one' }],
+    })
+  })
+
   it('when given nothing, does not refuse', () => {
     const subcommand = new GitTagSubcommand({
       applicationData: mockApplicationData(),

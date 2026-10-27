@@ -1,6 +1,7 @@
 import { gitParsedArguments } from '../cli-options/parsed-arguments.ts'
 import { GitRefusals } from '../git-subcommands/git-refusals.ts'
 import { GitSubcommand } from '../git-subcommand.ts'
+import { GitTagParser } from './tag/parser.ts'
 
 export class GitTagSubcommand extends GitSubcommand {
   protected override logPrefix = 'Git tag: '
@@ -16,6 +17,10 @@ export class GitTagSubcommand extends GitSubcommand {
 
   override refusal() {
     return this.parsed().refusal() || this.extrasRefusal()
+  }
+
+  protected override parse() {
+    return new GitTagParser(this.rawResponse).parse()
   }
 
   private parsed() {
