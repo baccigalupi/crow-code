@@ -1,6 +1,7 @@
 import { gitParsedArguments } from '../cli-options/parsed-arguments.ts'
 import { GitRefusals } from '../git-subcommands/git-refusals.ts'
 import { GitSubcommand } from '../git-subcommand.ts'
+import { GitConfigParser } from './config/parser.ts'
 
 export class GitConfigSubcommand extends GitSubcommand {
   protected override logPrefix = 'Git config: '
@@ -20,6 +21,10 @@ export class GitConfigSubcommand extends GitSubcommand {
     return (
       this.formsRefusal() || this.parsed().refusal() || this.argumentRefusal()
     )
+  }
+
+  protected override parse() {
+    return new GitConfigParser(this.rawResponse, `${this.given()[0]}`).parse()
   }
 
   private given() {

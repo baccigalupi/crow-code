@@ -1,8 +1,24 @@
 import { describe, expect, it } from 'bun:test'
 import { GitConfigSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/config.ts'
 import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
+import { mockCommand } from '../../../../../support/mock-command.ts'
 
 describe('GitConfigSubcommand', () => {
+  it('when git config --list runs, returns typed entries', async () => {
+    const applicationData = mockApplicationData({
+      command: mockCommand({ stdout: 'core.bare=false\n' }),
+    })
+    const subcommand = new GitConfigSubcommand({
+      applicationData,
+      operationArguments: { args: ['--list'] },
+    })
+
+    await subcommand.run()
+    const result = subcommand.result()
+
+    expect(result).toEqual({ entries: [{ key: 'core.bare', value: 'false' }] })
+  })
+
   it('when given --get and a key, does not refuse', () => {
     const subcommand = new GitConfigSubcommand({
       applicationData: mockApplicationData(),

@@ -128,7 +128,11 @@ export type GitOutput = {
   files?: GitLogFile[]
   changes?: GitStatusFile[]
   entries?:
-    GitLsFilesEntry[] | GitLsTreeEntry[] | GitReflogEntry[] | GitStashEntry[]
+    | GitLsFilesEntry[]
+    | GitLsTreeEntry[]
+    | GitReflogEntry[]
+    | GitStashEntry[]
+    | GitConfigEntry[]
   worktrees?: GitWorktree[]
   path?: string
   text?: string
@@ -167,6 +171,11 @@ export type GitReflogEntry = {
 export type GitStashEntry = {
   selector: string
   message: string
+}
+
+export type GitConfigEntry = {
+  key: string
+  value: string
 }
 
 export type GitWorktree = {
