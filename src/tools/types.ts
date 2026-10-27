@@ -136,6 +136,9 @@ export type GitOutput = {
     | GitBranchEntry[]
     | GitTagEntry[]
     | GitRemoteEntry[]
+    | GitRefEntry[]
+    | GitIgnoredPath[]
+    | GitAttribute[]
   worktrees?: GitWorktree[]
   path?: string
   url?: string
@@ -149,6 +152,7 @@ export type GitOutput = {
   name?: string
   kind?: GitObjectKind
   size?: number
+  objectCounts?: GitObjectCounts
   matches?: GitGrepMatch[]
   counts?: GitGrepCount[]
 }
@@ -199,6 +203,41 @@ export type GitRemoteEntry = {
   name: string
   url?: string
   direction?: string
+}
+
+export type GitObjectCounts = {
+  count: number
+  sizeKilobytes: number
+  inPack?: number
+  packs?: number
+  sizePackKilobytes?: number
+  prunePackable?: number
+  garbage?: number
+  sizeGarbageKilobytes?: number
+}
+
+export type GitRefKind =
+  'head' | 'branch' | 'tag' | 'remote' | 'stash' | 'other'
+
+export type GitRefEntry = {
+  name: string
+  sha: string
+  kind: GitRefKind
+  objectType?: string
+  peeled?: boolean
+}
+
+export type GitIgnoredPath = {
+  path: string
+  source?: string
+  line?: number
+  pattern?: string
+}
+
+export type GitAttribute = {
+  path: string
+  attribute: string
+  value: string
 }
 
 export type GitWorktree = {

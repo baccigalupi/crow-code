@@ -1,8 +1,24 @@
 import { describe, expect, it } from 'bun:test'
 import { GitCheckIgnoreSubcommand } from '../../../../../../src/tools/git/read-only/git-passthrough/subcommands/check-ignore.ts'
 import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
+import { mockCommand } from '../../../../../support/mock-command.ts'
 
 describe('GitCheckIgnoreSubcommand', () => {
+  it('when git check-ignore runs, returns typed entries', async () => {
+    const applicationData = mockApplicationData({
+      command: mockCommand({ stdout: 'build.log\n' }),
+    })
+    const subcommand = new GitCheckIgnoreSubcommand({
+      applicationData,
+      operationArguments: { args: ['build.log'] },
+    })
+
+    await subcommand.run()
+    const result = subcommand.result()
+
+    expect(result).toEqual({ entries: [{ path: 'build.log' }] })
+  })
+
   it('when given -v and a path, does not refuse', () => {
     const subcommand = new GitCheckIgnoreSubcommand({
       applicationData: mockApplicationData(),
