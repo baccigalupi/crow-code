@@ -236,3 +236,4 @@
 {"id":"int-54c4cdd9","kind":"field_change","created_at":"2026-10-28T00:47:53.794828Z","actor":"Kane Baccigalupi","issue_id":"crow-code-4vz.8","extra":{"field":"status","new_value":"closed","old_value":"open","reason":"Deferred: re-evaluate later"}}
 {"id":"int-c99f3d8d","kind":"field_change","created_at":"2026-10-28T00:47:54.160254Z","actor":"Kane Baccigalupi","issue_id":"crow-code-4vz","extra":{"field":"status","new_value":"closed","old_value":"open","reason":"Deferred: re-evaluate later"}}
 {"id":"int-a8649366","kind":"field_change","created_at":"2026-10-28T18:12:16.462208Z","actor":"Kane Baccigalupi","issue_id":"crow-code-40t.12.4","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Closed"}}
+{"id":"int-a192f9db","kind":"field_change","created_at":"2026-10-28T23:14:09.349479Z","actor":"Kane Baccigalupi","issue_id":"crow-code-40t.1","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Closed"}}
