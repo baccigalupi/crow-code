@@ -7,10 +7,11 @@ describe('Languages', () => {
 
     const grammars = languages.grammars()
 
-    expect(grammars).toHaveLength(3)
+    expect(grammars).toHaveLength(4)
     expect(grammars[0].language).toBe('typescript')
     expect(grammars[1].language).toBe('tsx')
     expect(grammars[2].language).toBe('javascript')
+    expect(grammars[3].language).toBe('python')
   })
 
   it('when asked for the language parser of a language, returns the parser owning its grammar', () => {

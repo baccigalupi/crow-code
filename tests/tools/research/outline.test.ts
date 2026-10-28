@@ -159,4 +159,77 @@ describe('outline', () => {
       },
     ])
   })
+
+  it('when a python file defines a class and a function, nests the method inside the class', async () => {
+    mkdirSync(`${fixturesDirectory}/outline`, { recursive: true })
+    writeFileSync(
+      `${fixturesDirectory}/outline/crow.py`,
+      'class Crow:\n    def fly(self, height: int) -> None:\n        pass\n\n\ndef land():\n    pass\n',
+    )
+    const applicationData = mockApplicationData()
+    const path = `${fixturesDirectory}/outline/crow.py`
+
+    const file = outline({ applicationData, operationArguments: { path } })
+    await file.run()
+
+    expect(file.result()).toEqual({
+      path,
+      language: 'python',
+      symbols: [
+        {
+          name: 'Crow',
+          kind: 'class',
+          signature: 'class Crow:',
+          startLine: 1,
+          endLine: 3,
+          children: [
+            {
+              name: 'fly',
+              kind: 'function',
+              signature: 'def fly(self, height: int) -> None:',
+              startLine: 2,
+              endLine: 3,
+              children: [],
+            },
+          ],
+        },
+        {
+          name: 'land',
+          kind: 'function',
+          signature: 'def land():',
+          startLine: 6,
+          endLine: 7,
+          children: [],
+        },
+      ],
+    })
+  })
+
+  it('when an extensionless file has a python3 shebang, outlines it as python', async () => {
+    mkdirSync(`${fixturesDirectory}/outline`, { recursive: true })
+    writeFileSync(
+      `${fixturesDirectory}/outline/fly`,
+      '#!/usr/bin/env python3\ndef fly():\n    pass\n',
+    )
+    const applicationData = mockApplicationData()
+    const path = `${fixturesDirectory}/outline/fly`
+
+    const file = outline({ applicationData, operationArguments: { path } })
+    await file.run()
+
+    expect(file.result()).toEqual({
+      path,
+      language: 'python',
+      symbols: [
+        {
+          name: 'fly',
+          kind: 'function',
+          signature: 'def fly():',
+          startLine: 2,
+          endLine: 3,
+          children: [],
+        },
+      ],
+    })
+  })
 })
