@@ -240,19 +240,19 @@ rebuild and large).
 
 Each tool and its existing issue in the Research tools for agents epic:
 
-| Tool                 | Issue                                                                    |
-| -------------------- | ------------------------------------------------------------------------ |
-| symbols / outline    | `crow-code-40t.1` symbols/outline tool: list functions/classes in a file |
-| read_symbol          | none                                                                     |
-| find_definition      | `crow-code-40t.2` find_definition tool: where a symbol is defined        |
-| find_references      | `crow-code-40t.3` find_references tool: all usages of a symbol           |
-| callers / callees    | `crow-code-40t.9` callers/callees tool: call-hierarchy queries           |
-| imports              | `crow-code-40t.8` imports tool: file dependency graph                    |
-| dependents           | none                                                                     |
-| related_tests        | none                                                                     |
-| project_map          | `crow-code-40t.10` project_map tool: high-level repo structure digest    |
-| ast_search           | `crow-code-40t.7` ast_search tool: structural/syntax-aware code search   |
-| diagnostics (syntax) | `crow-code-40t.4` diagnostics tool: structured errors/warnings per file  |
+| Tool                 | Issue                                                                                  |
+| -------------------- | -------------------------------------------------------------------------------------- |
+| symbols / outline    | `crow-code-40t.1` symbols/outline tool: list functions/classes in a file               |
+| read_symbol          | `crow-code-40t.12.1` read_symbol tool: read one function or class by name              |
+| find_definition      | `crow-code-40t.2` find_definition tool: where a symbol is defined                      |
+| find_references      | `crow-code-40t.3` find_references tool: all usages of a symbol                         |
+| callers / callees    | `crow-code-40t.9` callers/callees tool: call-hierarchy queries                         |
+| imports              | `crow-code-40t.8` imports tool: file dependency graph                                  |
+| dependents           | `crow-code-40t.12.2` dependents tool: files that transitively depend on a change       |
+| related_tests        | `crow-code-40t.12.3` related_tests tool: test files and test cases related to a change |
+| project_map          | `crow-code-40t.10` project_map tool: high-level repo structure digest                  |
+| ast_search           | `crow-code-40t.7` ast_search tool: structural/syntax-aware code search                 |
+| diagnostics (syntax) | `crow-code-40t.4` diagnostics tool: structured errors/warnings per file                |
 
 ### symbols / outline
 
