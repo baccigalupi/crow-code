@@ -21,6 +21,10 @@ export class Filesystem {
     return writeFile(path, text)
   }
 
+  async readBytes(path: string) {
+    return new Uint8Array(await readFile(path))
+  }
+
   async mkdirWithParents(path: string) {
     await mkdir(path, { recursive: true })
   }

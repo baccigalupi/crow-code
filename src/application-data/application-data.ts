@@ -12,6 +12,7 @@ import { AllowedPaths } from './allowed-paths.ts'
 import type { PathPermissions } from './allowed-paths/path-permissions.ts'
 import { expandHome } from './allowed-paths/expand-home.ts'
 import { openAndMigrateDatabase } from '../database/open-and-migrate-database.ts'
+import { Parsers } from '../tools/research/language-parsers/parsers.ts'
 import type { ConsoleError, ConsoleLog, Logger } from '../types.ts'
 
 @delegate({ args: 'args' }, 'runtime')
@@ -76,6 +77,11 @@ export class ApplicationData {
       this.logger(),
       this.filesystem,
     )
+  }
+
+  @memoize
+  parsers() {
+    return new Parsers(this)
   }
 }
 

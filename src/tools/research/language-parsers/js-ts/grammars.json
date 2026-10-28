@@ -1,0 +1,23 @@
+[
+  {
+    "language": "typescript",
+    "packageName": "tree-sitter-typescript",
+    "file": "tree-sitter-typescript.wasm",
+    "extensions": [".ts", ".mts", ".cts"],
+    "interpreters": ["bun", "deno", "ts-node", "tsx"]
+  },
+  {
+    "language": "tsx",
+    "packageName": "tree-sitter-typescript",
+    "file": "tree-sitter-tsx.wasm",
+    "extensions": [".tsx"],
+    "interpreters": []
+  },
+  {
+    "language": "javascript",
+    "packageName": "tree-sitter-javascript",
+    "file": "tree-sitter-javascript.wasm",
+    "extensions": [".js", ".mjs", ".cjs", ".jsx"],
+    "interpreters": ["node"]
+  }
+]

@@ -42,6 +42,21 @@ describe('filesystem', () => {
     ).toBe('two')
   })
 
+  it('reads a file as bytes', async () => {
+    mkdirSync(`${fixturesDirectory}/filesystem`, { recursive: true })
+    writeFileSync(
+      `${fixturesDirectory}/filesystem/alpha.bin`,
+      new Uint8Array([1, 2, 3]),
+    )
+    const filesystem = new Filesystem()
+
+    const bytes = await filesystem.readBytes(
+      `${fixturesDirectory}/filesystem/alpha.bin`,
+    )
+
+    expect(bytes).toEqual(new Uint8Array([1, 2, 3]))
+  })
+
   it('makes a directory with its missing parents', async () => {
     const filesystem = new Filesystem()
 

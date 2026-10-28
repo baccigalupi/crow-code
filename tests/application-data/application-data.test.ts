@@ -194,6 +194,14 @@ describe('ApplicationData', () => {
     expect(await clonedData.database()).toBe(newDatabase)
   })
 
+  it('when asked for parsers twice, returns the same parsers', () => {
+    const appData = new ApplicationData()
+
+    const first = appData.parsers()
+
+    expect(first).toBe(appData.parsers())
+  })
+
   it('when closed, destroys the database connection', async () => {
     const appData = new ApplicationData()
     appData.runtime = new Runtime(process)
