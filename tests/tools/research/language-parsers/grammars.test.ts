@@ -7,9 +7,11 @@ describe('Grammars', () => {
       {
         language: 'python',
         packageName: 'tree-sitter-python',
-        file: 'tree-sitter-python.wasm',
+        version: '0.23.6',
+        file: 'python/tree-sitter-python.wasm',
         extensions: ['.py', '.pyi'],
         interpreters: ['python3'],
+        tags: ['tree-sitter-python/queries/tags.scm'],
       },
     ])
 
@@ -18,9 +20,11 @@ describe('Grammars', () => {
     expect(grammar).toEqual({
       language: 'python',
       packageName: 'tree-sitter-python',
-      file: 'tree-sitter-python.wasm',
+      version: '0.23.6',
+      file: 'python/tree-sitter-python.wasm',
       extensions: ['.py', '.pyi'],
       interpreters: ['python3'],
+      tags: ['tree-sitter-python/queries/tags.scm'],
     })
   })
 
@@ -29,9 +33,11 @@ describe('Grammars', () => {
       {
         language: 'python',
         packageName: 'tree-sitter-python',
-        file: 'tree-sitter-python.wasm',
+        version: '0.23.6',
+        file: 'python/tree-sitter-python.wasm',
         extensions: ['.py'],
         interpreters: ['python3'],
+        tags: ['tree-sitter-python/queries/tags.scm'],
       },
     ])
 
@@ -46,9 +52,11 @@ describe('Grammars', () => {
         {
           language: 'python',
           packageName: 'tree-sitter-python',
-          file: 'tree-sitter-python.wasm',
+          version: '0.23.6',
+          file: 'python/tree-sitter-python.wasm',
           extensions: ['.py'],
           interpreters: ['python3'],
+          tags: ['tree-sitter-python/queries/tags.scm'],
         },
       ])
 
@@ -65,9 +73,11 @@ describe('Grammars', () => {
         {
           language: 'python',
           packageName: 'tree-sitter-python',
-          file: 'tree-sitter-python.wasm',
+          version: '0.23.6',
+          file: 'python/tree-sitter-python.wasm',
           extensions: ['.py'],
           interpreters: ['python3'],
+          tags: ['tree-sitter-python/queries/tags.scm'],
         },
       ])
 
@@ -81,9 +91,11 @@ describe('Grammars', () => {
         {
           language: 'python',
           packageName: 'tree-sitter-python',
-          file: 'tree-sitter-python.wasm',
+          version: '0.23.6',
+          file: 'python/tree-sitter-python.wasm',
           extensions: ['.py'],
           interpreters: ['python3'],
+          tags: ['tree-sitter-python/queries/tags.scm'],
         },
       ])
 
@@ -97,9 +109,11 @@ describe('Grammars', () => {
         {
           language: 'python',
           packageName: 'tree-sitter-python',
-          file: 'tree-sitter-python.wasm',
+          version: '0.23.6',
+          file: 'python/tree-sitter-python.wasm',
           extensions: ['.py'],
           interpreters: ['python3'],
+          tags: ['tree-sitter-python/queries/tags.scm'],
         },
       ])
 

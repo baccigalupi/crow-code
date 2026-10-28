@@ -79,9 +79,11 @@ describe('parseFile', () => {
     const parser = await applicationData.parsers().parserFor({
       language: 'typescript',
       packageName: 'tree-sitter-typescript',
-      file: 'tree-sitter-typescript.wasm',
+      version: '0.23.2',
+      file: 'js-ts/tree-sitter-typescript.wasm',
       extensions: ['.ts'],
       interpreters: [],
+      tags: ['js-ts/javascript-tags.scm', 'js-ts/typescript-tags.scm'],
     })
     spyOn(parser, 'parse').mockReturnValue(null)
     const loggerErrorSpy = spyOn(applicationData.logger(), 'error')

@@ -2,22 +2,28 @@
   {
     "language": "typescript",
     "packageName": "tree-sitter-typescript",
-    "file": "tree-sitter-typescript.wasm",
+    "version": "0.23.2",
+    "file": "js-ts/tree-sitter-typescript.wasm",
     "extensions": [".ts", ".mts", ".cts"],
-    "interpreters": ["bun", "deno", "ts-node", "tsx"]
+    "interpreters": ["bun", "deno", "ts-node", "tsx"],
+    "tags": ["js-ts/javascript-tags.scm", "js-ts/typescript-tags.scm"]
   },
   {
     "language": "tsx",
     "packageName": "tree-sitter-typescript",
-    "file": "tree-sitter-tsx.wasm",
+    "version": "0.23.2",
+    "file": "js-ts/tree-sitter-tsx.wasm",
     "extensions": [".tsx"],
-    "interpreters": []
+    "interpreters": [],
+    "tags": ["js-ts/javascript-tags.scm", "js-ts/typescript-tags.scm"]
   },
   {
     "language": "javascript",
     "packageName": "tree-sitter-javascript",
-    "file": "tree-sitter-javascript.wasm",
+    "version": "0.23.1",
+    "file": "js-ts/tree-sitter-javascript.wasm",
     "extensions": [".js", ".mjs", ".cjs", ".jsx"],
-    "interpreters": ["node"]
+    "interpreters": ["node"],
+    "tags": ["js-ts/javascript-tags.scm"]
   }
 ]

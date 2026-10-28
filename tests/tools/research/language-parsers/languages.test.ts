@@ -12,4 +12,12 @@ describe('Languages', () => {
     expect(grammars[1].language).toBe('tsx')
     expect(grammars[2].language).toBe('javascript')
   })
+
+  it('when asked for the language parser of a language, returns the parser owning its grammar', () => {
+    const languages = new Languages()
+
+    const languageParser = languages.languageParserFor('tsx')
+
+    expect(languageParser.grammars()[1].language).toBe('tsx')
+  })
 })

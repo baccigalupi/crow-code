@@ -74,11 +74,12 @@ What the test settled:
 ### Grammars and query files
 
 - Grammars are loaded dynamically, per language the repository needs (chosen
-  by the user, or proposed from the repository's file extensions). Each
-  `.wasm` is fetched once from its npm package, pinned to an exact version,
-  checksum-verified and cached in the agent's data directory. A manifest of
-  known-good (language, grammar version, checksum, query-file version) pairs
-  defines what is supported, because each grammar is built for a tree-sitter
+  by the user, or proposed from the repository's file extensions). The
+  runtime is core: `web-tree-sitter.wasm` loads from the `web-tree-sitter`
+  dependency. Languages are not: each grammar's `.wasm` and `tags.scm` are
+  stored in its language folder (`js-ts/tree-sitter-typescript.wasm`), and
+  its `grammars.json` records the npm package and version they were copied
+  from, so upgrades can be checked. Each grammar is built for a tree-sitter
   ABI version and `web-tree-sitter` loads only a range of them.
 - First languages: TypeScript/TSX, JavaScript, Python, Go, Rust, Java, Ruby.
   Language is chosen by file extension (plus shebang for extensionless
