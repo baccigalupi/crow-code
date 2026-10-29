@@ -46,6 +46,20 @@ export type SymbolSource = {
   source: string
 }
 
+export type Diagnostic = {
+  line: number
+  column: number
+  severity: 'error'
+  message: string
+  source: 'syntax'
+}
+
+export type FileDiagnostics = {
+  path: string
+  language: string
+  diagnostics: Diagnostic[]
+}
+
 export type ParsedFile = {
   path: string
   language: string
