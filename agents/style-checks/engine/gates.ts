@@ -23,5 +23,8 @@ export const isTsxOrTestTsxFile = (fileName: string) =>
 
 export const isHooksFile = (fileName: string) => /(^|\/)hooks\//.test(fileName)
 
+export const isTuiSourceFile = (fileName: string) =>
+  /(^|\/)src\/tui\/.*\.ts$/.test(fileName) && !fileName.endsWith('.test.ts')
+
 export const isInstallFile = (fileName: string) =>
   /(^|\/)(src|tests)\/tui\/install\/.*\.tsx?$/.test(fileName)

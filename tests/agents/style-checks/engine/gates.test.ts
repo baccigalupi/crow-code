@@ -9,6 +9,7 @@ import {
   isTestSupportFile,
   isTsxFile,
   isTsxOrTestTsxFile,
+  isTuiSourceFile,
 } from '../../../../agents/style-checks/engine/gates.ts'
 
 describe('gates', () => {
@@ -162,5 +163,29 @@ describe('gates', () => {
     const result = isInstallFile(fileName)
 
     expect(result).toBe(true)
+  })
+
+  it('when isTuiSourceFile gets a src tui ts path, returns true', () => {
+    const fileName = 'src/tui/install/data-stores/text-field-store.ts'
+
+    const result = isTuiSourceFile(fileName)
+
+    expect(result).toBe(true)
+  })
+
+  it('when isTuiSourceFile gets a path outside src tui, returns false', () => {
+    const fileName = 'src/tools/read.ts'
+
+    const result = isTuiSourceFile(fileName)
+
+    expect(result).toBe(false)
+  })
+
+  it('when isTuiSourceFile gets a tests tui path, returns false', () => {
+    const fileName = 'tests/tui/x.test.ts'
+
+    const result = isTuiSourceFile(fileName)
+
+    expect(result).toBe(false)
   })
 })

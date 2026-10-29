@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'bun:test'
 import {
+  auditSource,
   classify,
+  formatAdvisory,
   lintSource,
   parseArgs,
 } from '../../../agents/style-checks/cli.ts'
@@ -195,6 +197,67 @@ describe('style-check cli', () => {
     const command = [
       'agents/style-check',
       'tests/support/fixtures/style-checks/void-guard.ts',
+    ]
+
+    const child = Bun.spawn(command, { stdout: 'pipe', stderr: 'pipe' })
+
+    expect(await child.exited).toBe(0)
+  })
+
+  it('when a tui store imports opentui, reports it as advisory only', () => {
+    const file = 'src/tui/install/data-stores/text-field-store.ts'
+    const source = "import { x } from '@opentui/core'\n"
+
+    const audit = auditSource(file, source)
+
+    expect(audit).toEqual({
+      blocking: [],
+      advisory: [
+        'src/tui/install/data-stores/text-field-store.ts:1:1: crow-style-tui/tui-import-boundaries: stores never import @opentui/core or panel files; found @opentui/core',
+      ],
+    })
+  })
+
+  it('when the same import is outside src, reports no advisory', () => {
+    const file = 'src/tools/x.ts'
+    const source = "import { x } from '@opentui/core'\n"
+
+    const audit = auditSource(file, source)
+
+    expect(audit.advisory).toEqual([])
+  })
+
+  it('when a test file is audited, reports no advisory', () => {
+    const file = 'tests/x.test.ts'
+    const source = "import { x } from '@opentui/core'\n"
+
+    const audit = auditSource(file, source)
+
+    expect(audit.advisory).toEqual([])
+  })
+
+  it('when code uses a ternary, reports it as blocking only', () => {
+    const file = 'src/example.ts'
+    const source = 'export const x = true ? 1 : 2\n'
+
+    const audit = auditSource(file, source)
+
+    expect(audit.blocking).toHaveLength(1)
+    expect(audit.advisory).toEqual([])
+  })
+
+  it('when a line is formatted as advisory, suffixes it', () => {
+    const line = 'src/x.ts:1:1: rule: message'
+
+    const formatted = formatAdvisory(line)
+
+    expect(formatted).toBe('src/x.ts:1:1: rule: message (advisory)')
+  })
+
+  it('when a tui file is named, runs advisory checks and exits 0', async () => {
+    const command = [
+      'agents/style-check',
+      'src/tui/install/data-stores/text-field-store.ts',
     ]
 
     const child = Bun.spawn(command, { stdout: 'pipe', stderr: 'pipe' })

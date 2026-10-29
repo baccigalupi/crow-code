@@ -3,18 +3,17 @@ import { checkSource } from '../../../agents/style-checks/engine/check-source.ts
 import { tsxPlugin } from '../../../agents/style-checks/tsx-plugin.ts'
 
 describe('tsxPlugin', () => {
-  it('when the plugin is built, lists the five rules in order', () => {
+  it('when the plugin is built, lists the four rules in order', () => {
     const plugin = tsxPlugin
 
     const rules = plugin.rules
 
     expect(plugin.name).toBe('crow-style-tsx')
-    expect(rules).toHaveLength(5)
+    expect(rules).toHaveLength(4)
     expect(rules[0].name).toBe('arrow-function-components')
     expect(rules[1].name).toBe('no-react-state')
-    expect(rules[2].name).toBe('views-only-call-view-models')
-    expect(rules[3].name).toBe('no-inline-props-type')
-    expect(rules[4].name).toBe('no-jsx-logical-and')
+    expect(rules[2].name).toBe('no-inline-props-type')
+    expect(rules[3].name).toBe('no-jsx-logical-and')
   })
 
   it('when a tsx file uses a function declaration, reports it', () => {
@@ -163,102 +162,6 @@ describe('tsxPlugin', () => {
   it('when JSX uses a ternary conditional, ignores it', () => {
     const source =
       'const App = ({ on }: { on: boolean }) => <div>{on ? 1 : 2}</div>'
-
-    const diagnostics = checkSource(
-      tsxPlugin,
-      'src/tui/install/example.tsx',
-      source,
-    )
-
-    expect(diagnostics).toHaveLength(0)
-  })
-
-  it('when a view splits text into lines, reports it', () => {
-    const source =
-      "const App = () => <div>{'a\\nb'.split('\\n').map(l => <b key={l}>{l}</b>)}</div>"
-
-    const diagnostics = checkSource(
-      tsxPlugin,
-      'src/tui/install/example.tsx',
-      source,
-    )
-
-    expect(diagnostics).toHaveLength(1)
-    expect(diagnostics[0].message).toContain('view model')
-  })
-
-  it('when a view renders multi-line text in one Text, ignores it', () => {
-    const source = "const App = () => <div>{'a\\nb'}</div>"
-
-    const diagnostics = checkSource(
-      tsxPlugin,
-      'src/tui/install/example.tsx',
-      source,
-    )
-
-    expect(diagnostics).toHaveLength(0)
-  })
-
-  it('when a view calls a plain helper with arguments, reports it', () => {
-    const source =
-      "const App = ({ u }: { u: string }) => <div>{directory(u, '~/.crow')}</div>"
-
-    const diagnostics = checkSource(
-      tsxPlugin,
-      'src/tui/install/example.tsx',
-      source,
-    )
-
-    expect(diagnostics).toHaveLength(1)
-    expect(diagnostics[0].message).toContain('view model')
-  })
-
-  it('when a view calls JSON.stringify, reports it', () => {
-    const source =
-      'const App = ({ o }: { o: object }) => <div>{JSON.stringify(o)}</div>'
-
-    const diagnostics = checkSource(
-      tsxPlugin,
-      'src/tui/install/example.tsx',
-      source,
-    )
-
-    expect(diagnostics).toHaveLength(1)
-    expect(diagnostics[0].message).toContain('view model')
-  })
-
-  it('when a view only calls hooks and view models, ignores it', () => {
-    const source = `const App = ({ session }) => {
-        const buffer = useSignalValue(session.buffer)
-        const { rowHeight } = appViewModel({ buffer })
-        useKeys(session)
-        return <div>{rowHeight}</div>
-      }`
-
-    const diagnostics = checkSource(
-      tsxPlugin,
-      'src/tui/install/example.tsx',
-      source,
-    )
-
-    expect(diagnostics).toHaveLength(0)
-  })
-
-  it('when JSX maps entries to elements, ignores the map call', () => {
-    const source =
-      'const Chat = ({ items }) => <div>{items.map((e) => <b key={e.id}>{e.t}</b>)}</div>'
-
-    const diagnostics = checkSource(
-      tsxPlugin,
-      'src/tui/install/example.tsx',
-      source,
-    )
-
-    expect(diagnostics).toHaveLength(0)
-  })
-
-  it('when a view dynamically imports a module, ignores the import', () => {
-    const source = "const load = () => import('./x')"
 
     const diagnostics = checkSource(
       tsxPlugin,
