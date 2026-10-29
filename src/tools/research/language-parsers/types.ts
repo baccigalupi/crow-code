@@ -36,6 +36,16 @@ export type FileOutline = {
   symbols: OutlineSymbol[]
 }
 
+export type SymbolSource = {
+  path: string
+  name: string
+  kind: string
+  startLine: number
+  endLine: number
+  docComment: string
+  source: string
+}
+
 export type ParsedFile = {
   path: string
   language: string
