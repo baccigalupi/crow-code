@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import type { Node } from 'web-tree-sitter'
-import { DocComment } from '../../../../src/tools/research/read-symbol/doc-comment.ts'
+import { DocComment } from '../../../../src/tools/research/language-parsers/doc-comment.ts'
 
 describe('DocComment', () => {
   it('when contiguous comments sit above the node, joins them in order', () => {

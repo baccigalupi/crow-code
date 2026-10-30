@@ -44,6 +44,26 @@ describe('JsTsLanguageParser', () => {
     expect(handles).toBe(false)
   })
 
+  it('when a comment sits above the definition, returns it as the doc comment', async () => {
+    const parser = await new Parsers(mockApplicationData()).parserFor({
+      language: 'typescript',
+      packageName: 'tree-sitter-typescript',
+      version: '0.23.2',
+      file: 'js-ts/tree-sitter-typescript.wasm',
+      extensions: ['.ts'],
+      interpreters: [],
+      tags: [],
+    })
+    const tree = parser.parse('/** Flies. */\nfunction fly() {}\n')
+    const languageParser = new JsTsLanguageParser()
+
+    const docComment = languageParser.docComment(
+      tree!.rootNode.namedChildren[1]!,
+    )
+
+    expect(docComment).toBe('/** Flies. */')
+  })
+
   describe('signature', () => {
     it('when the definition has a body, signs it with the text before the body', async () => {
       const parser = await new Parsers(mockApplicationData()).parserFor({

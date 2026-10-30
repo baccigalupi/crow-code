@@ -152,6 +152,32 @@ describe('readSymbol', () => {
     })
   })
 
+  it('when a python function has a docstring, returns it as the doc comment', async () => {
+    mkdirSync(`${fixturesDirectory}/read-symbol`, { recursive: true })
+    writeFileSync(
+      `${fixturesDirectory}/read-symbol/docstring.py`,
+      'def fly():\n    """Flies."""\n    pass\n',
+    )
+    const applicationData = mockApplicationData()
+    const path = `${fixturesDirectory}/read-symbol/docstring.py`
+
+    const symbol = readSymbol({
+      applicationData,
+      operationArguments: { path, name: 'fly' },
+    })
+    await symbol.run()
+
+    expect(symbol.result()).toEqual({
+      path,
+      name: 'fly',
+      kind: 'function',
+      startLine: 1,
+      endLine: 3,
+      docComment: '"""Flies."""',
+      source: 'def fly():\n    """Flies."""\n    pass',
+    })
+  })
+
   it('when the file has no grammar, fails with the parse reason', async () => {
     mkdirSync(`${fixturesDirectory}/read-symbol`, { recursive: true })
     writeFileSync(`${fixturesDirectory}/read-symbol/notes.txt`, 'fly\n')

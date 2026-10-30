@@ -14,6 +14,7 @@ export type LanguageParser = {
   grammars(): Grammar[]
   handles(language: string): boolean
   signature(node: Node): string
+  docComment(node: Node): string
 }
 
 export type OutlineSymbol = {

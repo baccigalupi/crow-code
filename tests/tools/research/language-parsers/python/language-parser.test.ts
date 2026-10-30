@@ -32,6 +32,84 @@ describe('PythonLanguageParser', () => {
     expect(handles).toBe(false)
   })
 
+  it('when the body starts with a string, returns it as the doc comment', async () => {
+    const parser = await new Parsers(mockApplicationData()).parserFor({
+      language: 'python',
+      packageName: 'tree-sitter-python',
+      version: '0.25.0',
+      file: 'python/tree-sitter-python.wasm',
+      extensions: ['.py'],
+      interpreters: [],
+      tags: [],
+    })
+    const tree = parser.parse('def fly():\n    """Flies."""\n    pass\n')
+    const languageParser = new PythonLanguageParser()
+
+    const docComment = languageParser.docComment(tree!.rootNode.firstChild!)
+
+    expect(docComment).toBe('"""Flies."""')
+  })
+
+  it('when the body starts with another statement, returns the comment above', async () => {
+    const parser = await new Parsers(mockApplicationData()).parserFor({
+      language: 'python',
+      packageName: 'tree-sitter-python',
+      version: '0.25.0',
+      file: 'python/tree-sitter-python.wasm',
+      extensions: ['.py'],
+      interpreters: [],
+      tags: [],
+    })
+    const tree = parser.parse('# Flies.\ndef fly():\n    go()\n')
+    const languageParser = new PythonLanguageParser()
+
+    const docComment = languageParser.docComment(
+      tree!.rootNode.namedChildren[1]!,
+    )
+
+    expect(docComment).toBe('# Flies.')
+  })
+
+  it('when the definition has no body, returns the comment above', async () => {
+    const parser = await new Parsers(mockApplicationData()).parserFor({
+      language: 'python',
+      packageName: 'tree-sitter-python',
+      version: '0.25.0',
+      file: 'python/tree-sitter-python.wasm',
+      extensions: ['.py'],
+      interpreters: [],
+      tags: [],
+    })
+    const tree = parser.parse('# Count.\nX = 1\n')
+    const languageParser = new PythonLanguageParser()
+
+    const docComment = languageParser.docComment(
+      tree!.rootNode.namedChildren[1]!.firstChild!,
+    )
+
+    expect(docComment).toBe('# Count.')
+  })
+
+  it('when the body starts with a non-expression statement, returns the comment above', async () => {
+    const parser = await new Parsers(mockApplicationData()).parserFor({
+      language: 'python',
+      packageName: 'tree-sitter-python',
+      version: '0.25.0',
+      file: 'python/tree-sitter-python.wasm',
+      extensions: ['.py'],
+      interpreters: [],
+      tags: [],
+    })
+    const tree = parser.parse('# Flies.\ndef fly():\n    return 1\n')
+    const languageParser = new PythonLanguageParser()
+
+    const docComment = languageParser.docComment(
+      tree!.rootNode.namedChildren[1]!,
+    )
+
+    expect(docComment).toBe('# Flies.')
+  })
+
   it('when the definition has a body, signs it with the text before the body', async () => {
     const parser = await new Parsers(mockApplicationData()).parserFor({
       language: 'python',

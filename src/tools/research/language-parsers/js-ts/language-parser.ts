@@ -1,4 +1,5 @@
 import type { Node } from 'web-tree-sitter'
+import { DocComment } from '../doc-comment.ts'
 import grammars from './grammars.json'
 
 export class JsTsLanguageParser {
@@ -12,6 +13,10 @@ export class JsTsLanguageParser {
 
   signature(node: Node) {
     return this.signatureText(node, this.body(node))
+  }
+
+  docComment(node: Node) {
+    return new DocComment(node).text()
   }
 
   private body(node: Node) {

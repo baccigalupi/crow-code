@@ -7,8 +7,8 @@ import type {
 import { ReadOnlyFileOperation } from '../files/read-only/base-operation.ts'
 import { FileDefinitions } from './outline/file-definitions.ts'
 import { parseFile } from './parse-file.ts'
-import { DocComment } from './read-symbol/doc-comment.ts'
 import { SymbolMatch } from './read-symbol/symbol-match.ts'
+import { SymbolText } from './read-symbol/symbol-text.ts'
 
 type TaskArguments = { path: string; name: string }
 
@@ -44,16 +44,19 @@ export class ReadSymbol extends ReadOnlyFileOperation<
   private async read(parsed: ParsedFile) {
     const definitions = new FileDefinitions(this.applicationData, parsed)
     const match = new SymbolMatch(await definitions.list())
-    await this.select(match.matches(this.operationArguments.name))
+    await this.select(
+      match.matches(this.operationArguments.name),
+      parsed.language,
+    )
   }
 
-  private async select(matches: Definition[]) {
+  private async select(matches: Definition[], language: string) {
     if (matches.length === 0) {
       this.fail(`symbol not found: ${this.qualifiedName()}`)
     } else if (matches.length > 1) {
       this.fail(`ambiguous symbol: ${this.listing(matches)}`)
     } else {
-      await this.record(matches[0])
+      await this.record(matches[0], language)
     }
   }
 
@@ -70,21 +73,18 @@ export class ReadSymbol extends ReadOnlyFileOperation<
     return `${path}::${name}`
   }
 
-  private async record(definition: Definition) {
-    const path = this.operationArguments.path
-    const text = await this.applicationData.filesystem.readTextFile(path)
+  private async record(definition: Definition, language: string) {
+    const text = new SymbolText(definition, language, await this.readText())
     this.kind = definition.symbol.kind
     this.startLine = definition.symbol.startLine
     this.endLine = definition.symbol.endLine
-    this.docComment = new DocComment(definition.node).text()
-    this.source = this.lines(text)
+    this.docComment = text.docComment()
+    this.source = text.source()
   }
 
-  private lines(text: string) {
-    return text
-      .split('\n')
-      .slice(this.startLine - 1, this.endLine)
-      .join('\n')
+  private readText() {
+    const path = this.operationArguments.path
+    return this.applicationData.filesystem.readTextFile(path)
   }
 }
 
