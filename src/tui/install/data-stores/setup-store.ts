@@ -42,16 +42,16 @@ export class SetupStore {
   }
 
   private startOnCompleteSetup() {
-    if (this.setupArguments.step.current.value === 'completeSetup') {
+    if (this.setupArguments.navigator.current.value === 'completeSetup') {
       this.runAll().start()
     }
   }
 
   @memoize
   private runAll() {
-    const { applicationData, inputs, step } = this.setupArguments
+    const { applicationData, inputs, navigator } = this.setupArguments
     const { progress } = this
-    const operationArguments = { inputs, step, progress }
+    const operationArguments = { inputs, navigator, progress }
     return new RunAll({ applicationData, operationArguments })
   }
 }

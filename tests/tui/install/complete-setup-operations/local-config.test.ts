@@ -16,7 +16,7 @@ describe('LocalConfigTask', () => {
 
     const label = new LocalConfigTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, step: store.step },
+      operationArguments: { inputs: store.inputs, navigator: store.navigator },
     }).label()
 
     expect(label).toBe('Writing config to .crow/config.json')
@@ -31,7 +31,7 @@ describe('LocalConfigTask', () => {
 
     const task = await new LocalConfigTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, step: store.step },
+      operationArguments: { inputs: store.inputs, navigator: store.navigator },
     }).run()
 
     const written = JSON.parse(
@@ -54,7 +54,7 @@ describe('LocalConfigTask', () => {
 
     const task = await new LocalConfigTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, step: store.step },
+      operationArguments: { inputs: store.inputs, navigator: store.navigator },
     }).run()
 
     expect(task.success()).toBe(false)
@@ -73,7 +73,7 @@ describe('LocalConfigTask', () => {
 
     await new LocalConfigTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, step: store.step },
+      operationArguments: { inputs: store.inputs, navigator: store.navigator },
     }).run()
 
     const written = JSON.parse(
@@ -95,7 +95,7 @@ describe('LocalConfigTask', () => {
 
     await new LocalConfigTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, step: store.step },
+      operationArguments: { inputs: store.inputs, navigator: store.navigator },
     }).run()
 
     const written = JSON.parse(
@@ -117,7 +117,7 @@ describe('LocalConfigTask', () => {
 
     await new LocalConfigTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, step: store.step },
+      operationArguments: { inputs: store.inputs, navigator: store.navigator },
     }).run()
 
     const written = JSON.parse(

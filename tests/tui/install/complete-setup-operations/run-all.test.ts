@@ -16,7 +16,7 @@ describe('RunAll', () => {
       applicationData,
       operationArguments: {
         inputs: store.inputs,
-        step: store.step,
+        navigator: store.navigator,
         progress: new SetupProgressStore(),
       },
     })
@@ -33,7 +33,7 @@ describe('RunAll', () => {
       applicationData,
       operationArguments: {
         inputs: store.inputs,
-        step: store.step,
+        navigator: store.navigator,
         progress: new SetupProgressStore(),
       },
     })
@@ -51,7 +51,11 @@ describe('RunAll', () => {
     const finishedAtStart: number[] = []
     const setup = new RunAll({
       applicationData,
-      operationArguments: { inputs: store.inputs, step: store.step, progress },
+      operationArguments: {
+        inputs: store.inputs,
+        navigator: store.navigator,
+        progress,
+      },
     })
     spyOn(applicationData.filesystem, 'mkdirWithParents').mockImplementation(
       () => {
@@ -78,14 +82,14 @@ describe('RunAll', () => {
       applicationData,
       operationArguments: {
         inputs: store.inputs,
-        step: store.step,
+        navigator: store.navigator,
         progress: new SetupProgressStore(),
       },
     })
 
     await setup.run()
 
-    expect(store.step.current.peek()).toBe('done')
+    expect(store.navigator.current.peek()).toBe('done')
   })
 
   it('when a task fails, skips the rest and moves to done', async () => {
@@ -100,7 +104,7 @@ describe('RunAll', () => {
       applicationData,
       operationArguments: {
         inputs: store.inputs,
-        step: store.step,
+        navigator: store.navigator,
         progress: new SetupProgressStore(),
       },
     })
@@ -108,7 +112,7 @@ describe('RunAll', () => {
     await setup.run()
 
     expect(mkdir).toHaveBeenCalledTimes(1)
-    expect(store.step.current.peek()).toBe('done')
+    expect(store.navigator.current.peek()).toBe('done')
   })
 
   it('when a task fails, records only the failed task as finished', async () => {
@@ -120,7 +124,11 @@ describe('RunAll', () => {
     const progress = new SetupProgressStore()
     const setup = new RunAll({
       applicationData,
-      operationArguments: { inputs: store.inputs, step: store.step, progress },
+      operationArguments: {
+        inputs: store.inputs,
+        navigator: store.navigator,
+        progress,
+      },
     })
 
     await setup.run()

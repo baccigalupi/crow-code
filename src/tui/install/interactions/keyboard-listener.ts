@@ -6,6 +6,7 @@ import {
   type PasteEvent,
 } from '@opentui/core'
 import { memoize } from '../../../decorators.ts'
+import { Keypress } from '../../keypress.ts'
 import type { DataStore } from '../data-store.ts'
 import { keypressFromEvent } from './keypress-from-event.ts'
 
@@ -42,11 +43,16 @@ export class KeyboardListener {
 
   private press(event: KeyEvent) {
     const { input, key } = keypressFromEvent(event)
-    this.model.press(input, key, () => this.renderer.destroy())
+    this.navigate(new Keypress(input, key))
   }
 
+  // A paste is typed input that arrives all at once, with newlines dropped.
   private paste(event: PasteEvent) {
     const text = stripAnsiSequences(decodePasteBytes(event.bytes))
-    this.model.paste(text, () => this.renderer.destroy())
+    this.navigate(new Keypress(text.replace(/[\r\n]/g, ''), {}))
+  }
+
+  private navigate(keypress: Keypress) {
+    this.model.navigator.press(keypress, () => this.renderer.destroy())
   }
 }

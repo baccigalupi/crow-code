@@ -20,7 +20,7 @@ describe('GlobalDirectoryTask', () => {
 
     const task = await new GlobalDirectoryTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, step: store.step },
+      operationArguments: { inputs: store.inputs, navigator: store.navigator },
     }).run()
 
     expect(task.success()).toBe(true)
@@ -36,7 +36,7 @@ describe('GlobalDirectoryTask', () => {
 
     const task = await new GlobalDirectoryTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, step: store.step },
+      operationArguments: { inputs: store.inputs, navigator: store.navigator },
     }).run()
 
     expect(task.success()).toBe(true)
@@ -54,7 +54,7 @@ describe('GlobalDirectoryTask', () => {
 
     await new GlobalDirectoryTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, step: store.step },
+      operationArguments: { inputs: store.inputs, navigator: store.navigator },
     }).run()
 
     expect(existsSync(join(home, '.crow'))).toBe(true)
@@ -69,7 +69,7 @@ describe('GlobalDirectoryTask', () => {
 
     const task = await new GlobalDirectoryTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, step: store.step },
+      operationArguments: { inputs: store.inputs, navigator: store.navigator },
     }).run()
 
     expect(task.success()).toBe(false)
@@ -82,7 +82,7 @@ describe('GlobalDirectoryTask', () => {
 
     const label = new GlobalDirectoryTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, step: store.step },
+      operationArguments: { inputs: store.inputs, navigator: store.navigator },
     }).label()
 
     expect(label).toBe('Creating ~/.crow')

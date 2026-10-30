@@ -21,7 +21,7 @@ describe('KeyboardListener', () => {
 
   it('when text is pasted, inserts it into the active field', async () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
-    model.step.goTo('providerCredentials')
+    model.navigator.goTo('providerCredentials')
     const { renderer, mockInput } = await createTestRenderer({
       width: 20,
       height: 3,
@@ -37,7 +37,7 @@ describe('KeyboardListener', () => {
 
   it('when pasted text has newlines, removes them without advancing', async () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
-    model.step.goTo('providerCredentials')
+    model.navigator.goTo('providerCredentials')
     const { renderer, mockInput } = await createTestRenderer({
       width: 20,
       height: 3,
@@ -48,13 +48,13 @@ describe('KeyboardListener', () => {
     await renderer.idle()
 
     expect(model.providers.providerCredentials.text.peek().text).toBe('sk-123')
-    expect(model.step.current.peek()).toBe('providerCredentials')
+    expect(model.navigator.current.peek()).toBe('providerCredentials')
     renderer.destroy()
   })
 
   it('when text is pasted on confirm, leaves the env file alone', async () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
-    model.step.goTo('confirm')
+    model.navigator.goTo('confirm')
     const { renderer, mockInput } = await createTestRenderer({
       width: 20,
       height: 3,
@@ -70,7 +70,7 @@ describe('KeyboardListener', () => {
 
   it('when text is pasted on the done step, destroys the renderer', async () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
-    model.step.goTo('done')
+    model.navigator.goTo('done')
     const onDestroy = mock(() => {})
     const { renderer, mockInput } = await createTestRenderer({
       width: 20,
@@ -96,7 +96,7 @@ describe('KeyboardListener', () => {
     mockInput.pressEnter()
     await renderer.idle()
 
-    expect(model.step.current.peek()).toBe('crowGlobalDirectory')
+    expect(model.navigator.current.peek()).toBe('crowGlobalDirectory')
     renderer.destroy()
   })
 
@@ -133,7 +133,7 @@ describe('KeyboardListener', () => {
 
   it('when n then return arrive on the confirm step, declines and exits without writing', async () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
-    model.step.goTo('confirm')
+    model.navigator.goTo('confirm')
     const onDestroy = mock(() => {})
     const { renderer, mockInput } = await createTestRenderer({
       width: 20,
@@ -146,7 +146,7 @@ describe('KeyboardListener', () => {
     mockInput.pressEnter()
 
     expect(model.confirm.confirmed.peek()).toBe(false)
-    expect(model.step.current.peek()).toBe('confirm')
+    expect(model.navigator.current.peek()).toBe('confirm')
     expect(onDestroy).toHaveBeenCalledTimes(1)
   })
 

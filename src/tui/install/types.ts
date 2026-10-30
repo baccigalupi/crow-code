@@ -1,9 +1,10 @@
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { RenderContext, Renderable } from '@opentui/core'
-import type { ExitApp, InputText, KeyFlags } from '../types.ts'
+import type { InputText } from '../types.ts'
+import type { Keypress } from '../keypress.ts'
+import type { Navigator } from '../navigator.ts'
 import type { AsyncOperation, CrowPermissionsConfig } from '../../types.ts'
 import type { ApplicationData } from '../../application-data/application-data.ts'
-import type { DataStore } from './data-store.ts'
 import type { ConfirmPromptViewModel } from './view-models/confirm-prompt-view-model.ts'
 import type { DoneMessageViewModel } from './view-models/done-message-view-model.ts'
 import type { ProviderPromptViewModel } from './view-models/provider-prompt-view-model.ts'
@@ -12,7 +13,9 @@ import type { TextPromptViewModel } from './view-models/text-prompt-view-model.t
 import type { DirectoriesStore } from './data-stores/directories-store.ts'
 import type { PermissionsStore } from './data-stores/permissions-store.ts'
 import type { SetupProgressStore } from './data-stores/setup-progress-store.ts'
-import type { StepStore } from './data-stores/step-store.ts'
+import type { ConfirmStore } from './data-stores/confirm-store.ts'
+import type { ProvidersStore } from './data-stores/providers-store.ts'
+import type { TextFieldStore } from './data-stores/text-field-store.ts'
 
 export type InstallStep =
   | 'repo'
@@ -264,7 +267,7 @@ export type DataStoreArguments = {
 
 export type SetupTaskArguments = {
   readonly inputs: ReadonlySignal<UserInputData>
-  readonly step: StepStore
+  readonly navigator: Navigator<InstallStep>
 }
 
 export type RunAllArguments = SetupTaskArguments & {
@@ -273,9 +276,26 @@ export type RunAllArguments = SetupTaskArguments & {
 
 export type SetupStoreArguments = DataStoreArguments & SetupTaskArguments
 
-export type KeypressArguments = {
-  readonly model: DataStore
-  readonly exit: ExitApp
-  readonly input: string
-  readonly key: KeyFlags
+export type TextEditorArguments = {
+  readonly field: TextFieldStore
+  readonly keypress: Keypress
+}
+
+export type ProviderFormControllerArguments = {
+  readonly field: TextFieldStore
+  readonly providers: ProvidersStore
+  readonly back?: InstallStep
+  readonly forward?: InstallStep
+}
+
+export type TextFlowArguments = {
+  readonly directories: DirectoriesStore
+  readonly permissions: PermissionsStore
+}
+
+export type InstallFlowArguments = {
+  readonly directories: DirectoriesStore
+  readonly permissions: PermissionsStore
+  readonly providers: ProvidersStore
+  readonly confirm: ConfirmStore
 }

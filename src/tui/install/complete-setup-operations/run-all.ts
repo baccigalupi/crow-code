@@ -18,15 +18,15 @@ export class RunAll extends Operation<RunAllArguments> {
 
   async run() {
     await this.runTasks(this.tasks())
-    this.operationArguments.step.goTo('done')
+    this.operationArguments.navigator.goTo('done')
     return this
   }
 
   @memoize
   tasks() {
     const { applicationData } = this
-    const { inputs, step } = this.operationArguments
-    const operationArguments = { inputs, step }
+    const { inputs, navigator } = this.operationArguments
+    const operationArguments = { inputs, navigator }
     return [
       new LocalConfigTask({ applicationData, operationArguments }),
       new GlobalDirectoryTask({ applicationData, operationArguments }),

@@ -1,5 +1,6 @@
 import { describe, expect, it, mock, spyOn } from 'bun:test'
 import { effect } from '@preact/signals-core'
+import { Keypress } from '../../../src/tui/keypress.ts'
 import { DataStore } from '../../../src/tui/install/data-store.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
@@ -21,58 +22,14 @@ describe('DataStore', () => {
     expect(model.inputs.peek().providers).toEqual([{ name: 'Ollama', url: '' }])
   })
 
-  it('when a letter is pressed on the repo step, types it into the repo directory', () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-
-    model.press('x', {}, mock())
-
-    expect(model.directories.repoDirectory.text.peek()).toEqual({
-      text: 'x',
-      cursor: 1,
-    })
-  })
-
-  it('when return is pressed on the repo step, moves to the global directory', () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-
-    model.press('', { return: true }, mock())
-
-    expect(model.step.current.peek()).toBe('crowGlobalDirectory')
-  })
-
-  it('when a credential is pasted, types it without its newlines and keeps the step', () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.step.goTo('providerCredentials')
-
-    model.paste('sk-123\r\n', mock())
-
-    expect(model.providers.providerCredentials.text.peek()).toEqual({
-      text: 'sk-123',
-      cursor: 6,
-    })
-    expect(model.step.current.peek()).toBe('providerCredentials')
-  })
-
-  it('when pasting on the confirm step, types nothing', () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.step.goTo('confirm')
-
-    model.paste('/x', mock())
-
-    expect(model.directories.envFile.text.peek()).toEqual({
-      text: '',
-      cursor: 0,
-    })
-  })
-
   it('when return commits a provider, the step values change once', () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
     model.providers.providerName.insert('nous')
-    model.step.goTo('providerCredentials')
+    model.navigator.goTo('providerCredentials')
     const watcher = mock()
     effect(() => watcher(model.stepValues.value.step))
 
-    model.press('', { return: true }, mock())
+    model.navigator.press(new Keypress('', { return: true }), mock())
 
     expect(watcher.mock.calls).toEqual([
       ['providerCredentials'],
@@ -89,7 +46,7 @@ describe('DataStore', () => {
     const model = new DataStore({ applicationData })
     model.listen()
 
-    model.step.goTo('completeSetup')
+    model.navigator.goTo('completeSetup')
 
     expect(mkdir.mock.calls).toEqual([['.crow']])
   })
@@ -101,7 +58,7 @@ describe('DataStore', () => {
     model.listen()
     model.dispose()
 
-    model.step.goTo('completeSetup')
+    model.navigator.goTo('completeSetup')
 
     expect(mkdir).not.toHaveBeenCalled()
   })
@@ -109,7 +66,7 @@ describe('DataStore', () => {
   it('when the step moves, inputs report the new step', () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
 
-    model.step.goTo('ignore')
+    model.navigator.goTo('ignore')
 
     expect(model.inputs.peek().step).toBe('ignore')
   })

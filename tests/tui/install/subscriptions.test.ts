@@ -1,4 +1,5 @@
 import { describe, expect, it, mock } from 'bun:test'
+import { Keypress } from '../../../src/tui/keypress.ts'
 import { Subscriptions } from '../../../src/tui/install/subscriptions.ts'
 import { DataStore } from '../../../src/tui/install/data-store.ts'
 import { InstallViewModels } from '../../../src/tui/install/view-models/install-view-models.ts'
@@ -53,7 +54,7 @@ describe('Subscriptions', () => {
     )
     subscriptions.listen()
 
-    model.press('x', {}, mock())
+    model.navigator.press(new Keypress('x', {}), mock())
 
     expect(screen.stepPrompts.update.mock.calls[1][0].props.input.text).toBe(
       'x',
@@ -74,7 +75,7 @@ describe('Subscriptions', () => {
     subscriptions.listen()
 
     subscriptions.dispose()
-    model.press('y', {}, mock())
+    model.navigator.press(new Keypress('y', {}), mock())
 
     expect(screen.stepPrompts.update).toHaveBeenCalledTimes(1)
   })
