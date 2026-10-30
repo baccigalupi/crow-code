@@ -1,14 +1,15 @@
 import { describe, expect, it } from 'bun:test'
 import { checkSource } from '../../../../agents/style-checks/engine/check-source.ts'
 import { tuiBoundariesPlugin } from '../../../../agents/style-checks/tui-boundaries-plugin.ts'
+import { tuiViewBoundariesPlugin } from '../../../../agents/style-checks/tui-view-boundaries-plugin.ts'
 
-describe('tuiImportBoundaries', () => {
+describe('tui-import-boundaries', () => {
   it('when a view imports a store, reports it', () => {
     const source =
       "import { TextFieldStore } from '../../data-stores/text-field-store.ts'"
 
     const diagnostics = checkSource(
-      tuiBoundariesPlugin,
+      tuiViewBoundariesPlugin,
       'src/tui/install/panels/repo/view.ts',
       source,
     )
@@ -29,7 +30,7 @@ describe('tuiImportBoundaries', () => {
     ].join('\n')
 
     const diagnostics = checkSource(
-      tuiBoundariesPlugin,
+      tuiViewBoundariesPlugin,
       'src/tui/install/panels/provider/field-view.ts',
       source,
     )
@@ -236,7 +237,7 @@ describe('tuiImportBoundaries', () => {
     const source = "import { x } from './text-field-store.ts'"
 
     const diagnostics = checkSource(
-      tuiBoundariesPlugin,
+      tuiViewBoundariesPlugin,
       'src/tools/view.ts',
       source,
     )
@@ -248,8 +249,33 @@ describe('tuiImportBoundaries', () => {
     const source = "const x = require('./text-field-store.ts')"
 
     const diagnostics = checkSource(
-      tuiBoundariesPlugin,
+      tuiViewBoundariesPlugin,
       'src/tui/install/panels/repo/view.ts',
+      source,
+    )
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
+  it('when a view imports a view model, reports it', () => {
+    const source =
+      "import { x } from '../view-models/text-prompt-view-model.ts'"
+
+    const diagnostics = checkSource(
+      tuiViewBoundariesPlugin,
+      'src/tui/install/views/steps/provider-field-view.ts',
+      source,
+    )
+
+    expect(diagnostics).toHaveLength(1)
+  })
+
+  it('when a store imports a store, the view rule reports nothing', () => {
+    const source = "import { x } from './text-field-store.ts'"
+
+    const diagnostics = checkSource(
+      tuiViewBoundariesPlugin,
+      'src/tui/install/data-stores/permissions-store.ts',
       source,
     )
 

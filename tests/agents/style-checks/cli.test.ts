@@ -218,6 +218,20 @@ describe('style-check cli', () => {
     })
   })
 
+  it('when a tui view imports a store, reports it as blocking only', () => {
+    const file = 'src/tui/install/views/prompt-view.ts'
+    const source = "import { x } from '../data-stores/directories-store.ts'\n"
+
+    const audit = auditSource(file, source)
+
+    expect(audit).toEqual({
+      blocking: [
+        'src/tui/install/views/prompt-view.ts:1:1: crow-style-tui-views/tui-view-imports: views import only @opentui/core, theme, decorators, other views and types; found ../data-stores/directories-store.ts',
+      ],
+      advisory: [],
+    })
+  })
+
   it('when the same import is outside src, reports no advisory', () => {
     const file = 'src/tools/x.ts'
     const source = "import { x } from '@opentui/core'\n"

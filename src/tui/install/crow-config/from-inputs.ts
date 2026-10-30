@@ -1,10 +1,7 @@
 import { join } from 'node:path'
 import { buildPermissions } from './from-inputs/permissions.ts'
 import { buildProviders } from './from-inputs/providers.ts'
-import {
-  defaultCrowGlobalDirectory,
-  defaultCrowRepoDirectory,
-} from '../data-stores/directories-store.ts'
+import { DirectoriesStore } from '../data-stores/directories-store.ts'
 import type { InputText } from '../../types.ts'
 import type {
   CrowConfigInputs,
@@ -19,6 +16,7 @@ export class CrowConfigFromInputs {
   private repoDirectoryInput: InputText
   private envFileInput: InputText
   private sectionInputs: PermissionInputs & ProviderInputs
+  private readonly directories = new DirectoriesStore()
 
   constructor({
     globalDirectory,
@@ -41,11 +39,17 @@ export class CrowConfigFromInputs {
   }
 
   crowGlobalDirectory() {
-    return this.directory(this.globalDirectoryInput, defaultCrowGlobalDirectory)
+    return this.directory(
+      this.globalDirectoryInput,
+      this.directories.defaultGlobalDirectory,
+    )
   }
 
   crowRepoDirectory() {
-    return this.directory(this.repoDirectoryInput, defaultCrowRepoDirectory)
+    return this.directory(
+      this.repoDirectoryInput,
+      this.directories.defaultRepoDirectory,
+    )
   }
 
   crowConfig() {

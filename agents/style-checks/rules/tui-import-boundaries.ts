@@ -7,15 +7,16 @@ const baseName = (path: string) => path.slice(path.lastIndexOf('/') + 1)
 const moduleName = (specifier: string) =>
   baseName(specifier).replace(/\.ts$/, '')
 
-const roles = [
-  {
-    isRole: (fileName: string) => /(^|-)view\.ts$/.test(baseName(fileName)),
-    violates: (specifier: string) =>
-      specifier !== '@opentui/core' &&
-      !/^(theme|decorators|types|view|.*-view)$/.test(moduleName(specifier)),
-    message: (specifier: string) =>
-      `views import only @opentui/core, theme, decorators, other views and types; found ${specifier}`,
-  },
+const viewRole = {
+  isRole: (fileName: string) => /(^|-)view\.ts$/.test(baseName(fileName)),
+  violates: (specifier: string) =>
+    specifier !== '@opentui/core' &&
+    !/^(theme|decorators|types|view|.*-view)$/.test(moduleName(specifier)),
+  message: (specifier: string) =>
+    `views import only @opentui/core, theme, decorators, other views and types; found ${specifier}`,
+}
+
+const otherRoles = [
   {
     isRole: (fileName: string) => baseName(fileName).endsWith('-store.ts'),
     violates: (specifier: string) =>
@@ -42,8 +43,8 @@ const roles = [
   },
 ]
 
-export const tuiImportBoundaries: Rule = {
-  name: 'tui-import-boundaries',
+const boundaryRule = (name: string, roles: typeof otherRoles): Rule => ({
+  name,
   applies: isTuiSourceFile,
   enter(node, ctx) {
     if (!ts.isImportDeclaration(node)) return
@@ -55,4 +56,12 @@ export const tuiImportBoundaries: Rule = {
       ctx.report(node, role.message(specifier))
     }
   },
-}
+})
+
+// Views stay blocking; the other roles are still advisory.
+export const tuiViewImports = boundaryRule('tui-view-imports', [viewRole])
+
+export const tuiImportBoundaries = boundaryRule(
+  'tui-import-boundaries',
+  otherRoles,
+)

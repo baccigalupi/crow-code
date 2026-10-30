@@ -1,11 +1,10 @@
 import { computed } from '@preact/signals-core'
 import { TextFieldStore } from './text-field-store.ts'
 
-export const defaultCrowRepoDirectory = '.crow'
-export const defaultCrowGlobalDirectory = '~/.crow'
-
 // Where crow keeps its repo config, its global data and its .env file.
 export class DirectoriesStore {
+  readonly defaultRepoDirectory = '.crow'
+  readonly defaultGlobalDirectory = '~/.crow'
   readonly repoDirectory = new TextFieldStore()
   readonly globalDirectory = new TextFieldStore()
   readonly envFile = new TextFieldStore()

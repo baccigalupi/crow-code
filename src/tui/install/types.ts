@@ -4,6 +4,13 @@ import type { ExitApp, InputText, KeyFlags } from '../types.ts'
 import type { AsyncOperation, CrowPermissionsConfig } from '../../types.ts'
 import type { ApplicationData } from '../../application-data/application-data.ts'
 import type { DataStore } from './data-store.ts'
+import type { ConfirmPromptViewModel } from './view-models/confirm-prompt-view-model.ts'
+import type { DoneMessageViewModel } from './view-models/done-message-view-model.ts'
+import type { ProviderPromptViewModel } from './view-models/provider-prompt-view-model.ts'
+import type { SetupProgressViewModel } from './view-models/setup-progress-view-model.ts'
+import type { TextPromptViewModel } from './view-models/text-prompt-view-model.ts'
+import type { DirectoriesStore } from './data-stores/directories-store.ts'
+import type { PermissionsStore } from './data-stores/permissions-store.ts'
 import type { SetupProgressStore } from './data-stores/setup-progress-store.ts'
 import type { StepStore } from './data-stores/step-store.ts'
 
@@ -96,7 +103,7 @@ export type PermissionInputs = Pick<
   | 'allowedLocalScripts'
 >
 
-export type ConfigPanelProps = CrowConfigInputs & {
+export type ConfigPanelValues = CrowConfigInputs & {
   readonly step: InstallStep
 }
 
@@ -107,6 +114,11 @@ export type HighlightedJson = {
   readonly after: string
 }
 
+export type ConfigPanelProps = HighlightedJson & {
+  readonly visible: boolean
+  readonly crowConfigPath: string
+}
+
 export type StepValues = CrowConfigInputs & {
   readonly step: InstallStep
   readonly crowConfigPath: string
@@ -114,7 +126,7 @@ export type StepValues = CrowConfigInputs & {
   readonly setupTasks: readonly SetupTaskStatus[]
 }
 
-export type SetupProgressProps = Pick<StepValues, 'setupTasks'>
+export type SetupProgressValues = Pick<StepValues, 'setupTasks'>
 
 export type SetupProgressRow = {
   readonly id: string
@@ -124,7 +136,15 @@ export type SetupProgressRow = {
   readonly error: string
 }
 
-export type ProviderPromptProps = Pick<
+export type SetupProgressProps = {
+  readonly rows: readonly SetupProgressRow[]
+}
+
+export type DoneMessageProps = SetupProgressProps & {
+  readonly hint: string
+}
+
+export type ProviderPromptValues = Pick<
   UserInputData,
   'step' | 'providers' | 'providerName' | 'providerUrl' | 'providerCredentials'
 >
@@ -135,16 +155,100 @@ export type ProviderFieldDefinition = {
   readonly masked: boolean
 }
 
+export type ProviderFieldStatus = 'done' | 'active' | 'pending'
+
+export type ProviderFieldProps = {
+  readonly label: string
+  readonly input: InputText
+  readonly masked: boolean
+  readonly status: ProviderFieldStatus
+}
+
+export type ProviderPromptProps = {
+  readonly title: string
+  readonly fields: readonly ProviderFieldProps[]
+}
+
+export type ConfirmPromptProps = {
+  readonly selectedIndex: number
+}
+
+export type TextPromptStep = Extract<
+  InstallStep,
+  | 'repo'
+  | 'crowGlobalDirectory'
+  | 'envFile'
+  | 'ignore'
+  | 'additionalRead'
+  | 'additionalWrite'
+  | 'escalateRead'
+  | 'escalateWrite'
+  | 'allowedLocalScripts'
+>
+
+export type TextPromptInputKey = Extract<
+  keyof CrowConfigInputs,
+  | 'repoDirectory'
+  | 'globalDirectory'
+  | 'envFile'
+  | 'ignore'
+  | 'additionalRead'
+  | 'additionalWrite'
+  | 'escalateRead'
+  | 'escalateWrite'
+  | 'allowedLocalScripts'
+>
+
+export type TextPromptProps = {
+  readonly label: string
+  readonly input: InputText
+  readonly defaultValue: string
+  readonly bare?: boolean
+}
+
+export type TextPromptViewModelArguments = {
+  readonly directories: DirectoriesStore
+  readonly permissions: PermissionsStore
+}
+
+export type EmptyStepProps = Readonly<Record<string, never>>
+
+export type StepProps =
+  | TextPromptProps
+  | ProviderPromptProps
+  | ConfirmPromptProps
+  | SetupProgressProps
+  | DoneMessageProps
+  | EmptyStepProps
+
+// The current step and what its prompt view draws.
+export type StepPromptsProps = {
+  readonly step: InstallStep
+  readonly props: StepProps
+}
+
+export type StepPropsBuilders = Partial<
+  Record<InstallStep, (values: StepValues) => StepProps>
+>
+
+export type StepPromptsViewModelArguments = {
+  readonly text: TextPromptViewModel
+  readonly provider: ProviderPromptViewModel
+  readonly confirm: ConfirmPromptViewModel
+  readonly progress: SetupProgressViewModel
+  readonly done: DoneMessageViewModel
+}
+
 export type StepView = {
   root(): Renderable
-  update(values: StepValues): void
+  update(props: StepProps): void
 }
 
 export type StepViewClass = new (renderer: RenderContext) => StepView
 
 export type InstallScreenViews = {
-  readonly configPanel: { update(values: ConfigPanelProps): void }
-  readonly stepPrompts: { update(values: StepValues): void }
+  readonly configPanel: { update(props: ConfigPanelProps): void }
+  readonly stepPrompts: { update(props: StepPromptsProps): void }
 }
 
 export type StatefulTask = {

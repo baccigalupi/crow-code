@@ -6,7 +6,8 @@ import { createOpenTuiRunner } from '../runner.ts'
 import { DataStore } from './data-store.ts'
 import { KeyboardListener } from './interactions/keyboard-listener.ts'
 import { Subscriptions } from './subscriptions.ts'
-import { InstallScreen } from './views/install-screen.ts'
+import { InstallViewModels } from './view-models/install-view-models.ts'
+import { InstallScreen } from './views/install-screen-view.ts'
 
 // The install command's only way into the install TUI. The data store is
 // built here, before the view mounts, so setup completion is listening from
@@ -43,9 +44,13 @@ export class InstallTuiRunner {
     return new DataStore({ applicationData: this.applicationData })
   }
 
+  private viewModels() {
+    return new InstallViewModels(this.model())
+  }
+
   private listeners(renderer: CliRenderer, screen: InstallScreen) {
     return [
-      new Subscriptions(this.model(), screen),
+      new Subscriptions(this.model(), screen, this.viewModels()),
       new KeyboardListener(renderer, this.model()),
     ]
   }
