@@ -31,7 +31,9 @@ describe('KeyboardListener', () => {
     await mockInput.pasteBracketedText('sk-123')
     await renderer.idle()
 
-    expect(model.providers.providerCredentials.text.peek().text).toBe('sk-123')
+    expect(model.providerEditForm.providerCredentials.text.peek().text).toBe(
+      'sk-123',
+    )
     renderer.destroy()
   })
 
@@ -47,7 +49,9 @@ describe('KeyboardListener', () => {
     await mockInput.pasteBracketedText('sk-123\r\n')
     await renderer.idle()
 
-    expect(model.providers.providerCredentials.text.peek().text).toBe('sk-123')
+    expect(model.providerEditForm.providerCredentials.text.peek().text).toBe(
+      'sk-123',
+    )
     expect(model.navigator.current.peek()).toBe('providerCredentials')
     renderer.destroy()
   })

@@ -7,7 +7,8 @@ import type { AsyncOperation, CrowPermissionsConfig } from '../../types.ts'
 import type { ApplicationData } from '../../application-data/application-data.ts'
 import type { Panels } from './panels.ts'
 import type { SetupProgressStore } from './data-stores/setup-progress-store.ts'
-import type { ProvidersStore } from './data-stores/providers-store.ts'
+import type { ProviderEditFormStore } from './data-stores/provider-edit-form-store.ts'
+import type { ProviderStore } from './data-stores/provider-store.ts'
 import type { TextFieldStore } from './data-stores/text-field-store.ts'
 
 // The names of the panels that take keys, derived from the registry. The
@@ -215,7 +216,8 @@ export type TextEditorArguments = {
 
 export type ProviderFormControllerArguments = {
   readonly field: TextFieldStore
-  readonly providers: ProvidersStore
+  readonly form: ProviderEditFormStore
+  readonly providers: ProviderStore
   readonly back?: PanelName
   readonly forward?: PanelName
 }

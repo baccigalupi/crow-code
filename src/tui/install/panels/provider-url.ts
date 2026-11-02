@@ -9,6 +9,6 @@ export class ProviderUrlPanel extends ProviderPanel {
   readonly highlights = { key: 'baseUrl', occurrence: 'last' } as const
 
   field(store: DataStore) {
-    return store.providers.providerUrl
+    return store.providerEditForm.providerUrl
   }
 }

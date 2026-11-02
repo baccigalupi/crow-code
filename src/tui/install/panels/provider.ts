@@ -20,9 +20,9 @@ export abstract class ProviderPanel {
 
   controller(store: DataStore) {
     const { back, forward } = this
-    const { providers } = store
+    const { providers, providerEditForm: form } = store
     const field = this.field(store)
-    return new ProviderFormController({ field, providers, back, forward })
+    return new ProviderFormController({ field, form, providers, back, forward })
   }
 
   viewModel(_store: DataStore) {

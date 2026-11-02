@@ -22,12 +22,14 @@ describe('ProviderCredentialsPanel', () => {
 
     controller.handle(new Keypress('x', {}))
 
-    expect(store.providers.providerCredentials.text.peek().text).toBe('x')
+    expect(store.providerEditForm.providerCredentials.text.peek().text).toBe(
+      'x',
+    )
   })
 
   it('when return is pressed, its controller saves the provider and moves on', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    store.providers.providerName.insert('nous')
+    store.providerEditForm.providerName.insert('nous')
     const controller = new ProviderCredentialsPanel().controller(store)
 
     const outcome = controller.handle(new Keypress('', { return: true }))

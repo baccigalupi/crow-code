@@ -5,7 +5,8 @@ import { crowConfigFromInputs } from './crow-config/from-inputs.ts'
 import { ConfirmStore } from './data-stores/confirm-store.ts'
 import { DirectoriesStore } from './data-stores/directories-store.ts'
 import { PermissionsStore } from './data-stores/permissions-store.ts'
-import { ProvidersStore } from './data-stores/providers-store.ts'
+import { ProviderEditFormStore } from './data-stores/provider-edit-form-store.ts'
+import { ProviderStore } from './data-stores/provider-store.ts'
 import { SetupStore } from './data-stores/setup-store.ts'
 import { Panels } from './panels.ts'
 
@@ -15,7 +16,8 @@ export class DataStore {
   readonly confirm = new ConfirmStore()
   readonly directories = new DirectoriesStore()
   readonly permissions = new PermissionsStore()
-  readonly providers = new ProvidersStore()
+  readonly providerEditForm = new ProviderEditFormStore()
+  readonly providers = new ProviderStore()
   readonly navigator = new Navigator<PanelName>({
     initial: 'repo',
     panels: new Panels().flows(this),
@@ -42,9 +44,16 @@ export class DataStore {
     return {
       ...this.directories.values.value,
       ...this.permissions.values.value,
-      ...this.providers.values.value,
+      ...this.providerAnswers(),
       step: this.navigator.current.value,
       confirmation: this.confirm.confirmed.value,
+    }
+  }
+
+  private providerAnswers() {
+    return {
+      ...this.providerEditForm.values.value,
+      ...this.providers.values.value,
     }
   }
 

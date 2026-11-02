@@ -22,7 +22,7 @@ describe('ProviderUrlPanel', () => {
 
     controller.handle(new Keypress('x', {}))
 
-    expect(store.providers.providerUrl.text.peek().text).toBe('x')
+    expect(store.providerEditForm.providerUrl.text.peek().text).toBe('x')
   })
 
   it('when shift-tab is pressed, its controller goes back to the name field', () => {

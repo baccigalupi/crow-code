@@ -9,6 +9,6 @@ export class ProviderCredentialsPanel extends ProviderPanel {
   readonly highlights = { key: 'providerCredentials' }
 
   field(store: DataStore) {
-    return store.providers.providerCredentials
+    return store.providerEditForm.providerCredentials
   }
 }

@@ -12,7 +12,7 @@ const providerSteps: readonly (PanelName | undefined)[] = [
 
 // While on a provider step a new record is open, even when still blank, so
 // the preview never makes a finished provider look like it is being edited.
-const draftProviders = ({
+const editedProviders = ({
   providerName,
   providerUrl,
   step,
@@ -23,7 +23,7 @@ const draftProviders = ({
 
 // Finished providers plus the one being typed, shaped for config.json.
 export const buildProviders = (providerInputs: ProviderInputs) => {
-  return [...providerInputs.providers, ...draftProviders(providerInputs)].map(
+  return [...providerInputs.providers, ...editedProviders(providerInputs)].map(
     providerConfig,
   )
 }

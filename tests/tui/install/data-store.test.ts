@@ -15,16 +15,16 @@ describe('DataStore', () => {
 
   it('when a provider is committed, inputs list the provider', () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
-    model.providers.providerName.insert('Ollama')
+    model.providerEditForm.providerName.insert('Ollama')
 
-    model.providers.commit()
+    model.providers.save(model.providerEditForm.provider(), '')
 
     expect(model.inputs.peek().providers).toEqual([{ name: 'Ollama', url: '' }])
   })
 
   it('when return commits a provider, the step values change once', () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
-    model.providers.providerName.insert('nous')
+    model.providerEditForm.providerName.insert('nous')
     model.navigator.goTo('providerCredentials')
     const watcher = mock()
     effect(() => watcher(model.stepValues.value.step))

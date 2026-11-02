@@ -9,6 +9,6 @@ export class ProviderNamePanel extends ProviderPanel {
   readonly highlights = { key: 'name', occurrence: 'last' } as const
 
   field(store: DataStore) {
-    return store.providers.providerName
+    return store.providerEditForm.providerName
   }
 }

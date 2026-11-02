@@ -22,7 +22,7 @@ describe('ProviderNamePanel', () => {
 
     controller.handle(new Keypress('x', {}))
 
-    expect(store.providers.providerName.text.peek().text).toBe('x')
+    expect(store.providerEditForm.providerName.text.peek().text).toBe('x')
   })
 
   it('when tab is pressed, its controller goes to the url field', () => {

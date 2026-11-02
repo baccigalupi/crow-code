@@ -1,11 +1,15 @@
-import { signal, type ReadonlySignal } from '@preact/signals-core'
-import type { EnvBuffer, InstallProvider } from '../../types.ts'
+import { computed, signal, type ReadonlySignal } from '@preact/signals-core'
+import type { EnvBuffer, InstallProvider } from '../types.ts'
 
 // The providers committed so far, and their credentials held for the .env
 // file rather than the config.
-export class SavedProvidersStore {
+export class ProviderStore {
   private saved = signal<readonly InstallProvider[]>([])
   private buffered = signal<EnvBuffer>({})
+  readonly values = computed(() => ({
+    providers: this.saved.value,
+    envBuffer: this.buffered.value,
+  }))
 
   get providers(): ReadonlySignal<readonly InstallProvider[]> {
     return this.saved
