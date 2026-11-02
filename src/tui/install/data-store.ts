@@ -1,7 +1,6 @@
 import { computed } from '@preact/signals-core'
 import type { PanelName, DataStoreArguments } from './types.ts'
 import { Navigator } from '../navigator.ts'
-import { crowConfigFromInputs } from './crow-config/from-inputs.ts'
 import { ConfirmStore } from './data-stores/confirm-store.ts'
 import { DirectoriesStore } from './data-stores/directories-store.ts'
 import { PermissionsStore } from './data-stores/permissions-store.ts'
@@ -26,7 +25,6 @@ export class DataStore {
   readonly progress = new SetupProgressStore()
   readonly applicationData: ApplicationData
   readonly inputs = computed(() => this.answers())
-  readonly stepValues = computed(() => this.promptValues())
 
   constructor({ applicationData }: DataStoreArguments) {
     this.applicationData = applicationData
@@ -47,16 +45,6 @@ export class DataStore {
     return {
       ...this.providerEditForm.values.value,
       ...this.providers.values.value,
-    }
-  }
-
-  // What the current prompt shows: the answers, the config path they lead
-  // to and the setup progress.
-  private promptValues() {
-    return {
-      ...this.inputs.value,
-      crowConfigPath: crowConfigFromInputs(this.inputs.value).crowConfigPath(),
-      setupTasks: this.progress.tasks.value,
     }
   }
 }

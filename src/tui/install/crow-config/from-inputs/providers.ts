@@ -1,4 +1,5 @@
-import type { InstallProvider, PanelName, ProviderInputs } from '../../types.ts'
+import type { InstallProvider, PanelName } from '../../types.ts'
+import type { ProviderInputs } from '../types.ts'
 
 const providerConfig = ({ name, url }: InstallProvider) => {
   return { name, baseUrl: url }

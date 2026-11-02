@@ -26,12 +26,8 @@ describe('CompleteSetupPanel', () => {
 
   it('when no setup task has run, its view model has no rows', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new CompleteSetupPanel().viewModel(store)
 
-    const props = viewModel.props({
-      ...store.stepValues.peek(),
-      setupTasks: [],
-    })
+    const props = new CompleteSetupPanel().props(store)
 
     expect(props).toEqual({ rows: [] })
   })

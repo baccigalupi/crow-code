@@ -26,9 +26,8 @@ describe('EnvFilePanel', () => {
   it('when nothing is typed, its view model defaults to .env inside the global directory', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.directories.globalDirectory.insert('/g')
-    const viewModel = new EnvFilePanel().viewModel(store)
 
-    const props = viewModel.props(store.stepValues.peek())
+    const props = new EnvFilePanel().props(store)
 
     expect(props.label).toBe('Credentials .env file')
     expect(props.defaultValue).toBe('/g/.env')

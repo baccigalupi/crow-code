@@ -1,5 +1,9 @@
-import type { SetupProgressValues } from '../../types.ts'
+import type { SetupTaskStatus } from '../../types.ts'
 import type { SetupProgressViewModel } from '../shared/setup-progress-view-model.ts'
+
+type SetupProgressValues = {
+  readonly setupTasks: readonly SetupTaskStatus[]
+}
 
 // The finished setup rows, then the hint that says how it ended.
 export class DoneMessageViewModel {

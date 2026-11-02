@@ -22,12 +22,12 @@ describe('DataStore', () => {
     expect(model.inputs.peek().providers).toEqual([{ name: 'Ollama', url: '' }])
   })
 
-  it('when return commits a provider, the step values change once', () => {
+  it('when return commits a provider, the step changes once', () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
     model.providerEditForm.providerName.insert('nous')
     model.navigator.goTo('providerCredentials')
     const watcher = mock()
-    effect(() => watcher(model.stepValues.value.step))
+    effect(() => watcher(model.navigator.current.value))
 
     model.navigator.press(new Keypress('', { return: true }), mock())
 
@@ -48,7 +48,7 @@ describe('DataStore', () => {
     model.navigator.goTo('completeSetup')
 
     expect(mkdir.mock.calls).toEqual([['.crow']])
-    expect(model.stepValues.peek().setupTasks).toEqual([
+    expect(model.progress.tasks.peek()).toEqual([
       {
         id: 'LocalConfigTask',
         label: 'Writing config to .crow/config.json',
@@ -70,22 +70,5 @@ describe('DataStore', () => {
     model.navigator.goTo('ignore')
 
     expect(model.inputs.peek().step).toBe('ignore')
-  })
-
-  it('when no repo directory is typed, the config path is in the default directory', () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-
-    const { crowConfigPath } = model.stepValues.peek()
-
-    expect(crowConfigPath).toBe('.crow/config.json')
-  })
-
-  it('when a repo directory is typed, the config path is inside it', () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.directories.repoDirectory.insert('./lib')
-
-    const { crowConfigPath } = model.stepValues.peek()
-
-    expect(crowConfigPath).toBe('./lib/config.json')
   })
 })

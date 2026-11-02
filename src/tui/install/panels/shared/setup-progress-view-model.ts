@@ -1,4 +1,8 @@
-import type { SetupProgressValues, SetupTaskStatus } from '../../types.ts'
+import type { SetupTaskStatus } from '../../types.ts'
+
+type SetupProgressValues = {
+  readonly setupTasks: readonly SetupTaskStatus[]
+}
 
 // The setup tasks as rows: each with the mark that says whether it is done,
 // failed, running or still waiting.

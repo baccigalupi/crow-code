@@ -26,8 +26,8 @@ export abstract class ProviderPanel {
     return new ProviderFormController({ field, form, providers, back, forward })
   }
 
-  viewModel(_store: DataStore) {
-    return new ProviderPromptViewModel()
+  props(store: DataStore) {
+    return new ProviderPromptViewModel().props(store.inputs.value)
   }
 
   view(renderer: RenderContext) {

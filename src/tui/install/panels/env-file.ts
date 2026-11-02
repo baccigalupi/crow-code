@@ -1,6 +1,6 @@
 import type { DataStore } from '../data-store.ts'
 import { crowConfigFromInputs } from '../crow-config/from-inputs.ts'
-import type { CrowConfigInputs } from '../types.ts'
+import type { CrowConfigInputs } from '../crow-config/types.ts'
 import { TextPromptPanel } from './text-prompt.ts'
 
 export class EnvFilePanel extends TextPromptPanel {

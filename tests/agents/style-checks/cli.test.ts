@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import {
-  auditSource,
   classify,
-  formatAdvisory,
   lintSource,
   parseArgs,
 } from '../../../agents/style-checks/cli.ts'
@@ -204,71 +202,38 @@ describe('style-check cli', () => {
     expect(await child.exited).toBe(0)
   })
 
-  it('when a tui store imports opentui, reports it as advisory only', () => {
+  it('when a tui store imports opentui, reports it as blocking', () => {
     const file = 'src/tui/install/data-stores/text-field-store.ts'
     const source = "import { x } from '@opentui/core'\n"
 
-    const audit = auditSource(file, source)
+    const lines = lintSource(file, source)
 
-    expect(audit).toEqual({
-      blocking: [],
-      advisory: [
-        'src/tui/install/data-stores/text-field-store.ts:1:1: crow-style-tui/tui-import-boundaries: stores never import @opentui/core or panel files; found @opentui/core',
-      ],
-    })
+    expect(lines).toEqual([
+      'src/tui/install/data-stores/text-field-store.ts:1:1: crow-style-tui/tui-import-boundaries: stores never import @opentui/core or panel files; found @opentui/core',
+    ])
   })
 
-  it('when a tui view imports a store, reports it as blocking only', () => {
+  it('when a tui view imports a store, reports it as blocking', () => {
     const file = 'src/tui/install/views/prompt-view.ts'
     const source = "import { x } from '../data-stores/directories-store.ts'\n"
 
-    const audit = auditSource(file, source)
+    const lines = lintSource(file, source)
 
-    expect(audit).toEqual({
-      blocking: [
-        'src/tui/install/views/prompt-view.ts:1:1: crow-style-tui-views/tui-view-imports: views import only @opentui/core, theme, decorators, other views and types; found ../data-stores/directories-store.ts',
-      ],
-      advisory: [],
-    })
+    expect(lines).toEqual([
+      'src/tui/install/views/prompt-view.ts:1:1: crow-style-tui/tui-import-boundaries: views import only @opentui/core, theme, decorators, other views and types; found ../data-stores/directories-store.ts',
+    ])
   })
 
-  it('when the same import is outside src, reports no advisory', () => {
+  it('when the same import is outside src tui, reports nothing', () => {
     const file = 'src/tools/x.ts'
     const source = "import { x } from '@opentui/core'\n"
 
-    const audit = auditSource(file, source)
+    const lines = lintSource(file, source)
 
-    expect(audit.advisory).toEqual([])
+    expect(lines).toEqual([])
   })
 
-  it('when a test file is audited, reports no advisory', () => {
-    const file = 'tests/x.test.ts'
-    const source = "import { x } from '@opentui/core'\n"
-
-    const audit = auditSource(file, source)
-
-    expect(audit.advisory).toEqual([])
-  })
-
-  it('when code uses a ternary, reports it as blocking only', () => {
-    const file = 'src/example.ts'
-    const source = 'export const x = true ? 1 : 2\n'
-
-    const audit = auditSource(file, source)
-
-    expect(audit.blocking).toHaveLength(1)
-    expect(audit.advisory).toEqual([])
-  })
-
-  it('when a line is formatted as advisory, suffixes it', () => {
-    const line = 'src/x.ts:1:1: rule: message'
-
-    const formatted = formatAdvisory(line)
-
-    expect(formatted).toBe('src/x.ts:1:1: rule: message (advisory)')
-  })
-
-  it('when a tui file is named, runs advisory checks and exits 0', async () => {
+  it('when a tui file is named, lints it and exits 0', async () => {
     const command = [
       'agents/style-check',
       'src/tui/install/data-stores/text-field-store.ts',

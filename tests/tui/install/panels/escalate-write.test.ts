@@ -25,9 +25,8 @@ describe('EscalateWritePanel', () => {
 
   it('when nothing is typed, its view model shows the question and a parenthesised default', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new EscalateWritePanel().viewModel(store)
 
-    const props = viewModel.props(store.stepValues.peek())
+    const props = new EscalateWritePanel().props(store)
 
     expect(props.label).toBe('Escalate write directories')
     expect(props.defaultValue).toBe(store.permissions.defaultEscalateWrite)

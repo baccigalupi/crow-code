@@ -7,7 +7,7 @@ import type {
   CrowConfigInputs,
   PermissionInputs,
   ProviderInputs,
-} from '../types.ts'
+} from './types.ts'
 
 // READ side: builds the config the installer would write from the typed
 // inputs. Pure; touches no files. Writing lives in write.ts.

@@ -25,9 +25,8 @@ describe('CrowGlobalDirectoryPanel', () => {
 
   it('when nothing is typed, its view model shows the question and the default', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new CrowGlobalDirectoryPanel().viewModel(store)
 
-    const props = viewModel.props(store.stepValues.peek())
+    const props = new CrowGlobalDirectoryPanel().props(store)
 
     expect(props).toEqual({
       label: 'User crow directory',

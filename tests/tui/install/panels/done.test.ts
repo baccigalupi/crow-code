@@ -26,9 +26,8 @@ describe('DonePanel', () => {
 
   it('when no setup task has failed, its view model says it is done', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new DonePanel().viewModel(store)
 
-    const props = viewModel.props(store.stepValues.peek())
+    const props = new DonePanel().props(store)
 
     expect(props.hint).toBe('Done! Press any key to exit')
   })

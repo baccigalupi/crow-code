@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'bun:test'
 import { createTestRenderer } from '@opentui/core/testing'
+import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { ConfigPreviewPanel } from '../../../../src/tui/install/panels/config-preview.ts'
+import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('ConfigPreviewPanel', () => {
   it('when asked, names itself', () => {
@@ -11,30 +13,14 @@ describe('ConfigPreviewPanel', () => {
     expect(name).toBe('configPreview')
   })
 
-  it('when asked for its view model, hides the preview on the first step', () => {
+  it('when asked for its props, hides the preview on the first step', () => {
+    const store = new DataStore({ applicationData: mockApplicationData() })
     const panel = new ConfigPreviewPanel()
 
-    const props = panel.viewModel().props(
-      {
-        repoDirectory: { text: '', cursor: 0 },
-        globalDirectory: { text: '', cursor: 0 },
-        envFile: { text: '', cursor: 0 },
-        ignore: { text: '', cursor: 0 },
-        additionalRead: { text: '', cursor: 0 },
-        additionalWrite: { text: '', cursor: 0 },
-        escalateRead: { text: '', cursor: 0 },
-        escalateWrite: { text: '', cursor: 0 },
-        allowedLocalScripts: { text: '', cursor: 0 },
-        providerName: { text: '', cursor: 0 },
-        providerUrl: { text: '', cursor: 0 },
-        providerCredentials: { text: '', cursor: 0 },
-        providers: [],
-        step: 'repo',
-      },
-      { key: 'repo' },
-    )
+    const props = panel.props(store, { key: 'repo' })
 
     expect(props.visible).toBe(false)
+    expect(props.crowConfigPath).toBe('.crow/config.json')
   })
 
   it('when its view is mounted, shows the config path it is given', async () => {

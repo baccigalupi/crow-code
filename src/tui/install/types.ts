@@ -3,6 +3,7 @@ import type { InputText } from '../types.ts'
 import type { Keypress } from '../keypress.ts'
 import type { AsyncOperation, CrowPermissionsConfig } from '../../types.ts'
 import type { ApplicationData } from '../../application-data/application-data.ts'
+import type { CrowConfigInputs } from './crow-config/types.ts'
 import type { Panels } from './panels.ts'
 import type { ProviderEditFormStore } from './data-stores/provider-edit-form-store.ts'
 import type { ProviderStore } from './data-stores/provider-store.ts'
@@ -46,50 +47,6 @@ export type SetupTaskStatus = {
   readonly error: string
 }
 
-export type UserInputData = {
-  readonly globalDirectory: InputText
-  readonly repoDirectory: InputText
-  readonly envFile: InputText
-  readonly ignore: InputText
-  readonly additionalRead: InputText
-  readonly additionalWrite: InputText
-  readonly escalateRead: InputText
-  readonly escalateWrite: InputText
-  readonly allowedLocalScripts: InputText
-  readonly providerName: InputText
-  readonly providerUrl: InputText
-  readonly providerCredentials: InputText
-  readonly providers: readonly InstallProvider[]
-  readonly step: PanelName
-  readonly confirmation: boolean
-  readonly envBuffer: EnvBuffer
-}
-
-export type CrowConfigInputs = Omit<
-  UserInputData,
-  'step' | 'confirmation' | 'envBuffer'
-> &
-  Partial<Pick<UserInputData, 'step'>>
-
-export type ProviderInputs = Pick<
-  CrowConfigInputs,
-  'providerName' | 'providerUrl' | 'providerCredentials' | 'providers' | 'step'
->
-
-export type PermissionInputs = Pick<
-  CrowConfigInputs,
-  | 'ignore'
-  | 'additionalRead'
-  | 'additionalWrite'
-  | 'escalateRead'
-  | 'escalateWrite'
-  | 'allowedLocalScripts'
->
-
-export type ConfigPanelValues = CrowConfigInputs & {
-  readonly step: PanelName
-}
-
 // The config line a panel edits; a key that is not in the config highlights
 // nothing.
 export type PanelHighlights = Omit<HighlightJsonArguments, 'json'>
@@ -106,15 +63,6 @@ export type ConfigPanelProps = HighlightedJson & {
   readonly crowConfigPath: string
 }
 
-export type StepValues = CrowConfigInputs & {
-  readonly step: PanelName
-  readonly crowConfigPath: string
-  readonly confirmation: boolean
-  readonly setupTasks: readonly SetupTaskStatus[]
-}
-
-export type SetupProgressValues = Pick<StepValues, 'setupTasks'>
-
 export type SetupProgressRow = {
   readonly id: string
   readonly label: string
@@ -130,11 +78,6 @@ export type SetupProgressProps = {
 export type DoneMessageProps = SetupProgressProps & {
   readonly hint: string
 }
-
-export type ProviderPromptValues = Pick<
-  UserInputData,
-  'step' | 'providers' | 'providerName' | 'providerUrl' | 'providerCredentials'
->
 
 export type ProviderFieldDefinition = {
   readonly label: string
@@ -173,11 +116,6 @@ export type StepProps =
   | ConfirmPromptProps
   | SetupProgressProps
   | DoneMessageProps
-
-// What a prompt panel draws its prompt from and with.
-export type PanelViewModel = {
-  props(values: StepValues): StepProps
-}
 
 export type PanelView = {
   root(): Renderable

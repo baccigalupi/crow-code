@@ -48,9 +48,8 @@ describe('ProviderNamePanel', () => {
   it('when asked for its view model, shows the first field as the active one', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.navigator.goTo('providerName')
-    const viewModel = new ProviderNamePanel().viewModel(store)
 
-    const props = viewModel.props(store.stepValues.peek())
+    const props = new ProviderNamePanel().props(store)
 
     expect(props.title).toBe('Provider 1')
   })

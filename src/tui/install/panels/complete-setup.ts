@@ -17,8 +17,9 @@ export class CompleteSetupPanel {
     return new IdleController('stay')
   }
 
-  viewModel(_store: DataStore) {
-    return new SetupProgressViewModel()
+  props(store: DataStore) {
+    const setupTasks = store.progress.tasks.value
+    return new SetupProgressViewModel().props({ setupTasks })
   }
 
   view(renderer: RenderContext) {

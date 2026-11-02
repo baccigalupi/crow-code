@@ -1,4 +1,6 @@
 import type { RenderContext } from '@opentui/core'
+import type { DataStore } from '../data-store.ts'
+import type { PanelHighlights } from '../types.ts'
 import { ConfigPanelViewModel } from './config-preview/view-model.ts'
 import { ConfigPanelView } from './config-preview/view.ts'
 
@@ -6,8 +8,8 @@ import { ConfigPanelView } from './config-preview/view.ts'
 export class ConfigPreviewPanel {
   readonly name = 'configPreview'
 
-  viewModel() {
-    return new ConfigPanelViewModel()
+  props(store: DataStore, highlights: PanelHighlights) {
+    return new ConfigPanelViewModel().props(store.inputs.value, highlights)
   }
 
   view(renderer: RenderContext) {

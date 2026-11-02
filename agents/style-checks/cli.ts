@@ -15,7 +15,6 @@ import type { Plugin } from './engine/types.ts'
 import { installNamesPlugin } from './install-names-plugin.ts'
 import { tsxPlugin } from './tsx-plugin.ts'
 import { tuiBoundariesPlugin } from './tui-boundaries-plugin.ts'
-import { tuiViewBoundariesPlugin } from './tui-view-boundaries-plugin.ts'
 import { unitTestsPlugin } from './unit-tests-plugin.ts'
 import { voidGuardViolations } from './void-guard.ts'
 
@@ -88,17 +87,12 @@ const pluginsFor = (file: string): Plugin[] => {
   const kind = classify(file)
   const tsx = file.endsWith('.tsx') ? [tsxPlugin] : []
   if (kind === 'code') {
-    return [codePlugin, installNamesPlugin, tuiViewBoundariesPlugin, ...tsx]
+    return [codePlugin, installNamesPlugin, tuiBoundariesPlugin, ...tsx]
   }
   if (kind === 'test') {
     return [unitTestsPlugin, codePlugin, installNamesPlugin, ...tsx]
   }
   if (kind === 'support') return [codePlugin, ...tsx]
-  return []
-}
-
-const advisoryPluginsFor = (file: string): Plugin[] => {
-  if (classify(file) === 'code') return [tuiBoundariesPlugin]
   return []
 }
 
@@ -110,15 +104,8 @@ const formatLines = (plugins: Plugin[], file: string, source: string) =>
     ),
   )
 
-export const auditSource = (file: string, source: string) => ({
-  blocking: formatLines(pluginsFor(file), file, source),
-  advisory: formatLines(advisoryPluginsFor(file), file, source),
-})
-
-export const formatAdvisory = (line: string) => `${line} (advisory)`
-
 export const lintSource = (file: string, source: string): string[] =>
-  auditSource(file, source).blocking
+  formatLines(pluginsFor(file), file, source)
 
 const gitFiles = async (args: string[]): Promise<string[]> => {
   const child = Bun.spawn(['git', ...args], { stdout: 'pipe' })
@@ -190,10 +177,9 @@ const run = async (command: string[]): Promise<number> =>
   await Bun.spawn(command, { stdout: 'inherit', stderr: 'inherit' }).exited
 
 const lintFile = async (file: string): Promise<boolean> => {
-  const { blocking, advisory } = auditSource(file, await readFile(file, 'utf8'))
-  for (const line of blocking) console.log(line)
-  for (const line of advisory) console.log(formatAdvisory(line))
-  return blocking.length === 0
+  const lines = lintSource(file, await readFile(file, 'utf8'))
+  for (const line of lines) console.log(line)
+  return lines.length === 0
 }
 
 const voidGuard = (files: string[]) => {

@@ -1,6 +1,6 @@
-import type { StepValues } from '../../types.ts'
-
-type ConfirmPromptValues = Pick<StepValues, 'confirmation'>
+type ConfirmPromptValues = {
+  readonly confirmation: boolean
+}
 
 // Which of Yes and No the confirm prompt has selected.
 export class ConfirmPromptViewModel {

@@ -1,8 +1,17 @@
+import type { InputText } from '../../../types.ts'
 import type {
+  InstallProvider,
   PanelName,
   ProviderFieldDefinition,
-  ProviderPromptValues,
 } from '../../types.ts'
+
+type ProviderPromptValues = {
+  readonly step: PanelName
+  readonly providers: readonly InstallProvider[]
+  readonly providerName: InputText
+  readonly providerUrl: InputText
+  readonly providerCredentials: InputText
+}
 
 // The three provider steps as one "Provider N" block. Earlier fields show
 // their values, the current one is live, later ones wait.

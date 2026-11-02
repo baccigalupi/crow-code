@@ -16,8 +16,10 @@ export class DonePanel {
     return new IdleController('exit')
   }
 
-  viewModel(_store: DataStore) {
-    return new DoneMessageViewModel(new SetupProgressViewModel())
+  props(store: DataStore) {
+    const setupTasks = store.progress.tasks.value
+    const viewModel = new DoneMessageViewModel(new SetupProgressViewModel())
+    return viewModel.props({ setupTasks })
   }
 
   view(renderer: RenderContext) {

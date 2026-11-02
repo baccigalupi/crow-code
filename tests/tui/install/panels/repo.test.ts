@@ -35,9 +35,8 @@ describe('RepoPanel', () => {
 
   it('when nothing is typed, its view model shows the question and the default', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new RepoPanel().viewModel(store)
 
-    const props = viewModel.props(store.stepValues.peek())
+    const props = new RepoPanel().props(store)
 
     expect(props).toEqual({
       label: 'What directory for the local repo crow setup',

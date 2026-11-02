@@ -37,9 +37,8 @@ describe('ConfirmPanel', () => {
 
   it('when asked for its view model, selects the option the store has chosen', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new ConfirmPanel().viewModel(store)
 
-    const props = viewModel.props(store.stepValues.peek())
+    const props = new ConfirmPanel().props(store)
 
     expect(props).toEqual({ selectedIndex: 0 })
   })

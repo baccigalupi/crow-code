@@ -25,9 +25,8 @@ describe('AdditionalWritePanel', () => {
 
   it('when nothing is typed, its view model shows the question and a bare default', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new AdditionalWritePanel().viewModel(store)
 
-    const props = viewModel.props(store.stepValues.peek())
+    const props = new AdditionalWritePanel().props(store)
 
     expect(props.label).toBe('Additional write directories')
     expect(props.defaultValue).toBe(store.permissions.defaultAdditionalWrite)

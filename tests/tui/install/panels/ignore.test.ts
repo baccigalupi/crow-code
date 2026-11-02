@@ -25,9 +25,8 @@ describe('IgnorePanel', () => {
 
   it('when nothing is typed, its view model shows the question and a bare default', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new IgnorePanel().viewModel(store)
 
-    const props = viewModel.props(store.stepValues.peek())
+    const props = new IgnorePanel().props(store)
 
     expect(props.label).toBe('Ignored paths')
     expect(props.defaultValue).toBe(store.permissions.defaultIgnore)

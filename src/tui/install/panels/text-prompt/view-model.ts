@@ -1,4 +1,4 @@
-import type { CrowConfigInputs } from '../../types.ts'
+import type { CrowConfigInputs } from '../../crow-config/types.ts'
 import type { TextPromptPanel } from '../text-prompt.ts'
 import type { DataStore } from '../../data-store.ts'
 

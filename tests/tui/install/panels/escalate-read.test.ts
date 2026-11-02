@@ -25,9 +25,8 @@ describe('EscalateReadPanel', () => {
 
   it('when nothing is typed, its view model shows the question and a bare default', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new EscalateReadPanel().viewModel(store)
 
-    const props = viewModel.props(store.stepValues.peek())
+    const props = new EscalateReadPanel().props(store)
 
     expect(props.label).toBe('Escalate read directories')
     expect(props.defaultValue).toBe(store.permissions.defaultEscalateRead)

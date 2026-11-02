@@ -36,15 +36,13 @@ export class Subscriptions {
 
   private drawPreview() {
     const { model, layout, panels } = this
-    const values = model.inputs.value
-    const { highlights } = panels.get(values.step)
-    layout.drawPreview(panels.preview.viewModel().props(values, highlights))
+    const { highlights } = panels.get(model.navigator.current.value)
+    layout.drawPreview(panels.preview.props(model, highlights))
   }
 
   private drawPrompt() {
     const { model, layout, panels } = this
-    const values = model.stepValues.value
-    const viewModel = panels.get(values.step).viewModel(model)
-    layout.drawPrompt(values.step, viewModel.props(values))
+    const step = model.navigator.current.value
+    layout.drawPrompt(step, panels.get(step).props(model))
   }
 }

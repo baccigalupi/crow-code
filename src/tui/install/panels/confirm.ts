@@ -15,8 +15,9 @@ export class ConfirmPanel {
     return new ConfirmController(store.confirm)
   }
 
-  viewModel(_store: DataStore) {
-    return new ConfirmPromptViewModel()
+  props(store: DataStore) {
+    const confirmation = store.confirm.confirmed.value
+    return new ConfirmPromptViewModel().props({ confirmation })
   }
 
   view(renderer: RenderContext) {

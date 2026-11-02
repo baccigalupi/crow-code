@@ -1,7 +1,8 @@
 import type { RenderContext } from '@opentui/core'
 import type { DataStore } from '../data-store.ts'
 import type { TextFieldStore } from '../data-stores/text-field-store.ts'
-import type { CrowConfigInputs, PanelHighlights, PanelName } from '../types.ts'
+import type { CrowConfigInputs } from '../crow-config/types.ts'
+import type { PanelHighlights, PanelName } from '../types.ts'
 import { TextPromptController } from './text-prompt/controller.ts'
 import { TextPromptViewModel } from './text-prompt/view-model.ts'
 import { PromptView } from './shared/prompt-view.ts'
@@ -26,8 +27,8 @@ export abstract class TextPromptPanel {
     return new TextPromptController(this.field(store))
   }
 
-  viewModel(store: DataStore) {
-    return new TextPromptViewModel(this, store)
+  props(store: DataStore) {
+    return new TextPromptViewModel(this, store).props(store.inputs.value)
   }
 
   view(renderer: RenderContext) {
