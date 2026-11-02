@@ -1,6 +1,7 @@
 import type { ApplicationOperationArguments } from '../../types.ts'
-import type { WebFetchResult } from '../types.ts'
+import type { FetchedResponse, WebFetchResult } from '../types.ts'
 import { OperationWithResult } from '../../operation.ts'
+import { FollowRedirects } from './fetch/follow-redirects.ts'
 import { HtmlText } from './fetch/html-text.ts'
 
 type TaskArguments = {
@@ -21,6 +22,8 @@ export class WebFetch extends OperationWithResult<
     text: '',
   }
 
+  private fetched: FetchedResponse = { url: '', response: new Response(null) }
+
   async run() {
     try {
       await this.send()
@@ -35,29 +38,53 @@ export class WebFetch extends OperationWithResult<
   }
 
   private async send() {
-    const { url } = this.operationArguments
-    const response = await this.applicationData.fetch()(url)
+    const follow = this.followRedirects()
+    await this.runSubOperation(follow)
+    this.fetched = follow.result()
+    if (this.succeeded) {
+      await this.accept()
+    }
+  }
+
+  private followRedirects() {
+    const { applicationData, operationArguments } = this
+    return new FollowRedirects({ applicationData, operationArguments })
+  }
+
+  private async accept() {
+    const { url, response } = this.fetched
     if (response.ok) {
-      this.page = await this.read(response)
+      this.page = await this.read()
     } else {
       this.fail(`web fetch failed with status ${response.status}: ${url}`)
     }
   }
 
-  private async read(response: Response) {
-    const contentType = response.headers.get('content-type') || ''
-    const body = await response.text()
-    const text = await this.visibleText(contentType, body)
-    const { url } = this.operationArguments
-    return { url, status: response.status, contentType, text }
+  private async read() {
+    const { url, response } = this.fetched
+    const { status } = response
+    const contentType = this.contentType()
+    return { url, status, contentType, text: await this.text() }
   }
 
-  private visibleText(contentType: string, body: string) {
-    if (/^(text\/html|application\/xhtml\+xml)/.test(contentType)) {
-      return new HtmlText(body).text()
+  private contentType() {
+    return this.fetched.response.headers.get('content-type') || ''
+  }
+
+  private async text() {
+    if (this.isHtml()) {
+      return new HtmlText(await this.body()).text()
     }
 
-    return body
+    return this.body()
+  }
+
+  private isHtml() {
+    return /^(text\/html|application\/xhtml\+xml)/.test(this.contentType())
+  }
+
+  private body() {
+    return this.fetched.response.text()
   }
 
   private failNetwork(error: unknown) {

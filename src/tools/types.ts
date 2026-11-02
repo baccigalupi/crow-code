@@ -299,6 +299,11 @@ export type WebFetchResult = {
   text: string
 }
 
+export type FetchedResponse = {
+  url: string
+  response: Response
+}
+
 export type DirectoryEntryKind = 'file' | 'directory' | 'symlink'
 
 export type DirectoryEntry = {
