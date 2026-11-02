@@ -1,38 +1,20 @@
 import type { ReadonlySignal } from '@preact/signals-core'
-import type { RenderContext, Renderable } from '@opentui/core'
+import type { Renderable } from '@opentui/core'
 import type { InputText } from '../types.ts'
 import type { Keypress } from '../keypress.ts'
 import type { Navigator } from '../navigator.ts'
 import type { AsyncOperation, CrowPermissionsConfig } from '../../types.ts'
 import type { ApplicationData } from '../../application-data/application-data.ts'
-import type { ConfirmPromptViewModel } from './view-models/confirm-prompt-view-model.ts'
-import type { DoneMessageViewModel } from './view-models/done-message-view-model.ts'
-import type { ProviderPromptViewModel } from './view-models/provider-prompt-view-model.ts'
-import type { SetupProgressViewModel } from './view-models/setup-progress-view-model.ts'
-import type { TextPromptViewModel } from './view-models/text-prompt-view-model.ts'
-import type { DirectoriesStore } from './data-stores/directories-store.ts'
-import type { PermissionsStore } from './data-stores/permissions-store.ts'
+import type { Panels } from './panels.ts'
 import type { SetupProgressStore } from './data-stores/setup-progress-store.ts'
-import type { ConfirmStore } from './data-stores/confirm-store.ts'
 import type { ProvidersStore } from './data-stores/providers-store.ts'
 import type { TextFieldStore } from './data-stores/text-field-store.ts'
 
-export type InstallStep =
-  | 'repo'
-  | 'crowGlobalDirectory'
-  | 'envFile'
-  | 'ignore'
-  | 'additionalRead'
-  | 'additionalWrite'
-  | 'escalateRead'
-  | 'escalateWrite'
-  | 'allowedLocalScripts'
-  | 'providerName'
-  | 'providerUrl'
-  | 'providerCredentials'
-  | 'confirm'
-  | 'completeSetup'
-  | 'done'
+// The names of the panels that take keys, derived from the registry. The
+// template form keeps the literals from widening to string in object literals.
+export type PanelName = `${Panels['prompts'][number]['name']}`
+
+export type PromptPanel = Panels['prompts'][number]
 
 export type InstallProvider = {
   readonly name: string
@@ -80,7 +62,7 @@ export type UserInputData = {
   readonly providerUrl: InputText
   readonly providerCredentials: InputText
   readonly providers: readonly InstallProvider[]
-  readonly step: InstallStep
+  readonly step: PanelName
   readonly confirmation: boolean
   readonly envBuffer: EnvBuffer
 }
@@ -107,8 +89,12 @@ export type PermissionInputs = Pick<
 >
 
 export type ConfigPanelValues = CrowConfigInputs & {
-  readonly step: InstallStep
+  readonly step: PanelName
 }
+
+// The config line a panel edits; a key that is not in the config highlights
+// nothing.
+export type PanelHighlights = Omit<HighlightJsonArguments, 'json'>
 
 // The config json split around the line the current step edits.
 export type HighlightedJson = {
@@ -123,7 +109,7 @@ export type ConfigPanelProps = HighlightedJson & {
 }
 
 export type StepValues = CrowConfigInputs & {
-  readonly step: InstallStep
+  readonly step: PanelName
   readonly crowConfigPath: string
   readonly confirmation: boolean
   readonly setupTasks: readonly SetupTaskStatus[]
@@ -176,32 +162,6 @@ export type ConfirmPromptProps = {
   readonly selectedIndex: number
 }
 
-export type TextPromptStep = Extract<
-  InstallStep,
-  | 'repo'
-  | 'crowGlobalDirectory'
-  | 'envFile'
-  | 'ignore'
-  | 'additionalRead'
-  | 'additionalWrite'
-  | 'escalateRead'
-  | 'escalateWrite'
-  | 'allowedLocalScripts'
->
-
-export type TextPromptInputKey = Extract<
-  keyof CrowConfigInputs,
-  | 'repoDirectory'
-  | 'globalDirectory'
-  | 'envFile'
-  | 'ignore'
-  | 'additionalRead'
-  | 'additionalWrite'
-  | 'escalateRead'
-  | 'escalateWrite'
-  | 'allowedLocalScripts'
->
-
 export type TextPromptProps = {
   readonly label: string
   readonly input: InputText
@@ -209,49 +169,21 @@ export type TextPromptProps = {
   readonly bare?: boolean
 }
 
-export type TextPromptViewModelArguments = {
-  readonly directories: DirectoriesStore
-  readonly permissions: PermissionsStore
-}
-
-export type EmptyStepProps = Readonly<Record<string, never>>
-
 export type StepProps =
   | TextPromptProps
   | ProviderPromptProps
   | ConfirmPromptProps
   | SetupProgressProps
   | DoneMessageProps
-  | EmptyStepProps
 
-// The current step and what its prompt view draws.
-export type StepPromptsProps = {
-  readonly step: InstallStep
-  readonly props: StepProps
+// What a prompt panel draws its prompt from and with.
+export type PanelViewModel = {
+  props(values: StepValues): StepProps
 }
 
-export type StepPropsBuilders = Partial<
-  Record<InstallStep, (values: StepValues) => StepProps>
->
-
-export type StepPromptsViewModelArguments = {
-  readonly text: TextPromptViewModel
-  readonly provider: ProviderPromptViewModel
-  readonly confirm: ConfirmPromptViewModel
-  readonly progress: SetupProgressViewModel
-  readonly done: DoneMessageViewModel
-}
-
-export type StepView = {
+export type PanelView = {
   root(): Renderable
   update(props: StepProps): void
-}
-
-export type StepViewClass = new (renderer: RenderContext) => StepView
-
-export type InstallScreenViews = {
-  readonly configPanel: { update(props: ConfigPanelProps): void }
-  readonly stepPrompts: { update(props: StepPromptsProps): void }
 }
 
 export type StatefulTask = {
@@ -267,7 +199,7 @@ export type DataStoreArguments = {
 
 export type SetupTaskArguments = {
   readonly inputs: ReadonlySignal<UserInputData>
-  readonly navigator: Navigator<InstallStep>
+  readonly navigator: Navigator<PanelName>
 }
 
 export type RunAllArguments = SetupTaskArguments & {
@@ -284,18 +216,6 @@ export type TextEditorArguments = {
 export type ProviderFormControllerArguments = {
   readonly field: TextFieldStore
   readonly providers: ProvidersStore
-  readonly back?: InstallStep
-  readonly forward?: InstallStep
-}
-
-export type TextFlowArguments = {
-  readonly directories: DirectoriesStore
-  readonly permissions: PermissionsStore
-}
-
-export type InstallFlowArguments = {
-  readonly directories: DirectoriesStore
-  readonly permissions: PermissionsStore
-  readonly providers: ProvidersStore
-  readonly confirm: ConfirmStore
+  readonly back?: PanelName
+  readonly forward?: PanelName
 }

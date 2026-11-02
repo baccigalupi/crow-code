@@ -1,0 +1,18 @@
+import type { DataStore } from '../data-store.ts'
+import { TextPromptPanel } from './text-prompt.ts'
+
+export class EscalateWritePanel extends TextPromptPanel {
+  readonly name = 'escalateWrite'
+  readonly label = 'Escalate write directories'
+  readonly bare = false
+  readonly next = 'allowedLocalScripts'
+  readonly highlights = { key: 'escalateWrite' }
+
+  field(store: DataStore) {
+    return store.permissions.escalateWrite
+  }
+
+  defaultValue(store: DataStore) {
+    return store.permissions.defaultEscalateWrite
+  }
+}

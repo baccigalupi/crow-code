@@ -1,6 +1,6 @@
 import type { Keypress } from '../../../keypress.ts'
 import type { Outcome } from '../../../types.ts'
-import type { InstallStep } from '../../types.ts'
+import type { PanelName } from '../../types.ts'
 import type { TextFieldStore } from '../../data-stores/text-field-store.ts'
 import { TextEditor } from '../shared/text-editor.ts'
 
@@ -12,7 +12,7 @@ export class TextPromptController {
     this.field = field
   }
 
-  handle(keypress: Keypress): Outcome<InstallStep> {
+  handle(keypress: Keypress): Outcome<PanelName> {
     if (keypress.key.return === true) return 'next'
     else if (!keypress.isEscape()) this.edit(keypress)
     return 'stay'

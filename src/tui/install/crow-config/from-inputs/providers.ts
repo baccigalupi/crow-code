@@ -1,14 +1,10 @@
-import type {
-  InstallProvider,
-  InstallStep,
-  ProviderInputs,
-} from '../../types.ts'
+import type { InstallProvider, PanelName, ProviderInputs } from '../../types.ts'
 
 const providerConfig = ({ name, url }: InstallProvider) => {
   return { name, baseUrl: url }
 }
 
-const providerSteps: readonly (InstallStep | undefined)[] = [
+const providerSteps: readonly (PanelName | undefined)[] = [
   'providerName',
   'providerUrl',
   'providerCredentials',

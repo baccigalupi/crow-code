@@ -5,9 +5,9 @@ import { memoize } from '../../decorators.ts'
 import { createOpenTuiRunner } from '../runner.ts'
 import { DataStore } from './data-store.ts'
 import { KeyboardListener } from './interactions/keyboard-listener.ts'
+import { Layout } from './layout.ts'
+import { Panels } from './panels.ts'
 import { Subscriptions } from './subscriptions.ts'
-import { InstallViewModels } from './view-models/install-view-models.ts'
-import { InstallScreen } from './views/install-screen-view.ts'
 
 // The install command's only way into the install TUI. The data store is
 // built here, before the view mounts, so setup completion is listening from
@@ -32,9 +32,9 @@ export class InstallTuiRunner {
   }
 
   view(renderer: CliRenderer) {
-    const screen = new InstallScreen(renderer)
-    const listeners = this.listeners(renderer, screen)
-    screen.mount()
+    const layout = new Layout(renderer, new Panels())
+    const listeners = this.listeners(renderer, layout)
+    layout.mount()
     listeners.forEach((listener) => listener.listen())
     renderer.once('destroy', () => this.dispose(listeners))
   }
@@ -44,13 +44,9 @@ export class InstallTuiRunner {
     return new DataStore({ applicationData: this.applicationData })
   }
 
-  private viewModels() {
-    return new InstallViewModels(this.model())
-  }
-
-  private listeners(renderer: CliRenderer, screen: InstallScreen) {
+  private listeners(renderer: CliRenderer, layout: Layout) {
     return [
-      new Subscriptions(this.model(), screen, this.viewModels()),
+      new Subscriptions(this.model(), layout, new Panels()),
       new KeyboardListener(renderer, this.model()),
     ]
   }
