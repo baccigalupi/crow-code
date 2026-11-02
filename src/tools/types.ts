@@ -292,6 +292,13 @@ export type PathExistsResult = {
   exists: boolean
 }
 
+export type WebFetchResult = {
+  url: string
+  status: number
+  contentType: string
+  text: string
+}
+
 export type DirectoryEntryKind = 'file' | 'directory' | 'symlink'
 
 export type DirectoryEntry = {
