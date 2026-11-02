@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, it, jest } from 'bun:test'
 import { webFetch } from '../../../src/tools/web/fetch.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 import {
@@ -137,5 +137,147 @@ describe('webFetch', () => {
 
     expect(operation.result().text).toBe('Hi & bye')
     expect(operation.result().contentType).toBe('text/html; charset=utf-8')
+  })
+
+  describe('timeout', () => {
+    beforeEach(() => {
+      jest.useFakeTimers()
+    })
+
+    afterEach(() => {
+      jest.clearAllTimers()
+      jest.useRealTimers()
+    })
+
+    it('when fifteen seconds pass, aborts the request signal', async () => {
+      const called = Promise.withResolvers<void>()
+      const signals: AbortSignal[] = []
+      const fetch = ((_url: string, init: RequestInit) => {
+        signals.push(init.signal as AbortSignal)
+        called.resolve()
+        return new Promise(() => {})
+      }) as unknown as typeof globalThis.fetch
+      const applicationData = mockApplicationData({ fetch })
+      const operationArguments = { url: 'https://192.0.2.1/a' }
+
+      void webFetch({ applicationData, operationArguments }).run()
+      await called.promise
+      jest.advanceTimersByTime(14999)
+      expect(signals[0].aborted).toBe(false)
+      jest.advanceTimersByTime(1)
+
+      expect(signals[0].aborted).toBe(true)
+    })
+
+    it('when the request outlasts the limit, fails with a timeout reason', async () => {
+      const called = Promise.withResolvers<void>()
+      const fetch = ((_url: string, init: RequestInit) => {
+        const signal = init.signal as AbortSignal
+        called.resolve()
+        return new Promise((_resolve, reject) => {
+          signal.addEventListener('abort', () => reject(signal.reason))
+        })
+      }) as unknown as typeof globalThis.fetch
+      const applicationData = mockApplicationData({ fetch })
+      const operationArguments = { url: 'https://192.0.2.1/a' }
+
+      const operation = webFetch({ applicationData, operationArguments })
+      const running = operation.run()
+      await called.promise
+      jest.advanceTimersByTime(15000)
+      await running
+
+      expect(operation.success()).toBe(false)
+      expect(operation.reason).toBe(
+        'web fetch timed out after 15000 ms: https://192.0.2.1/a',
+      )
+    })
+
+    it('when the fetch finishes in time, leaves no timer running', async () => {
+      const fetch = mockFetchResponse(
+        () =>
+          new Response('hello', { headers: { 'content-type': 'text/plain' } }),
+      )
+      const applicationData = mockApplicationData({ fetch })
+      const operationArguments = { url: 'https://192.0.2.1/a' }
+
+      await webFetch({ applicationData, operationArguments }).run()
+
+      expect(jest.getTimerCount()).toBe(0)
+    })
+
+    it('when the body stalls past the limit, fails with a timeout reason', async () => {
+      const reading = Promise.withResolvers<void>()
+      const fetch = ((_url: string, init: RequestInit) => {
+        const signal = init.signal as AbortSignal
+        const body = new ReadableStream(
+          {
+            start(controller) {
+              signal.addEventListener('abort', () =>
+                controller.error(signal.reason),
+              )
+            },
+            pull() {
+              reading.resolve()
+            },
+          },
+          { highWaterMark: 0 },
+        )
+        const headers = { 'content-type': 'text/plain' }
+        return Promise.resolve(new Response(body, { headers }))
+      }) as unknown as typeof globalThis.fetch
+      const applicationData = mockApplicationData({ fetch })
+      const operationArguments = { url: 'https://192.0.2.1/a' }
+
+      const operation = webFetch({ applicationData, operationArguments })
+      const running = operation.run()
+      await reading.promise
+      jest.advanceTimersByTime(15000)
+      await running
+
+      expect(operation.reason).toBe(
+        'web fetch timed out after 15000 ms: https://192.0.2.1/a',
+      )
+    })
+
+    it('when a later hop stalls, the one limit still fires', async () => {
+      const first = Promise.withResolvers<void>()
+      const second = Promise.withResolvers<void>()
+      const hops = [
+        () => {
+          first.resolve()
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              const headers = { location: '/b' }
+              resolve(new Response(null, { status: 302, headers }))
+            }, 10000)
+          })
+        },
+        (signal: AbortSignal) => {
+          second.resolve()
+          return new Promise((_resolve, reject) => {
+            signal.addEventListener('abort', () => reject(signal.reason))
+          })
+        },
+      ]
+      const fetch = ((_url: string, init: RequestInit) => {
+        const hop = hops.shift() as (signal: AbortSignal) => Promise<unknown>
+        return hop(init.signal as AbortSignal)
+      }) as unknown as typeof globalThis.fetch
+      const applicationData = mockApplicationData({ fetch })
+      const operationArguments = { url: 'https://192.0.2.1/a' }
+
+      const operation = webFetch({ applicationData, operationArguments })
+      const running = operation.run()
+      await first.promise
+      jest.advanceTimersByTime(10000)
+      await second.promise
+      jest.advanceTimersByTime(5000)
+      await running
+
+      expect(operation.reason).toBe(
+        'web fetch timed out after 15000 ms: https://192.0.2.1/a',
+      )
+    })
   })
 })

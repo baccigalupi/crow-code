@@ -1,8 +1,9 @@
 import type { ApplicationOperationArguments } from '../../types.ts'
 import type { FetchedResponse, WebFetchResult } from '../types.ts'
 import { OperationWithResult } from '../../operation.ts'
-import { FollowRedirects } from './fetch/follow-redirects.ts'
-import { HtmlText } from './fetch/html-text.ts'
+import { FetchResponse } from './fetch/fetch-response.ts'
+import { PageReader } from './fetch/page-reader.ts'
+import { RequestClock } from './fetch/request-clock.ts'
 
 type TaskArguments = {
   url: string
@@ -24,13 +25,21 @@ export class WebFetch extends OperationWithResult<
 
   private fetched: FetchedResponse = { url: '', response: new Response(null) }
 
+  private clock = new RequestClock()
+
   async run() {
+    this.clock.start()
+    await this.attempt()
+    this.clock.stop()
+    return this
+  }
+
+  private async attempt() {
     try {
       await this.send()
     } catch (error) {
       this.failNetwork(error)
     }
-    return this
   }
 
   result() {
@@ -38,58 +47,38 @@ export class WebFetch extends OperationWithResult<
   }
 
   private async send() {
-    const follow = this.followRedirects()
-    await this.runSubOperation(follow)
-    this.fetched = follow.result()
+    const response = this.fetchResponse()
+    await this.runSubOperation(response)
+    this.fetched = response.result()
     if (this.succeeded) {
       await this.accept()
     }
   }
 
-  private followRedirects() {
-    const { applicationData, operationArguments } = this
-    return new FollowRedirects({ applicationData, operationArguments })
+  private fetchResponse() {
+    const { applicationData } = this
+    const { url } = this.operationArguments
+    const operationArguments = { url, signal: this.clock.signal() }
+    return new FetchResponse({ applicationData, operationArguments })
   }
 
   private async accept() {
     const { url, response } = this.fetched
     if (response.ok) {
-      this.page = await this.read()
+      this.page = await new PageReader(this.fetched).read()
     } else {
       this.fail(`web fetch failed with status ${response.status}: ${url}`)
     }
   }
 
-  private async read() {
-    const { url, response } = this.fetched
-    const { status } = response
-    const contentType = this.contentType()
-    return { url, status, contentType, text: await this.text() }
-  }
-
-  private contentType() {
-    return this.fetched.response.headers.get('content-type') || ''
-  }
-
-  private async text() {
-    if (this.isHtml()) {
-      return new HtmlText(await this.body()).text()
-    }
-
-    return this.body()
-  }
-
-  private isHtml() {
-    return /^(text\/html|application\/xhtml\+xml)/.test(this.contentType())
-  }
-
-  private body() {
-    return this.fetched.response.text()
-  }
-
   private failNetwork(error: unknown) {
     const { url } = this.operationArguments
-    this.fail(`web fetch failed: ${url} — ${(error as Error).message}`)
+    const { name, message } = error as Error
+    if (name === 'TimeoutError') {
+      this.fail(`web fetch timed out after ${this.clock.timeoutMs} ms: ${url}`)
+    } else {
+      this.fail(`web fetch failed: ${url} — ${message}`)
+    }
   }
 }
 
