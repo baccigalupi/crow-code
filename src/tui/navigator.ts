@@ -29,6 +29,13 @@ export class Navigator<Name extends string> {
 
   goTo(name: Name) {
     this.position.value = name
+    this.enter(this.panel())
+  }
+
+  private enter(panel: PanelFlow<Name>) {
+    if (panel.entered === undefined) return
+
+    panel.entered(this)
   }
 
   press(keypress: Keypress, exit: ExitApp) {

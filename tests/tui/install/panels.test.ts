@@ -80,6 +80,17 @@ describe('Panels', () => {
     expect(flows.envFile.cancel).toBeUndefined()
   })
 
+  it('when asked for flows, only completeSetup has entered', () => {
+    const store = new DataStore({ applicationData: mockApplicationData() })
+
+    const flows = new Panels().flows(store)
+
+    expect(typeof flows.completeSetup.entered).toBe('function')
+    expect(flows.done.entered).toBeUndefined()
+    expect(flows.confirm.entered).toBeUndefined()
+    expect(flows.ignore.entered).toBeUndefined()
+  })
+
   it('when asked for flows, the done controller exits on any key', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
 

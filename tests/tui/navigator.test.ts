@@ -151,6 +151,50 @@ describe('Navigator', () => {
     expect(exit).toHaveBeenCalledTimes(0)
   })
 
+  it('when a panel is entered, calls its entered with the navigator', () => {
+    const entered = mock()
+    const navigator = new Navigator<'a' | 'b'>({
+      initial: 'a',
+      panels: {
+        a: { controller: { handle: () => 'stay' } },
+        b: { controller: { handle: () => 'stay' }, entered },
+      },
+    })
+
+    navigator.goTo('b')
+
+    expect(entered.mock.calls).toEqual([[navigator]])
+  })
+
+  it('when a panel declares no entered, moving to it works', () => {
+    const navigator = new Navigator<'a' | 'b'>({
+      initial: 'a',
+      panels: {
+        a: { controller: { handle: () => 'stay' } },
+        b: { controller: { handle: () => 'stay' } },
+      },
+    })
+
+    navigator.goTo('b')
+
+    expect(navigator.current.peek()).toBe('b')
+  })
+
+  it('when the controller says next, calls entered on the next panel', () => {
+    const entered = mock()
+    const navigator = new Navigator<'a' | 'b'>({
+      initial: 'a',
+      panels: {
+        a: { controller: { handle: () => 'next' }, next: 'b' },
+        b: { controller: { handle: () => 'stay' }, entered },
+      },
+    })
+
+    navigator.press(new Keypress('x', {}), mock())
+
+    expect(entered.mock.calls).toEqual([[navigator]])
+  })
+
   it('when a controller writes and navigates, notifies once', () => {
     const count = signal('0')
     const seen: string[][] = []

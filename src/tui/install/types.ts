@@ -1,12 +1,9 @@
-import type { ReadonlySignal } from '@preact/signals-core'
 import type { Renderable } from '@opentui/core'
 import type { InputText } from '../types.ts'
 import type { Keypress } from '../keypress.ts'
-import type { Navigator } from '../navigator.ts'
 import type { AsyncOperation, CrowPermissionsConfig } from '../../types.ts'
 import type { ApplicationData } from '../../application-data/application-data.ts'
 import type { Panels } from './panels.ts'
-import type { SetupProgressStore } from './data-stores/setup-progress-store.ts'
 import type { ProviderEditFormStore } from './data-stores/provider-edit-form-store.ts'
 import type { ProviderStore } from './data-stores/provider-store.ts'
 import type { TextFieldStore } from './data-stores/text-field-store.ts'
@@ -199,15 +196,12 @@ export type DataStoreArguments = {
 }
 
 export type SetupTaskArguments = {
-  readonly inputs: ReadonlySignal<UserInputData>
-  readonly navigator: Navigator<PanelName>
+  readonly inputs: CrowConfigInputs
 }
 
 export type RunAllArguments = SetupTaskArguments & {
-  readonly progress: SetupProgressStore
+  readonly finished: (task: StatefulTask) => void
 }
-
-export type SetupStoreArguments = DataStoreArguments & SetupTaskArguments
 
 export type TextEditorArguments = {
   readonly field: TextFieldStore

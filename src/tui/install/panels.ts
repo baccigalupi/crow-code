@@ -1,4 +1,5 @@
 import { memoize } from '../../decorators.ts'
+import type { Navigator } from '../navigator.ts'
 import type { PanelFlow } from '../types.ts'
 import type { DataStore } from './data-store.ts'
 import type { PanelName, PromptPanel } from './types.ts'
@@ -60,7 +61,20 @@ export class Panels {
 
   private flow(panel: PromptPanel, store: DataStore): PanelFlow<PanelName> {
     const { next, cancel } = panel
-    return { controller: panel.controller(store), next, cancel }
+    const controller = panel.controller(store)
+    return { controller, next, cancel, entered: this.entered(panel, store) }
+  }
+
+  // The panel's own entered with the store bound, so the navigator never
+  // sees the store.
+  private entered(panel: PromptPanel, store: DataStore) {
+    const { entered } = panel
+    if (entered === undefined) {
+      return
+    } else {
+      return (navigator: Navigator<PanelName>) =>
+        entered.call(panel, store, navigator)
+    }
   }
 
   @memoize

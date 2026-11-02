@@ -1,10 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { LocalConfigTask } from '../../../../src/tui/install/complete-setup-operations/local-config.ts'
-import { DataStore } from '../../../../src/tui/install/data-store.ts'
-import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
-import { mockApplicationData } from '../../../support/mock-application-data.ts'
+import { LocalConfigTask } from '../../../../../src/tui/install/panels/complete-setup/local-config-task.ts'
+import { DataStore } from '../../../../../src/tui/install/data-store.ts'
+import {
+  clearDirectory,
+  fixturesDirectory,
+} from '../../../../support/fixtures.ts'
+import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 
 describe('LocalConfigTask', () => {
   beforeEach(() => clearDirectory(join(fixturesDirectory, 'write-crow-config')))
@@ -16,7 +19,7 @@ describe('LocalConfigTask', () => {
 
     const label = new LocalConfigTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, navigator: store.navigator },
+      operationArguments: { inputs: store.inputs.peek() },
     }).label()
 
     expect(label).toBe('Writing config to .crow/config.json')
@@ -31,7 +34,7 @@ describe('LocalConfigTask', () => {
 
     const task = await new LocalConfigTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, navigator: store.navigator },
+      operationArguments: { inputs: store.inputs.peek() },
     }).run()
 
     const written = JSON.parse(
@@ -54,7 +57,7 @@ describe('LocalConfigTask', () => {
 
     const task = await new LocalConfigTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, navigator: store.navigator },
+      operationArguments: { inputs: store.inputs.peek() },
     }).run()
 
     expect(task.success()).toBe(false)
@@ -73,7 +76,7 @@ describe('LocalConfigTask', () => {
 
     await new LocalConfigTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, navigator: store.navigator },
+      operationArguments: { inputs: store.inputs.peek() },
     }).run()
 
     const written = JSON.parse(
@@ -95,7 +98,7 @@ describe('LocalConfigTask', () => {
 
     await new LocalConfigTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, navigator: store.navigator },
+      operationArguments: { inputs: store.inputs.peek() },
     }).run()
 
     const written = JSON.parse(
@@ -117,7 +120,7 @@ describe('LocalConfigTask', () => {
 
     await new LocalConfigTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, navigator: store.navigator },
+      operationArguments: { inputs: store.inputs.peek() },
     }).run()
 
     const written = JSON.parse(

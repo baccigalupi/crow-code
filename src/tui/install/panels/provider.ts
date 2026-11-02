@@ -15,6 +15,7 @@ export abstract class ProviderPanel {
   abstract readonly forward: PanelName | undefined
   abstract readonly highlights: PanelHighlights
   readonly cancel = 'confirm'
+  readonly entered = undefined
 
   abstract field(store: DataStore): TextFieldStore
 

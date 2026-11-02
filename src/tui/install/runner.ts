@@ -10,8 +10,8 @@ import { Panels } from './panels.ts'
 import { Subscriptions } from './subscriptions.ts'
 
 // The install command's only way into the install TUI. The data store is
-// built here, before the view mounts, so setup completion is listening from
-// the start and no view or keypress ever sees the filesystem.
+// built here, before the view mounts, so no view or keypress ever sees the
+// filesystem.
 export class InstallTuiRunner {
   private applicationData: ApplicationData
   private io: ReplIo
@@ -22,7 +22,6 @@ export class InstallTuiRunner {
   }
 
   run() {
-    this.model().listen()
     return createOpenTuiRunner(
       this.applicationData,
       this.io,
@@ -51,10 +50,9 @@ export class InstallTuiRunner {
     ]
   }
 
-  // Once the renderer is gone nothing may redraw, read keys or start setup.
+  // Once the renderer is gone nothing may redraw or read keys.
   private dispose(listeners: readonly { dispose(): void }[]) {
     listeners.forEach((listener) => listener.dispose())
-    this.model().dispose()
   }
 }
 

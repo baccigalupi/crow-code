@@ -8,24 +8,6 @@ import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { mockStdin } from '../../support/mock-streams.ts'
 
 describe('runner', () => {
-  it('when the renderer is destroyed, setup no longer starts', async () => {
-    const applicationData = mockApplicationData()
-    const mkdir = spyOn(
-      applicationData.filesystem,
-      'mkdirWithParents',
-    ).mockImplementation(() => new Promise<void>(() => {}))
-    const runner = new InstallTuiRunner(applicationData, {})
-    const { renderer } = await createTestRenderer({ width: 70, height: 8 })
-    runner.run()
-    runner.view(renderer)
-    renderer.destroy()
-    runner.model().directories.repoDirectory.insert('/repo/injected')
-
-    runner.model().navigator.goTo('completeSetup')
-
-    expect(mkdir.mock.calls).toEqual([])
-  })
-
   it('when run, starts setup from the model once the step reaches completeSetup', () => {
     const applicationData = mockApplicationData()
     const mkdir = spyOn(
@@ -289,7 +271,11 @@ describe('runner', () => {
     })
 
     it('when return arrives on the confirm step with yes, moves to the completeSetup step', async () => {
-      const runner = new InstallTuiRunner(mockApplicationData(), {})
+      const applicationData = mockApplicationData()
+      spyOn(applicationData.filesystem, 'mkdirWithParents').mockImplementation(
+        () => new Promise<void>(() => {}),
+      )
+      const runner = new InstallTuiRunner(applicationData, {})
       runner.model().navigator.goTo('confirm')
       const { renderer, renderOnce, captureCharFrame, mockInput } =
         await createTestRenderer({ width: 70, height: 10 })

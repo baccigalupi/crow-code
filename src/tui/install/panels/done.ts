@@ -9,6 +9,7 @@ export class DonePanel {
   readonly name = 'done'
   readonly next = undefined
   readonly cancel = undefined
+  readonly entered = undefined
   readonly highlights = { key: 'done' }
 
   controller(_store: DataStore) {

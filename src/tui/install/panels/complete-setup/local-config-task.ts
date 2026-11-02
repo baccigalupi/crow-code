@@ -1,9 +1,9 @@
-import type { SetupTaskArguments } from '../types.ts'
-import { Operation } from '../../../operation.ts'
-import { crowConfigFromInputs } from '../crow-config/from-inputs.ts'
+import type { SetupTaskArguments } from '../../types.ts'
+import { Operation } from '../../../../operation.ts'
+import { crowConfigFromInputs } from '../../crow-config/from-inputs.ts'
 
 // Setup task: creates the repo directory and writes config.json from the
-// answers gathered by the data store.
+// answers snapshotted when setup started.
 export class LocalConfigTask extends Operation<SetupTaskArguments> {
   protected override logPrefix = 'Local config: '
 
@@ -35,6 +35,6 @@ export class LocalConfigTask extends Operation<SetupTaskArguments> {
   }
 
   private builder() {
-    return crowConfigFromInputs(this.operationArguments.inputs.peek())
+    return crowConfigFromInputs(this.operationArguments.inputs)
   }
 }

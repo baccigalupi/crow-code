@@ -37,30 +37,31 @@ describe('DataStore', () => {
     ])
   })
 
-  it('when listening, reaching completeSetup starts setup', () => {
+  it('when the navigator reaches completeSetup, setup starts and its tasks are listed', () => {
     const applicationData = mockApplicationData()
     const mkdir = spyOn(
       applicationData.filesystem,
       'mkdirWithParents',
     ).mockImplementation(() => new Promise<void>(() => {}))
     const model = new DataStore({ applicationData })
-    model.listen()
 
     model.navigator.goTo('completeSetup')
 
     expect(mkdir.mock.calls).toEqual([['.crow']])
-  })
-
-  it('when disposed, reaching completeSetup starts no setup', () => {
-    const applicationData = mockApplicationData()
-    const mkdir = spyOn(applicationData.filesystem, 'mkdirWithParents')
-    const model = new DataStore({ applicationData })
-    model.listen()
-    model.dispose()
-
-    model.navigator.goTo('completeSetup')
-
-    expect(mkdir).not.toHaveBeenCalled()
+    expect(model.stepValues.peek().setupTasks).toEqual([
+      {
+        id: 'LocalConfigTask',
+        label: 'Writing config to .crow/config.json',
+        done: false,
+        error: '',
+      },
+      {
+        id: 'GlobalDirectoryTask',
+        label: 'Creating ~/.crow',
+        done: false,
+        error: '',
+      },
+    ])
   })
 
   it('when the step moves, inputs report the new step', () => {

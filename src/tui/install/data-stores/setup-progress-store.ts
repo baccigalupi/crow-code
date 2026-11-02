@@ -1,15 +1,28 @@
 import { signal, type ReadonlySignal } from '@preact/signals-core'
-import type { StatefulTask } from '../types.ts'
+import type { SetupTaskStatus } from '../types.ts'
 
-// Which setup tasks have run, in the order they finished.
+// The setup tasks and which of them have finished, with the error each
+// finished task reported.
 export class SetupProgressStore {
-  private finishedTasks = signal<readonly StatefulTask[]>([])
+  private statuses = signal<readonly SetupTaskStatus[]>([])
 
-  get finished(): ReadonlySignal<readonly StatefulTask[]> {
-    return this.finishedTasks
+  get tasks(): ReadonlySignal<readonly SetupTaskStatus[]> {
+    return this.statuses
   }
 
-  finish(task: StatefulTask) {
-    this.finishedTasks.value = [...this.finishedTasks.value, task]
+  list(tasks: readonly SetupTaskStatus[]) {
+    this.statuses.value = tasks
+  }
+
+  finish(id: string, error: string) {
+    this.statuses.value = this.statuses.value.map((status) =>
+      this.finished(status, id, error),
+    )
+  }
+
+  private finished(status: SetupTaskStatus, id: string, error: string) {
+    if (status.id !== id) return status
+
+    return { ...status, done: true, error }
   }
 }

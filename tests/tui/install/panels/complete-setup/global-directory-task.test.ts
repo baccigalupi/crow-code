@@ -1,12 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { existsSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
-import { GlobalDirectoryTask } from '../../../../src/tui/install/complete-setup-operations/global-directory.ts'
-import { DataStore } from '../../../../src/tui/install/data-store.ts'
-import { Environment } from '../../../../src/application-data/env-vars.ts'
-import { defaultFilesystem } from '../../../../src/application-data/filesystem.ts'
-import { clearDirectory, fixturesDirectory } from '../../../support/fixtures.ts'
-import { mockApplicationData } from '../../../support/mock-application-data.ts'
+import { GlobalDirectoryTask } from '../../../../../src/tui/install/panels/complete-setup/global-directory-task.ts'
+import { DataStore } from '../../../../../src/tui/install/data-store.ts'
+import { Environment } from '../../../../../src/application-data/env-vars.ts'
+import { defaultFilesystem } from '../../../../../src/application-data/filesystem.ts'
+import {
+  clearDirectory,
+  fixturesDirectory,
+} from '../../../../support/fixtures.ts'
+import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 
 describe('GlobalDirectoryTask', () => {
   beforeEach(() => clearDirectory(join(fixturesDirectory, 'global-directory')))
@@ -20,7 +23,7 @@ describe('GlobalDirectoryTask', () => {
 
     const task = await new GlobalDirectoryTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, navigator: store.navigator },
+      operationArguments: { inputs: store.inputs.peek() },
     }).run()
 
     expect(task.success()).toBe(true)
@@ -36,7 +39,7 @@ describe('GlobalDirectoryTask', () => {
 
     const task = await new GlobalDirectoryTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, navigator: store.navigator },
+      operationArguments: { inputs: store.inputs.peek() },
     }).run()
 
     expect(task.success()).toBe(true)
@@ -54,7 +57,7 @@ describe('GlobalDirectoryTask', () => {
 
     await new GlobalDirectoryTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, navigator: store.navigator },
+      operationArguments: { inputs: store.inputs.peek() },
     }).run()
 
     expect(existsSync(join(home, '.crow'))).toBe(true)
@@ -69,7 +72,7 @@ describe('GlobalDirectoryTask', () => {
 
     const task = await new GlobalDirectoryTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, navigator: store.navigator },
+      operationArguments: { inputs: store.inputs.peek() },
     }).run()
 
     expect(task.success()).toBe(false)
@@ -82,7 +85,7 @@ describe('GlobalDirectoryTask', () => {
 
     const label = new GlobalDirectoryTask({
       applicationData,
-      operationArguments: { inputs: store.inputs, navigator: store.navigator },
+      operationArguments: { inputs: store.inputs.peek() },
     }).label()
 
     expect(label).toBe('Creating ~/.crow')

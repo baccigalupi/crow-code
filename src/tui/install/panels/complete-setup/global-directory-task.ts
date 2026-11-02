@@ -1,7 +1,7 @@
-import type { SetupTaskArguments } from '../types.ts'
-import { Operation } from '../../../operation.ts'
-import { expandHome } from '../../../application-data/allowed-paths/expand-home.ts'
-import { crowConfigFromInputs } from '../crow-config/from-inputs.ts'
+import type { SetupTaskArguments } from '../../types.ts'
+import { Operation } from '../../../../operation.ts'
+import { expandHome } from '../../../../application-data/allowed-paths/expand-home.ts'
+import { crowConfigFromInputs } from '../../crow-config/from-inputs.ts'
 
 // Setup task: creates the global crow directory that holds the database and
 // the .env file.
@@ -32,7 +32,7 @@ export class GlobalDirectoryTask extends Operation<SetupTaskArguments> {
   }
 
   private directory() {
-    const inputs = this.operationArguments.inputs.peek()
+    const { inputs } = this.operationArguments
     return crowConfigFromInputs(inputs).crowGlobalDirectory()
   }
 }

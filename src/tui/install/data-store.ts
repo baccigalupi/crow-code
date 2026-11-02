@@ -7,11 +7,12 @@ import { DirectoriesStore } from './data-stores/directories-store.ts'
 import { PermissionsStore } from './data-stores/permissions-store.ts'
 import { ProviderEditFormStore } from './data-stores/provider-edit-form-store.ts'
 import { ProviderStore } from './data-stores/provider-store.ts'
-import { SetupStore } from './data-stores/setup-store.ts'
+import { SetupProgressStore } from './data-stores/setup-progress-store.ts'
+import type { ApplicationData } from '../../application-data/application-data.ts'
 import { Panels } from './panels.ts'
 
 // The whole installer: the prompts' stores, the answers they add up to, the
-// setup that runs once they are confirmed, and the navigator that keys drive.
+// setup progress, and the navigator that keys drive.
 export class DataStore {
   readonly confirm = new ConfirmStore()
   readonly directories = new DirectoriesStore()
@@ -22,21 +23,13 @@ export class DataStore {
     initial: 'repo',
     panels: new Panels().flows(this),
   })
-  readonly setup: SetupStore
+  readonly progress = new SetupProgressStore()
+  readonly applicationData: ApplicationData
   readonly inputs = computed(() => this.answers())
   readonly stepValues = computed(() => this.promptValues())
 
   constructor({ applicationData }: DataStoreArguments) {
-    const { inputs, navigator } = this
-    this.setup = new SetupStore({ applicationData, inputs, navigator })
-  }
-
-  listen() {
-    this.setup.listen()
-  }
-
-  dispose() {
-    this.setup.dispose()
+    this.applicationData = applicationData
   }
 
   // Every answer typed so far, as one value for the config builder.
@@ -63,7 +56,7 @@ export class DataStore {
     return {
       ...this.inputs.value,
       crowConfigPath: crowConfigFromInputs(this.inputs.value).crowConfigPath(),
-      setupTasks: this.setup.tasks.value,
+      setupTasks: this.progress.tasks.value,
     }
   }
 }

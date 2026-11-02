@@ -16,6 +16,7 @@ export abstract class TextPromptPanel {
   abstract readonly next: PanelName
   abstract readonly highlights: PanelHighlights
   readonly cancel = undefined
+  readonly entered = undefined
 
   abstract field(store: DataStore): TextFieldStore
 

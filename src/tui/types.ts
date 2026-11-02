@@ -1,4 +1,5 @@
 import type { Keypress } from './keypress.ts'
+import type { Navigator } from './navigator.ts'
 
 export interface InputText {
   readonly text: string
@@ -21,6 +22,7 @@ export type PanelFlow<Name extends string> = {
   readonly controller: Controller<Name>
   readonly next?: Name
   readonly cancel?: Name
+  entered?(navigator: Navigator<Name>): unknown
 }
 
 export type NavigatorArguments<Name extends string> = {
