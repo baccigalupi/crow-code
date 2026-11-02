@@ -32,7 +32,44 @@ describe('FollowRedirects', () => {
 
     expect(fetch.mock.calls[0]).toEqual([
       'https://192.0.2.1/a',
-      { redirect: 'manual' },
+      {
+        redirect: 'manual',
+        credentials: 'omit',
+        headers: { 'user-agent': 'crow' },
+      },
+    ])
+  })
+
+  it('when sending, every hop carries the crow user agent and omits credentials', async () => {
+    const responses = [
+      new Response(null, { status: 302, headers: { location: '/b' } }),
+      new Response('ok'),
+    ]
+    const fetch = mock((..._request: unknown[]) => {
+      return Promise.resolve(responses.shift() as Response)
+    })
+    const applicationData = mockApplicationData({
+      fetch: fetch as unknown as typeof globalThis.fetch,
+    })
+    const operationArguments = { url: 'https://192.0.2.1/a' }
+
+    await new FollowRedirects({ applicationData, operationArguments }).run()
+
+    expect(fetch.mock.calls[0]).toEqual([
+      'https://192.0.2.1/a',
+      {
+        redirect: 'manual',
+        credentials: 'omit',
+        headers: { 'user-agent': 'crow' },
+      },
+    ])
+    expect(fetch.mock.calls[1]).toEqual([
+      'https://192.0.2.1/b',
+      {
+        redirect: 'manual',
+        credentials: 'omit',
+        headers: { 'user-agent': 'crow' },
+      },
     ])
   })
 

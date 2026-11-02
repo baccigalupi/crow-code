@@ -53,7 +53,11 @@ export class FollowRedirects extends OperationWithResult<
   }
 
   private request() {
-    return this.applicationData.fetch()(this.current, { redirect: 'manual' })
+    return this.applicationData.fetch()(this.current, {
+      redirect: 'manual',
+      credentials: 'omit',
+      headers: { 'user-agent': 'crow' },
+    })
   }
 
   private location() {
