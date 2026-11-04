@@ -3,14 +3,14 @@ import { testRender } from '@opentui/react/test-utils'
 import { act } from 'react'
 import { InstallApp } from '../../../src/tui/install/app.tsx'
 import { DataStore } from '../../../src/tui/install/data-store.ts'
-import { Panels } from '../../../src/tui/install/panels.ts'
+import { Router } from '../../../src/tui/install/router.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('InstallApp', () => {
   it('when drawn in a short terminal, shows the header and the question on the last row', async () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <InstallApp model={model} panels={new Panels()} />,
+      <InstallApp model={model} router={new Router()} />,
       { width: 70, height: 8 },
     )
 
@@ -26,7 +26,7 @@ describe('InstallApp', () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
     model.navigator.goTo('crowGlobalDirectory')
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <InstallApp model={model} panels={new Panels()} />,
+      <InstallApp model={model} router={new Router()} />,
       { width: 70, height: 24 },
     )
 
@@ -40,7 +40,7 @@ describe('InstallApp', () => {
   it('when the terminal is resized, the question follows the last row', async () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, renderOnce, captureCharFrame, resize } = await testRender(
-      <InstallApp model={model} panels={new Panels()} />,
+      <InstallApp model={model} router={new Router()} />,
       {
         width: 70,
         height: 8,
@@ -63,7 +63,7 @@ describe('InstallApp', () => {
     model.providers.save({ name: 'c', url: 'https://c' }, '')
     model.navigator.goTo('providerName')
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <InstallApp model={model} panels={new Panels()} />,
+      <InstallApp model={model} router={new Router()} />,
       { width: 70, height: 20 },
     )
 

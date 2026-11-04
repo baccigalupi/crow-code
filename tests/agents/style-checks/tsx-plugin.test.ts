@@ -3,17 +3,57 @@ import { checkSource } from '../../../agents/style-checks/engine/check-source.ts
 import { tsxPlugin } from '../../../agents/style-checks/tsx-plugin.ts'
 
 describe('tsxPlugin', () => {
-  it('when the plugin is built, lists the four rules in order', () => {
+  it('when the plugin is built, lists the five rules in order', () => {
     const plugin = tsxPlugin
 
     const rules = plugin.rules
 
     expect(plugin.name).toBe('crow-style-tsx')
-    expect(rules).toHaveLength(4)
+    expect(rules).toHaveLength(5)
     expect(rules[0].name).toBe('arrow-function-components')
     expect(rules[1].name).toBe('no-react-state')
     expect(rules[2].name).toBe('no-inline-props-type')
     expect(rules[3].name).toBe('no-jsx-logical-and')
+    expect(rules[4].name).toBe('no-if-else-in-tsx')
+  })
+
+  it('when a tsx file has an if/else, reports it', () => {
+    const source =
+      'const App = () => { if (x) { return null } else { return 1 } }'
+
+    const diagnostics = checkSource(
+      tsxPlugin,
+      'src/tui/install/example.tsx',
+      source,
+    )
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('no if/else in tsx')
+  })
+
+  it('when a tsx file has a guard with no else, ignores it', () => {
+    const source = 'const App = () => { if (x) return null; return 1 }'
+
+    const diagnostics = checkSource(
+      tsxPlugin,
+      'src/tui/install/example.tsx',
+      source,
+    )
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
+  it('when a ts file has an if/else, ignores it', () => {
+    const source =
+      'const helper = () => { if (x) { return 0 } else { return 1 } }'
+
+    const diagnostics = checkSource(
+      tsxPlugin,
+      'src/tui/install/helper.ts',
+      source,
+    )
+
+    expect(diagnostics).toHaveLength(0)
   })
 
   it('when a tsx file uses a function declaration, reports it', () => {

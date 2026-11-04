@@ -2,16 +2,16 @@ import type { Keypress } from '../keypress.ts'
 import type { AsyncOperation, CrowPermissionsConfig } from '../../types.ts'
 import type { ApplicationData } from '../../application-data/application-data.ts'
 import type { CrowConfigInputs } from './crow-config/types.ts'
-import type { Panels } from './panels.ts'
+import type { Router } from './router.ts'
 import type { ProviderEditFormStore } from './data-stores/provider-edit-form-store.ts'
 import type { ProviderStore } from './data-stores/provider-store.ts'
 import type { TextFieldStore } from './data-stores/text-field-store.ts'
 
 // The names of the panels that take keys, derived from the registry. The
 // template form keeps the literals from widening to string in object literals.
-export type PanelName = `${Panels['prompts'][number]['name']}`
+export type PanelName = `${Router['prompts'][number]['name']}`
 
-export type PromptPanel = Panels['prompts'][number]
+export type PromptPanel = Router['prompts'][number]
 
 export type InstallProvider = {
   readonly name: string
@@ -43,6 +43,15 @@ export type SetupTaskStatus = {
   readonly label: string
   readonly done: boolean
   readonly error: string
+}
+
+export type ProviderFieldState = {
+  readonly name: 'providerName' | 'providerUrl' | 'providerCredentials'
+  readonly state: 'answered' | 'live' | 'upcoming'
+}
+
+export type SetupTaskRow = SetupTaskStatus & {
+  readonly state: 'failed' | 'done' | 'running' | 'waiting'
 }
 
 // The config line a panel edits; a key that is not in the config highlights

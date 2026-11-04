@@ -71,4 +71,20 @@ describe('DataStore', () => {
 
     expect(model.inputs.peek().step).toBe('ignore')
   })
+
+  it('when on the repo step, does not show the config', () => {
+    const model = new DataStore({ applicationData: mockApplicationData() })
+
+    const showsConfig = model.showsConfig.peek()
+
+    expect(showsConfig).toBe(false)
+  })
+
+  it('when past the repo step, shows the config', () => {
+    const model = new DataStore({ applicationData: mockApplicationData() })
+
+    model.navigator.goTo('envFile')
+
+    expect(model.showsConfig.peek()).toBe(true)
+  })
 })

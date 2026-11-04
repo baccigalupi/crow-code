@@ -719,6 +719,19 @@ export interface Host {}`
     expect(diagnostics[0].message).toContain('guard clauses must be')
   })
 
+  it('when a tsx guard clause is not on the first line, reports it', () => {
+    const source = `const Example = ({ x }: ExampleProps) => {
+      const y = x
+      if (y === null) return null
+      return <text>{y}</text>
+    }`
+
+    const diagnostics = checkSource(codePlugin, 'src/example.tsx', source)
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('guard clauses must be')
+  })
+
   it('when a guard clause is wrapped in a block, does not report it', () => {
     const source = `const example = (x: string | null) => {
       if (x === null) { return '' }

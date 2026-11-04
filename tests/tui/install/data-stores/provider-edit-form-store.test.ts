@@ -44,4 +44,16 @@ describe('ProviderEditFormStore', () => {
     expect(provider).toEqual({ name: 'Open Router', url: 'https://o' })
     expect(credential).toBe('sk-1')
   })
+
+  it('when on the url, the name is answered, the url live and the key upcoming', () => {
+    const form = new ProviderEditFormStore()
+
+    const states = form.fieldStates('providerUrl')
+
+    expect(states).toEqual([
+      { name: 'providerName', state: 'answered' },
+      { name: 'providerUrl', state: 'live' },
+      { name: 'providerCredentials', state: 'upcoming' },
+    ])
+  })
 })

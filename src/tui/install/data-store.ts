@@ -8,7 +8,7 @@ import { ProviderEditFormStore } from './data-stores/provider-edit-form-store.ts
 import { ProviderStore } from './data-stores/provider-store.ts'
 import { SetupProgressStore } from './data-stores/setup-progress-store.ts'
 import type { ApplicationData } from '../../application-data/application-data.ts'
-import { Panels } from './panels.ts'
+import { Router } from './router.ts'
 
 // The whole installer: the prompts' stores, the answers they add up to, the
 // setup progress, and the navigator that keys drive.
@@ -20,11 +20,12 @@ export class DataStore {
   readonly providers = new ProviderStore()
   readonly navigator = new Navigator<PanelName>({
     initial: 'repo',
-    panels: new Panels().flows(this),
+    panels: new Router().flows(this),
   })
   readonly progress = new SetupProgressStore()
   readonly applicationData: ApplicationData
   readonly inputs = computed(() => this.answers())
+  readonly showsConfig = computed(() => this.navigator.current.value !== 'repo')
 
   constructor({ applicationData }: DataStoreArguments) {
     this.applicationData = applicationData
