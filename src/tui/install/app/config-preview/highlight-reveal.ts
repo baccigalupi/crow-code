@@ -32,3 +32,10 @@ export class HighlightReveal {
     marker.id = this.shownId
   }
 }
+
+// React hands over the scrollbox once, when it mounts.
+export const watchHighlight = (scrollbox: ScrollBoxRenderable | null) => {
+  if (scrollbox === null) return
+
+  new HighlightReveal(scrollbox).watch()
+}

@@ -1,17 +1,8 @@
-import type { ScrollBoxRenderable } from '@opentui/core'
 import type { DataStore } from '../../data-store.ts'
 import type { Router } from '../../router.ts'
-import { theme } from '../../../theme.ts'
 import { useSignalValue } from '../../../use-signal-value.ts'
 import { ConfigJsonViewModel } from './config-json-view-model.ts'
-import { HighlightReveal } from './highlight-reveal.ts'
-
-// React hands over the scrollbox once, when it mounts.
-const watchHighlight = (scrollbox: ScrollBoxRenderable | null) => {
-  if (scrollbox === null) return
-
-  new HighlightReveal(scrollbox).watch()
-}
+import { watchHighlight } from './highlight-reveal.ts'
 
 type ConfigJsonProps = {
   model: DataStore
@@ -37,7 +28,7 @@ export const ConfigJson = ({ model, router }: ConfigJsonProps) => {
         flexDirection="column"
         alignSelf="flex-start"
         flexShrink={0}
-        backgroundColor={theme.configPanel.background}
+        backgroundColor={viewModel.background}
         paddingX={2}
         paddingY={viewModel.paddingY}
         marginTop={1}
@@ -53,8 +44,8 @@ export const ConfigJson = ({ model, router }: ConfigJsonProps) => {
         <text flexShrink={0} height={viewModel.lineCount()}>
           {viewModel.before()}
           <span
-            fg={theme.configPanel.highlightTextColor}
-            bg={theme.configPanel.highlightBackground}
+            fg={viewModel.highlightTextColor}
+            bg={viewModel.highlightBackground}
           >
             {viewModel.highlighted()}
           </span>

@@ -1,5 +1,6 @@
 import type { CrowConfigInputs } from '../../crow-config/types.ts'
 import type { PanelHighlights } from '../../types.ts'
+import { theme } from '../../../theme.ts'
 import { crowConfigFromInputs } from '../../crow-config/from-inputs.ts'
 import { highlightJson } from './highlight.ts'
 
@@ -8,6 +9,9 @@ import { highlightJson } from './highlight.ts'
 // count, and a key that changes with every new json.
 export class ConfigJsonViewModel {
   readonly paddingY = 1
+  readonly background = theme.configPanel.background
+  readonly highlightTextColor = theme.configPanel.highlightTextColor
+  readonly highlightBackground = theme.configPanel.highlightBackground
   private inputs: CrowConfigInputs
   private highlights: PanelHighlights
 

@@ -26,6 +26,21 @@ describe('ConfigJsonViewModel', () => {
     expect(row).toBe(3)
   })
 
+  it('when asked for colors, gives the config panel theme colors', () => {
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), {
+      key: 'envFile',
+    })
+
+    const colors = [
+      viewModel.background,
+      viewModel.highlightTextColor,
+      viewModel.highlightBackground,
+    ]
+
+    expect(colors).toEqual(['#0a0f1e', '#0a0f1e', '#e6ca6c'])
+  })
+
   it('when asked for the line count, counts every json line', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const viewModel = new ConfigJsonViewModel(store.inputs.peek(), {

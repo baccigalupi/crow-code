@@ -61,6 +61,7 @@ export const ProgressRows = ({ rows }: ProgressRowsProps) => (
   </box>
 )
 
-export const SetupProgress = ({ model }: SetupProgressProps) => (
-  <ProgressRows rows={useSignalValue(model.progress.rows)} />
-)
+export const SetupProgress = ({ model }: SetupProgressProps) => {
+  const rows = useSignalValue(model.progress.rows)
+  return <ProgressRows rows={rows} />
+}

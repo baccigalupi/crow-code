@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
-import { theme } from '../../theme.ts'
+import { HeaderViewModel } from './header-view-model.ts'
+
+const viewModel = new HeaderViewModel()
 
 const Bar = ({ children }: { children?: ReactNode }) => (
   <box
@@ -8,7 +10,7 @@ const Bar = ({ children }: { children?: ReactNode }) => (
     width="100%"
     paddingX={1}
     justifyContent="space-between"
-    backgroundColor={theme.chrome.background}
+    backgroundColor={viewModel.background}
   >
     {children}
   </box>
@@ -20,8 +22,8 @@ export const Header = () => (
   <box flexDirection="column" width="100%" flexShrink={0}>
     <Bar />
     <Bar>
-      <text fg={theme.chrome.textColor}>Installing Crow Code</text>
-      <text fg={theme.chrome.textColor}>ctrl-c quit</text>
+      <text fg={viewModel.textColor}>Installing Crow Code</text>
+      <text fg={viewModel.textColor}>ctrl-c quit</text>
     </Bar>
     <Bar />
   </box>

@@ -169,6 +169,34 @@ describe('tsxPlugin', () => {
       expect(diagnostics[0].message).toContain('one attribute or one call')
     })
 
+    it('when an attribute is two attributes deep, reports it', () => {
+      const source =
+        'const App = () => <box color={theme.panel.background} />\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain('one attribute or one call')
+    })
+
+    it('when a call is two attributes deep, reports it', () => {
+      const source =
+        'const App = () => <text>{view.label.text()}</text>\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain('one attribute or one call')
+    })
+
     it('when a call takes another call, reports it', () => {
       const source =
         'const App = () => <text>{format(model.text())}</text>\nexport { App }'

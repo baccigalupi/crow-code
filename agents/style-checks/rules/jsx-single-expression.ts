@@ -13,15 +13,17 @@ const valueKinds = new Set([
   ts.SyntaxKind.ThisKeyword,
 ])
 
+const isValue = (node: ts.Expression) => valueKinds.has(node.kind)
+
 // A value, or one attribute reached from it: `name`, `view.width`,
-// `fields[name]`.
-const isAttribute = (node: ts.Expression): boolean => {
-  if (valueKinds.has(node.kind)) return true
-  if (ts.isPropertyAccessExpression(node)) return isAttribute(node.expression)
+// `fields[name]`. Never two deep, like `theme.panel.background`.
+const isAttribute = (node: ts.Expression) => {
+  if (isValue(node)) return true
+  if (ts.isPropertyAccessExpression(node)) return isValue(node.expression)
   return (
     ts.isElementAccessExpression(node) &&
-    isAttribute(node.expression) &&
-    isAttribute(node.argumentExpression)
+    isValue(node.expression) &&
+    isValue(node.argumentExpression)
   )
 }
 
