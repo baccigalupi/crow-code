@@ -23,13 +23,14 @@ describe('EscalateReadPanel', () => {
     expect(store.permissions.escalateRead.text.peek().text).toBe('x')
   })
 
-  it('when nothing is typed, its view model shows the question and a bare default', () => {
+  it('when nothing is typed, it shows the question and a bare default', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
+    const panel = new EscalateReadPanel()
 
-    const props = new EscalateReadPanel().props(store)
+    const defaultValue = panel.defaultValue(store)
 
-    expect(props.label).toBe('Escalate read directories')
-    expect(props.defaultValue).toBe(store.permissions.defaultEscalateRead)
-    expect(props.bare).toBe(true)
+    expect(panel.label).toBe('Escalate read directories')
+    expect(defaultValue).toBe(store.permissions.defaultEscalateRead)
+    expect(panel.bare).toBe(true)
   })
 })

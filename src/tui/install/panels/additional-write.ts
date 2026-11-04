@@ -1,5 +1,5 @@
 import type { DataStore } from '../data-store.ts'
-import { TextPromptPanel } from './text-prompt.ts'
+import { TextPromptPanel } from './text-prompt.tsx'
 
 export class AdditionalWritePanel extends TextPromptPanel {
   readonly name = 'additionalWrite'

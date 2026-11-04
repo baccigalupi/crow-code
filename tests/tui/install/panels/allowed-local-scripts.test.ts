@@ -23,15 +23,14 @@ describe('AllowedLocalScriptsPanel', () => {
     expect(store.permissions.allowedLocalScripts.text.peek().text).toBe('x')
   })
 
-  it('when nothing is typed, its view model shows the question and a parenthesised default', () => {
+  it('when nothing is typed, it shows the question and a parenthesised default', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
+    const panel = new AllowedLocalScriptsPanel()
 
-    const props = new AllowedLocalScriptsPanel().props(store)
+    const defaultValue = panel.defaultValue(store)
 
-    expect(props.label).toBe('Allowed local scripts')
-    expect(props.defaultValue).toBe(
-      store.permissions.defaultAllowedLocalScripts,
-    )
-    expect(props.bare).toBe(false)
+    expect(panel.label).toBe('Allowed local scripts')
+    expect(defaultValue).toBe(store.permissions.defaultAllowedLocalScripts)
+    expect(panel.bare).toBe(false)
   })
 })

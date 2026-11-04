@@ -3,12 +3,12 @@ import { codePlugin } from '../../../agents/style-checks/code-plugin.ts'
 import { checkSource } from '../../../agents/style-checks/engine/check-source.ts'
 
 describe('codePlugin', () => {
-  it('when the plugin is built, lists the twenty rules in order', () => {
+  it('when the plugin is built, lists the twenty-one rules in order', () => {
     const plugin = codePlugin
 
     const rules = plugin.rules
 
-    expect(rules).toHaveLength(20)
+    expect(rules).toHaveLength(21)
     expect(rules[0].name).toBe('no-module-function-declaration')
     expect(rules[1].name).toBe('no-parameter-properties')
     expect(rules[2].name).toBe('constructor-assign-only')
@@ -29,6 +29,7 @@ describe('codePlugin', () => {
     expect(rules[17].name).toBe('chained-conditionals')
     expect(rules[18].name).toBe('guard-clause-first-line')
     expect(rules[19].name).toBe('max-file-lines')
+    expect(rules[20].name).toBe('no-input-hooks')
   })
 
   it('when a ternary is used, reports it', () => {

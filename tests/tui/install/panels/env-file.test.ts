@@ -23,14 +23,15 @@ describe('EnvFilePanel', () => {
     expect(store.directories.envFile.text.peek().text).toBe('x')
   })
 
-  it('when nothing is typed, its view model defaults to .env inside the global directory', () => {
+  it('when nothing is typed, it defaults to .env inside the global directory', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.directories.globalDirectory.insert('/g')
+    const panel = new EnvFilePanel()
 
-    const props = new EnvFilePanel().props(store)
+    const defaultValue = panel.defaultValue(store, store.inputs.peek())
 
-    expect(props.label).toBe('Credentials .env file')
-    expect(props.defaultValue).toBe('/g/.env')
-    expect(props.bare).toBe(false)
+    expect(panel.label).toBe('Credentials .env file')
+    expect(defaultValue).toBe('/g/.env')
+    expect(panel.bare).toBe(false)
   })
 })

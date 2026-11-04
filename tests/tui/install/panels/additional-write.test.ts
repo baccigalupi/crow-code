@@ -23,13 +23,14 @@ describe('AdditionalWritePanel', () => {
     expect(store.permissions.additionalWrite.text.peek().text).toBe('x')
   })
 
-  it('when nothing is typed, its view model shows the question and a bare default', () => {
+  it('when nothing is typed, it shows the question and a bare default', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
+    const panel = new AdditionalWritePanel()
 
-    const props = new AdditionalWritePanel().props(store)
+    const defaultValue = panel.defaultValue(store)
 
-    expect(props.label).toBe('Additional write directories')
-    expect(props.defaultValue).toBe(store.permissions.defaultAdditionalWrite)
-    expect(props.bare).toBe(true)
+    expect(panel.label).toBe('Additional write directories')
+    expect(defaultValue).toBe(store.permissions.defaultAdditionalWrite)
+    expect(panel.bare).toBe(true)
   })
 })

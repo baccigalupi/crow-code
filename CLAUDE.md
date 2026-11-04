@@ -156,31 +156,28 @@ per-path.
 
 ### TUI
 
-`src/tui/*` is a terminal UI on `@opentui/core` (pinned 0.6.6) with no view
-framework. `install/` is the first-run config installer (view classes in
-`views/`, stores in `data-stores/`, plus interactions),
-launched by `crow install` via `install/runner.ts`. The agent app is not built
-yet: `crow` with no args prints a coming-soon message. State uses
-`@preact/signals-core` through plain store classes in `install/data-stores/`:
-one class per concern (`TextFieldStore`, `StepStore`, `ProvidersStore`,
-`SetupStore`, …), built as fields of `DataStore` (`install/data-store.ts`), the
-entry point the runner creates once. Signals are private fields exposed through
-`ReadonlySignal` getters; derived values are `computed` fields created once on
-the class that owns their signals; multi-write methods wrap their writes in
-`batch`; a store that needs an effect starts it in `listen()` (constructors do
-no work) and releases it in `dispose()`.
+`src/tui/*` is a terminal UI on `@opentui/core` with React through
+`@opentui/react` (both pinned 0.6.6). `install/` is the first-run config
+installer, launched by `crow install` via `install/runner.ts`. The agent app is
+not built yet: `crow` with no args prints a coming-soon message.
 
-Views are classes over imperative core renderables (`BoxRenderable`,
-`TextRenderable` with `StyledText`, `SelectRenderable`): each builds its
-renderables once (memoized `root()`) and redraws them from plain values in
-`update(values)` — a view never sees a store or a signal. `StepPromptsView`
-maps the current step to its view class and swaps views when the step changes.
-`Subscriptions` (`install/subscriptions.ts`) holds the UI's only effects, one
-per view it feeds from the store; `KeyboardListener`
-(`install/interactions/keyboard-listener.ts`) forwards `renderer.keyInput`
-keys and pastes to `DataStore#press`/`paste`. Both follow the
-`listen()`/`dispose()` shape, and the runner disposes them and the store when
-the renderer is destroyed.
+State and flow are framework-free. State uses `@preact/signals-core` through
+plain store classes in `install/data-stores/`, built as fields of `DataStore`
+(`install/data-store.ts`), which the runner creates once. The panel flow is
+`Navigator` (`src/tui/navigator.ts`) over `Panels#flows` (`install/panels.ts`):
+each panel entry in `install/panels/` declares its `name`, `next`, `cancel`,
+`entered`, `highlights` and `controller(store)`; controllers turn a `Keypress`
+into an outcome. None of this imports React.
+
+The view is one React tree: `InstallApp` (`install/app.tsx`) fills the
+terminal with `Header`, `ConfigPreview` and `CurrentPrompt` from
+`install/components/`. Components read signals through `useSignalValue`
+(`src/tui/use-signal-value.ts`, on `useSyncExternalStore`). Each panel entry
+also has `prompt(model)` returning its JSX, and `CurrentPrompt` renders the
+current panel's prompt. `useInstallKeys` (`install/hooks/use-install-keys.ts`)
+sends every key and paste to `navigator.press`. `InstallTuiRunner#view` mounts
+the app with `createRoot(renderer)` inside `flushSync`; destroying the renderer
+unmounts it. Component tests use `testRender` from `@opentui/react/test-utils`.
 
 ## Style gates
 
@@ -252,6 +249,6 @@ The Bun runtime types (`bun-types`) are indexed as a named
 (`search_graph`/`get_code_snippet`/`trace_path`) rather than writing `Bun.*`
 calls from memory — see `AGENTS.md` § Dependency lookup for the query pattern.
 
-The TUI (`src/tui/*`) is built on **OpenTUI core**, with
+The TUI (`src/tui/*`) is built on **OpenTUI core** and **`@opentui/react`**, with
 **`@preact/signals-core`** for state (see the TUI section above and
 `package.json`'s `dependencies`).

@@ -14,7 +14,6 @@ import { checkSource } from './engine/check-source.ts'
 import type { Plugin } from './engine/types.ts'
 import { installNamesPlugin } from './install-names-plugin.ts'
 import { tsxPlugin } from './tsx-plugin.ts'
-import { tuiBoundariesPlugin } from './tui-boundaries-plugin.ts'
 import { unitTestsPlugin } from './unit-tests-plugin.ts'
 import { voidGuardViolations } from './void-guard.ts'
 
@@ -86,9 +85,7 @@ export const parseArgs = (args: string[]): Parsed => {
 const pluginsFor = (file: string): Plugin[] => {
   const kind = classify(file)
   const tsx = file.endsWith('.tsx') ? [tsxPlugin] : []
-  if (kind === 'code') {
-    return [codePlugin, installNamesPlugin, tuiBoundariesPlugin, ...tsx]
-  }
+  if (kind === 'code') return [codePlugin, installNamesPlugin, ...tsx]
   if (kind === 'test') {
     return [unitTestsPlugin, codePlugin, installNamesPlugin, ...tsx]
   }

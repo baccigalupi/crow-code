@@ -5,15 +5,12 @@ import { Panels } from '../../../src/tui/install/panels.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('Panels', () => {
-  it('when listed, has the header, the preview and fifteen prompts', () => {
+  it('when listed, has fifteen prompts', () => {
     const panels = new Panels()
 
-    const { all, prompts } = panels
+    const { prompts } = panels
 
-    expect(all).toHaveLength(17)
     expect(prompts).toHaveLength(15)
-    expect(all[0]).toBe(panels.header)
-    expect(all[1]).toBe(panels.preview)
   })
 
   it('when asked for a prompt by name, returns that panel', () => {

@@ -1,13 +1,14 @@
 import type { ApplicationData } from '../../application-data/application-data.ts'
 import type { ReplIo } from '../runner/types.ts'
 import { createCliRenderer, type CliRenderer } from '@opentui/core'
+import { createRoot, flushSync } from '@opentui/react'
+import { createElement } from 'react'
 import { memoize } from '../../decorators.ts'
 import { createOpenTuiRunner } from '../runner.ts'
+import { InstallApp } from './app.tsx'
 import { DataStore } from './data-store.ts'
 import { KeyboardListener } from './interactions/keyboard-listener.ts'
-import { Layout } from './layout.ts'
 import { Panels } from './panels.ts'
-import { Subscriptions } from './subscriptions.ts'
 
 // The install command's only way into the install TUI. The data store is
 // built here, before the view mounts, so no view or keypress ever sees the
@@ -30,29 +31,20 @@ export class InstallTuiRunner {
     )
   }
 
+  // Mounts synchronously so the first frame is already drawn when keys
+  // start. Destroying the renderer unmounts the app and ends key input.
   view(renderer: CliRenderer) {
-    const layout = new Layout(renderer, new Panels())
-    const listeners = this.listeners(renderer, layout)
-    layout.mount()
-    listeners.forEach((listener) => listener.listen())
-    renderer.once('destroy', () => this.dispose(listeners))
+    const app = createElement(InstallApp, {
+      model: this.model(),
+      panels: new Panels(),
+    })
+    flushSync(() => createRoot(renderer).render(app))
+    new KeyboardListener(renderer, this.model()).listen()
   }
 
   @memoize
   model() {
     return new DataStore({ applicationData: this.applicationData })
-  }
-
-  private listeners(renderer: CliRenderer, layout: Layout) {
-    return [
-      new Subscriptions(this.model(), layout, new Panels()),
-      new KeyboardListener(renderer, this.model()),
-    ]
-  }
-
-  // Once the renderer is gone nothing may redraw or read keys.
-  private dispose(listeners: readonly { dispose(): void }[]) {
-    listeners.forEach((listener) => listener.dispose())
   }
 }
 

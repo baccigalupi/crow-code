@@ -1,5 +1,5 @@
 import type { DataStore } from '../data-store.ts'
-import { ProviderPanel } from './provider.ts'
+import { ProviderPanel } from './provider.tsx'
 
 export class ProviderNamePanel extends ProviderPanel {
   readonly name = 'providerName'

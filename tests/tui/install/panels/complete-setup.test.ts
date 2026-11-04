@@ -1,7 +1,9 @@
 import { describe, expect, it, spyOn } from 'bun:test'
+import { testRender } from '@opentui/react/test-utils'
+import { act } from 'react'
 import { Keypress } from '../../../../src/tui/keypress.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
-import { CompleteSetupPanel } from '../../../../src/tui/install/panels/complete-setup.ts'
+import { CompleteSetupPanel } from '../../../../src/tui/install/panels/complete-setup.tsx'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('CompleteSetupPanel', () => {
@@ -24,12 +26,27 @@ describe('CompleteSetupPanel', () => {
     expect(outcome).toBe('stay')
   })
 
-  it('when no setup task has run, its view model has no rows', () => {
+  it('when asked for its prompt, renders the setup rows', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
+    store.progress.list([
+      {
+        id: 'LocalConfigTask',
+        label: 'Writing config to .crow/config.json',
+        done: false,
+        error: '',
+      },
+    ])
+    const { renderer, renderOnce, captureCharFrame } = await testRender(
+      new CompleteSetupPanel().prompt(store),
+      { width: 50, height: 3 },
+    )
 
-    const props = new CompleteSetupPanel().props(store)
+    await renderOnce()
 
-    expect(props).toEqual({ rows: [] })
+    expect(captureCharFrame()).toContain(
+      '› Writing config to .crow/config.json',
+    )
+    act(() => renderer.destroy())
   })
 
   it('when entered, lists both tasks as pending', () => {

@@ -4,7 +4,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
-    "jsxImportSource": "react",
+    "jsxImportSource": "@opentui/react",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "experimentalDecorators": false,

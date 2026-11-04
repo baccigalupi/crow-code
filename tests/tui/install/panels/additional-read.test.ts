@@ -23,13 +23,14 @@ describe('AdditionalReadPanel', () => {
     expect(store.permissions.additionalRead.text.peek().text).toBe('x')
   })
 
-  it('when nothing is typed, its view model shows the question and a bare default', () => {
+  it('when nothing is typed, it shows the question and a bare default', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
+    const panel = new AdditionalReadPanel()
 
-    const props = new AdditionalReadPanel().props(store)
+    const defaultValue = panel.defaultValue(store)
 
-    expect(props.label).toBe('Additional read directories')
-    expect(props.defaultValue).toBe(store.permissions.defaultAdditionalRead)
-    expect(props.bare).toBe(true)
+    expect(panel.label).toBe('Additional read directories')
+    expect(defaultValue).toBe(store.permissions.defaultAdditionalRead)
+    expect(panel.bare).toBe(true)
   })
 })

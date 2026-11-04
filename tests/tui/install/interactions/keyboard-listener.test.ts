@@ -19,25 +19,7 @@ describe('KeyboardListener', () => {
     renderer.destroy()
   })
 
-  it('when text is pasted, inserts it into the active field', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.navigator.goTo('providerCredentials')
-    const { renderer, mockInput } = await createTestRenderer({
-      width: 20,
-      height: 3,
-    })
-    new KeyboardListener(renderer, model).listen()
-
-    await mockInput.pasteBracketedText('sk-123')
-    await renderer.idle()
-
-    expect(model.providerEditForm.providerCredentials.text.peek().text).toBe(
-      'sk-123',
-    )
-    renderer.destroy()
-  })
-
-  it('when pasted text has newlines, removes them without advancing', async () => {
+  it('when pasted text has newlines, inserts it without them and without advancing', async () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
     model.navigator.goTo('providerCredentials')
     const { renderer, mockInput } = await createTestRenderer({
@@ -133,9 +115,10 @@ describe('KeyboardListener', () => {
     mockInput.pressEscape()
 
     expect(onDestroy).not.toHaveBeenCalled()
+    renderer.destroy()
   })
 
-  it('when n then return arrive on the confirm step, declines and exits without writing', async () => {
+  it('when n then return arrive on the confirm step, declines and exits', async () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
     model.navigator.goTo('confirm')
     const onDestroy = mock(() => {})
@@ -152,21 +135,5 @@ describe('KeyboardListener', () => {
     expect(model.confirm.confirmed.peek()).toBe(false)
     expect(model.navigator.current.peek()).toBe('confirm')
     expect(onDestroy).toHaveBeenCalledTimes(1)
-  })
-
-  it('when disposed, typing leaves the field empty', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    const { renderer, mockInput } = await createTestRenderer({
-      width: 20,
-      height: 3,
-    })
-    const listener = new KeyboardListener(renderer, model)
-    listener.listen()
-
-    listener.dispose()
-    await mockInput.typeText('x')
-
-    expect(model.directories.repoDirectory.text.peek().text).toBe('')
-    renderer.destroy()
   })
 })

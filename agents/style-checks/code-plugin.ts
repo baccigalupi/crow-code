@@ -5,6 +5,7 @@ import { guardClauseFirstLine } from './rules/guard-clause-first-line.ts'
 import { maxFileLines } from './rules/max-file-lines.ts'
 import { maxFunctionLines } from './rules/max-function-lines.ts'
 import { noForLoops } from './rules/no-for-loops.ts'
+import { noInputHooks } from './rules/no-input-hooks.ts'
 import { noModuleFunctionDeclaration } from './rules/no-module-function-declaration.ts'
 import { noNestedFunctionDeclarations } from './rules/no-nested-function-declarations.ts'
 import { noNullishCoalescing } from './rules/no-nullish-coalescing.ts'
@@ -43,5 +44,6 @@ export const codePlugin: Plugin = {
     chainedConditionals,
     guardClauseFirstLine,
     maxFileLines,
+    noInputHooks,
   ],
 }

@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'bun:test'
+import { testRender } from '@opentui/react/test-utils'
+import { act } from 'react'
 import { Keypress } from '../../../../src/tui/keypress.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
-import { DonePanel } from '../../../../src/tui/install/panels/done.ts'
+import { DonePanel } from '../../../../src/tui/install/panels/done.tsx'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('DonePanel', () => {
@@ -24,11 +26,16 @@ describe('DonePanel', () => {
     expect(outcome).toBe('exit')
   })
 
-  it('when no setup task has failed, its view model says it is done', () => {
+  it('when asked for its prompt, says it is done', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
+    const { renderer, renderOnce, captureCharFrame } = await testRender(
+      new DonePanel().prompt(store),
+      { width: 50, height: 3 },
+    )
 
-    const props = new DonePanel().props(store)
+    await renderOnce()
 
-    expect(props.hint).toBe('Done! Press any key to exit')
+    expect(captureCharFrame()).toContain('Done! Press any key to exit')
+    act(() => renderer.destroy())
   })
 })

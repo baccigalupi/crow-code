@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'bun:test'
+import { testRender } from '@opentui/react/test-utils'
+import { act } from 'react'
 import { Keypress } from '../../../../src/tui/keypress.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { RepoPanel } from '../../../../src/tui/install/panels/repo.ts'
@@ -33,16 +35,18 @@ describe('RepoPanel', () => {
     expect(outcome).toBe('next')
   })
 
-  it('when nothing is typed, its view model shows the question and the default', () => {
+  it('when asked for its prompt, renders the question and the default', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
+    const { renderer, renderOnce, captureCharFrame } = await testRender(
+      new RepoPanel().prompt(store),
+      { width: 70, height: 3 },
+    )
 
-    const props = new RepoPanel().props(store)
+    await renderOnce()
 
-    expect(props).toEqual({
-      label: 'What directory for the local repo crow setup',
-      input: { text: '', cursor: 0 },
-      defaultValue: '.crow',
-      bare: false,
-    })
+    expect(captureCharFrame()).toContain(
+      'What directory for the local repo crow setup: (.crow)',
+    )
+    act(() => renderer.destroy())
   })
 })

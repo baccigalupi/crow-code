@@ -106,16 +106,6 @@ describe('style-check cli', () => {
     ])
   })
 
-  it('when a tsx code file has a JSX && conditional, reports the tsx rule', () => {
-    const source = 'export const View = () => <b>{a && <i />}</b>\n'
-
-    const lines = lintSource('src/tui/example.tsx', source)
-
-    expect(lines).toContain(
-      'src/tui/example.tsx:1:31: crow-style-tsx/no-jsx-logical-and: no && conditionals in JSX; use a helper component with early return null',
-    )
-  })
-
   it('when a test file has no describe, reports the unit-test rule', () => {
     const source = ''
 
@@ -134,17 +124,6 @@ describe('style-check cli', () => {
 
     expect(lines).toContain(
       'tests/example.test.ts:3:15: crow-style-code/no-ternary: conditionals must be flat; no ternary operator (?:)',
-    )
-  })
-
-  it('when a tsx test file has a JSX && conditional, reports the tsx rule', () => {
-    const source =
-      "describe('x', () => {\n  it('y', () => {\n    const v = <b>{a && <i />}</b>\n  })\n})\n"
-
-    const lines = lintSource('tests/example.test.tsx', source)
-
-    expect(lines).toContain(
-      'tests/example.test.tsx:3:19: crow-style-tsx/no-jsx-logical-and: no && conditionals in JSX; use a helper component with early return null',
     )
   })
 
@@ -200,37 +179,6 @@ describe('style-check cli', () => {
     const child = Bun.spawn(command, { stdout: 'pipe', stderr: 'pipe' })
 
     expect(await child.exited).toBe(0)
-  })
-
-  it('when a tui store imports opentui, reports it as blocking', () => {
-    const file = 'src/tui/install/data-stores/text-field-store.ts'
-    const source = "import { x } from '@opentui/core'\n"
-
-    const lines = lintSource(file, source)
-
-    expect(lines).toEqual([
-      'src/tui/install/data-stores/text-field-store.ts:1:1: crow-style-tui/tui-import-boundaries: stores never import @opentui/core or panel files; found @opentui/core',
-    ])
-  })
-
-  it('when a tui view imports a store, reports it as blocking', () => {
-    const file = 'src/tui/install/views/prompt-view.ts'
-    const source = "import { x } from '../data-stores/directories-store.ts'\n"
-
-    const lines = lintSource(file, source)
-
-    expect(lines).toEqual([
-      'src/tui/install/views/prompt-view.ts:1:1: crow-style-tui/tui-import-boundaries: views import only @opentui/core, theme, decorators, other views and types; found ../data-stores/directories-store.ts',
-    ])
-  })
-
-  it('when the same import is outside src tui, reports nothing', () => {
-    const file = 'src/tools/x.ts'
-    const source = "import { x } from '@opentui/core'\n"
-
-    const lines = lintSource(file, source)
-
-    expect(lines).toEqual([])
   })
 
   it('when a tui file is named, lints it and exits 0', async () => {

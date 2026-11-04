@@ -23,13 +23,14 @@ describe('EscalateWritePanel', () => {
     expect(store.permissions.escalateWrite.text.peek().text).toBe('x')
   })
 
-  it('when nothing is typed, its view model shows the question and a parenthesised default', () => {
+  it('when nothing is typed, it shows the question and a parenthesised default', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
+    const panel = new EscalateWritePanel()
 
-    const props = new EscalateWritePanel().props(store)
+    const defaultValue = panel.defaultValue(store)
 
-    expect(props.label).toBe('Escalate write directories')
-    expect(props.defaultValue).toBe(store.permissions.defaultEscalateWrite)
-    expect(props.bare).toBe(false)
+    expect(panel.label).toBe('Escalate write directories')
+    expect(defaultValue).toBe(store.permissions.defaultEscalateWrite)
+    expect(panel.bare).toBe(false)
   })
 })

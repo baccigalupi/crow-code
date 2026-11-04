@@ -23,16 +23,14 @@ describe('CrowGlobalDirectoryPanel', () => {
     expect(store.directories.globalDirectory.text.peek().text).toBe('x')
   })
 
-  it('when nothing is typed, its view model shows the question and the default', () => {
+  it('when nothing is typed, it shows the question and the default', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
+    const panel = new CrowGlobalDirectoryPanel()
 
-    const props = new CrowGlobalDirectoryPanel().props(store)
+    const defaultValue = panel.defaultValue(store)
 
-    expect(props).toEqual({
-      label: 'User crow directory',
-      input: { text: '', cursor: 0 },
-      defaultValue: '~/.crow',
-      bare: false,
-    })
+    expect(panel.label).toBe('User crow directory')
+    expect(defaultValue).toBe('~/.crow')
+    expect(panel.bare).toBe(false)
   })
 })

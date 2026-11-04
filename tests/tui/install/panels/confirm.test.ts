@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'bun:test'
+import { testRender } from '@opentui/react/test-utils'
+import { act } from 'react'
 import { Keypress } from '../../../../src/tui/keypress.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
-import { ConfirmPanel } from '../../../../src/tui/install/panels/confirm.ts'
+import { ConfirmPanel } from '../../../../src/tui/install/panels/confirm.tsx'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('ConfirmPanel', () => {
@@ -35,11 +37,16 @@ describe('ConfirmPanel', () => {
     expect(outcome).toBe('exit')
   })
 
-  it('when asked for its view model, selects the option the store has chosen', () => {
+  it('when asked for its prompt, asks to complete setup', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
+    const { renderer, renderOnce, captureCharFrame } = await testRender(
+      new ConfirmPanel().prompt(store),
+      { width: 40, height: 4 },
+    )
 
-    const props = new ConfirmPanel().props(store)
+    await renderOnce()
 
-    expect(props).toEqual({ selectedIndex: 0 })
+    expect(captureCharFrame()).toContain('Complete setup?')
+    act(() => renderer.destroy())
   })
 })

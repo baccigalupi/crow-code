@@ -9,8 +9,8 @@ description: >-
 
 # Dependency lookup
 
-Note on the TUI: the TUI (`src/tui/*`) is built on **OpenTUI core** with
-**`@preact/signals-core`** for state. No indexed dependency project covers it.
+Note on the TUI: the TUI (`src/tui/*`) is built on **OpenTUI core** and
+**`@opentui/react`**, with **`@preact/signals-core`** for state. No indexed dependency project covers it.
 Read `src/tui/*` source directly for TUI questions instead.
 
 Bun runtime types are indexed as a `codebase-memory-mcp` project, backed by

@@ -1,5 +1,3 @@
-import type { Renderable } from '@opentui/core'
-import type { InputText } from '../types.ts'
 import type { Keypress } from '../keypress.ts'
 import type { AsyncOperation, CrowPermissionsConfig } from '../../types.ts'
 import type { ApplicationData } from '../../application-data/application-data.ts'
@@ -50,77 +48,6 @@ export type SetupTaskStatus = {
 // The config line a panel edits; a key that is not in the config highlights
 // nothing.
 export type PanelHighlights = Omit<HighlightJsonArguments, 'json'>
-
-// The config json split around the line the current step edits.
-export type HighlightedJson = {
-  readonly before: string
-  readonly highlighted: string
-  readonly after: string
-}
-
-export type ConfigPanelProps = HighlightedJson & {
-  readonly visible: boolean
-  readonly crowConfigPath: string
-}
-
-export type SetupProgressRow = {
-  readonly id: string
-  readonly label: string
-  readonly indicator: string
-  readonly done: boolean
-  readonly error: string
-}
-
-export type SetupProgressProps = {
-  readonly rows: readonly SetupProgressRow[]
-}
-
-export type DoneMessageProps = SetupProgressProps & {
-  readonly hint: string
-}
-
-export type ProviderFieldDefinition = {
-  readonly label: string
-  readonly input: 'providerName' | 'providerUrl' | 'providerCredentials'
-  readonly masked: boolean
-}
-
-export type ProviderFieldStatus = 'done' | 'active' | 'pending'
-
-export type ProviderFieldProps = {
-  readonly label: string
-  readonly input: InputText
-  readonly masked: boolean
-  readonly status: ProviderFieldStatus
-}
-
-export type ProviderPromptProps = {
-  readonly title: string
-  readonly fields: readonly ProviderFieldProps[]
-}
-
-export type ConfirmPromptProps = {
-  readonly selectedIndex: number
-}
-
-export type TextPromptProps = {
-  readonly label: string
-  readonly input: InputText
-  readonly defaultValue: string
-  readonly bare?: boolean
-}
-
-export type StepProps =
-  | TextPromptProps
-  | ProviderPromptProps
-  | ConfirmPromptProps
-  | SetupProgressProps
-  | DoneMessageProps
-
-export type PanelView = {
-  root(): Renderable
-  update(props: StepProps): void
-}
 
 export type StatefulTask = {
   readonly reason: string

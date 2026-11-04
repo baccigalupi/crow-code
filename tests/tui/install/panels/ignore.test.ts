@@ -23,13 +23,14 @@ describe('IgnorePanel', () => {
     expect(store.permissions.ignore.text.peek().text).toBe('x')
   })
 
-  it('when nothing is typed, its view model shows the question and a bare default', () => {
+  it('when nothing is typed, it shows the question and a bare default', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
+    const panel = new IgnorePanel()
 
-    const props = new IgnorePanel().props(store)
+    const defaultValue = panel.defaultValue(store)
 
-    expect(props.label).toBe('Ignored paths')
-    expect(props.defaultValue).toBe(store.permissions.defaultIgnore)
-    expect(props.bare).toBe(true)
+    expect(panel.label).toBe('Ignored paths')
+    expect(defaultValue).toBe(store.permissions.defaultIgnore)
+    expect(panel.bare).toBe(true)
   })
 })

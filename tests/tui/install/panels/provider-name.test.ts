@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'bun:test'
+import { testRender } from '@opentui/react/test-utils'
+import { act } from 'react'
 import { Keypress } from '../../../../src/tui/keypress.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { ProviderNamePanel } from '../../../../src/tui/install/panels/provider-name.ts'
@@ -45,12 +47,17 @@ describe('ProviderNamePanel', () => {
     expect(outcome).toBe('stay')
   })
 
-  it('when asked for its view model, shows the first field as the active one', () => {
+  it('when asked for its prompt, renders the provider block', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.navigator.goTo('providerName')
+    const { renderer, renderOnce, captureCharFrame } = await testRender(
+      new ProviderNamePanel().prompt(store),
+      { width: 70, height: 8 },
+    )
 
-    const props = new ProviderNamePanel().props(store)
+    await renderOnce()
 
-    expect(props.title).toBe('Provider 1')
+    expect(captureCharFrame()).toContain('Provider 1')
+    act(() => renderer.destroy())
   })
 })
