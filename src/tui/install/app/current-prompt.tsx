@@ -10,7 +10,7 @@ type CurrentPromptProps = {
 // The current panel's prompt, sitting on the bottom rows. A panel change is a
 // plain re-render with the new panel's prompt.
 export const CurrentPrompt = ({ model, router }: CurrentPromptProps) => {
-  const current = useSignalValue(model.navigator.current)
+  const panel = router.get(useSignalValue(model.navigator.current))
   return (
     <box
       flexDirection="column"
@@ -18,7 +18,7 @@ export const CurrentPrompt = ({ model, router }: CurrentPromptProps) => {
       flexShrink={0}
       justifyContent="flex-end"
     >
-      {router.get(current).prompt(model)}
+      {panel.prompt(model)}
     </box>
   )
 }

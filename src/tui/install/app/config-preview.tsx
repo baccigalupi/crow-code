@@ -1,8 +1,7 @@
 import type { DataStore } from '../data-store.ts'
 import type { Router } from '../router.ts'
-import { crowConfigFromInputs } from '../crow-config/from-inputs.ts'
-import { highlightJson } from './config-preview/highlight.ts'
 import { useSignalValue } from '../../use-signal-value.ts'
+import { ConfigPreviewViewModel } from './config-preview-view-model.ts'
 import { ConfigJson } from './config-preview/config-json.tsx'
 
 type ConfigPreviewProps = {
@@ -15,11 +14,8 @@ type ConfigPreviewProps = {
 // leaves, scrolling the json.
 export const ConfigPreview = ({ model, router }: ConfigPreviewProps) => {
   const inputs = useSignalValue(model.inputs)
-  const current = useSignalValue(model.navigator.current)
   const visible = useSignalValue(model.showsConfig)
-  const config = crowConfigFromInputs(inputs)
-  const json = config.crowConfigJson()
-  const sections = highlightJson({ json, ...router.get(current).highlights })
+  const viewModel = new ConfigPreviewViewModel(inputs)
   return (
     <box
       visible={visible}
@@ -29,10 +25,8 @@ export const ConfigPreview = ({ model, router }: ConfigPreviewProps) => {
       flexShrink={1}
       minHeight={0}
     >
-      <text flexShrink={0}>
-        {`Installing repo config in: ${config.crowConfigPath()}`}
-      </text>
-      <ConfigJson {...sections} />
+      <text flexShrink={0}>{viewModel.pathLine()}</text>
+      <ConfigJson model={model} router={router} />
     </box>
   )
 }

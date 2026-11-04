@@ -1,14 +1,14 @@
 import { batch, computed } from '@preact/signals-core'
-import type { ProviderFieldState } from '../types.ts'
+import type { ProviderFieldName, ProviderFieldState } from '../types.ts'
 import { TextFieldStore } from './text-field-store.ts'
 
 // The provider being typed across the name/url/credentials panels.
 export class ProviderEditFormStore {
-  private readonly order = [
+  private readonly order: readonly string[] = [
     'providerName',
     'providerUrl',
     'providerCredentials',
-  ] as const
+  ]
   readonly providerName = new TextFieldStore()
   readonly providerUrl = new TextFieldStore()
   readonly providerCredentials = new TextFieldStore()
@@ -31,15 +31,11 @@ export class ProviderEditFormStore {
 
   // Fields before the current step show their answers, the current one is
   // live, later ones are still to come.
-  fieldStates(current: string): ProviderFieldState[] {
-    const step = this.order.findIndex((name) => name === current)
-    return this.order.map((name, index) => ({
-      name,
-      state: this.fieldState(index, step),
-    }))
+  fieldState(name: ProviderFieldName, current: string) {
+    return this.stateAt(this.order.indexOf(name), this.order.indexOf(current))
   }
 
-  private fieldState(index: number, step: number) {
+  private stateAt(index: number, step: number): ProviderFieldState {
     if (index < step) {
       return 'answered'
     } else if (index === step) {

@@ -3,15 +3,16 @@ import { rgbToHex, type ScrollBoxRenderable } from '@opentui/core'
 import { testRender } from '@opentui/react/test-utils'
 import { act } from 'react'
 import { ConfigJson } from '../../../../../src/tui/install/app/config-preview/config-json.tsx'
+import { DataStore } from '../../../../../src/tui/install/data-store.ts'
+import { Router } from '../../../../../src/tui/install/router.ts'
+import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 
 describe('ConfigJson', () => {
   it('when a line is highlighted, draws it dark on gold', async () => {
+    const model = new DataStore({ applicationData: mockApplicationData() })
+    model.navigator.goTo('envFile')
     const { renderer, renderOnce, captureSpans } = await testRender(
-      <ConfigJson
-        before={'{\n  "crowGlobalDirectory": "~/.crow",\n  '}
-        highlighted={'"envFile": "~/.crow/.env",'}
-        after={'\n  "providers": []\n}'}
-      />,
+      <ConfigJson model={model} router={new Router()} />,
       { width: 70, height: 24 },
     )
 
@@ -25,30 +26,26 @@ describe('ConfigJson', () => {
   })
 
   it('when the json is taller than its rows, scrolls the highlighted line into view', async () => {
+    const model = new DataStore({ applicationData: mockApplicationData() })
+    model.navigator.goTo('escalateWrite')
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <ConfigJson
-        before={'{\n  "a": 1,\n  "b": 2,\n  "c": 3,\n  "d": 4,\n  "e": 5,\n  '}
-        highlighted={'"last": 6'}
-        after={'\n}'}
-      />,
-      { width: 30, height: 6 },
+      <ConfigJson model={model} router={new Router()} />,
+      { width: 70, height: 6 },
     )
 
     await renderOnce()
     await renderOnce()
 
-    expect(captureCharFrame()).toContain('"last": 6')
+    expect(captureCharFrame()).toContain('"escalateWrite"')
     act(() => renderer.destroy())
   })
 
   it('when scrolled away from the highlight, keeps the scroll across renders', async () => {
+    const model = new DataStore({ applicationData: mockApplicationData() })
+    model.navigator.goTo('escalateWrite')
     const { renderer, renderOnce } = await testRender(
-      <ConfigJson
-        before={'{\n  "a": 1,\n  "b": 2,\n  "c": 3,\n  "d": 4,\n  "e": 5,\n  '}
-        highlighted={'"last": 6'}
-        after={'\n}'}
-      />,
-      { width: 30, height: 6 },
+      <ConfigJson model={model} router={new Router()} />,
+      { width: 70, height: 6 },
     )
     await renderOnce()
     await renderOnce()

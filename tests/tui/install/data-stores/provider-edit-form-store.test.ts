@@ -48,12 +48,12 @@ describe('ProviderEditFormStore', () => {
   it('when on the url, the name is answered, the url live and the key upcoming', () => {
     const form = new ProviderEditFormStore()
 
-    const states = form.fieldStates('providerUrl')
+    const states = [
+      form.fieldState('providerName', 'providerUrl'),
+      form.fieldState('providerUrl', 'providerUrl'),
+      form.fieldState('providerCredentials', 'providerUrl'),
+    ]
 
-    expect(states).toEqual([
-      { name: 'providerName', state: 'answered' },
-      { name: 'providerUrl', state: 'live' },
-      { name: 'providerCredentials', state: 'upcoming' },
-    ])
+    expect(states).toEqual(['answered', 'live', 'upcoming'])
   })
 })

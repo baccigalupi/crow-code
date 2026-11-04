@@ -20,6 +20,7 @@ describe('text-prompt', () => {
             label="Where"
             input={emptyText()}
             placeholder="(.crow)"
+            masked={false}
           />,
           { width: 40, height: 3 },
         )
@@ -40,6 +41,7 @@ describe('text-prompt', () => {
           label="Where"
           input={insertText(emptyText(), './lib')}
           placeholder=""
+          masked={false}
         />,
         { width: 40, height: 3 },
       )
@@ -56,6 +58,7 @@ describe('text-prompt', () => {
           label="Where"
           input={{ text: 'abc', cursor: 1 }}
           placeholder=""
+          masked={false}
         />,
         { width: 20, height: 1 },
       )
@@ -74,6 +77,7 @@ describe('text-prompt', () => {
           label="Where"
           input={{ text: 'ab', cursor: 2 }}
           placeholder=""
+          masked={false}
         />,
         { width: 20, height: 1 },
       )

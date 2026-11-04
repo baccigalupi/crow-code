@@ -13,9 +13,9 @@ describe('tsxPlugin', () => {
     expect(rules[0].name).toBe('arrow-function-components')
     expect(rules[1].name).toBe('no-react-state')
     expect(rules[2].name).toBe('no-inline-props-type')
-    expect(rules[3].name).toBe('no-jsx-logical-and')
-    expect(rules[4].name).toBe('no-if-else-in-tsx')
-    expect(rules[5].name).toBe('no-functions-in-components')
+    expect(rules[3].name).toBe('no-if-else-in-tsx')
+    expect(rules[4].name).toBe('no-functions-in-components')
+    expect(rules[5].name).toBe('jsx-single-expression')
   })
 
   it('when a component defines a function, reports it', () => {
@@ -141,6 +141,76 @@ describe('tsxPlugin', () => {
     expect(diagnostics[0].message).toContain('const arrows')
   })
 
+  describe('jsx-single-expression', () => {
+    it('when an attribute does arithmetic, reports it', () => {
+      const source = 'const App = () => <box top={row + 1} />\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain('one attribute or one call')
+    })
+
+    it('when a child is a template literal, reports it', () => {
+      const source =
+        'const App = () => <text>{`${label}:`}</text>\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain('one attribute or one call')
+    })
+
+    it('when a call takes another call, reports it', () => {
+      const source =
+        'const App = () => <text>{format(model.text())}</text>\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain('one attribute or one call')
+    })
+
+    it('when a call takes an arrow, reports it', () => {
+      const source =
+        'const App = () => <box>{rows.map((row) => row)}</box>\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain('one attribute or one call')
+    })
+
+    it('when expressions are a value, an attribute or one plain call, ignores them', () => {
+      const source =
+        'const App = () => <box top={1} title="t" width={view.width} key={name}>{rows.map(Row)}{view.label(model, 2)}{fields[name]}</box>\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(0)
+    })
+  })
+
   it('when a tsx file uses a function expression, reports it', () => {
     const source = 'const reveal = function () { return 1 }\nexport { reveal }'
 
@@ -255,7 +325,7 @@ describe('tsxPlugin', () => {
     )
 
     expect(diagnostics).toHaveLength(1)
-    expect(diagnostics[0].message).toContain('early return')
+    expect(diagnostics[0].message).toContain('one attribute or one call')
   })
 
   it('when JSX wraps a && conditional in parentheses, reports it', () => {
@@ -269,7 +339,7 @@ describe('tsxPlugin', () => {
     )
 
     expect(diagnostics).toHaveLength(1)
-    expect(diagnostics[0].message).toContain('early return')
+    expect(diagnostics[0].message).toContain('one attribute or one call')
   })
 
   it('when JSX holds an empty expression, ignores it', () => {
@@ -284,7 +354,7 @@ describe('tsxPlugin', () => {
     expect(diagnostics).toHaveLength(0)
   })
 
-  it('when JSX uses a ternary conditional, ignores it', () => {
+  it('when JSX uses a ternary conditional, reports it', () => {
     const source =
       'const App = ({ on }: { on: boolean }) => <div>{on ? 1 : 2}</div>'
 
@@ -294,7 +364,8 @@ describe('tsxPlugin', () => {
       source,
     )
 
-    expect(diagnostics).toHaveLength(0)
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('one attribute or one call')
   })
 
   it('when an exported component inlines its props type, reports it', () => {
@@ -418,16 +489,6 @@ describe('tsxPlugin', () => {
 
     expect(diagnostics).toHaveLength(1)
     expect(diagnostics[0].message).toContain('named props type')
-  })
-
-  it('when a tsx test uses a JSX && conditional, reports it', () => {
-    const source =
-      'const App = ({ on }: { on: boolean }) => <div>{on && <b>x</b>}</div>'
-
-    const diagnostics = checkSource(tsxPlugin, 'tests/example.test.tsx', source)
-
-    expect(diagnostics).toHaveLength(1)
-    expect(diagnostics[0].message).toContain('early return')
   })
 
   it('when a non-jsx && expression exists, ignores it', () => {

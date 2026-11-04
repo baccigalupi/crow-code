@@ -10,8 +10,7 @@ const colors = theme.setupProgress
 const FailedRow = ({ task }: { task: SetupTaskRow }) => (
   <box flexDirection="column">
     <text>
-      <span fg={colors.failedColor}>✗</span>
-      {` ${task.label}`}
+      <span fg={colors.failedColor}>✗</span> {task.label}
     </text>
     <box paddingLeft={2}>
       <text attributes={TextAttributes.DIM}>{task.error}</text>
@@ -22,16 +21,19 @@ const FailedRow = ({ task }: { task: SetupTaskRow }) => (
 const DoneRow = ({ task }: { task: SetupTaskRow }) => (
   <text>
     <span fg={colors.completeColor}>✓</span>
-    <span attributes={TextAttributes.DIM}>{` ${task.label}`}</span>
+    <span attributes={TextAttributes.DIM}> {task.label}</span>
   </text>
 )
 
 const RunningRow = ({ task }: { task: SetupTaskRow }) => (
-  <text>{`› ${task.label}`}</text>
+  <text>› {task.label}</text>
 )
 
 const WaitingRow = ({ task }: { task: SetupTaskRow }) => (
-  <text>{`  ${task.label}`}</text>
+  <text>
+    {'  '}
+    {task.label}
+  </text>
 )
 
 const rowViews = {
@@ -46,6 +48,8 @@ const Row = ({ task }: { task: SetupTaskRow }) => {
   return <View task={task} />
 }
 
+const keyedRow = (task: SetupTaskRow) => <Row key={task.id} task={task} />
+
 type ProgressRowsProps = { rows: readonly SetupTaskRow[] }
 
 type SetupProgressProps = { model: DataStore }
@@ -53,9 +57,7 @@ type SetupProgressProps = { model: DataStore }
 // The setup tasks as rows, each drawn in the state the store gives it.
 export const ProgressRows = ({ rows }: ProgressRowsProps) => (
   <box flexDirection="column" paddingX={1}>
-    {rows.map((task) => (
-      <Row key={task.id} task={task} />
-    ))}
+    {rows.map(keyedRow)}
   </box>
 )
 

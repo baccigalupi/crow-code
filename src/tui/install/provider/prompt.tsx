@@ -1,10 +1,10 @@
 import { TextAttributes } from '@opentui/core'
 import type { DataStore } from '../data-store.ts'
-import type { TextFieldStore } from '../data-stores/text-field-store.ts'
-import type { ProviderFieldState } from '../types.ts'
+import type { ProviderFieldName } from '../types.ts'
 import type { InputText } from '../../types.ts'
 import { useSignalValue } from '../../use-signal-value.ts'
 import { PromptLine } from '../text-prompt/prompt.tsx'
+import { ProviderPromptViewModel } from './prompt-view-model.ts'
 
 const fields = {
   providerName: { label: 'Name', masked: false },
@@ -16,7 +16,9 @@ type FieldViewProps = { label: string; input: InputText; masked: boolean }
 
 const AnsweredField = ({ label, input }: FieldViewProps) => (
   <box paddingX={1}>
-    <text>{`${label}: ${input.text}`}</text>
+    <text>
+      {label}: {input.text}
+    </text>
   </box>
 )
 
@@ -26,7 +28,7 @@ const LiveField = (props: FieldViewProps) => (
 
 const UpcomingField = ({ label }: FieldViewProps) => (
   <box paddingX={1}>
-    <text attributes={TextAttributes.DIM}>{`${label}:`}</text>
+    <text attributes={TextAttributes.DIM}>{label}:</text>
   </box>
 )
 
@@ -36,18 +38,14 @@ const fieldViews = {
   upcoming: UpcomingField,
 }
 
-type FieldProps = {
-  label: string
-  field: TextFieldStore
-  masked: boolean
-  state: ProviderFieldState['state']
-}
+type FieldProps = { model: DataStore; name: ProviderFieldName }
 
-// A field drawn in the state the form gives it.
-const Field = ({ label, field, masked, state }: FieldProps) => {
-  const input = useSignalValue(field.text)
-  const View = fieldViews[state]
-  return <View label={label} input={input} masked={masked} />
+// A field drawn in the state the form gives it on the current step.
+const Field = ({ model, name }: FieldProps) => {
+  const current = useSignalValue(model.navigator.current)
+  const input = useSignalValue(model.providerEditForm[name].text)
+  const View = fieldViews[model.providerEditForm.fieldState(name, current)]
+  return <View {...fields[name]} input={input} />
 }
 
 type ProviderPromptProps = { model: DataStore }
@@ -55,22 +53,13 @@ type ProviderPromptProps = { model: DataStore }
 // The three provider steps as one "Provider N" block over an escape hint.
 export const ProviderPrompt = ({ model }: ProviderPromptProps) => {
   const providers = useSignalValue(model.providers.providers)
-  const current = useSignalValue(model.navigator.current)
+  const viewModel = new ProviderPromptViewModel(providers)
   return (
     <box flexDirection="column">
-      <box
-        border
-        title={`Provider ${providers.length + 1}`}
-        flexDirection="column"
-      >
-        {model.providerEditForm.fieldStates(current).map(({ name, state }) => (
-          <Field
-            key={name}
-            {...fields[name]}
-            field={model.providerEditForm[name]}
-            state={state}
-          />
-        ))}
+      <box border title={viewModel.title()} flexDirection="column">
+        <Field model={model} name="providerName" />
+        <Field model={model} name="providerUrl" />
+        <Field model={model} name="providerCredentials" />
       </box>
       <box paddingX={1}>
         <text attributes={TextAttributes.DIM}>

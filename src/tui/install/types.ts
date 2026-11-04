@@ -45,10 +45,10 @@ export type SetupTaskStatus = {
   readonly error: string
 }
 
-export type ProviderFieldState = {
-  readonly name: 'providerName' | 'providerUrl' | 'providerCredentials'
-  readonly state: 'answered' | 'live' | 'upcoming'
-}
+export type ProviderFieldName =
+  'providerName' | 'providerUrl' | 'providerCredentials'
+
+export type ProviderFieldState = 'answered' | 'live' | 'upcoming'
 
 export type SetupTaskRow = SetupTaskStatus & {
   readonly state: 'failed' | 'done' | 'running' | 'waiting'

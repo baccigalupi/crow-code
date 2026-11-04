@@ -3,29 +3,30 @@ import type { DataStore } from '../data-store.ts'
 import type { TextPromptPanel } from './text-prompt.tsx'
 import type { InputText } from '../../types.ts'
 import { useSignalValue } from '../../use-signal-value.ts'
+import { PromptLineViewModel } from './prompt-line-view-model.ts'
 
-const maskCharacter = '•'
-
-// One `label: value` line with a block cursor and the dimmed placeholder.
-// Masked inputs show only bullets.
-export const PromptLine = (props: {
+type PromptLineProps = {
   label: string
   input: InputText
   placeholder: string
-  masked?: boolean
-}) => {
-  const { input, label } = props
-  const text = props.masked
-    ? maskCharacter.repeat(input.text.length)
-    : input.text
-  const cursor = text.charAt(input.cursor) || ' '
+  masked: boolean
+}
+
+// One `label: value` line with a block cursor and the dimmed placeholder.
+export const PromptLine = ({
+  label,
+  input,
+  placeholder,
+  masked,
+}: PromptLineProps) => {
+  const viewModel = new PromptLineViewModel(input, masked)
   return (
     <box paddingX={1}>
       <text>
-        {`${label}: ${text.slice(0, input.cursor)}`}
-        <span attributes={TextAttributes.DIM}>{props.placeholder}</span>
-        <span attributes={TextAttributes.INVERSE}>{cursor}</span>
-        {text.slice(input.cursor + 1)}
+        {label}: {viewModel.beforeCursor()}
+        <span attributes={TextAttributes.DIM}>{placeholder}</span>
+        <span attributes={TextAttributes.INVERSE}>{viewModel.atCursor()}</span>
+        {viewModel.afterCursor()}
       </text>
     </box>
   )
@@ -45,6 +46,7 @@ export const TextPrompt = ({ panel, model }: TextPromptProps) => {
       label={panel.label}
       input={input}
       placeholder={panel.placeholder(model, inputs)}
+      masked={false}
     />
   )
 }
