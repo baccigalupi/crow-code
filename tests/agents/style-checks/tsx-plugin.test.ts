@@ -3,18 +3,89 @@ import { checkSource } from '../../../agents/style-checks/engine/check-source.ts
 import { tsxPlugin } from '../../../agents/style-checks/tsx-plugin.ts'
 
 describe('tsxPlugin', () => {
-  it('when the plugin is built, lists the five rules in order', () => {
+  it('when the plugin is built, lists the six rules in order', () => {
     const plugin = tsxPlugin
 
     const rules = plugin.rules
 
     expect(plugin.name).toBe('crow-style-tsx')
-    expect(rules).toHaveLength(5)
+    expect(rules).toHaveLength(6)
     expect(rules[0].name).toBe('arrow-function-components')
     expect(rules[1].name).toBe('no-react-state')
     expect(rules[2].name).toBe('no-inline-props-type')
     expect(rules[3].name).toBe('no-jsx-logical-and')
     expect(rules[4].name).toBe('no-if-else-in-tsx')
+    expect(rules[5].name).toBe('no-functions-in-components')
+  })
+
+  it('when a component defines a function, reports it', () => {
+    const source =
+      'const App = () => { const handle = () => 1; return <box onMouse={handle} /> }'
+
+    const diagnostics = checkSource(
+      tsxPlugin,
+      'src/tui/install/example.tsx',
+      source,
+    )
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain(
+      'no functions defined in components',
+    )
+  })
+
+  it('when a component defines a function expression, reports it', () => {
+    const source =
+      'const App = () => { const handle = function () { return 1 }; return <box onMouse={handle} /> }'
+
+    const diagnostics = checkSource(
+      tsxPlugin,
+      'src/tui/install/example.tsx',
+      source,
+    )
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain(
+      'no functions defined in components',
+    )
+  })
+
+  it('when a class method in a tsx file defines a function, ignores it', () => {
+    const source =
+      'class Panel { run() { const done = () => 1; return done } }\nexport { Panel }'
+
+    const diagnostics = checkSource(
+      tsxPlugin,
+      'src/tui/install/example.tsx',
+      source,
+    )
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
+  it('when a tsx file defines a function at module level, ignores it', () => {
+    const source = 'const Row = () => null\nconst App = () => <Row />'
+
+    const diagnostics = checkSource(
+      tsxPlugin,
+      'src/tui/install/example.tsx',
+      source,
+    )
+
+    expect(diagnostics).toHaveLength(0)
+  })
+
+  it('when a ts file defines a function inside a function, ignores it', () => {
+    const source =
+      'const helper = () => { const inner = () => 1; return inner }'
+
+    const diagnostics = checkSource(
+      tsxPlugin,
+      'src/tui/install/helper.ts',
+      source,
+    )
+
+    expect(diagnostics).toHaveLength(0)
   })
 
   it('when a tsx file has an if/else, reports it', () => {

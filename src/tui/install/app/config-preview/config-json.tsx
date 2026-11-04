@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import type { ScrollBoxRenderable } from '@opentui/core'
 import { theme } from '../../../theme.ts'
+import { HighlightScroll } from './highlight-scroll.ts'
 
 const marginTop = 1
 const paddingY = 1
@@ -12,22 +13,16 @@ type ConfigJsonProps = {
 }
 
 // The config json in the rows it is given, scrolled so the highlighted line
-// is in view. It scrolls once per new json, just before drawing, when layout
-// already has the new height, then leaves the user's scrolling alone.
+// is in view.
 export const ConfigJson = ({ before, highlighted, after }: ConfigJsonProps) => {
   const scrollbox = useRef<ScrollBoxRenderable>(null)
-  const scrollPending = useRef(true)
+  const highlightScroll = useMemo(() => new HighlightScroll(scrollbox), [])
   const lines = `${before}${highlighted}${after}`.split('\n').length
   const highlightedRow = marginTop + paddingY + before.split('\n').length - 1
-  useEffect(() => {
-    scrollPending.current = true
-  }, [before, highlighted, after])
-  const scrollToHighlight = () => {
-    if (!scrollPending.current) return
-    const box = scrollbox.current as ScrollBoxRenderable
-    box.scrollTop = highlightedRow
-    scrollPending.current = false
-  }
+  useEffect(
+    () => highlightScroll.aim(highlightedRow),
+    [highlightScroll, highlightedRow, before, highlighted, after],
+  )
   return (
     <scrollbox
       id="config-json"
@@ -35,7 +30,7 @@ export const ConfigJson = ({ before, highlighted, after }: ConfigJsonProps) => {
       flexGrow={1}
       flexShrink={1}
       minHeight={0}
-      renderBefore={scrollToHighlight}
+      renderBefore={highlightScroll.scroll.bind(highlightScroll)}
     >
       <box
         flexDirection="column"
