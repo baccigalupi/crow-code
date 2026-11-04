@@ -34,7 +34,7 @@ describe('tsxPlugin', () => {
     )
   })
 
-  it('when a component defines a function expression, reports it', () => {
+  it('when a component defines a function expression, reports it twice', () => {
     const source =
       'const App = () => { const handle = function () { return 1 }; return <box onMouse={handle} /> }'
 
@@ -44,7 +44,8 @@ describe('tsxPlugin', () => {
       source,
     )
 
-    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics).toHaveLength(2)
+    expect(diagnostics[1].message).toContain('const arrows')
     expect(diagnostics[0].message).toContain(
       'no functions defined in components',
     )
@@ -129,6 +130,19 @@ describe('tsxPlugin', () => {
 
   it('when a tsx file uses a function declaration, reports it', () => {
     const source = 'function App() { return null }'
+
+    const diagnostics = checkSource(
+      tsxPlugin,
+      'src/tui/install/example.tsx',
+      source,
+    )
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].message).toContain('const arrows')
+  })
+
+  it('when a tsx file uses a function expression, reports it', () => {
+    const source = 'const reveal = function () { return 1 }\nexport { reveal }'
 
     const diagnostics = checkSource(
       tsxPlugin,

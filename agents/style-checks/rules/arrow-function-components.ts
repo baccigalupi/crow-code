@@ -6,10 +6,10 @@ export const arrowFunctionComponents: Rule = {
   name: 'arrow-function-components',
   applies: isTsxOrTestTsxFile,
   enter(node, ctx) {
-    if (ts.isFunctionDeclaration(node)) {
+    if (ts.isFunctionDeclaration(node) || ts.isFunctionExpression(node)) {
       ctx.report(
         node,
-        'tsx components must be const arrows, not function declarations',
+        'tsx functions must be const arrows, not function declarations or expressions',
       )
     }
   },
