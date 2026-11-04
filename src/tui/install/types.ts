@@ -23,10 +23,20 @@ export type CrowProviderConfig = {
   readonly baseUrl: string
 }
 
-export type HighlightJsonArguments = {
+export type JsonFieldArguments<Value> = {
+  readonly name: string
+  readonly value: Value
+  readonly highlighted: boolean
   readonly json: string
-  readonly key: string
-  readonly occurrence?: 'first' | 'last'
+  readonly last: boolean
+}
+
+export type ProviderEntryArguments = {
+  readonly provider: CrowProviderConfig
+  readonly index: number
+  readonly last: boolean
+  readonly highlightKey: string
+  readonly json: string
 }
 
 export type EnvBuffer = Readonly<Record<string, string>>
@@ -56,7 +66,7 @@ export type SetupTaskRow = SetupTaskStatus & {
 
 // The config line a panel edits; a key that is not in the config highlights
 // nothing.
-export type PanelHighlights = Omit<HighlightJsonArguments, 'json'>
+export type PanelHighlights = { readonly key: string }
 
 export type StatefulTask = {
   readonly reason: string

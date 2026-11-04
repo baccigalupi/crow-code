@@ -13,7 +13,7 @@ describe('ProviderUrlPanel', () => {
     expect(name).toBe('providerUrl')
     expect(panel.next).toBe('providerCredentials')
     expect(panel.cancel).toBe('confirm')
-    expect(panel.highlights).toEqual({ key: 'baseUrl', occurrence: 'last' })
+    expect(panel.highlights).toEqual({ key: 'baseUrl' })
   })
 
   it('when a key is typed, its controller edits the provider url', () => {

@@ -48,8 +48,6 @@ const Row = ({ task }: { task: SetupTaskRow }) => {
   return <View task={task} />
 }
 
-const keyedRow = (task: SetupTaskRow) => <Row key={task.id} task={task} />
-
 type ProgressRowsProps = { rows: readonly SetupTaskRow[] }
 
 type SetupProgressProps = { model: DataStore }
@@ -57,7 +55,9 @@ type SetupProgressProps = { model: DataStore }
 // The setup tasks as rows, each drawn in the state the store gives it.
 export const ProgressRows = ({ rows }: ProgressRowsProps) => (
   <box flexDirection="column" paddingX={1}>
-    {rows.map(keyedRow)}
+    {rows.map((task) => (
+      <Row key={task.id} task={task} />
+    ))}
   </box>
 )
 

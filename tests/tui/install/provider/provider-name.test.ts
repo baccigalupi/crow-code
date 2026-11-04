@@ -15,7 +15,7 @@ describe('ProviderNamePanel', () => {
     expect(name).toBe('providerName')
     expect(panel.next).toBe('providerUrl')
     expect(panel.cancel).toBe('confirm')
-    expect(panel.highlights).toEqual({ key: 'name', occurrence: 'last' })
+    expect(panel.highlights).toEqual({ key: 'name' })
   })
 
   it('when a key is typed, its controller edits the provider name', () => {

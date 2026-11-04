@@ -3,19 +3,21 @@ import type { Router } from '../../router.ts'
 import { useSignalValue } from '../../../use-signal-value.ts'
 import { ConfigJsonViewModel } from './config-json-view-model.ts'
 import { watchHighlight } from './highlight-reveal.ts'
+import { Indented, ListField, StringField } from './json-rows.tsx'
+import { ProviderEntry } from './provider-entry.tsx'
 
 type ConfigJsonProps = {
   model: DataStore
   router: Router
 }
 
-// The config json in the rows it is given, scrolled to the line the current
-// panel edits each time the json changes. The marker, rebuilt with every new
-// json, is what HighlightReveal scrolls into view.
+// The config json, laid out in its own shape, with the key the current panel
+// edits highlighted and scrolled into view each time the json changes.
 export const ConfigJson = ({ model, router }: ConfigJsonProps) => {
   const inputs = useSignalValue(model.inputs)
   const panel = router.get(useSignalValue(model.navigator.current))
   const viewModel = new ConfigJsonViewModel(inputs, panel.highlights)
+  const providers = viewModel.providers()
   return (
     <scrollbox
       id="config-json"
@@ -30,27 +32,32 @@ export const ConfigJson = ({ model, router }: ConfigJsonProps) => {
         flexShrink={0}
         backgroundColor={viewModel.background}
         paddingX={2}
-        paddingY={viewModel.paddingY}
+        paddingY={1}
         marginTop={1}
       >
-        <box
-          key={viewModel.key()}
-          id="config-highlight"
-          position="absolute"
-          top={viewModel.markerRow()}
-          height={1}
-          width={1}
-        />
-        <text flexShrink={0} height={viewModel.lineCount()}>
-          {viewModel.before()}
-          <span
-            fg={viewModel.highlightTextColor}
-            bg={viewModel.highlightBackground}
-          >
-            {viewModel.highlighted()}
-          </span>
-          {viewModel.after()}
-        </text>
+        <text>{'{'}</text>
+        <Indented>
+          <StringField field={viewModel.stringField('crowGlobalDirectory')} />
+          <StringField field={viewModel.stringField('envFile')} />
+          <text>"permissions": {'{'}</text>
+          <Indented>
+            <ListField field={viewModel.listField('ignore')} />
+            <ListField field={viewModel.listField('additionalRead')} />
+            <ListField field={viewModel.listField('additionalWrite')} />
+            <ListField field={viewModel.listField('escalateRead')} />
+            <ListField field={viewModel.listField('escalateWrite')} />
+            <ListField field={viewModel.lastListField('allowedLocalScripts')} />
+          </Indented>
+          <text>{'},'}</text>
+          <text>"providers": [</text>
+          <Indented>
+            {providers.map((provider) => (
+              <ProviderEntry key={provider.index} provider={provider} />
+            ))}
+          </Indented>
+          <text>]</text>
+        </Indented>
+        <text>{'}'}</text>
       </box>
     </scrollbox>
   )

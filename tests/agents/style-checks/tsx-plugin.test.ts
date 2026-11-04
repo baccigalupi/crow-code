@@ -3,19 +3,97 @@ import { checkSource } from '../../../agents/style-checks/engine/check-source.ts
 import { tsxPlugin } from '../../../agents/style-checks/tsx-plugin.ts'
 
 describe('tsxPlugin', () => {
-  it('when the plugin is built, lists the six rules in order', () => {
+  it('when the plugin is built, lists the seven rules in order', () => {
     const plugin = tsxPlugin
 
     const rules = plugin.rules
 
     expect(plugin.name).toBe('crow-style-tsx')
-    expect(rules).toHaveLength(6)
+    expect(rules).toHaveLength(7)
     expect(rules[0].name).toBe('arrow-function-components')
     expect(rules[1].name).toBe('no-react-state')
     expect(rules[2].name).toBe('no-inline-props-type')
     expect(rules[3].name).toBe('no-if-else-in-tsx')
     expect(rules[4].name).toBe('no-functions-in-components')
     expect(rules[5].name).toBe('jsx-single-expression')
+    expect(rules[6].name).toBe('component-names')
+  })
+
+  describe('component-names', () => {
+    it('when a lowercase arrow returns jsx, reports it', () => {
+      const source = 'const row = (item) => <Row item={item} />\nexport { row }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain('capitalize')
+    })
+
+    it('when a lowercase arrow returns jsx from a block, reports it', () => {
+      const source =
+        'const row = (item) => { const x = item; return <Row item={x} /> }\nexport { row }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain('capitalize')
+    })
+
+    it('when a component is passed as a function, reports it', () => {
+      const source =
+        'const App = () => { const rows = items.map(Row); return <box /> }\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain('never call them')
+    })
+
+    it('when a component is called, reports it', () => {
+      const source = 'const App = () => Row({ item })\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain('never call them')
+    })
+
+    it('when a builtin like String is called, ignores it', () => {
+      const source =
+        'const App = () => <text key={key}>{name}</text>\nconst key = String(1)\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(0)
+    })
+
+    it('when a ts file passes a capitalized name, ignores it', () => {
+      const source = 'const rows = items.map(Row)\nexport { rows }'
+
+      const diagnostics = checkSource(tsxPlugin, 'src/tui/example.ts', source)
+
+      expect(diagnostics).toHaveLength(0)
+    })
   })
 
   it('when a component defines a function, reports it', () => {
@@ -225,9 +303,49 @@ describe('tsxPlugin', () => {
       expect(diagnostics[0].message).toContain('one attribute or one call')
     })
 
+    it('when a list maps each item to one element, ignores it', () => {
+      const source =
+        'const App = () => <box>{items.map((item) => <Row key={item.id} item={item} />)}</box>\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(0)
+    })
+
+    it('when a list maps each item to one parenthesized element, ignores it', () => {
+      const source =
+        'const App = () => <box>{items.map((item) => (<Row key={item.id} item={item} />))}</box>\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(0)
+    })
+
+    it('when a listed element holds logic, reports it', () => {
+      const source =
+        'const App = () => <box>{items.map((item) => <Row item={format(label(item))} />)}</box>\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain('one attribute or one call')
+    })
+
     it('when expressions are a value, an attribute or one plain call, ignores them', () => {
       const source =
-        'const App = () => <box top={1} title="t" width={view.width} key={name}>{rows.map(Row)}{view.label(model, 2)}{fields[name]}</box>\nexport { App }'
+        'const App = () => <box top={1} title="t" width={view.width} key={name}>{rows.map(format)}{view.label(model, 2)}{fields[name]}</box>\nexport { App }'
 
       const diagnostics = checkSource(
         tsxPlugin,

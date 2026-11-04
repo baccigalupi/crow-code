@@ -25,6 +25,26 @@ describe('ConfigJson', () => {
     act(() => renderer.destroy())
   })
 
+  it('when a provider name is being typed, highlights it in the last provider', async () => {
+    const model = new DataStore({ applicationData: mockApplicationData() })
+    model.providers.save({ name: 'nous', url: 'https://n' }, '')
+    model.providerEditForm.providerName.insert('local')
+    model.navigator.goTo('providerName')
+    const { renderer, renderOnce, captureSpans } = await testRender(
+      <ConfigJson model={model} router={new Router()} />,
+      { width: 70, height: 60 },
+    )
+
+    await renderOnce()
+
+    const lines = captureSpans().lines
+    expect(lines[25].spans[0].text).toContain('"name": "nous",')
+    expect(rgbToHex(lines[25].spans[0].bg)).toBe('#0a0f1e')
+    expect(lines[29].spans[1].text).toBe('"name": "local",')
+    expect(rgbToHex(lines[29].spans[1].bg)).toBe('#e6ca6c')
+    act(() => renderer.destroy())
+  })
+
   it('when the json is taller than its rows, scrolls the highlighted line into view', async () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
     model.navigator.goTo('escalateWrite')

@@ -1,5 +1,6 @@
 import type { Plugin } from './engine/types.ts'
 import { arrowFunctionComponents } from './rules/arrow-function-components.ts'
+import { componentNames } from './rules/component-names.ts'
 import { jsxSingleExpression } from './rules/jsx-single-expression.ts'
 import { noFunctionsInComponents } from './rules/no-functions-in-components.ts'
 import { noIfElseInTsx } from './rules/no-if-else-in-tsx.ts'
@@ -15,5 +16,6 @@ export const tsxPlugin: Plugin = {
     noIfElseInTsx,
     noFunctionsInComponents,
     jsxSingleExpression,
+    componentNames,
   ],
 }

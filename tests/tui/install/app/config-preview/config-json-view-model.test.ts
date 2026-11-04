@@ -4,51 +4,74 @@ import { DataStore } from '../../../../../src/tui/install/data-store.ts'
 import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 
 describe('ConfigJsonViewModel', () => {
-  it('when a key is highlighted, splits the config json around its line', () => {
+  it('when asked for a string field, quotes its config value', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const viewModel = new ConfigJsonViewModel(store.inputs.peek(), {
-      key: 'envFile',
+      key: 'repo',
     })
 
-    const highlighted = viewModel.highlighted()
+    const field = viewModel.stringField('envFile')
 
-    expect(highlighted).toBe('"envFile": "~/.crow/.env",')
+    expect(field.quoted()).toBe('"~/.crow/.env"')
   })
 
-  it('when a key is highlighted, puts the marker on its line below the padding', () => {
+  it('when the panel edits a field, highlights that field', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const viewModel = new ConfigJsonViewModel(store.inputs.peek(), {
       key: 'envFile',
     })
 
-    const row = viewModel.markerRow()
+    const field = viewModel.stringField('envFile')
 
-    expect(row).toBe(3)
+    expect(field.id()).toBe('config-highlight')
   })
 
-  it('when asked for colors, gives the config panel theme colors', () => {
+  it('when asked for a list field, gives its permission entries', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const viewModel = new ConfigJsonViewModel(store.inputs.peek(), {
-      key: 'envFile',
+      key: 'repo',
     })
 
-    const colors = [
-      viewModel.background,
-      viewModel.highlightTextColor,
-      viewModel.highlightBackground,
-    ]
+    const field = viewModel.listField('escalateWrite')
 
-    expect(colors).toEqual(['#0a0f1e', '#0a0f1e', '#e6ca6c'])
+    expect(field.items()[0].quoted()).toBe('"./dev"')
+    expect(field.comma()).toBe(',')
   })
 
-  it('when asked for the line count, counts every json line', () => {
+  it('when asked for the last list field, ends it without a comma', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const viewModel = new ConfigJsonViewModel(store.inputs.peek(), {
-      key: 'envFile',
+      key: 'repo',
     })
 
-    const lines = viewModel.lineCount()
+    const field = viewModel.lastListField('allowedLocalScripts')
 
-    expect(lines).toBe(19)
+    expect(field.comma()).toBe('')
+  })
+
+  it('when providers are saved, gives one entry each, the last one last', () => {
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.providers.save({ name: 'nous', url: 'https://n' }, '')
+    store.providers.save({ name: 'local', url: 'http://l' }, '')
+    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), {
+      key: 'repo',
+    })
+
+    const providers = viewModel.providers()
+
+    expect(providers).toHaveLength(2)
+    expect(providers[0].comma()).toBe(',')
+    expect(providers[1].comma()).toBe('')
+  })
+
+  it('when asked for its background, gives the config panel color', () => {
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), {
+      key: 'repo',
+    })
+
+    const background = viewModel.background
+
+    expect(background).toBe('#0a0f1e')
   })
 })
