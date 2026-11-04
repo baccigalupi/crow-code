@@ -28,7 +28,7 @@ describe('EnvFilePanel', () => {
     store.directories.globalDirectory.insert('/g')
     const panel = new EnvFilePanel()
 
-    const defaultValue = panel.defaultValue(store, store.inputs.peek())
+    const defaultValue = panel.defaultValue(store)
 
     expect(panel.label).toBe('Credentials .env file')
     expect(defaultValue).toBe('/g/.env')

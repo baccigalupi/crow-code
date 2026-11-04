@@ -1,6 +1,4 @@
 import type { DataStore } from '../data-store.ts'
-import { crowConfigFromInputs } from '../crow-config/from-inputs.ts'
-import type { CrowConfigInputs } from '../crow-config/types.ts'
 import { TextPromptPanel } from '../text-prompt/text-prompt.tsx'
 
 export class EnvFilePanel extends TextPromptPanel {
@@ -14,7 +12,7 @@ export class EnvFilePanel extends TextPromptPanel {
     return store.directories.envFile
   }
 
-  defaultValue(_store: DataStore, values: CrowConfigInputs) {
-    return crowConfigFromInputs(values).crowConfig().envFile
+  defaultValue(store: DataStore) {
+    return store.directories.defaultEnvFile.value
   }
 }

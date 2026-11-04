@@ -2,7 +2,6 @@ import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { existsSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { GlobalDirectoryTask } from '../../../../../src/tui/install/complete-setup/run-all/global-directory-task.ts'
-import { DataStore } from '../../../../../src/tui/install/data-store.ts'
 import { Environment } from '../../../../../src/application-data/env-vars.ts'
 import { defaultFilesystem } from '../../../../../src/application-data/filesystem.ts'
 import {
@@ -15,15 +14,13 @@ describe('GlobalDirectoryTask', () => {
   beforeEach(() => clearDirectory(join(fixturesDirectory, 'global-directory')))
   afterEach(() => clearDirectory(join(fixturesDirectory, 'global-directory')))
 
-  it('when run, creates the typed global directory', async () => {
+  it('when run, creates the global directory', async () => {
     const path = join(fixturesDirectory, 'global-directory', 'crow-global')
     const applicationData = mockApplicationData()
-    const store = new DataStore({ applicationData })
-    store.directories.globalDirectory.insert(path)
 
     const task = await new GlobalDirectoryTask({
       applicationData,
-      operationArguments: { inputs: store.inputs.peek() },
+      operationArguments: { globalDirectory: path },
     }).run()
 
     expect(task.success()).toBe(true)
@@ -33,13 +30,11 @@ describe('GlobalDirectoryTask', () => {
   it('when the directory already exists, succeeds and keeps it', async () => {
     const path = join(fixturesDirectory, 'global-directory', 'crow-global')
     const applicationData = mockApplicationData()
-    const store = new DataStore({ applicationData })
-    store.directories.globalDirectory.insert(path)
     mkdirSync(path, { recursive: true })
 
     const task = await new GlobalDirectoryTask({
       applicationData,
-      operationArguments: { inputs: store.inputs.peek() },
+      operationArguments: { globalDirectory: path },
     }).run()
 
     expect(task.success()).toBe(true)
@@ -53,11 +48,10 @@ describe('GlobalDirectoryTask', () => {
       filesystem: defaultFilesystem(),
     })
     const applicationData = mockApplicationData({ envars })
-    const store = new DataStore({ applicationData })
 
     await new GlobalDirectoryTask({
       applicationData,
-      operationArguments: { inputs: store.inputs.peek() },
+      operationArguments: { globalDirectory: '~/.crow' },
     }).run()
 
     expect(existsSync(join(home, '.crow'))).toBe(true)
@@ -65,14 +59,13 @@ describe('GlobalDirectoryTask', () => {
 
   it('when the directory cannot be created, fails naming the directory', async () => {
     const applicationData = mockApplicationData()
-    const store = new DataStore({ applicationData })
     spyOn(applicationData.filesystem, 'mkdirWithParents').mockRejectedValue(
       new Error('permission denied'),
     )
 
     const task = await new GlobalDirectoryTask({
       applicationData,
-      operationArguments: { inputs: store.inputs.peek() },
+      operationArguments: { globalDirectory: '~/.crow' },
     }).run()
 
     expect(task.success()).toBe(false)
@@ -81,11 +74,10 @@ describe('GlobalDirectoryTask', () => {
 
   it('when labelled, names the unexpanded global directory', () => {
     const applicationData = mockApplicationData()
-    const store = new DataStore({ applicationData })
 
     const label = new GlobalDirectoryTask({
       applicationData,
-      operationArguments: { inputs: store.inputs.peek() },
+      operationArguments: { globalDirectory: '~/.crow' },
     }).label()
 
     expect(label).toBe('Creating ~/.crow')

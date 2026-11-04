@@ -13,7 +13,11 @@ describe('RunAll', () => {
     const store = new DataStore({ applicationData })
     const setup = new RunAll({
       applicationData,
-      operationArguments: { inputs: store.inputs.peek(), finished: mock() },
+      operationArguments: {
+        inputs: store.inputs.peek(),
+        globalDirectory: '~/.crow',
+        finished: mock(),
+      },
     })
 
     setup.run()
@@ -26,7 +30,11 @@ describe('RunAll', () => {
     const store = new DataStore({ applicationData })
     const setup = new RunAll({
       applicationData,
-      operationArguments: { inputs: store.inputs.peek(), finished: mock() },
+      operationArguments: {
+        inputs: store.inputs.peek(),
+        globalDirectory: '~/.crow',
+        finished: mock(),
+      },
     })
 
     const tasks = setup.tasks()
@@ -42,7 +50,11 @@ describe('RunAll', () => {
     const finishedAtStart: number[] = []
     const setup = new RunAll({
       applicationData,
-      operationArguments: { inputs: store.inputs.peek(), finished },
+      operationArguments: {
+        inputs: store.inputs.peek(),
+        globalDirectory: '~/.crow',
+        finished,
+      },
     })
     spyOn(applicationData.filesystem, 'mkdirWithParents').mockImplementation(
       () => {
@@ -68,7 +80,11 @@ describe('RunAll', () => {
     const store = new DataStore({ applicationData })
     const setup = new RunAll({
       applicationData,
-      operationArguments: { inputs: store.inputs.peek(), finished: mock() },
+      operationArguments: {
+        inputs: store.inputs.peek(),
+        globalDirectory: '~/.crow',
+        finished: mock(),
+      },
     })
 
     await setup.run()
@@ -86,7 +102,11 @@ describe('RunAll', () => {
     const finished = mock()
     const setup = new RunAll({
       applicationData,
-      operationArguments: { inputs: store.inputs.peek(), finished },
+      operationArguments: {
+        inputs: store.inputs.peek(),
+        globalDirectory: '~/.crow',
+        finished,
+      },
     })
 
     await setup.run()

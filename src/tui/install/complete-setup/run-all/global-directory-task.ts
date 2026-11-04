@@ -1,11 +1,10 @@
-import type { SetupTaskArguments } from '../../types.ts'
+import type { GlobalDirectoryTaskArguments } from '../../types.ts'
 import { Operation } from '../../../../operation.ts'
 import { expandHome } from '../../../../application-data/allowed-paths/expand-home.ts'
-import { crowConfigFromInputs } from '../../crow-config/from-inputs.ts'
 
 // Setup task: creates the global crow directory that holds the database and
 // the .env file.
-export class GlobalDirectoryTask extends Operation<SetupTaskArguments> {
+export class GlobalDirectoryTask extends Operation<GlobalDirectoryTaskArguments> {
   protected override logPrefix = 'Global directory: '
 
   label() {
@@ -32,7 +31,6 @@ export class GlobalDirectoryTask extends Operation<SetupTaskArguments> {
   }
 
   private directory() {
-    const { inputs } = this.operationArguments
-    return crowConfigFromInputs(inputs).crowGlobalDirectory()
+    return this.operationArguments.globalDirectory
   }
 }

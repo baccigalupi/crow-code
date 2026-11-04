@@ -16,13 +16,21 @@ export class RunAll extends Operation<RunAllArguments> {
 
   @memoize
   tasks() {
+    return [this.localConfigTask(), this.globalDirectoryTask()]
+  }
+
+  private localConfigTask() {
     const { applicationData } = this
     const { inputs } = this.operationArguments
     const operationArguments = { inputs }
-    return [
-      new LocalConfigTask({ applicationData, operationArguments }),
-      new GlobalDirectoryTask({ applicationData, operationArguments }),
-    ]
+    return new LocalConfigTask({ applicationData, operationArguments })
+  }
+
+  private globalDirectoryTask() {
+    const { applicationData } = this
+    const { globalDirectory } = this.operationArguments
+    const operationArguments = { globalDirectory }
+    return new GlobalDirectoryTask({ applicationData, operationArguments })
   }
 
   private async runTasks(tasks: readonly SetupTask[]) {

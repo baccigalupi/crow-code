@@ -73,9 +73,14 @@ export type SetupTaskArguments = {
   readonly inputs: CrowConfigInputs
 }
 
-export type RunAllArguments = SetupTaskArguments & {
-  readonly finished: (task: StatefulTask) => void
+export type GlobalDirectoryTaskArguments = {
+  readonly globalDirectory: string
 }
+
+export type RunAllArguments = SetupTaskArguments &
+  GlobalDirectoryTaskArguments & {
+    readonly finished: (task: StatefulTask) => void
+  }
 
 export type TextEditorArguments = {
   readonly field: TextFieldStore

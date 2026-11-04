@@ -35,10 +35,11 @@ export class CompleteSetupPanel {
   private runAll(store: DataStore) {
     const { applicationData } = store
     const inputs = store.inputs.peek()
+    const globalDirectory = store.directories.globalPath.peek()
     const finished = (task: StatefulTask) => this.finish(store, task)
     return new RunAll({
       applicationData,
-      operationArguments: { inputs, finished },
+      operationArguments: { inputs, globalDirectory, finished },
     })
   }
 
