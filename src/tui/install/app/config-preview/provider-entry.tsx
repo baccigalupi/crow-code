@@ -3,8 +3,10 @@ import { Indented, StringField } from './json-rows.tsx'
 
 type ProviderEntryProps = { provider: ProviderEntryViewModel }
 
+type ProvidersProps = { providers: readonly ProviderEntryViewModel[] }
+
 // { "name": "...", "baseUrl": "..." },
-export const ProviderEntry = ({ provider }: ProviderEntryProps) => (
+const ProviderEntry = ({ provider }: ProviderEntryProps) => (
   <box flexDirection="column">
     <text>{'{'}</text>
     <Indented>
@@ -16,4 +18,12 @@ export const ProviderEntry = ({ provider }: ProviderEntryProps) => (
       {provider.comma()}
     </text>
   </box>
+)
+
+export const Providers = ({ providers }: ProvidersProps) => (
+  <>
+    {providers.map((provider) => (
+      <ProviderEntry key={provider.index} provider={provider} />
+    ))}
+  </>
 )

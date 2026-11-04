@@ -1,7 +1,7 @@
 import { TextAttributes } from '@opentui/core'
 import type { DataStore } from '../data-store.ts'
 import { useSignalValue } from '../../use-signal-value.ts'
-import { ProgressRows } from '../complete-setup/setup-progress.tsx'
+import { ProgressList } from '../complete-setup/setup-progress.tsx'
 import { DoneMessageViewModel } from './done-message-view-model.ts'
 
 type DoneMessageProps = { model: DataStore }
@@ -12,7 +12,7 @@ export const DoneMessage = ({ model }: DoneMessageProps) => {
   const viewModel = new DoneMessageViewModel(rows)
   return (
     <box flexDirection="column">
-      <ProgressRows rows={rows} />
+      <ProgressList rows={rows} />
       <box paddingX={1}>
         <text attributes={TextAttributes.DIM}>{viewModel.summary()}</text>
       </box>

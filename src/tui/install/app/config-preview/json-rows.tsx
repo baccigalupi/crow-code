@@ -8,6 +8,8 @@ type StringFieldProps = { field: StringFieldViewModel }
 
 type ListFieldProps = { field: ListFieldViewModel }
 
+type ListItemsProps = { items: readonly StringFieldViewModel[] }
+
 // Json lines nested one level inside their parent.
 export const Indented = ({ children }: IndentedProps) => (
   <box flexDirection="column" paddingLeft={2}>
@@ -35,26 +37,29 @@ const ListItem = ({ field }: StringFieldProps) => (
   </text>
 )
 
+const ListItems = ({ items }: ListItemsProps) => (
+  <>
+    {items.map((item) => (
+      <ListItem key={item.name} field={item} />
+    ))}
+  </>
+)
+
 // "name": [ ... ],
-export const ListField = ({ field }: ListFieldProps) => {
-  const items = field.items()
-  return (
-    <box id={field.id()} key={field.key()} flexDirection="column">
-      <text>
-        <span fg={field.textColor()} bg={field.background()}>
-          "{field.name}": [
-        </span>
-      </text>
-      <Indented>
-        {items.map((item) => (
-          <ListItem key={item.name} field={item} />
-        ))}
-      </Indented>
-      <text>
-        <span fg={field.textColor()} bg={field.background()}>
-          ]{field.comma()}
-        </span>
-      </text>
-    </box>
-  )
-}
+export const ListField = ({ field }: ListFieldProps) => (
+  <box id={field.id()} key={field.key()} flexDirection="column">
+    <text>
+      <span fg={field.textColor()} bg={field.background()}>
+        "{field.name}": [
+      </span>
+    </text>
+    <Indented>
+      <ListItems items={field.items()} />
+    </Indented>
+    <text>
+      <span fg={field.textColor()} bg={field.background()}>
+        ]{field.comma()}
+      </span>
+    </text>
+  </box>
+)

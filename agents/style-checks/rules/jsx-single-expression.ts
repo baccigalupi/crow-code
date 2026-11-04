@@ -53,6 +53,36 @@ const isElementList = (node: ts.Expression) =>
   node.arguments.length === 1 &&
   rendersElement(node.arguments[0])
 
+const isContent = (child: ts.JsxChild) =>
+  !ts.isJsxText(child) || !child.containsOnlyTriviaWhiteSpaces
+
+const outside = (node: ts.Node): ts.Node => {
+  if (ts.isParenthesizedExpression(node.parent)) return outside(node.parent)
+  return node.parent
+}
+
+// The map is the only child of a fragment that is the whole concise body of
+// the component: the component does only the mapping.
+const isSoleMapping = (node: ts.JsxExpression) => {
+  const root = node.parent
+  if (!ts.isJsxFragment(root)) return false
+  return (
+    root.children.filter(isContent).length === 1 &&
+    ts.isArrowFunction(outside(root))
+  )
+}
+
+const generalMessage =
+  'jsx expressions hold one attribute or one call; move the logic to the view model'
+
+const mappingMessage =
+  'map lists only in a component that does only the mapping, returning <>{rows.map(...)}</>'
+
+const messageFor = (expression: ts.Expression) => {
+  if (isElementList(expression)) return mappingMessage
+  return generalMessage
+}
+
 export const jsxSingleExpression: Rule = {
   name: 'jsx-single-expression',
   applies: isTsxFile,
@@ -60,10 +90,7 @@ export const jsxSingleExpression: Rule = {
     if (!ts.isJsxExpression(node) || node.expression === undefined) return
     const expression = ctx.skipParentheses(node.expression) as ts.Expression
     if (isAttribute(expression) || isPlainCall(expression)) return
-    if (isElementList(expression)) return
-    ctx.report(
-      expression,
-      'jsx expressions hold one attribute or one call; move the logic to the view model',
-    )
+    if (isElementList(expression) && isSoleMapping(node)) return
+    ctx.report(expression, messageFor(expression))
   },
 }

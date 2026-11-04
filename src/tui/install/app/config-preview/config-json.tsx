@@ -4,7 +4,7 @@ import { useSignalValue } from '../../../use-signal-value.ts'
 import { ConfigJsonViewModel } from './config-json-view-model.ts'
 import { watchHighlight } from './highlight-reveal.ts'
 import { Indented, ListField, StringField } from './json-rows.tsx'
-import { ProviderEntry } from './provider-entry.tsx'
+import { Providers } from './provider-entry.tsx'
 
 type ConfigJsonProps = {
   model: DataStore
@@ -17,7 +17,6 @@ export const ConfigJson = ({ model, router }: ConfigJsonProps) => {
   const inputs = useSignalValue(model.inputs)
   const panel = router.get(useSignalValue(model.navigator.current))
   const viewModel = new ConfigJsonViewModel(inputs, panel.highlights)
-  const providers = viewModel.providers()
   return (
     <scrollbox
       id="config-json"
@@ -51,9 +50,7 @@ export const ConfigJson = ({ model, router }: ConfigJsonProps) => {
           <text>{'},'}</text>
           <text>"providers": [</text>
           <Indented>
-            {providers.map((provider) => (
-              <ProviderEntry key={provider.index} provider={provider} />
-            ))}
+            <Providers providers={viewModel.providers()} />
           </Indented>
           <text>]</text>
         </Indented>

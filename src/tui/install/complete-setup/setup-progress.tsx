@@ -52,16 +52,22 @@ type ProgressRowsProps = { rows: readonly SetupTaskRow[] }
 
 type SetupProgressProps = { model: DataStore }
 
-// The setup tasks as rows, each drawn in the state the store gives it.
-export const ProgressRows = ({ rows }: ProgressRowsProps) => (
-  <box flexDirection="column" paddingX={1}>
+const ProgressRows = ({ rows }: ProgressRowsProps) => (
+  <>
     {rows.map((task) => (
       <Row key={task.id} task={task} />
     ))}
+  </>
+)
+
+// The setup tasks as rows, each drawn in the state the store gives it.
+export const ProgressList = ({ rows }: ProgressRowsProps) => (
+  <box flexDirection="column" paddingX={1}>
+    <ProgressRows rows={rows} />
   </box>
 )
 
 export const SetupProgress = ({ model }: SetupProgressProps) => {
   const rows = useSignalValue(model.progress.rows)
-  return <ProgressRows rows={rows} />
+  return <ProgressList rows={rows} />
 }

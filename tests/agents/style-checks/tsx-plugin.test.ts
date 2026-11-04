@@ -303,9 +303,65 @@ describe('tsxPlugin', () => {
       expect(diagnostics[0].message).toContain('one attribute or one call')
     })
 
-    it('when a list maps each item to one element, ignores it', () => {
+    it('when a mapping component wraps the map in an element, reports it', () => {
       const source =
-        'const App = () => <box>{items.map((item) => <Row key={item.id} item={item} />)}</box>\nexport { App }'
+        'const Rows = () => <box>{items.map((item) => <Row key={item.id} item={item} />)}</box>\nexport { Rows }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain('only the mapping')
+    })
+
+    it('when a component maps beside other children, reports it', () => {
+      const source =
+        'const App = () => <box><text>]</text>{items.map((item) => <Row key={item.id} item={item} />)}</box>\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain('only the mapping')
+    })
+
+    it('when a map is nested below the root element, reports it', () => {
+      const source =
+        'const App = () => <box><box>{items.map((item) => <Row key={item.id} item={item} />)}</box></box>\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain('only the mapping')
+    })
+
+    it('when a component with a block body maps, reports it', () => {
+      const source =
+        'const App = () => { const rows = items; return <box>{rows.map((item) => <Row key={item.id} item={item} />)}</box> }\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain('only the mapping')
+    })
+
+    it('when a component only maps inside a fragment, ignores it', () => {
+      const source =
+        'const Rows = () => <>{items.map((item) => <Row key={item.id} item={item} />)}</>\nexport { Rows }'
 
       const diagnostics = checkSource(
         tsxPlugin,
@@ -318,7 +374,7 @@ describe('tsxPlugin', () => {
 
     it('when a list maps each item to one parenthesized element, ignores it', () => {
       const source =
-        'const App = () => <box>{items.map((item) => (<Row key={item.id} item={item} />))}</box>\nexport { App }'
+        'const Rows = () => <>{items.map((item) => (<Row key={item.id} item={item} />))}</>\nexport { Rows }'
 
       const diagnostics = checkSource(
         tsxPlugin,
@@ -331,7 +387,7 @@ describe('tsxPlugin', () => {
 
     it('when a listed element holds logic, reports it', () => {
       const source =
-        'const App = () => <box>{items.map((item) => <Row item={format(label(item))} />)}</box>\nexport { App }'
+        'const Rows = () => <>{items.map((item) => <Row item={format(label(item))} />)}</>\nexport { Rows }'
 
       const diagnostics = checkSource(
         tsxPlugin,
