@@ -1,7 +1,7 @@
 import { describe, expect, it, mock } from 'bun:test'
-import { FollowRedirects } from '../../../../src/tools/web/fetch/follow-redirects.ts'
-import { mockApplicationData } from '../../../support/mock-application-data.ts'
-import { mockFetchSequence } from '../../../support/mock-fetch.ts'
+import { FollowRedirects } from '../../../../../src/tools/web/fetch/fetch-response/follow-redirects.ts'
+import { mockApplicationData } from '../../../../support/mock-application-data.ts'
+import { mockFetchSequence } from '../../../../support/mock-fetch.ts'
 
 describe('FollowRedirects', () => {
   it('when the redirect is relative, follows it to the resolved url', async () => {

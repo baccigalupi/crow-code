@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { HtmlText } from '../../../../src/tools/web/fetch/html-text.ts'
+import { HtmlText } from '../../../../../../src/tools/web/fetch/read-body/page-parser/html-text.ts'
 
 describe('HtmlText', () => {
   it('when given a document, returns only body text', async () => {

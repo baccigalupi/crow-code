@@ -1,8 +1,8 @@
 import type { FetchedResponse } from '../../types.ts'
 import { OperationWithResult } from '../../../operation.ts'
-import { FollowRedirects } from './follow-redirects.ts'
-import { RedirectLocation } from './redirect-location.ts'
-import { SendRequest } from './send-request.ts'
+import { FollowRedirects } from './fetch-response/follow-redirects.ts'
+import { RedirectLocation } from './fetch-response/redirect-location.ts'
+import { SendRequest } from './fetch-response/send-request.ts'
 
 type TaskArguments = {
   url: string

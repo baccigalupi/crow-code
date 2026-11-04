@@ -139,6 +139,25 @@ describe('webFetch', () => {
     expect(operation.result().contentType).toBe('text/html; charset=utf-8')
   })
 
+  it('when the body is over 2 MB, fails with the body size reason', async () => {
+    const fetch = mockFetchResponse(
+      () =>
+        new Response('a'.repeat(2097153), {
+          headers: { 'content-type': 'text/plain' },
+        }),
+    )
+    const applicationData = mockApplicationData({ fetch })
+    const operationArguments = { url: 'https://192.0.2.1/a' }
+
+    const operation = webFetch({ applicationData, operationArguments })
+    await operation.run()
+
+    expect(operation.success()).toBe(false)
+    expect(operation.reason).toBe(
+      'web fetch body over 2097152 bytes: https://192.0.2.1/a',
+    )
+  })
+
   describe('timeout', () => {
     beforeEach(() => {
       jest.useFakeTimers()

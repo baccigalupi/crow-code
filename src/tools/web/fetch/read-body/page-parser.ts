@@ -1,14 +1,16 @@
-import type { FetchedResponse } from '../../types.ts'
-import { HtmlText } from './html-text.ts'
+import type { FetchedResponse } from '../../../types.ts'
+import { HtmlText } from './page-parser/html-text.ts'
 
-export class PageReader {
+export class PageParser {
   private fetched: FetchedResponse
+  private body: string
 
-  constructor(fetched: FetchedResponse) {
+  constructor(fetched: FetchedResponse, body: string) {
     this.fetched = fetched
+    this.body = body
   }
 
-  async read() {
+  async page() {
     const { url, response } = this.fetched
     const { status } = response
     const contentType = this.contentType()
@@ -19,19 +21,15 @@ export class PageReader {
     return this.fetched.response.headers.get('content-type') || ''
   }
 
-  private async text() {
+  private text() {
     if (this.isHtml()) {
-      return new HtmlText(await this.body()).text()
+      return new HtmlText(this.body).text()
     }
 
-    return this.body()
+    return this.body
   }
 
   private isHtml() {
     return /^(text\/html|application\/xhtml\+xml)/.test(this.contentType())
-  }
-
-  private body() {
-    return this.fetched.response.text()
   }
 }

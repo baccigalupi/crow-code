@@ -2,7 +2,7 @@ import type { ApplicationOperationArguments } from '../../types.ts'
 import type { FetchedResponse, WebFetchResult } from '../types.ts'
 import { OperationWithResult } from '../../operation.ts'
 import { FetchResponse } from './fetch/fetch-response.ts'
-import { PageReader } from './fetch/page-reader.ts'
+import { ReadBody } from './fetch/read-body.ts'
 import { RequestClock } from './fetch/request-clock.ts'
 
 type TaskArguments = {
@@ -28,57 +28,44 @@ export class WebFetch extends OperationWithResult<
   private clock = new RequestClock()
 
   async run() {
-    this.clock.start()
-    await this.attempt()
+    this.clock.start(this.operationArguments.url)
+    await this.fetchResponse()
+    await this.readPage()
+    this.reportError()
     this.clock.stop()
     return this
-  }
-
-  private async attempt() {
-    try {
-      await this.send()
-    } catch (error) {
-      this.failNetwork(error)
-    }
   }
 
   result() {
     return this.page
   }
 
-  private async send() {
-    const response = this.fetchResponse()
-    await this.runSubOperation(response)
-    this.fetched = response.result()
-    if (this.succeeded) {
-      await this.accept()
+  private reportError() {
+    const { url, response: fetchedResponse } = this.fetched
+    if (this.succeeded && !fetchedResponse.ok) {
+      this.fail(
+        `web fetch failed with status ${fetchedResponse.status}: ${url}`,
+      )
     }
   }
 
-  private fetchResponse() {
+  private async fetchResponse() {
     const { applicationData } = this
     const { url } = this.operationArguments
     const operationArguments = { url, signal: this.clock.signal() }
-    return new FetchResponse({ applicationData, operationArguments })
+    const response = new FetchResponse({ applicationData, operationArguments })
+    await this.runSubOperation(response)
+    this.fetched = response.result()
   }
 
-  private async accept() {
-    const { url, response } = this.fetched
-    if (response.ok) {
-      this.page = await new PageReader(this.fetched).read()
-    } else {
-      this.fail(`web fetch failed with status ${response.status}: ${url}`)
-    }
-  }
+  private async readPage() {
+    if (!this.succeeded || !this.fetched.response.ok) return
 
-  private failNetwork(error: unknown) {
-    const { url } = this.operationArguments
-    const { name, message } = error as Error
-    if (name === 'TimeoutError') {
-      this.fail(`web fetch timed out after ${this.clock.timeoutMs} ms: ${url}`)
-    } else {
-      this.fail(`web fetch failed: ${url} — ${message}`)
-    }
+    const { applicationData } = this
+    const operationArguments = this.fetched
+    const body = new ReadBody({ applicationData, operationArguments })
+    await this.runSubOperation(body)
+    this.page = body.result()
   }
 }
 

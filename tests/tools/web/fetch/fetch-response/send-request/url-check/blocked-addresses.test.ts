@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { BlockedAddresses } from '../../../../src/tools/web/fetch/blocked-addresses.ts'
+import { BlockedAddresses } from '../../../../../../../src/tools/web/fetch/fetch-response/send-request/url-check/blocked-addresses.ts'
 
 describe('BlockedAddresses', () => {
   it('when the address is 127.0.0.1, is blocked', () => {

@@ -1,7 +1,7 @@
-import { Operation } from '../../../operation.ts'
-import { BlockedAddresses } from './blocked-addresses.ts'
-import { HostAddresses } from './host-addresses.ts'
-import { UrlShape } from './url-shape.ts'
+import { Operation } from '../../../../../operation.ts'
+import { BlockedAddresses } from './url-check/blocked-addresses.ts'
+import { HostAddresses } from './url-check/host-addresses.ts'
+import { UrlShape } from './url-check/url-shape.ts'
 
 type TaskArguments = {
   url: string

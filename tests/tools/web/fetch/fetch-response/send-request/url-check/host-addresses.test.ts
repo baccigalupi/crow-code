@@ -1,5 +1,5 @@
 import { describe, expect, it, spyOn } from 'bun:test'
-import { HostAddresses } from '../../../../src/tools/web/fetch/host-addresses.ts'
+import { HostAddresses } from '../../../../../../../src/tools/web/fetch/fetch-response/send-request/url-check/host-addresses.ts'
 
 describe('HostAddresses', () => {
   it('when the host is an IPv4 literal, returns it without lookup', async () => {

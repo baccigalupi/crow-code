@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { RedirectLocation } from '../../../../src/tools/web/fetch/redirect-location.ts'
+import { RedirectLocation } from '../../../../../src/tools/web/fetch/fetch-response/redirect-location.ts'
 
 describe('RedirectLocation', () => {
   it('when the status is 302 with a location, is a redirect', () => {

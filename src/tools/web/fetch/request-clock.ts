@@ -3,8 +3,9 @@ export class RequestClock {
   private controller = new AbortController()
   private timer: Timer | undefined = undefined
 
-  start() {
-    const error = new DOMException('timed out', 'TimeoutError')
+  start(url: string) {
+    const message = `web fetch timed out after ${this.timeoutMs} ms: ${url}`
+    const error = new DOMException(message, 'TimeoutError')
     this.timer = setTimeout(() => this.controller.abort(error), this.timeoutMs)
   }
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { UrlShape } from '../../../../src/tools/web/fetch/url-shape.ts'
+import { UrlShape } from '../../../../../../../src/tools/web/fetch/fetch-response/send-request/url-check/url-shape.ts'
 
 describe('UrlShape', () => {
   it('when the url is plain https, has no problem', () => {

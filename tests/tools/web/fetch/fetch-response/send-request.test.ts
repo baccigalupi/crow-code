@@ -1,7 +1,10 @@
 import { describe, expect, it, mock } from 'bun:test'
-import { SendRequest } from '../../../../src/tools/web/fetch/send-request.ts'
-import { mockApplicationData } from '../../../support/mock-application-data.ts'
-import { mockFetchResponse } from '../../../support/mock-fetch.ts'
+import { SendRequest } from '../../../../../src/tools/web/fetch/fetch-response/send-request.ts'
+import { mockApplicationData } from '../../../../support/mock-application-data.ts'
+import {
+  mockFetchRejected,
+  mockFetchResponse,
+} from '../../../../support/mock-fetch.ts'
 
 describe('SendRequest', () => {
   it('when the url is allowed, returns the response', async () => {
@@ -38,6 +41,21 @@ describe('SendRequest', () => {
         signal,
       },
     ])
+  })
+
+  it('when the fetch rejects, fails with the url and message', async () => {
+    const fetch = mockFetchRejected('network down')
+    const applicationData = mockApplicationData({ fetch })
+    const signal = new AbortController().signal
+    const operationArguments = { url: 'https://192.0.2.1/a', signal }
+
+    const request = new SendRequest({ applicationData, operationArguments })
+    await request.run()
+
+    expect(request.success()).toBe(false)
+    expect(request.reason).toBe(
+      'web fetch failed: https://192.0.2.1/a — network down',
+    )
   })
 
   it('when the url is loopback, fails without fetching', async () => {

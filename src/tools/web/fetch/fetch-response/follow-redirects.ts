@@ -1,5 +1,5 @@
-import type { FetchedResponse } from '../../types.ts'
-import { OperationWithResult } from '../../../operation.ts'
+import type { FetchedResponse } from '../../../types.ts'
+import { OperationWithResult } from '../../../../operation.ts'
 import { RedirectLocation } from './redirect-location.ts'
 import { SendRequest } from './send-request.ts'
 
@@ -54,8 +54,7 @@ export class FollowRedirects extends OperationWithResult<
   private async hop() {
     this.redirects += 1
     this.current = this.next
-    const request = this.sendRequest()
-    await this.runSubOperation(request)
+    const request = await this.sendRequest()
     if (this.succeeded) {
       await this.land(request.result())
     }
@@ -65,7 +64,9 @@ export class FollowRedirects extends OperationWithResult<
     const { applicationData } = this
     const { signal } = this.operationArguments
     const operationArguments = { url: this.current, signal }
-    return new SendRequest({ applicationData, operationArguments })
+    return this.runSubOperation(
+      new SendRequest({ applicationData, operationArguments }),
+    )
   }
 
   private downgrades() {

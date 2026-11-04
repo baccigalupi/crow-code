@@ -1,6 +1,6 @@
 import { describe, expect, it, spyOn } from 'bun:test'
-import { UrlCheck } from '../../../../src/tools/web/fetch/url-check.ts'
-import { mockApplicationData } from '../../../support/mock-application-data.ts'
+import { UrlCheck } from '../../../../../../src/tools/web/fetch/fetch-response/send-request/url-check.ts'
+import { mockApplicationData } from '../../../../../support/mock-application-data.ts'
 
 describe('UrlCheck', () => {
   it('when the url is allowed, succeeds', async () => {
