@@ -205,25 +205,28 @@ unanswered open decision as a decision.
 
 ### Design
 
-A plain-language list of the changes the finished work will contain, written for
-a human reviewer who has not read the research. It answers "what will be
-different when this is done?" before the TDD steps answer "in what order?".
+Written for the user, reading on a phone, before coffee. Describe what the
+finished thing does, as if explaining it to a teammate who will use it, not
+build it. Short paragraphs or plain bullets. Say what exists now and what will
+exist instead.
 
-- One bullet per expected change, grouped under short headings by area when
-  there are more than a handful (e.g. Behavior, Data/config, Views, Tests).
-- Each bullet names the file or component and states the change in a sentence a
-  non-author can follow: what is added, changed, moved, or removed, and what a
-  user or caller will observe. No code blocks, no test mechanics, no red/green
-  detail — those belong in the steps.
-- Mark each bullet new, changed, or removed. Include user-visible behavior
-  changes, new or changed public interfaces and data shapes, and notable
-  deletions. Mention mechanical edits (renames, fixture updates) in one bullet,
-  not per file.
-- Every bullet traces to Goal, Verified research, or a Decision; every
-  production change in the steps appears here, and nothing here lacks a step.
-  Design may not introduce scope the Goal and Decisions don't cover.
-- Keep it scannable: short bullets, no paragraphs of rationale. Reasoning that
-  justifies a choice goes in Verified research or Decisions.
+No file paths, no type names, no method names, no backticks, no new/changed/
+removed tags, no test mechanics. Files live in the Files section; order and
+mechanics live in the Implementation steps. Design may not introduce scope the
+Goal and Decisions don't cover.
+
+Example:
+
+> Today the preview stringifies the config, then hunts through the text for the
+> key the step edits. Instead it will print the config from a fixed template:
+> two directory lines, six permission lists, then one record per provider. Each
+> step names the field it edits, and that line or block turns gold. The provider
+> being typed is always the last record, so its name or url is the one that
+> lights up.
+
+Test before saving: cover the file names and code in your head. If the section
+still makes sense to someone who has never opened the repo, keep it. If not,
+rewrite it.
 
 ### Implementation steps (TDD)
 
