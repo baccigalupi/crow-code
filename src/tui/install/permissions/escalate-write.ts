@@ -6,7 +6,6 @@ export class EscalateWritePanel extends TextPromptPanel {
   readonly label = 'Escalate write directories'
   readonly bare = false
   readonly next = 'allowedLocalScripts'
-  readonly highlights = { key: 'escalateWrite' }
 
   field(store: DataStore) {
     return store.permissions.escalateWrite

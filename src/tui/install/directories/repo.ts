@@ -6,7 +6,6 @@ export class RepoPanel extends TextPromptPanel {
   readonly label = 'What directory for the local repo crow setup'
   readonly bare = false
   readonly next = 'crowGlobalDirectory'
-  readonly highlights = { key: 'repo' }
 
   field(store: DataStore) {
     return store.directories.repoDirectory

@@ -7,7 +7,6 @@ export class DonePanel {
   readonly next = undefined
   readonly cancel = undefined
   readonly entered = undefined
-  readonly highlights = { key: 'done' }
 
   controller(_store: DataStore) {
     return new IdleController('exit')

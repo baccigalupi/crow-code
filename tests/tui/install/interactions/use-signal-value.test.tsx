@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import { signal, type ReadonlySignal } from '@preact/signals-core'
 import { act } from 'react'
 import { testRender } from '@opentui/react/test-utils'
-import { useSignalValue } from '../../src/tui/use-signal-value.ts'
+import { useSignalValue } from '../../../../src/tui/install/interactions/use-signal-value.ts'
 
 describe('useSignalValue', () => {
   it('when the signal changes, re-renders with the new value', async () => {

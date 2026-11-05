@@ -2,7 +2,7 @@ import { TextAttributes } from '@opentui/core'
 import type { DataStore } from '../data-store.ts'
 import type { ProviderFieldName } from '../types.ts'
 import type { InputText } from '../../types.ts'
-import { useSignalValue } from '../../use-signal-value.ts'
+import { useSignalValue } from '../interactions/use-signal-value.ts'
 import { PromptLine } from '../text-prompt/prompt.tsx'
 import { ProviderPromptViewModel } from './prompt-view-model.ts'
 

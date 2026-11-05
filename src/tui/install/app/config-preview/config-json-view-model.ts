@@ -3,13 +3,21 @@ import type { CrowConfigInputs } from '../../crow-config/types.ts'
 import { theme } from '../../../theme.ts'
 import { crowConfigFromInputs } from '../../crow-config/from-inputs.ts'
 
-// The crow config's values, as plain data for the fields that draw them.
+// The crow config's values, as plain data for the lines that draw them.
 export class ConfigJsonViewModel {
   readonly background = theme.configPanel.background
   private inputs: CrowConfigInputs
+  private selectedStep: string
 
-  constructor(inputs: CrowConfigInputs) {
+  constructor(inputs: CrowConfigInputs, selectedStep: string) {
     this.inputs = inputs
+    this.selectedStep = selectedStep
+  }
+
+  // Changes whenever the json or the selected step does, remounting the
+  // scrollbox so the highlighted line scrolls into view again.
+  key() {
+    return `${this.selectedStep}\n${this.json()}`
   }
 
   crowGlobalDirectory() {
@@ -60,7 +68,7 @@ export class ConfigJsonViewModel {
     return { index, name, baseUrl, last }
   }
 
-  json() {
+  private json() {
     return crowConfigFromInputs(this.inputs).crowConfigJson()
   }
 

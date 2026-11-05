@@ -18,16 +18,14 @@ export class DataStore {
   readonly permissions = new PermissionsStore()
   readonly providerEditForm = new ProviderEditFormStore()
   readonly providers = new ProviderStore()
-  private readonly router = new Router()
   readonly navigator = new Navigator<PanelName>({
     initial: 'repo',
-    panels: this.router.flows(this),
+    panels: new Router().flows(this),
   })
   readonly progress = new SetupProgressStore()
   readonly applicationData: ApplicationData
   readonly inputs = computed(() => this.answers())
   readonly showsConfig = computed(() => this.navigator.current.value !== 'repo')
-  readonly highlightKey = computed(() => this.currentPanel().highlights.key)
 
   constructor({ applicationData }: DataStoreArguments) {
     this.applicationData = applicationData
@@ -42,10 +40,6 @@ export class DataStore {
       step: this.navigator.current.value,
       confirmation: this.confirm.confirmed.value,
     }
-  }
-
-  private currentPanel() {
-    return this.router.get(this.navigator.current.value)
   }
 
   private providerAnswers() {

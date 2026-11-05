@@ -1,5 +1,5 @@
 import type { KeyEvent } from '@opentui/core'
-import type { KeyFlags } from '../../types.ts'
+import type { KeyFlags } from '../../../types.ts'
 
 class Keypress {
   private readonly namedKeys: Record<string, string> = {

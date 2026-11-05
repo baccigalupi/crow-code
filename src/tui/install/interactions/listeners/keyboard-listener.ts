@@ -5,8 +5,8 @@ import {
   type KeyEvent,
   type PasteEvent,
 } from '@opentui/core'
-import { Keypress } from '../../keypress.ts'
-import type { DataStore } from '../data-store.ts'
+import { Keypress } from '../../../keypress.ts'
+import type { DataStore } from '../../data-store.ts'
 import { keypressFromEvent } from './keypress-from-event.ts'
 
 // Feeds every key and paste on the renderer to the navigator, which knows

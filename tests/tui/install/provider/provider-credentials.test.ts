@@ -13,7 +13,6 @@ describe('ProviderCredentialsPanel', () => {
     expect(name).toBe('providerCredentials')
     expect(panel.next).toBe('providerName')
     expect(panel.cancel).toBe('confirm')
-    expect(panel.highlights).toEqual({ key: 'providerCredentials' })
   })
 
   it('when a key is typed, its controller edits the credentials', () => {

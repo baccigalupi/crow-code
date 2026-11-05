@@ -6,7 +6,7 @@ import { mockApplicationData } from '../../../../support/mock-application-data.t
 describe('ConfigJsonViewModel', () => {
   it('when asked for the directories, gives them from the config', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new ConfigJsonViewModel(store.inputs.peek())
+    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), 'repo')
 
     const directories = [viewModel.crowGlobalDirectory(), viewModel.envFile()]
 
@@ -19,7 +19,7 @@ describe('ConfigJsonViewModel', () => {
     store.permissions.additionalRead.insert('b')
     store.permissions.additionalWrite.insert('c')
     store.permissions.escalateRead.insert('d')
-    const viewModel = new ConfigJsonViewModel(store.inputs.peek())
+    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), 'repo')
 
     const lists = [
       viewModel.ignore(),
@@ -42,7 +42,7 @@ describe('ConfigJsonViewModel', () => {
 
   it('when a permission list is empty, writes empty brackets', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new ConfigJsonViewModel(store.inputs.peek())
+    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), 'repo')
 
     const json = viewModel.ignore()
 
@@ -53,7 +53,7 @@ describe('ConfigJsonViewModel', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.providers.save({ name: 'nous', url: 'https://n' }, '')
     store.providers.save({ name: 'local', url: 'http://l' }, '')
-    const viewModel = new ConfigJsonViewModel(store.inputs.peek())
+    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), 'repo')
 
     const providers = viewModel.providers()
 
@@ -63,19 +63,20 @@ describe('ConfigJsonViewModel', () => {
     ])
   })
 
-  it('when asked for the json, gives the whole config as json', () => {
+  it('when asked for its key, joins the selected step and the json', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.directories.globalDirectory.insert('/g')
-    const viewModel = new ConfigJsonViewModel(store.inputs.peek())
+    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), 'envFile')
 
-    const json = viewModel.json()
+    const key = viewModel.key()
 
-    expect(json).toContain('"crowGlobalDirectory": "/g"')
+    expect(key).toStartWith('envFile\n{')
+    expect(key).toContain('"crowGlobalDirectory": "/g"')
   })
 
   it('when asked for its background, gives the config panel color', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new ConfigJsonViewModel(store.inputs.peek())
+    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), 'repo')
 
     const background = viewModel.background
 

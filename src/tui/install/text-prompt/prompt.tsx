@@ -2,7 +2,7 @@ import { TextAttributes } from '@opentui/core'
 import type { DataStore } from '../data-store.ts'
 import type { TextPromptPanel } from './text-prompt.tsx'
 import type { InputText } from '../../types.ts'
-import { useSignalValue } from '../../use-signal-value.ts'
+import { useSignalValue } from '../interactions/use-signal-value.ts'
 import { PromptLineViewModel } from './prompt-line-view-model.ts'
 
 type PromptLineProps = {

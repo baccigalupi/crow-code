@@ -1,6 +1,6 @@
 import type { DataStore } from '../data-store.ts'
 import type { TextFieldStore } from '../data-stores/text-field-store.ts'
-import type { PanelHighlights, PanelName } from '../types.ts'
+import type { PanelName } from '../types.ts'
 import { ProviderFormController } from './controller.ts'
 import { ProviderPrompt } from './prompt.tsx'
 
@@ -11,7 +11,6 @@ export abstract class ProviderPanel {
   abstract readonly next: PanelName
   abstract readonly back: PanelName | undefined
   abstract readonly forward: PanelName | undefined
-  abstract readonly highlights: PanelHighlights
   readonly cancel = 'confirm'
   readonly entered = undefined
 

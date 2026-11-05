@@ -1,5 +1,5 @@
 import type { DataStore } from '../data-store.ts'
-import { useSignalValue } from '../../use-signal-value.ts'
+import { useSignalValue } from '../interactions/use-signal-value.ts'
 import { ConfirmPromptViewModel } from './prompt-view-model.ts'
 
 const options = [

@@ -7,7 +7,7 @@ import { memoize } from '../../decorators.ts'
 import { createOpenTuiRunner } from '../runner.ts'
 import { InstallApp } from './app.tsx'
 import { DataStore } from './data-store.ts'
-import { KeyboardListener } from './interactions/keyboard-listener.ts'
+import { KeyboardListener } from './interactions/listeners/keyboard-listener.ts'
 import { Router } from './router.ts'
 
 // The install command's only way into the install TUI. The data store is

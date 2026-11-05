@@ -6,7 +6,6 @@ export class IgnorePanel extends TextPromptPanel {
   readonly label = 'Ignored paths'
   readonly bare = true
   readonly next = 'additionalRead'
-  readonly highlights = { key: 'ignore' }
 
   field(store: DataStore) {
     return store.permissions.ignore

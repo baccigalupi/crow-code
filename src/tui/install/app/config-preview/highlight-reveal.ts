@@ -1,12 +1,10 @@
-import type { Renderable, ScrollBoxRenderable } from '@opentui/core'
+import type { ScrollBoxRenderable } from '@opentui/core'
 
-// Scrolls the config json so the highlighted line shows, once per new json.
-// Each new json brings a fresh marker on the highlighted line; just before a
-// draw, once layout is known, it is scrolled into view and marked shown, so
-// the user's own scrolling is left alone until the json changes again.
+// Scrolls a freshly mounted config json so its highlighted line shows. It
+// waits for the first draw, when layout is known, scrolls once, then stops,
+// leaving the user's own scrolling alone until the next mount.
 export class HighlightReveal {
-  private readonly waitingId = 'config-highlight'
-  private readonly shownId = 'config-highlight-shown'
+  private readonly highlightId = 'config-highlight'
   private scrollbox: ScrollBoxRenderable
 
   constructor(scrollbox: ScrollBoxRenderable) {
@@ -18,18 +16,8 @@ export class HighlightReveal {
   }
 
   reveal() {
-    if (this.waitingMarker() === undefined) return
-
-    this.scrollbox.scrollChildIntoView(this.waitingId)
-    this.markShown(this.waitingMarker() as Renderable)
-  }
-
-  private waitingMarker() {
-    return this.scrollbox.findDescendantById(this.waitingId)
-  }
-
-  private markShown(marker: Renderable) {
-    marker.id = this.shownId
+    this.scrollbox.scrollChildIntoView(this.highlightId)
+    this.scrollbox.renderBefore = undefined
   }
 }
 

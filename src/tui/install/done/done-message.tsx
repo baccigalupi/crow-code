@@ -1,6 +1,6 @@
 import { TextAttributes } from '@opentui/core'
 import type { DataStore } from '../data-store.ts'
-import { useSignalValue } from '../../use-signal-value.ts'
+import { useSignalValue } from '../interactions/use-signal-value.ts'
 import { ProgressList } from '../complete-setup/setup-progress.tsx'
 import { DoneMessageViewModel } from './done-message-view-model.ts'
 

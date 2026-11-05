@@ -7,7 +7,7 @@ import { ProviderNamePanel } from '../../../../src/tui/install/provider/provider
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('ProviderNamePanel', () => {
-  it('when asked, names itself, its flow and the config line it edits', () => {
+  it('when asked, names itself and its flow', () => {
     const panel = new ProviderNamePanel()
 
     const { name } = panel
@@ -15,7 +15,6 @@ describe('ProviderNamePanel', () => {
     expect(name).toBe('providerName')
     expect(panel.next).toBe('providerUrl')
     expect(panel.cancel).toBe('confirm')
-    expect(panel.highlights).toEqual({ key: 'name' })
   })
 
   it('when a key is typed, its controller edits the provider name', () => {

@@ -6,7 +6,6 @@ export class AllowedLocalScriptsPanel extends TextPromptPanel {
   readonly label = 'Allowed local scripts'
   readonly bare = false
   readonly next = 'providerName'
-  readonly highlights = { key: 'allowedLocalScripts' }
 
   field(store: DataStore) {
     return store.permissions.allowedLocalScripts

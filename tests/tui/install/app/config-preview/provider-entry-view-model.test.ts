@@ -26,7 +26,7 @@ describe('ProviderEntryViewModel', () => {
     const editable = entry.editable()
 
     expect(editable).toBe(true)
-    expect(entry.closing()).toBe('last')
+    expect(entry.last()).toBe(true)
   })
 
   it('when followed by another provider, is not editable and closes before more', () => {
@@ -40,6 +40,6 @@ describe('ProviderEntryViewModel', () => {
     const editable = entry.editable()
 
     expect(editable).toBe(false)
-    expect(entry.closing()).toBe('more')
+    expect(entry.last()).toBe(false)
   })
 })

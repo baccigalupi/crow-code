@@ -6,7 +6,6 @@ export class EscalateReadPanel extends TextPromptPanel {
   readonly label = 'Escalate read directories'
   readonly bare = true
   readonly next = 'escalateWrite'
-  readonly highlights = { key: 'escalateRead' }
 
   field(store: DataStore) {
     return store.permissions.escalateRead

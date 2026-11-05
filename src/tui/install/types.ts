@@ -23,10 +23,10 @@ export type CrowProviderConfig = {
   readonly baseUrl: string
 }
 
-export type FieldArguments = {
-  readonly name: string
+export type ConfigLineArguments = {
+  readonly step: string
   readonly editable: boolean
-  readonly highlightKey: string
+  readonly selectedStep: string
 }
 
 export type ProviderRow = {
@@ -60,10 +60,6 @@ export type ProviderFieldState = 'answered' | 'live' | 'upcoming'
 export type SetupTaskRow = SetupTaskStatus & {
   readonly state: 'failed' | 'done' | 'running' | 'waiting'
 }
-
-// The config line a panel edits; a key that is not in the config highlights
-// nothing.
-export type PanelHighlights = { readonly key: string }
 
 export type StatefulTask = {
   readonly reason: string

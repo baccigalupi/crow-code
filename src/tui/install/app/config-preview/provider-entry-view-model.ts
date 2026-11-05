@@ -1,7 +1,7 @@
 import type { ProviderRow } from '../../types.ts'
 
 // One provider in the config json. Only the last one is ever being typed, so
-// only its fields can highlight.
+// only its lines can highlight.
 export class ProviderEntryViewModel {
   private row: ProviderRow
 
@@ -21,11 +21,7 @@ export class ProviderEntryViewModel {
     return this.row.last
   }
 
-  // Which closing brace the entry draws: the list's last, or one with more
-  // providers after it.
-  closing() {
-    if (this.row.last) return 'last' as const
-
-    return 'more' as const
+  last() {
+    return this.row.last
   }
 }

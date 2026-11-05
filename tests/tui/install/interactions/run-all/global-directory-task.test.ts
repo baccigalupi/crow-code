@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { existsSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
-import { GlobalDirectoryTask } from '../../../../../src/tui/install/complete-setup/run-all/global-directory-task.ts'
+import { GlobalDirectoryTask } from '../../../../../src/tui/install/interactions/run-all/global-directory-task.ts'
 import { Environment } from '../../../../../src/application-data/env-vars.ts'
 import { defaultFilesystem } from '../../../../../src/application-data/filesystem.ts'
 import {

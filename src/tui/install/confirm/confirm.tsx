@@ -7,7 +7,6 @@ export class ConfirmPanel {
   readonly next = 'completeSetup'
   readonly cancel = undefined
   readonly entered = undefined
-  readonly highlights = { key: 'confirm' }
 
   controller(store: DataStore) {
     return new ConfirmController(store.confirm)

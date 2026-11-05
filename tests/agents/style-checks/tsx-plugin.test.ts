@@ -23,7 +23,7 @@ describe('tsxPlugin', () => {
   describe('no-view-model-arguments', () => {
     it('when a view model method is called with an argument, reports it', () => {
       const source =
-        "const App = () => { const view = new ThingViewModel(1); return <text>{view.value('name')}</text> }\nexport { App }"
+        "const App = () => { const viewModel = new ThingViewModel(1); return <text>{viewModel.value('name')}</text> }\nexport { App }"
 
       const diagnostics = checkSource(
         tsxPlugin,
@@ -39,7 +39,34 @@ describe('tsxPlugin', () => {
 
     it('when a view model method is called without arguments, ignores it', () => {
       const source =
+        'const App = () => { const viewModel = new ThingViewModel(1); return <text>{viewModel.name()}</text> }\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(0)
+    })
+
+    it('when a view model is bound to another name, reports it', () => {
+      const source =
         'const App = () => { const view = new ThingViewModel(1); return <text>{view.name()}</text> }\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain('name it viewModel')
+    })
+
+    it('when a view model is bound to viewModel, ignores it', () => {
+      const source =
+        'const App = () => { const viewModel = new ThingViewModel(1); return <text>{viewModel.name()}</text> }\nexport { App }'
 
       const diagnostics = checkSource(
         tsxPlugin,

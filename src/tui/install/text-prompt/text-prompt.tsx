@@ -1,7 +1,7 @@
 import type { DataStore } from '../data-store.ts'
 import type { TextFieldStore } from '../data-stores/text-field-store.ts'
 import type { CrowConfigInputs } from '../crow-config/types.ts'
-import type { PanelHighlights, PanelName } from '../types.ts'
+import type { PanelName } from '../types.ts'
 import { TextPromptController } from './controller.ts'
 import { TextPrompt } from './prompt.tsx'
 
@@ -13,7 +13,6 @@ export abstract class TextPromptPanel {
   abstract readonly label: string
   abstract readonly bare: boolean
   abstract readonly next: PanelName
-  abstract readonly highlights: PanelHighlights
   readonly cancel = undefined
   readonly entered = undefined
 

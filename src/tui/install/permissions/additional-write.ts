@@ -6,7 +6,6 @@ export class AdditionalWritePanel extends TextPromptPanel {
   readonly label = 'Additional write directories'
   readonly bare = true
   readonly next = 'escalateRead'
-  readonly highlights = { key: 'additionalWrite' }
 
   field(store: DataStore) {
     return store.permissions.additionalWrite

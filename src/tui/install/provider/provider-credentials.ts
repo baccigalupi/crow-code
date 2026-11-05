@@ -6,7 +6,6 @@ export class ProviderCredentialsPanel extends ProviderPanel {
   readonly next = 'providerName'
   readonly back = 'providerUrl'
   readonly forward = undefined
-  readonly highlights = { key: 'providerCredentials' }
 
   field(store: DataStore) {
     return store.providerEditForm.providerCredentials

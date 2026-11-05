@@ -5,7 +5,7 @@ import { ProviderUrlPanel } from '../../../../src/tui/install/provider/provider-
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('ProviderUrlPanel', () => {
-  it('when asked, names itself, its flow and the config line it edits', () => {
+  it('when asked, names itself and its flow', () => {
     const panel = new ProviderUrlPanel()
 
     const { name } = panel
@@ -13,7 +13,6 @@ describe('ProviderUrlPanel', () => {
     expect(name).toBe('providerUrl')
     expect(panel.next).toBe('providerCredentials')
     expect(panel.cancel).toBe('confirm')
-    expect(panel.highlights).toEqual({ key: 'baseUrl' })
   })
 
   it('when a key is typed, its controller edits the provider url', () => {

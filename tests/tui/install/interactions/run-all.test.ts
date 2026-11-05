@@ -1,5 +1,5 @@
 import { describe, expect, it, mock, spyOn } from 'bun:test'
-import { RunAll } from '../../../../src/tui/install/complete-setup/run-all.ts'
+import { RunAll } from '../../../../src/tui/install/interactions/run-all.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 

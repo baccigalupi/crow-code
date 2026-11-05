@@ -3,33 +3,27 @@ import type { ScrollBoxRenderable } from '@opentui/core'
 import { HighlightReveal } from '../../../../../src/tui/install/app/config-preview/highlight-reveal.ts'
 
 describe('HighlightReveal', () => {
-  it('when a new marker is waiting, scrolls it into view and marks it shown', () => {
-    const marker = { id: 'config-highlight' }
+  it('when revealing, scrolls the highlighted line into view', () => {
     const scrollChildIntoView = mock()
-    const scrollbox = {
-      findDescendantById: () => marker,
-      scrollChildIntoView,
-    } as unknown as ScrollBoxRenderable
+    const scrollbox = { scrollChildIntoView } as unknown as ScrollBoxRenderable
 
     new HighlightReveal(scrollbox).reveal()
 
     expect(scrollChildIntoView.mock.calls).toEqual([['config-highlight']])
-    expect(marker.id).toBe('config-highlight-shown')
   })
 
-  it('when no marker is waiting, leaves the scroll alone', () => {
-    const scrollChildIntoView = mock()
+  it('when revealing, stops watching so later draws leave the scroll alone', () => {
     const scrollbox = {
-      findDescendantById: () => undefined,
-      scrollChildIntoView,
+      scrollChildIntoView: mock(),
+      renderBefore: mock(),
     } as unknown as ScrollBoxRenderable
 
     new HighlightReveal(scrollbox).reveal()
 
-    expect(scrollChildIntoView.mock.calls).toEqual([])
+    expect(scrollbox.renderBefore).toBeUndefined()
   })
 
-  it('when watching, reveals just before each draw', () => {
+  it('when watching, reveals just before the next draw', () => {
     const scrollbox = {} as ScrollBoxRenderable
 
     new HighlightReveal(scrollbox).watch()

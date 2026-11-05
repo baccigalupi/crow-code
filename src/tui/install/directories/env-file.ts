@@ -6,7 +6,6 @@ export class EnvFilePanel extends TextPromptPanel {
   readonly label = 'Credentials .env file'
   readonly bare = false
   readonly next = 'ignore'
-  readonly highlights = { key: 'envFile' }
 
   field(store: DataStore) {
     return store.directories.envFile

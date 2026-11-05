@@ -1,8 +1,8 @@
 import { describe, expect, it, mock } from 'bun:test'
 import { createTestRenderer } from '@opentui/core/testing'
-import { KeyboardListener } from '../../../../src/tui/install/interactions/keyboard-listener.ts'
-import { DataStore } from '../../../../src/tui/install/data-store.ts'
-import { mockApplicationData } from '../../../support/mock-application-data.ts'
+import { KeyboardListener } from '../../../../../src/tui/install/interactions/listeners/keyboard-listener.ts'
+import { DataStore } from '../../../../../src/tui/install/data-store.ts'
+import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 
 describe('KeyboardListener', () => {
   it('when a char arrives, edits the active directory input', async () => {

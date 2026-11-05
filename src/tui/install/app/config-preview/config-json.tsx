@@ -1,7 +1,7 @@
 import type { DataStore } from '../../data-store.ts'
-import { useSignalValue } from '../../../use-signal-value.ts'
+import { useSignalValue } from '../../interactions/use-signal-value.ts'
 import { ConfigJsonViewModel } from './config-json-view-model.ts'
-import { Field } from './field.tsx'
+import { ConfigLine } from './config-line.tsx'
 import { watchHighlight } from './highlight-reveal.ts'
 import { Indented } from './indented.tsx'
 import { Providers } from './provider-entry.tsx'
@@ -9,13 +9,15 @@ import { Providers } from './provider-entry.tsx'
 type ConfigJsonProps = { store: DataStore }
 
 // The config json, written out in its own shape, with the key the current
-// panel edits highlighted. A new json remounts it, so the highlight scrolls
-// into view again.
+// panel edits highlighted. A new json or highlight remounts the scrollbox,
+// which scrolls the highlighted line into view once.
 export const ConfigJson = ({ store }: ConfigJsonProps) => {
   const inputs = useSignalValue(store.inputs)
-  const viewModel = new ConfigJsonViewModel(inputs)
+  const selectedStep = useSignalValue(store.navigator.current)
+  const viewModel = new ConfigJsonViewModel(inputs, selectedStep)
   return (
     <scrollbox
+      key={viewModel.key()}
       id="config-json"
       ref={watchHighlight}
       flexGrow={1}
@@ -23,7 +25,6 @@ export const ConfigJson = ({ store }: ConfigJsonProps) => {
       minHeight={0}
     >
       <box
-        key={viewModel.json()}
         flexDirection="column"
         alignSelf="flex-start"
         flexShrink={0}
@@ -34,37 +35,40 @@ export const ConfigJson = ({ store }: ConfigJsonProps) => {
       >
         <text>{'{'}</text>
         <Indented>
-          <Field store={store} name="crowGlobalDirectory">
+          <ConfigLine selectedStep={selectedStep} step="crowGlobalDirectory">
             "crowGlobalDirectory": "{viewModel.crowGlobalDirectory()}",
-          </Field>
-          <Field store={store} name="envFile">
+          </ConfigLine>
+          <ConfigLine selectedStep={selectedStep} step="envFile">
             "envFile": "{viewModel.envFile()}",
-          </Field>
+          </ConfigLine>
           <text>"permissions": {'{'}</text>
           <Indented>
-            <Field store={store} name="ignore">
+            <ConfigLine selectedStep={selectedStep} step="ignore">
               "ignore": {viewModel.ignore()},
-            </Field>
-            <Field store={store} name="additionalRead">
+            </ConfigLine>
+            <ConfigLine selectedStep={selectedStep} step="additionalRead">
               "additionalRead": {viewModel.additionalRead()},
-            </Field>
-            <Field store={store} name="additionalWrite">
+            </ConfigLine>
+            <ConfigLine selectedStep={selectedStep} step="additionalWrite">
               "additionalWrite": {viewModel.additionalWrite()},
-            </Field>
-            <Field store={store} name="escalateRead">
+            </ConfigLine>
+            <ConfigLine selectedStep={selectedStep} step="escalateRead">
               "escalateRead": {viewModel.escalateRead()},
-            </Field>
-            <Field store={store} name="escalateWrite">
+            </ConfigLine>
+            <ConfigLine selectedStep={selectedStep} step="escalateWrite">
               "escalateWrite": {viewModel.escalateWrite()},
-            </Field>
-            <Field store={store} name="allowedLocalScripts">
+            </ConfigLine>
+            <ConfigLine selectedStep={selectedStep} step="allowedLocalScripts">
               "allowedLocalScripts": {viewModel.allowedLocalScripts()}
-            </Field>
+            </ConfigLine>
           </Indented>
           <text>{'},'}</text>
           <text>"providers": [</text>
           <Indented>
-            <Providers store={store} rows={viewModel.providers()} />
+            <Providers
+              selectedStep={selectedStep}
+              rows={viewModel.providers()}
+            />
           </Indented>
           <text>]</text>
         </Indented>

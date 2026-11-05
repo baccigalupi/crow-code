@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import type { KeyEvent } from '@opentui/core'
-import { keypressFromEvent } from '../../../../src/tui/install/interactions/keypress-from-event.ts'
+import { keypressFromEvent } from '../../../../../src/tui/install/interactions/listeners/keypress-from-event.ts'
 
 describe('keypressFromEvent', () => {
   it('when a letter arrives, input is the letter', () => {
