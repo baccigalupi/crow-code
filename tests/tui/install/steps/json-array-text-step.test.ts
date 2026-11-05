@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test'
 import { IgnoreStep } from '../../../../src/tui/install/steps/text/ignore-step.ts'
 
-describe('JsonListTextStep', () => {
-  it('when asked for its default, is its config list as JSON', () => {
+describe('JsonArrayTextStep', () => {
+  it('when asked for its default, is its config array as JSON', () => {
     const step = new IgnoreStep()
 
     const defaultValue = step.defaultValue()
@@ -10,7 +10,7 @@ describe('JsonListTextStep', () => {
     expect(defaultValue).toBe('[]')
   })
 
-  it('when asked for its placeholder, is the JSON list alone', () => {
+  it('when asked for its placeholder, is the JSON array alone', () => {
     const step = new IgnoreStep()
 
     const placeholder = step.placeholder()

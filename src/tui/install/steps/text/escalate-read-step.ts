@@ -1,6 +1,6 @@
-import { JsonListTextStep } from '../json-list-text-step.ts'
+import { JsonArrayTextStep } from '../json-array-text-step.ts'
 
-export class EscalateReadStep extends JsonListTextStep {
+export class EscalateReadStep extends JsonArrayTextStep {
   readonly name = 'escalateRead'
   readonly label = 'Escalate read directories'
   readonly next = 'escalateWrite'

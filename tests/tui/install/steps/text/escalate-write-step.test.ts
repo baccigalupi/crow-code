@@ -26,7 +26,7 @@ describe('EscalateWriteStep', () => {
     expect(next).toBe('allowedLocalScripts')
   })
 
-  it('when asked for its default, is the config list joined', () => {
+  it('when asked for its default, is the config array joined', () => {
     const step = new EscalateWriteStep()
 
     const defaultValue = step.defaultValue()

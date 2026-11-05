@@ -1,6 +1,6 @@
-import { JsonListTextStep } from '../json-list-text-step.ts'
+import { JsonArrayTextStep } from '../json-array-text-step.ts'
 
-export class IgnoreStep extends JsonListTextStep {
+export class IgnoreStep extends JsonArrayTextStep {
   readonly name = 'ignore'
   readonly label = 'Ignored paths'
   readonly next = 'additionalRead'

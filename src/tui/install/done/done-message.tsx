@@ -1,7 +1,7 @@
 import { TextAttributes } from '@opentui/core'
 import type { DataStore } from '../data-store.ts'
 import { useSignalValue } from '../interactions/use-signal-value.ts'
-import { ProgressList } from '../complete-setup/setup-progress.tsx'
+import { SetupTasks } from '../complete-setup/setup-progress.tsx'
 import { DoneActions } from '../interactions/handlers/done-actions.ts'
 import { doneMessageViewModel } from './done-message-view-model.ts'
 
@@ -15,7 +15,7 @@ export const DoneMessage = ({ store }: DoneMessageProps) => {
   const actions = new DoneActions(store)
   return (
     <box flexDirection="column" focusable focused onKeyDown={actions.keyDown()}>
-      <ProgressList rows={rows} />
+      <SetupTasks rows={rows} />
       <box paddingX={1}>
         <text attributes={TextAttributes.DIM}>{viewModel.summary()}</text>
       </box>

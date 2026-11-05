@@ -8,47 +8,47 @@ const entries = (text: string) => {
     .filter((entry) => entry.length > 0)
 }
 
-const orDefault = (list: string[], defaultValue: string[]) => {
-  if (list.length === 0) return defaultValue
-  return list
+const orDefault = (paths: string[], defaultValue: string[]) => {
+  if (paths.length === 0) return defaultValue
+  return paths
 }
 
-const directoryList = (input: string, defaultValue: string[]) => {
+const directoryArray = (input: string, defaultValue: string[]) => {
   return orDefault(entries(input), defaultValue)
 }
 
 const defaultPermissions = () => defaultCrowConfig().permissions
 
-const readLists = ({
+const readArrays = ({
   ignore,
   additionalRead,
   escalateRead,
 }: PermissionInputs) => {
   const defaults = defaultPermissions()
   return {
-    ignore: directoryList(ignore, defaults.ignore),
-    additionalRead: directoryList(additionalRead, defaults.additionalRead),
-    escalateRead: directoryList(escalateRead, defaults.escalateRead),
+    ignore: directoryArray(ignore, defaults.ignore),
+    additionalRead: directoryArray(additionalRead, defaults.additionalRead),
+    escalateRead: directoryArray(escalateRead, defaults.escalateRead),
   }
 }
 
-const writeLists = ({
+const writeArrays = ({
   additionalWrite,
   escalateWrite,
   allowedLocalScripts: scripts,
 }: PermissionInputs) => {
   const defaults = defaultPermissions()
   return {
-    additionalWrite: directoryList(additionalWrite, defaults.additionalWrite),
-    escalateWrite: directoryList(escalateWrite, defaults.escalateWrite),
-    allowedLocalScripts: directoryList(scripts, defaults.allowedLocalScripts),
+    additionalWrite: directoryArray(additionalWrite, defaults.additionalWrite),
+    escalateWrite: directoryArray(escalateWrite, defaults.escalateWrite),
+    allowedLocalScripts: directoryArray(scripts, defaults.allowedLocalScripts),
   }
 }
 
 export const buildPermissions = (inputs: PermissionInputs) => {
   return {
     ...defaultPermissions(),
-    ...readLists(inputs),
-    ...writeLists(inputs),
+    ...readArrays(inputs),
+    ...writeArrays(inputs),
   }
 }

@@ -16,7 +16,7 @@ describe('ConfigJsonViewModel', () => {
     expect(directories).toEqual(['~/.crow', '~/.crow/.env'])
   })
 
-  it('when asked for the permissions, writes each list as json', () => {
+  it('when asked for the permissions, writes each array as json', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.permissions.ignore.replace('a')
     store.permissions.additionalRead.replace('b')
@@ -27,7 +27,7 @@ describe('ConfigJsonViewModel', () => {
       'repoDirectory',
     )
 
-    const lists = [
+    const arrays = [
       viewModel.ignore(),
       viewModel.additionalRead(),
       viewModel.additionalWrite(),
@@ -36,7 +36,7 @@ describe('ConfigJsonViewModel', () => {
       viewModel.allowedLocalScripts(),
     ]
 
-    expect(lists).toEqual([
+    expect(arrays).toEqual([
       '[\n  "a"\n]',
       '[\n  "b"\n]',
       '[\n  "c"\n]',
@@ -46,7 +46,7 @@ describe('ConfigJsonViewModel', () => {
     ])
   })
 
-  it('when a permission list is empty, writes empty brackets', () => {
+  it('when a permission array is empty, writes empty brackets', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const viewModel = new ConfigJsonViewModel(
       store.inputs.peek(),

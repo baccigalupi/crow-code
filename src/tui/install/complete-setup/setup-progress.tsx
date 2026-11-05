@@ -61,7 +61,7 @@ const ProgressRows = ({ rows }: ProgressRowsProps) => (
 )
 
 // The setup tasks as rows, each drawn in the state the store gives it.
-export const ProgressList = ({ rows }: ProgressRowsProps) => (
+export const SetupTasks = ({ rows }: ProgressRowsProps) => (
   <box flexDirection="column" paddingX={1}>
     <ProgressRows rows={rows} />
   </box>
@@ -69,5 +69,5 @@ export const ProgressList = ({ rows }: ProgressRowsProps) => (
 
 export const SetupProgress = ({ store }: SetupProgressProps) => {
   const rows = useSignalValue(store.progress.rows)
-  return <ProgressList rows={rows} />
+  return <SetupTasks rows={rows} />
 }

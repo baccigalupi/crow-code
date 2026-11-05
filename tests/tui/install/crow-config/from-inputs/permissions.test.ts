@@ -76,7 +76,7 @@ describe('buildPermissions', () => {
     expect(permissions.allowedLocalScripts).toEqual(['./a.sh', './b.sh'])
   })
 
-  it('when additionalRead input is empty, it is the default empty list', () => {
+  it('when additionalRead input is empty, it is the default empty array', () => {
     const additionalRead = ''
     const escalateRead = ''
     const escalateWrite = ''
@@ -112,7 +112,7 @@ describe('buildPermissions', () => {
     expect(permissions.additionalRead).toEqual(['/docs', '~/notes'])
   })
 
-  it('when additionalWrite input is empty, it is the default empty list', () => {
+  it('when additionalWrite input is empty, it is the default empty array', () => {
     const additionalWrite = ''
 
     const permissions = buildPermissions({
@@ -142,7 +142,7 @@ describe('buildPermissions', () => {
     expect(permissions.additionalWrite).toEqual(['/docs', '~/work'])
   })
 
-  it('when ignore input is empty, it is the default empty list', () => {
+  it('when ignore input is empty, it is the default empty array', () => {
     const ignore = ''
 
     const permissions = buildPermissions({
