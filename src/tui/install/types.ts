@@ -26,17 +26,22 @@ export type CrowProviderConfig = {
 export type JsonFieldArguments<Value> = {
   readonly name: string
   readonly value: Value
-  readonly highlighted: boolean
-  readonly json: string
+  readonly last: boolean
+  readonly editable: boolean
+  readonly highlightKey: string
+}
+
+export type JsonListItem = {
+  readonly index: number
+  readonly value: string
   readonly last: boolean
 }
 
-export type ProviderEntryArguments = {
-  readonly provider: CrowProviderConfig
+export type ProviderRow = {
   readonly index: number
+  readonly name: string
+  readonly baseUrl: string
   readonly last: boolean
-  readonly highlightKey: string
-  readonly json: string
 }
 
 export type EnvBuffer = Readonly<Record<string, string>>

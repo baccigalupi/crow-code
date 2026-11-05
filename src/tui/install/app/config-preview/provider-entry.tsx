@@ -1,29 +1,46 @@
-import type { ProviderEntryViewModel } from './provider-entry-view-model.ts'
-import { Indented, StringField } from './json-rows.tsx'
+import type { DataStore } from '../../data-store.ts'
+import type { ProviderRow } from '../../types.ts'
+import { Indented } from './indented.tsx'
+import { StringField } from './string-field.tsx'
+import { ProviderEntryViewModel } from './provider-entry-view-model.ts'
 
-type ProviderEntryProps = { provider: ProviderEntryViewModel }
+type ProviderEntryProps = { model: DataStore; row: ProviderRow }
 
-type ProvidersProps = { providers: readonly ProviderEntryViewModel[] }
+type ProvidersProps = { model: DataStore; rows: readonly ProviderRow[] }
 
 // { "name": "...", "baseUrl": "..." },
-const ProviderEntry = ({ provider }: ProviderEntryProps) => (
-  <box flexDirection="column">
-    <text>{'{'}</text>
-    <Indented>
-      <StringField field={provider.name()} />
-      <StringField field={provider.baseUrl()} />
-    </Indented>
-    <text>
-      {'}'}
-      {provider.comma()}
-    </text>
-  </box>
-)
+const ProviderEntry = ({ model, row }: ProviderEntryProps) => {
+  const view = new ProviderEntryViewModel(row)
+  return (
+    <box flexDirection="column">
+      <text>{'{'}</text>
+      <Indented>
+        <StringField
+          model={model}
+          name="name"
+          value={view.name()}
+          editable={view.editable()}
+        />
+        <StringField
+          model={model}
+          name="baseUrl"
+          value={view.baseUrl()}
+          editable={view.editable()}
+          last
+        />
+      </Indented>
+      <text>
+        {'}'}
+        {view.comma()}
+      </text>
+    </box>
+  )
+}
 
-export const Providers = ({ providers }: ProvidersProps) => (
+export const Providers = ({ model, rows }: ProvidersProps) => (
   <>
-    {providers.map((provider) => (
-      <ProviderEntry key={provider.index} provider={provider} />
+    {rows.map((row) => (
+      <ProviderEntry key={row.index} model={model} row={row} />
     ))}
   </>
 )

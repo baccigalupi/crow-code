@@ -6,9 +6,9 @@ describe('StringFieldViewModel', () => {
     const field = new StringFieldViewModel({
       name: 'envFile',
       value: 'C:\\crow',
-      highlighted: false,
-      json: '{}',
       last: false,
+      editable: true,
+      highlightKey: 'ignore',
     })
 
     const quoted = field.quoted()

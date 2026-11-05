@@ -1,46 +1,29 @@
-import type { CrowProviderConfig, ProviderEntryArguments } from '../../types.ts'
-import { StringFieldViewModel } from './string-field-view-model.ts'
+import type { ProviderRow } from '../../types.ts'
 
 // One provider in the config json. Only the last one is ever being typed, so
-// only its fields highlight.
+// only its fields can highlight.
 export class ProviderEntryViewModel {
-  readonly index: number
-  private provider: CrowProviderConfig
-  private last: boolean
-  private highlightKey: string
-  private json: string
+  private row: ProviderRow
 
-  constructor({
-    provider,
-    index,
-    last,
-    highlightKey,
-    json,
-  }: ProviderEntryArguments) {
-    this.provider = provider
-    this.index = index
-    this.last = last
-    this.highlightKey = highlightKey
-    this.json = json
+  constructor(row: ProviderRow) {
+    this.row = row
   }
 
   name() {
-    return this.field('name', this.provider.name, false)
+    return this.row.name
   }
 
   baseUrl() {
-    return this.field('baseUrl', this.provider.baseUrl, true)
+    return this.row.baseUrl
+  }
+
+  editable() {
+    return this.row.last
   }
 
   comma() {
-    if (this.last) return ''
+    if (this.row.last) return ''
 
     return ','
-  }
-
-  private field(name: string, value: string, last: boolean) {
-    const { json } = this
-    const highlighted = this.last && this.highlightKey === name
-    return new StringFieldViewModel({ name, value, highlighted, json, last })
   }
 }

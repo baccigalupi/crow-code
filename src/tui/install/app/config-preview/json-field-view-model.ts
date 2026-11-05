@@ -2,27 +2,27 @@ import type { JsonFieldArguments } from '../../types.ts'
 import { theme } from '../../../theme.ts'
 
 // One key of the config json: its trailing comma, and the colors and scroll
-// id it takes when it is the line the current panel edits.
+// id it takes when it is the key the current panel edits.
 export class JsonFieldViewModel<Value> {
   readonly name: string
   protected value: Value
-  protected highlighted: boolean
-  protected json: string
   private last: boolean
+  private editable: boolean
+  private highlightKey: string
   private readonly highlightId = 'config-highlight'
 
   constructor({
     name,
     value,
-    highlighted,
-    json,
     last,
+    editable,
+    highlightKey,
   }: JsonFieldArguments<Value>) {
     this.name = name
     this.value = value
-    this.highlighted = highlighted
-    this.json = json
     this.last = last
+    this.editable = editable
+    this.highlightKey = highlightKey
   }
 
   comma() {
@@ -31,28 +31,31 @@ export class JsonFieldViewModel<Value> {
     return ','
   }
 
-  // A new json remounts the highlighted field, so it scrolls into view again.
+  // A new value remounts the field, so a highlighted one scrolls into view
+  // again.
   key() {
-    if (this.highlighted) return this.json
-
-    return this.name
+    return JSON.stringify(this.value)
   }
 
   id() {
-    if (this.highlighted) return this.highlightId
+    if (this.highlighted()) return this.highlightId
 
     return `config-${this.name}`
   }
 
   textColor() {
-    if (!this.highlighted) return
+    if (!this.highlighted()) return
 
     return theme.configPanel.highlightTextColor
   }
 
   background() {
-    if (!this.highlighted) return
+    if (!this.highlighted()) return
 
     return theme.configPanel.highlightBackground
+  }
+
+  private highlighted() {
+    return this.editable && this.highlightKey === this.name
   }
 }

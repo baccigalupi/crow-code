@@ -19,6 +19,7 @@ import { noSuper } from './rules/no-super.ts'
 import { noTernary } from './rules/no-ternary.ts'
 import { noThrow } from './rules/no-throw.ts'
 import { typesOnlyInTypesFiles } from './rules/types-only-in-types-files.ts'
+import { viewModelsBuiltByComponents } from './rules/view-models-built-by-components.ts'
 import { whileOnlyInfinite } from './rules/while-only-infinite.ts'
 
 export const codePlugin: Plugin = {
@@ -45,5 +46,6 @@ export const codePlugin: Plugin = {
     guardClauseFirstLine,
     maxFileLines,
     noInputHooks,
+    viewModelsBuiltByComponents,
   ],
 }

@@ -4,14 +4,13 @@ import { testRender } from '@opentui/react/test-utils'
 import { act } from 'react'
 import { ConfigPreview } from '../../../../src/tui/install/app/config-preview.tsx'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
-import { Router } from '../../../../src/tui/install/router.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('ConfigPreview', () => {
   it('when on the repo panel, renders nothing', async () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <ConfigPreview model={model} router={new Router()} />,
+      <ConfigPreview model={model} />,
       { width: 70, height: 24 },
     )
 
@@ -25,7 +24,7 @@ describe('ConfigPreview', () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
     model.navigator.goTo('envFile')
     const { renderer, renderOnce, captureCharFrame, captureSpans } =
-      await testRender(<ConfigPreview model={model} router={new Router()} />, {
+      await testRender(<ConfigPreview model={model} />, {
         width: 70,
         height: 24,
       })

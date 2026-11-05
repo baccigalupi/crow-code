@@ -80,6 +80,14 @@ describe('DataStore', () => {
     expect(showsConfig).toBe(false)
   })
 
+  it('when on a step, highlights the config key that step edits', () => {
+    const model = new DataStore({ applicationData: mockApplicationData() })
+
+    model.navigator.goTo('envFile')
+
+    expect(model.highlightKey.peek()).toBe('envFile')
+  })
+
   it('when past the repo step, shows the config', () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
 

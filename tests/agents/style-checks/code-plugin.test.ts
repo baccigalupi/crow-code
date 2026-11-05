@@ -3,12 +3,12 @@ import { codePlugin } from '../../../agents/style-checks/code-plugin.ts'
 import { checkSource } from '../../../agents/style-checks/engine/check-source.ts'
 
 describe('codePlugin', () => {
-  it('when the plugin is built, lists the twenty-one rules in order', () => {
+  it('when the plugin is built, lists the twenty-two rules in order', () => {
     const plugin = codePlugin
 
     const rules = plugin.rules
 
-    expect(rules).toHaveLength(21)
+    expect(rules).toHaveLength(22)
     expect(rules[0].name).toBe('no-module-function-declaration')
     expect(rules[1].name).toBe('no-parameter-properties')
     expect(rules[2].name).toBe('constructor-assign-only')
@@ -30,6 +30,36 @@ describe('codePlugin', () => {
     expect(rules[18].name).toBe('guard-clause-first-line')
     expect(rules[19].name).toBe('max-file-lines')
     expect(rules[20].name).toBe('no-input-hooks')
+    expect(rules[21].name).toBe('view-models-built-by-components')
+  })
+
+  describe('view-models-built-by-components', () => {
+    it('when a ts module builds a view model, reports it', () => {
+      const source =
+        'class ListViewModel { item() { return new ItemViewModel(1) } }\nexport { ListViewModel }'
+
+      const diagnostics = checkSource(codePlugin, 'src/tui/list.ts', source)
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain('component that renders it')
+    })
+
+    it('when a component builds its view model, ignores it', () => {
+      const source =
+        'const Item = () => { const view = new ItemViewModel(1); return <text>{view.label()}</text> }\nexport { Item }'
+
+      const diagnostics = checkSource(codePlugin, 'src/tui/item.tsx', source)
+
+      expect(diagnostics).toHaveLength(0)
+    })
+
+    it('when a ts module builds another class, ignores it', () => {
+      const source = 'const store = new DataStore(1)\nexport { store }'
+
+      const diagnostics = checkSource(codePlugin, 'src/tui/list.ts', source)
+
+      expect(diagnostics).toHaveLength(0)
+    })
   })
 
   it('when a ternary is used, reports it', () => {

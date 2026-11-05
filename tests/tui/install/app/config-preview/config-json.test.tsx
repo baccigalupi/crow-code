@@ -4,7 +4,6 @@ import { testRender } from '@opentui/react/test-utils'
 import { act } from 'react'
 import { ConfigJson } from '../../../../../src/tui/install/app/config-preview/config-json.tsx'
 import { DataStore } from '../../../../../src/tui/install/data-store.ts'
-import { Router } from '../../../../../src/tui/install/router.ts'
 import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 
 describe('ConfigJson', () => {
@@ -12,7 +11,7 @@ describe('ConfigJson', () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
     model.navigator.goTo('envFile')
     const { renderer, renderOnce, captureSpans } = await testRender(
-      <ConfigJson model={model} router={new Router()} />,
+      <ConfigJson model={model} />,
       { width: 70, height: 24 },
     )
 
@@ -31,7 +30,7 @@ describe('ConfigJson', () => {
     model.providerEditForm.providerName.insert('local')
     model.navigator.goTo('providerName')
     const { renderer, renderOnce, captureSpans } = await testRender(
-      <ConfigJson model={model} router={new Router()} />,
+      <ConfigJson model={model} />,
       { width: 70, height: 60 },
     )
 
@@ -49,7 +48,7 @@ describe('ConfigJson', () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
     model.navigator.goTo('escalateWrite')
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <ConfigJson model={model} router={new Router()} />,
+      <ConfigJson model={model} />,
       { width: 70, height: 6 },
     )
 
@@ -64,7 +63,7 @@ describe('ConfigJson', () => {
     const model = new DataStore({ applicationData: mockApplicationData() })
     model.navigator.goTo('escalateWrite')
     const { renderer, renderOnce } = await testRender(
-      <ConfigJson model={model} router={new Router()} />,
+      <ConfigJson model={model} />,
       { width: 70, height: 6 },
     )
     await renderOnce()

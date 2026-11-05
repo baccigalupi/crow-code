@@ -1,17 +1,13 @@
 import type { DataStore } from '../data-store.ts'
-import type { Router } from '../router.ts'
 import { useSignalValue } from '../../use-signal-value.ts'
 import { ConfigJson } from './config-preview/config-json.tsx'
 
-type ConfigPreviewProps = {
-  model: DataStore
-  router: Router
-}
+type ConfigPreviewProps = { model: DataStore }
 
 // The crow config being built, with the line the current panel edits
 // highlighted. Hidden on the first question. Shrinks to the rows the prompt
 // leaves, scrolling the json.
-export const ConfigPreview = ({ model, router }: ConfigPreviewProps) => {
+export const ConfigPreview = ({ model }: ConfigPreviewProps) => {
   const path = useSignalValue(model.directories.configPath)
   const visible = useSignalValue(model.showsConfig)
   return (
@@ -24,7 +20,7 @@ export const ConfigPreview = ({ model, router }: ConfigPreviewProps) => {
       minHeight={0}
     >
       <text flexShrink={0}>Installing repo config in: {path}</text>
-      <ConfigJson model={model} router={router} />
+      <ConfigJson model={model} />
     </box>
   )
 }

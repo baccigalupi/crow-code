@@ -4,71 +4,41 @@ import { DataStore } from '../../../../../src/tui/install/data-store.ts'
 import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 
 describe('ConfigJsonViewModel', () => {
-  it('when asked for a string field, quotes its config value', () => {
+  it('when asked for a value, gives it from the config', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), {
-      key: 'repo',
-    })
+    const viewModel = new ConfigJsonViewModel(store.inputs.peek())
 
-    const field = viewModel.stringField('envFile')
+    const value = viewModel.value('envFile')
 
-    expect(field.quoted()).toBe('"~/.crow/.env"')
+    expect(value).toBe('~/.crow/.env')
   })
 
-  it('when the panel edits a field, highlights that field', () => {
+  it('when asked for a permission, gives its list from the config', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), {
-      key: 'envFile',
-    })
+    const viewModel = new ConfigJsonViewModel(store.inputs.peek())
 
-    const field = viewModel.stringField('envFile')
+    const list = viewModel.permission('escalateWrite')
 
-    expect(field.id()).toBe('config-highlight')
+    expect(list).toEqual(['./dev', './agent'])
   })
 
-  it('when asked for a list field, gives its permission entries', () => {
-    const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), {
-      key: 'repo',
-    })
-
-    const field = viewModel.listField('escalateWrite')
-
-    expect(field.items()[0].quoted()).toBe('"./dev"')
-    expect(field.comma()).toBe(',')
-  })
-
-  it('when asked for the last list field, ends it without a comma', () => {
-    const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), {
-      key: 'repo',
-    })
-
-    const field = viewModel.lastListField('allowedLocalScripts')
-
-    expect(field.comma()).toBe('')
-  })
-
-  it('when providers are saved, gives one entry each, the last one last', () => {
+  it('when providers are saved, gives one row each, the last one last', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.providers.save({ name: 'nous', url: 'https://n' }, '')
     store.providers.save({ name: 'local', url: 'http://l' }, '')
-    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), {
-      key: 'repo',
-    })
+    const viewModel = new ConfigJsonViewModel(store.inputs.peek())
 
     const providers = viewModel.providers()
 
-    expect(providers).toHaveLength(2)
-    expect(providers[0].comma()).toBe(',')
-    expect(providers[1].comma()).toBe('')
+    expect(providers).toEqual([
+      { index: 0, name: 'nous', baseUrl: 'https://n', last: false },
+      { index: 1, name: 'local', baseUrl: 'http://l', last: true },
+    ])
   })
 
   it('when asked for its background, gives the config panel color', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), {
-      key: 'repo',
-    })
+    const viewModel = new ConfigJsonViewModel(store.inputs.peek())
 
     const background = viewModel.background
 

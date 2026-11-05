@@ -17,7 +17,7 @@ export const InstallApp = ({ model, router }: InstallAppProps) => {
   return (
     <box flexDirection="column" width={width} height={height}>
       <Header />
-      <ConfigPreview model={model} router={router} />
+      <ConfigPreview model={model} />
       <CurrentPrompt model={model} router={router} />
     </box>
   )

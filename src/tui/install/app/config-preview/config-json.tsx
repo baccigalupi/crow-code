@@ -1,22 +1,19 @@
 import type { DataStore } from '../../data-store.ts'
-import type { Router } from '../../router.ts'
 import { useSignalValue } from '../../../use-signal-value.ts'
 import { ConfigJsonViewModel } from './config-json-view-model.ts'
 import { watchHighlight } from './highlight-reveal.ts'
-import { Indented, ListField, StringField } from './json-rows.tsx'
+import { Indented } from './indented.tsx'
+import { ListField } from './list-field.tsx'
+import { StringField } from './string-field.tsx'
 import { Providers } from './provider-entry.tsx'
 
-type ConfigJsonProps = {
-  model: DataStore
-  router: Router
-}
+type ConfigJsonProps = { model: DataStore }
 
 // The config json, laid out in its own shape, with the key the current panel
-// edits highlighted and scrolled into view each time the json changes.
-export const ConfigJson = ({ model, router }: ConfigJsonProps) => {
+// edits highlighted and scrolled into view each time its value changes.
+export const ConfigJson = ({ model }: ConfigJsonProps) => {
   const inputs = useSignalValue(model.inputs)
-  const panel = router.get(useSignalValue(model.navigator.current))
-  const viewModel = new ConfigJsonViewModel(inputs, panel.highlights)
+  const viewModel = new ConfigJsonViewModel(inputs)
   return (
     <scrollbox
       id="config-json"
@@ -36,21 +33,54 @@ export const ConfigJson = ({ model, router }: ConfigJsonProps) => {
       >
         <text>{'{'}</text>
         <Indented>
-          <StringField field={viewModel.stringField('crowGlobalDirectory')} />
-          <StringField field={viewModel.stringField('envFile')} />
+          <StringField
+            model={model}
+            name="crowGlobalDirectory"
+            value={viewModel.value('crowGlobalDirectory')}
+          />
+          <StringField
+            model={model}
+            name="envFile"
+            value={viewModel.value('envFile')}
+          />
           <text>"permissions": {'{'}</text>
           <Indented>
-            <ListField field={viewModel.listField('ignore')} />
-            <ListField field={viewModel.listField('additionalRead')} />
-            <ListField field={viewModel.listField('additionalWrite')} />
-            <ListField field={viewModel.listField('escalateRead')} />
-            <ListField field={viewModel.listField('escalateWrite')} />
-            <ListField field={viewModel.lastListField('allowedLocalScripts')} />
+            <ListField
+              model={model}
+              name="ignore"
+              value={viewModel.permission('ignore')}
+            />
+            <ListField
+              model={model}
+              name="additionalRead"
+              value={viewModel.permission('additionalRead')}
+            />
+            <ListField
+              model={model}
+              name="additionalWrite"
+              value={viewModel.permission('additionalWrite')}
+            />
+            <ListField
+              model={model}
+              name="escalateRead"
+              value={viewModel.permission('escalateRead')}
+            />
+            <ListField
+              model={model}
+              name="escalateWrite"
+              value={viewModel.permission('escalateWrite')}
+            />
+            <ListField
+              model={model}
+              name="allowedLocalScripts"
+              value={viewModel.permission('allowedLocalScripts')}
+              last
+            />
           </Indented>
           <text>{'},'}</text>
           <text>"providers": [</text>
           <Indented>
-            <Providers providers={viewModel.providers()} />
+            <Providers model={model} rows={viewModel.providers()} />
           </Indented>
           <text>]</text>
         </Indented>
