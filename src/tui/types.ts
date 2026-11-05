@@ -19,7 +19,7 @@ export type Controller<Name extends string> = {
 }
 
 export type PanelFlow<Name extends string> = {
-  readonly controller: Controller<Name>
+  readonly controller?: Controller<Name>
   readonly next?: Name
   readonly cancel?: Name
   entered?(navigator: Navigator<Name>): unknown

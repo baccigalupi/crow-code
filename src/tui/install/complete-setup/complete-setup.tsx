@@ -2,17 +2,13 @@ import type { Navigator } from '../../navigator.ts'
 import type { DataStore } from '../data-store.ts'
 import type { PanelName, StatefulTask } from '../types.ts'
 import { RunAll } from '../interactions/run-all.ts'
-import { IdleController } from './idle-controller.ts'
 import { SetupProgress } from './setup-progress.tsx'
 
 export class CompleteSetupPanel {
   readonly name = 'completeSetup'
   readonly next = undefined
   readonly cancel = undefined
-
-  controller(_store: DataStore) {
-    return new IdleController('stay')
-  }
+  readonly controller = undefined
 
   prompt(store: DataStore) {
     return <SetupProgress store={store} />

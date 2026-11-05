@@ -54,8 +54,18 @@ export class Router {
 
   private flow(panel: PromptPanel, store: DataStore): PanelFlow<PanelName> {
     const { next, cancel } = panel
-    const controller = panel.controller(store)
+    const controller = this.controller(panel, store)
     return { controller, next, cancel, entered: this.entered(panel, store) }
+  }
+
+  // A panel that takes no input has no controller.
+  private controller(panel: PromptPanel, store: DataStore) {
+    const { controller } = panel
+    if (controller === undefined) {
+      return
+    } else {
+      return controller.call(panel, store)
+    }
   }
 
   // The panel's own entered with the store bound, so the navigator never

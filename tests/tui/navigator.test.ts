@@ -151,6 +151,19 @@ describe('Navigator', () => {
     expect(exit).toHaveBeenCalledTimes(0)
   })
 
+  it('when the panel has no controller, a key changes nothing', () => {
+    const exit = mock()
+    const navigator = new Navigator<'a' | 'b'>({
+      initial: 'a',
+      panels: { a: { next: 'b' }, b: {} },
+    })
+
+    navigator.press(new Keypress('x', {}), exit)
+
+    expect(navigator.current.peek()).toBe('a')
+    expect(exit).toHaveBeenCalledTimes(0)
+  })
+
   it('when a panel is entered, calls its entered with the navigator', () => {
     const entered = mock()
     const navigator = new Navigator<'a' | 'b'>({

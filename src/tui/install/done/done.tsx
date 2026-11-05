@@ -1,5 +1,5 @@
 import type { DataStore } from '../data-store.ts'
-import { IdleController } from '../complete-setup/idle-controller.ts'
+import { DoneController } from './controller.ts'
 import { DoneMessage } from './done-message.tsx'
 
 export class DonePanel {
@@ -9,7 +9,7 @@ export class DonePanel {
   readonly entered = undefined
 
   controller(_store: DataStore) {
-    return new IdleController('exit')
+    return new DoneController()
   }
 
   prompt(store: DataStore) {

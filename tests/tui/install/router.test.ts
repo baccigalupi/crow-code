@@ -2,6 +2,8 @@ import { describe, expect, it } from 'bun:test'
 import { Keypress } from '../../../src/tui/keypress.ts'
 import { DataStore } from '../../../src/tui/install/data-store.ts'
 import { Router } from '../../../src/tui/install/router.ts'
+import type { PanelName } from '../../../src/tui/install/types.ts'
+import type { Controller } from '../../../src/tui/types.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('Router', () => {
@@ -90,9 +92,19 @@ describe('Router', () => {
 
   it('when asked for flows, the done controller exits on any key', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
+    const flows = new Router().flows(store)
+    const controller = flows.done.controller as Controller<PanelName>
+
+    const outcome = controller.handle(new Keypress('x', {}))
+
+    expect(outcome).toBe('exit')
+  })
+
+  it('when asked for flows, setup progress has no controller', () => {
+    const store = new DataStore({ applicationData: mockApplicationData() })
 
     const flows = new Router().flows(store)
 
-    expect(flows.done.controller.handle(new Keypress('x', {}))).toBe('exit')
+    expect(flows.completeSetup.controller).toBeUndefined()
   })
 })

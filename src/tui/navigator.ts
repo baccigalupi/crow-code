@@ -6,6 +6,7 @@ import {
 } from '@preact/signals-core'
 import type { Keypress } from './keypress.ts'
 import type {
+  Controller,
   ExitApp,
   NavigatorArguments,
   Outcome,
@@ -44,7 +45,17 @@ export class Navigator<Name extends string> {
 
   private dispatch(keypress: Keypress, exit: ExitApp) {
     if (keypress.isQuit()) exit()
-    else this.apply(this.panel().controller.handle(keypress), exit)
+    else this.apply(this.outcome(this.panel().controller, keypress), exit)
+  }
+
+  // A panel with no controller takes no input, so its keys change nothing.
+  private outcome(
+    controller: Controller<Name> | undefined,
+    keypress: Keypress,
+  ): Outcome<Name> {
+    if (controller === undefined) return 'stay'
+
+    return controller.handle(keypress)
   }
 
   private apply(outcome: Outcome<Name>, exit: ExitApp) {

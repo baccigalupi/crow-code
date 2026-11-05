@@ -1,7 +1,6 @@
 import { describe, expect, it, spyOn } from 'bun:test'
 import { testRender } from '@opentui/react/test-utils'
 import { act } from 'react'
-import { Keypress } from '../../../../src/tui/keypress.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { CompleteSetupPanel } from '../../../../src/tui/install/complete-setup/complete-setup.tsx'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
@@ -17,13 +16,12 @@ describe('CompleteSetupPanel', () => {
     expect(panel.cancel).toBeUndefined()
   })
 
-  it('when any key is pressed, its controller stays', () => {
-    const store = new DataStore({ applicationData: mockApplicationData() })
-    const controller = new CompleteSetupPanel().controller(store)
+  it('when asked for a controller, has none since it takes no input', () => {
+    const panel = new CompleteSetupPanel()
 
-    const outcome = controller.handle(new Keypress('x', {}))
+    const { controller } = panel
 
-    expect(outcome).toBe('stay')
+    expect(controller).toBeUndefined()
   })
 
   it('when asked for its prompt, renders the setup rows', async () => {
