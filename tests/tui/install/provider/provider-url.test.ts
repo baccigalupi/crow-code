@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'bun:test'
-import { Keypress } from '../../../../src/tui/keypress.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { ProviderUrlPanel } from '../../../../src/tui/install/provider/provider-url.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
@@ -15,32 +14,20 @@ describe('ProviderUrlPanel', () => {
     expect(panel.cancel).toBe('confirm')
   })
 
-  it('when a key is typed, its controller edits the provider url', () => {
+  it('when asked for its field, is the provider url', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const controller = new ProviderUrlPanel().controller(store)
 
-    controller.handle(new Keypress('x', {}))
+    const field = new ProviderUrlPanel().field(store)
 
-    expect(store.providerEditForm.providerUrl.text.peek().text).toBe('x')
+    expect(field).toBe(store.providerEditForm.providerUrl)
   })
 
-  it('when shift-tab is pressed, its controller goes back to the name field', () => {
-    const store = new DataStore({ applicationData: mockApplicationData() })
-    const controller = new ProviderUrlPanel().controller(store)
+  it('when asked where tab leads, goes back to the name and forward to the credentials', () => {
+    const panel = new ProviderUrlPanel()
 
-    const outcome = controller.handle(
-      new Keypress('', { tab: true, shift: true }),
-    )
+    const { forward, back } = panel
 
-    expect(outcome).toEqual({ goTo: 'providerName' })
-  })
-
-  it('when tab is pressed, its controller goes on to the credentials field', () => {
-    const store = new DataStore({ applicationData: mockApplicationData() })
-    const controller = new ProviderUrlPanel().controller(store)
-
-    const outcome = controller.handle(new Keypress('', { tab: true }))
-
-    expect(outcome).toEqual({ goTo: 'providerCredentials' })
+    expect(back).toBe('providerName')
+    expect(forward).toBe('providerCredentials')
   })
 })

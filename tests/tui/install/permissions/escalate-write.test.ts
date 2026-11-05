@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'bun:test'
-import { Keypress } from '../../../../src/tui/keypress.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { EscalateWritePanel } from '../../../../src/tui/install/permissions/escalate-write.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
@@ -14,13 +13,12 @@ describe('EscalateWritePanel', () => {
     expect(panel.next).toBe('allowedLocalScripts')
   })
 
-  it('when a key is typed, its controller edits the escalate write list', () => {
+  it('when asked for its field, is the escalate write list', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const controller = new EscalateWritePanel().controller(store)
 
-    controller.handle(new Keypress('x', {}))
+    const field = new EscalateWritePanel().field(store)
 
-    expect(store.permissions.escalateWrite.text.peek().text).toBe('x')
+    expect(field).toBe(store.permissions.escalateWrite)
   })
 
   it('when nothing is typed, it shows the question and a parenthesised default', () => {

@@ -5,39 +5,22 @@ import { IgnorePanel } from '../../../../src/tui/install/permissions/ignore.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('TextPromptPanel', () => {
-  describe('placeholder', () => {
-    it('when the field is empty, is the default in parentheses', () => {
-      const store = new DataStore({ applicationData: mockApplicationData() })
+  it('when asked for its placeholder, is the default in parentheses', () => {
+    const store = new DataStore({ applicationData: mockApplicationData() })
 
-      const placeholder = new RepoPanel().placeholder(
-        store,
-        store.inputs.peek(),
-      )
+    const placeholder = new RepoPanel().placeholder(store, store.inputs.peek())
 
-      expect(placeholder).toBe('(.crow)')
-    })
+    expect(placeholder).toBe('(.crow)')
+  })
 
-    it('when the field is empty and the panel is bare, is the default alone', () => {
-      const store = new DataStore({ applicationData: mockApplicationData() })
+  it('when the panel is bare, its placeholder is the default alone', () => {
+    const store = new DataStore({ applicationData: mockApplicationData() })
 
-      const placeholder = new IgnorePanel().placeholder(
-        store,
-        store.inputs.peek(),
-      )
+    const placeholder = new IgnorePanel().placeholder(
+      store,
+      store.inputs.peek(),
+    )
 
-      expect(placeholder).toBe('[]')
-    })
-
-    it('when the field has text, is empty', () => {
-      const store = new DataStore({ applicationData: mockApplicationData() })
-      store.directories.repoDirectory.insert('x')
-
-      const placeholder = new RepoPanel().placeholder(
-        store,
-        store.inputs.peek(),
-      )
-
-      expect(placeholder).toBe('')
-    })
+    expect(placeholder).toBe('[]')
   })
 })

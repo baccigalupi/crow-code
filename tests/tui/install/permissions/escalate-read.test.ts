@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'bun:test'
-import { Keypress } from '../../../../src/tui/keypress.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { EscalateReadPanel } from '../../../../src/tui/install/permissions/escalate-read.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
@@ -14,13 +13,12 @@ describe('EscalateReadPanel', () => {
     expect(panel.next).toBe('escalateWrite')
   })
 
-  it('when a key is typed, its controller edits the escalate read list', () => {
+  it('when asked for its field, is the escalate read list', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const controller = new EscalateReadPanel().controller(store)
 
-    controller.handle(new Keypress('x', {}))
+    const field = new EscalateReadPanel().field(store)
 
-    expect(store.permissions.escalateRead.text.peek().text).toBe('x')
+    expect(field).toBe(store.permissions.escalateRead)
   })
 
   it('when nothing is typed, it shows the question and a bare default', () => {

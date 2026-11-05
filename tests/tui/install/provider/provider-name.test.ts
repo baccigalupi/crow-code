@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { testRender } from '@opentui/react/test-utils'
 import { act } from 'react'
-import { Keypress } from '../../../../src/tui/keypress.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { ProviderNamePanel } from '../../../../src/tui/install/provider/provider-name.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
@@ -17,33 +16,21 @@ describe('ProviderNamePanel', () => {
     expect(panel.cancel).toBe('confirm')
   })
 
-  it('when a key is typed, its controller edits the provider name', () => {
+  it('when asked for its field, is the provider name', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const controller = new ProviderNamePanel().controller(store)
 
-    controller.handle(new Keypress('x', {}))
+    const field = new ProviderNamePanel().field(store)
 
-    expect(store.providerEditForm.providerName.text.peek().text).toBe('x')
+    expect(field).toBe(store.providerEditForm.providerName)
   })
 
-  it('when tab is pressed, its controller goes to the url field', () => {
-    const store = new DataStore({ applicationData: mockApplicationData() })
-    const controller = new ProviderNamePanel().controller(store)
+  it('when asked where tab leads, goes forward to the url and nowhere back', () => {
+    const panel = new ProviderNamePanel()
 
-    const outcome = controller.handle(new Keypress('', { tab: true }))
+    const { forward, back } = panel
 
-    expect(outcome).toEqual({ goTo: 'providerUrl' })
-  })
-
-  it('when shift-tab is pressed, its controller stays, there being no field before', () => {
-    const store = new DataStore({ applicationData: mockApplicationData() })
-    const controller = new ProviderNamePanel().controller(store)
-
-    const outcome = controller.handle(
-      new Keypress('', { tab: true, shift: true }),
-    )
-
-    expect(outcome).toBe('stay')
+    expect(forward).toBe('providerUrl')
+    expect(back).toBeUndefined()
   })
 
   it('when asked for its prompt, renders the provider block', async () => {
@@ -51,6 +38,7 @@ describe('ProviderNamePanel', () => {
     store.navigator.goTo('providerName')
     const { renderer, renderOnce, captureCharFrame } = await testRender(
       new ProviderNamePanel().prompt(store),
+
       { width: 70, height: 8 },
     )
 

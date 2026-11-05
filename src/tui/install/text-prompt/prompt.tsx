@@ -2,7 +2,9 @@ import { TextAttributes } from '@opentui/core'
 import type { DataStore } from '../data-store.ts'
 import type { TextPromptPanel } from './text-prompt.tsx'
 import type { InputText } from '../../types.ts'
+import { PromptNavigation } from '../interactions/prompt-navigation.ts'
 import { useSignalValue } from '../interactions/use-signal-value.ts'
+import { TextPromptActions } from './actions.ts'
 import { PromptLineViewModel } from './prompt-line-view-model.ts'
 
 type PromptLineProps = {
@@ -37,16 +39,26 @@ type TextPromptProps = {
   store: DataStore
 }
 
-// A text prompt panel's question over the answer typed into its field.
+// A text prompt panel's question beside a focused input holding its answer.
 export const TextPrompt = ({ panel, store }: TextPromptProps) => {
   const inputs = useSignalValue(store.inputs)
   const input = useSignalValue(panel.field(store).text)
+  const actions = new TextPromptActions({
+    panel,
+    store,
+    navigation: new PromptNavigation(store),
+  })
   return (
-    <PromptLine
-      label={panel.label}
-      input={input}
-      placeholder={panel.placeholder(store, inputs)}
-      masked={false}
-    />
+    <box paddingX={1} flexDirection="row">
+      <text>{panel.label}: </text>
+      <input
+        focused
+        flexGrow={1}
+        value={input.text}
+        placeholder={panel.placeholder(store, inputs)}
+        onInput={actions.input()}
+        onSubmit={actions.submit()}
+      />
+    </box>
   )
 }

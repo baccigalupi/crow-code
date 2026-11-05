@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'bun:test'
-import { Keypress } from '../../../../src/tui/keypress.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { AllowedLocalScriptsPanel } from '../../../../src/tui/install/permissions/allowed-local-scripts.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
@@ -14,13 +13,12 @@ describe('AllowedLocalScriptsPanel', () => {
     expect(panel.next).toBe('providerName')
   })
 
-  it('when a key is typed, its controller edits the allowed local scripts', () => {
+  it('when asked for its field, is the allowed local scripts', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const controller = new AllowedLocalScriptsPanel().controller(store)
 
-    controller.handle(new Keypress('x', {}))
+    const field = new AllowedLocalScriptsPanel().field(store)
 
-    expect(store.permissions.allowedLocalScripts.text.peek().text).toBe('x')
+    expect(field).toBe(store.permissions.allowedLocalScripts)
   })
 
   it('when nothing is typed, it shows the question and a parenthesised default', () => {

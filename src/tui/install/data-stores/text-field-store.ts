@@ -32,6 +32,10 @@ export class TextFieldStore {
     this.content.value = moveCursor(this.content.peek(), to)
   }
 
+  replace(text: string) {
+    this.content.value = { text, cursor: text.length }
+  }
+
   clear() {
     this.content.value = emptyText()
   }

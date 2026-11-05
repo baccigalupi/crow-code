@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'bun:test'
-import { Keypress } from '../../../../src/tui/keypress.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { IgnorePanel } from '../../../../src/tui/install/permissions/ignore.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
@@ -14,13 +13,12 @@ describe('IgnorePanel', () => {
     expect(panel.next).toBe('additionalRead')
   })
 
-  it('when a key is typed, its controller edits the ignore list', () => {
+  it('when asked for its field, is the ignore list', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const controller = new IgnorePanel().controller(store)
 
-    controller.handle(new Keypress('x', {}))
+    const field = new IgnorePanel().field(store)
 
-    expect(store.permissions.ignore.text.peek().text).toBe('x')
+    expect(field).toBe(store.permissions.ignore)
   })
 
   it('when nothing is typed, it shows the question and a bare default', () => {

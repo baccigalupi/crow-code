@@ -53,4 +53,17 @@ describe('DoneMessage', () => {
     expect(captureCharFrame()).toContain('Setup failed. Press any key to exit')
     act(() => renderer.destroy())
   })
+
+  it('when any key arrives, exits', async () => {
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    const { renderer, mockInput } = await testRender(
+      <DoneMessage store={store} />,
+      { width: 50, height: 3 },
+    )
+
+    await act(() => mockInput.typeText('x'))
+
+    expect(store.quit.requested.peek()).toBe(true)
+    act(() => renderer.destroy())
+  })
 })

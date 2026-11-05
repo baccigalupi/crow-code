@@ -6,22 +6,12 @@ import { CompleteSetupPanel } from '../../../../src/tui/install/complete-setup/c
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('CompleteSetupPanel', () => {
-  it('when asked, names itself and has nowhere to go next', () => {
+  it('when asked, names itself', () => {
     const panel = new CompleteSetupPanel()
 
     const { name } = panel
 
     expect(name).toBe('completeSetup')
-    expect(panel.next).toBeUndefined()
-    expect(panel.cancel).toBeUndefined()
-  })
-
-  it('when asked for a controller, has none since it takes no input', () => {
-    const panel = new CompleteSetupPanel()
-
-    const { controller } = panel
-
-    expect(controller).toBeUndefined()
   })
 
   it('when asked for its prompt, renders the setup rows', async () => {

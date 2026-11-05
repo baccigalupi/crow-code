@@ -3,6 +3,7 @@ import { TextAttributes } from '@opentui/core'
 import { testRender } from '@opentui/react/test-utils'
 import { act } from 'react'
 import { ProviderPrompt } from '../../../../src/tui/install/provider/prompt.tsx'
+import { ProviderNamePanel } from '../../../../src/tui/install/provider/provider-name.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
@@ -11,7 +12,7 @@ describe('ProviderPrompt', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.navigator.goTo('providerName')
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <ProviderPrompt store={store} />,
+      <ProviderPrompt panel={new ProviderNamePanel()} store={store} />,
       { width: 70, height: 10 },
     )
 
@@ -26,44 +27,25 @@ describe('ProviderPrompt', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.navigator.goTo('providerName')
     const { renderer, renderOnce, captureCharFrame, captureSpans } =
-      await testRender(<ProviderPrompt store={store} />, {
-        width: 70,
-        height: 10,
-      })
+      await testRender(
+        <ProviderPrompt panel={new ProviderNamePanel()} store={store} />,
+        {
+          width: 70,
+          height: 10,
+        },
+      )
 
     await renderOnce()
 
     const { lines } = captureSpans()
     expect(captureCharFrame()).toContain('Provider 1')
-    expect(lines[1].spans[0].text).toBe('│ Name: ')
-    expect(lines[1].spans[1].text).toBe(' ')
-    expect(lines[1].spans[1].attributes).toBe(TextAttributes.INVERSE)
+    expect(lines[1].spans[0].text).toContain('│ Name: ')
     expect(lines[2].spans[1].text).toBe('Url:')
     expect(lines[2].spans[1].attributes).toBe(TextAttributes.DIM)
     expect(lines[3].spans[1].text).toBe('API key:')
     expect(lines[3].spans[1].attributes).toBe(TextAttributes.DIM)
     expect(lines[5].spans[1].text).toBe('Esc to finish adding providers')
     expect(lines[5].spans[1].attributes).toBe(TextAttributes.DIM)
-    act(() => renderer.destroy())
-  })
-
-  it('when on the API key, earlier fields show their values and the key is masked', async () => {
-    const store = new DataStore({ applicationData: mockApplicationData() })
-    store.providerEditForm.providerName.insert('nous')
-    store.providerEditForm.providerUrl.insert('https://n')
-    store.providerEditForm.providerCredentials.insert('sk-1')
-    store.navigator.goTo('providerCredentials')
-    const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <ProviderPrompt store={store} />,
-      { width: 70, height: 10 },
-    )
-
-    await renderOnce()
-
-    expect(captureCharFrame()).toContain('Name: nous')
-    expect(captureCharFrame()).toContain('Url: https://n')
-    expect(captureCharFrame()).toContain('API key: ••••')
-    expect(captureCharFrame()).not.toContain('sk-1')
     act(() => renderer.destroy())
   })
 })

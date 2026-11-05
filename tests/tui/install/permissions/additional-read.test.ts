@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'bun:test'
-import { Keypress } from '../../../../src/tui/keypress.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { AdditionalReadPanel } from '../../../../src/tui/install/permissions/additional-read.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
@@ -14,13 +13,12 @@ describe('AdditionalReadPanel', () => {
     expect(panel.next).toBe('additionalWrite')
   })
 
-  it('when a key is typed, its controller edits the additional read list', () => {
+  it('when asked for its field, is the additional read list', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const controller = new AdditionalReadPanel().controller(store)
 
-    controller.handle(new Keypress('x', {}))
+    const field = new AdditionalReadPanel().field(store)
 
-    expect(store.permissions.additionalRead.text.peek().text).toBe('x')
+    expect(field).toBe(store.permissions.additionalRead)
   })
 
   it('when nothing is typed, it shows the question and a bare default', () => {

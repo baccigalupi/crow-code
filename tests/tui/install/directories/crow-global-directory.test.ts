@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'bun:test'
-import { Keypress } from '../../../../src/tui/keypress.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { CrowGlobalDirectoryPanel } from '../../../../src/tui/install/directories/crow-global-directory.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
@@ -14,13 +13,12 @@ describe('CrowGlobalDirectoryPanel', () => {
     expect(panel.next).toBe('envFile')
   })
 
-  it('when a key is typed, its controller edits the global directory', () => {
+  it('when asked for its field, is the global directory', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const controller = new CrowGlobalDirectoryPanel().controller(store)
 
-    controller.handle(new Keypress('x', {}))
+    const field = new CrowGlobalDirectoryPanel().field(store)
 
-    expect(store.directories.globalDirectory.text.peek().text).toBe('x')
+    expect(field).toBe(store.directories.globalDirectory)
   })
 
   it('when nothing is typed, it shows the question and the default', () => {

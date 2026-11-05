@@ -125,4 +125,45 @@ describe('text-prompt', () => {
     )
     act(() => renderer.destroy())
   })
+
+  it('when a key is typed, TextPrompt types it into the panel field', async () => {
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    const { renderer, mockInput } = await testRender(
+      <TextPrompt panel={new RepoPanel()} store={store} />,
+      { width: 70, height: 3 },
+    )
+
+    await act(() => mockInput.typeText('x'))
+
+    expect(store.directories.repoDirectory.text.peek().text).toBe('x')
+    act(() => renderer.destroy())
+  })
+
+  it('when the field is empty, TextPrompt shows the default as the placeholder', async () => {
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    const { renderer, renderOnce, captureCharFrame } = await testRender(
+      <TextPrompt panel={new RepoPanel()} store={store} />,
+      { width: 70, height: 3 },
+    )
+
+    await renderOnce()
+
+    expect(captureCharFrame()).toContain(
+      'What directory for the local repo crow setup: (.crow)',
+    )
+    act(() => renderer.destroy())
+  })
+
+  it('when return arrives, TextPrompt moves to the panel that comes next', async () => {
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    const { renderer, mockInput } = await testRender(
+      <TextPrompt panel={new RepoPanel()} store={store} />,
+      { width: 70, height: 3 },
+    )
+
+    act(() => mockInput.pressEnter())
+
+    expect(store.navigator.current.peek()).toBe('crowGlobalDirectory')
+    act(() => renderer.destroy())
+  })
 })

@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'bun:test'
-import { Keypress } from '../../../../src/tui/keypress.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { ProviderCredentialsPanel } from '../../../../src/tui/install/provider/provider-credentials.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
@@ -15,36 +14,20 @@ describe('ProviderCredentialsPanel', () => {
     expect(panel.cancel).toBe('confirm')
   })
 
-  it('when a key is typed, its controller edits the credentials', () => {
+  it('when asked for its field, is the credentials', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const controller = new ProviderCredentialsPanel().controller(store)
 
-    controller.handle(new Keypress('x', {}))
+    const field = new ProviderCredentialsPanel().field(store)
 
-    expect(store.providerEditForm.providerCredentials.text.peek().text).toBe(
-      'x',
-    )
+    expect(field).toBe(store.providerEditForm.providerCredentials)
   })
 
-  it('when return is pressed, its controller saves the provider and moves on', () => {
-    const store = new DataStore({ applicationData: mockApplicationData() })
-    store.providerEditForm.providerName.insert('nous')
-    const controller = new ProviderCredentialsPanel().controller(store)
+  it('when asked where tab leads, goes back to the url and nowhere forward', () => {
+    const panel = new ProviderCredentialsPanel()
 
-    const outcome = controller.handle(new Keypress('', { return: true }))
+    const { forward, back } = panel
 
-    expect(outcome).toBe('next')
-    expect(store.providers.providers.peek()).toHaveLength(1)
-  })
-
-  it('when shift-tab is pressed, its controller goes back to the url field', () => {
-    const store = new DataStore({ applicationData: mockApplicationData() })
-    const controller = new ProviderCredentialsPanel().controller(store)
-
-    const outcome = controller.handle(
-      new Keypress('', { tab: true, shift: true }),
-    )
-
-    expect(outcome).toEqual({ goTo: 'providerUrl' })
+    expect(back).toBe('providerUrl')
+    expect(forward).toBeUndefined()
   })
 })

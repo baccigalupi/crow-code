@@ -1,16 +1,8 @@
-import {
-  decodePasteBytes,
-  stripAnsiSequences,
-  type CliRenderer,
-  type KeyEvent,
-  type PasteEvent,
-} from '@opentui/core'
-import { Keypress } from '../../../keypress.ts'
+import type { CliRenderer, KeyEvent } from '@opentui/core'
 import type { DataStore } from '../../data-store.ts'
-import { keypressFromEvent } from './keypress-from-event.ts'
 
-// Feeds every key and paste on the renderer to the navigator, which knows
-// what the current panel does with it.
+// Quits on ctrl-c from anywhere, before the focused component sees it, and
+// destroys the renderer once the store asks to quit.
 export class KeyboardListener {
   private renderer: CliRenderer
   private store: DataStore
@@ -21,29 +13,20 @@ export class KeyboardListener {
   }
 
   listen() {
-    this.renderer.keyInput.on('keypress', (event) =>
-      this.press(this.typed(event)),
-    )
-    this.renderer.keyInput.on('paste', (event) =>
-      this.press(this.pasted(event)),
-    )
+    this.renderer.keyInput.on('keypress', (event) => this.quitOn(event))
+    this.store.quit.requested.subscribe((asked) => this.destroyOn(asked))
   }
 
-  private press(keypress: Keypress) {
-    this.store.navigator.press(keypress, () => this.renderer.destroy())
-  }
+  private quitOn(event: KeyEvent) {
+    if (!event.ctrl || event.name !== 'c') return
 
-  // The key stops here so a focused select never moves on its own; the store
-  // holds the selection.
-  private typed(event: KeyEvent) {
     event.preventDefault()
-    const { input, key } = keypressFromEvent(event)
-    return new Keypress(input, key)
+    this.store.quit.request()
   }
 
-  // A paste is typed input that arrives all at once, with newlines dropped.
-  private pasted(event: PasteEvent) {
-    const text = stripAnsiSequences(decodePasteBytes(event.bytes))
-    return new Keypress(text.replace(/[\r\n]/g, ''), {})
+  private destroyOn(asked: boolean) {
+    if (!asked) return
+
+    this.renderer.destroy()
   }
 }

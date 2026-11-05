@@ -6,9 +6,6 @@ import { SetupProgress } from './setup-progress.tsx'
 
 export class CompleteSetupPanel {
   readonly name = 'completeSetup'
-  readonly next = undefined
-  readonly cancel = undefined
-  readonly controller = undefined
 
   prompt(store: DataStore) {
     return <SetupProgress store={store} />

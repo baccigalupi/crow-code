@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'bun:test'
-import { Keypress } from '../../../../src/tui/keypress.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { EnvFilePanel } from '../../../../src/tui/install/directories/env-file.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
@@ -14,13 +13,12 @@ describe('EnvFilePanel', () => {
     expect(panel.next).toBe('ignore')
   })
 
-  it('when a key is typed, its controller edits the env file', () => {
+  it('when asked for its field, is the env file', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const controller = new EnvFilePanel().controller(store)
 
-    controller.handle(new Keypress('x', {}))
+    const field = new EnvFilePanel().field(store)
 
-    expect(store.directories.envFile.text.peek().text).toBe('x')
+    expect(field).toBe(store.directories.envFile)
   })
 
   it('when nothing is typed, it defaults to .env inside the global directory', () => {

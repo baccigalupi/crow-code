@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { testRender } from '@opentui/react/test-utils'
 import { act } from 'react'
-import { Keypress } from '../../../../src/tui/keypress.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { RepoPanel } from '../../../../src/tui/install/directories/repo.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
@@ -14,25 +13,14 @@ describe('RepoPanel', () => {
 
     expect(name).toBe('repo')
     expect(panel.next).toBe('crowGlobalDirectory')
-    expect(panel.cancel).toBeUndefined()
   })
 
-  it('when a key is typed, its controller edits the repo directory', () => {
+  it('when asked for its field, is the repo directory', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const controller = new RepoPanel().controller(store)
 
-    controller.handle(new Keypress('x', {}))
+    const field = new RepoPanel().field(store)
 
-    expect(store.directories.repoDirectory.text.peek().text).toBe('x')
-  })
-
-  it('when return is pressed, its controller moves on', () => {
-    const store = new DataStore({ applicationData: mockApplicationData() })
-    const controller = new RepoPanel().controller(store)
-
-    const outcome = controller.handle(new Keypress('', { return: true }))
-
-    expect(outcome).toBe('next')
+    expect(field).toBe(store.directories.repoDirectory)
   })
 
   it('when asked for its prompt, renders the question and the default', async () => {

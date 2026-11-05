@@ -35,6 +35,15 @@ describe('TextFieldStore', () => {
     ])
   })
 
+  it('when replaced, holds the new text with the cursor at its end', () => {
+    const field = new TextFieldStore()
+    field.insert('~/x')
+
+    field.replace('./crow')
+
+    expect(field.text.peek()).toEqual({ text: './crow', cursor: 6 })
+  })
+
   it('when cleared, empties the text', () => {
     const field = new TextFieldStore()
     field.insert('~/x')

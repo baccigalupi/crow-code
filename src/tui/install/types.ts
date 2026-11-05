@@ -2,9 +2,8 @@ import type { Keypress } from '../keypress.ts'
 import type { AsyncOperation, CrowPermissionsConfig } from '../../types.ts'
 import type { ApplicationData } from '../../application-data/application-data.ts'
 import type { CrowConfigInputs } from './crow-config/types.ts'
+import type { DataStore } from './data-store.ts'
 import type { Router } from './router.ts'
-import type { ProviderEditFormStore } from './data-stores/provider-edit-form-store.ts'
-import type { ProviderStore } from './data-stores/provider-store.ts'
 import type { TextFieldStore } from './data-stores/text-field-store.ts'
 
 // The names of the panels that take keys, derived from the registry. The
@@ -90,10 +89,14 @@ export type TextEditorArguments = {
   readonly keypress: Keypress
 }
 
-export type ProviderFormControllerArguments = {
-  readonly field: TextFieldStore
-  readonly form: ProviderEditFormStore
-  readonly providers: ProviderStore
-  readonly back?: PanelName
-  readonly forward?: PanelName
+// How a prompt moves the installer: to another panel, or out.
+export type Navigation = {
+  goTo(name: PanelName): void
+  exit(): void
+}
+
+export type PromptArguments<Panel> = {
+  readonly panel: Panel
+  readonly store: DataStore
+  readonly navigation: Navigation
 }

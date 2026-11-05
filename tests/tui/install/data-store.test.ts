@@ -1,6 +1,4 @@
-import { describe, expect, it, mock, spyOn } from 'bun:test'
-import { effect } from '@preact/signals-core'
-import { Keypress } from '../../../src/tui/keypress.ts'
+import { describe, expect, it, spyOn } from 'bun:test'
 import { DataStore } from '../../../src/tui/install/data-store.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
@@ -20,21 +18,6 @@ describe('DataStore', () => {
     store.providers.save(store.providerEditForm.provider(), '')
 
     expect(store.inputs.peek().providers).toEqual([{ name: 'Ollama', url: '' }])
-  })
-
-  it('when return commits a provider, the step changes once', () => {
-    const store = new DataStore({ applicationData: mockApplicationData() })
-    store.providerEditForm.providerName.insert('nous')
-    store.navigator.goTo('providerCredentials')
-    const watcher = mock()
-    effect(() => watcher(store.navigator.current.value))
-
-    store.navigator.press(new Keypress('', { return: true }), mock())
-
-    expect(watcher.mock.calls).toEqual([
-      ['providerCredentials'],
-      ['providerName'],
-    ])
   })
 
   it('when the navigator reaches completeSetup, setup starts and its tasks are listed', () => {

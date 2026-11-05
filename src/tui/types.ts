@@ -1,4 +1,3 @@
-import type { Keypress } from './keypress.ts'
 import type { Navigator } from './navigator.ts'
 
 export interface InputText {
@@ -8,20 +7,7 @@ export interface InputText {
 
 export type CursorMove = 'left' | 'right' | 'home' | 'end'
 
-export type ExitApp = () => void
-
-// What a controller says a key meant; the Navigator applies it.
-export type Outcome<Name extends string> =
-  'stay' | 'next' | 'cancel' | 'exit' | { readonly goTo: Name }
-
-export type Controller<Name extends string> = {
-  handle(keypress: Keypress): Outcome<Name>
-}
-
 export type PanelFlow<Name extends string> = {
-  readonly controller?: Controller<Name>
-  readonly next?: Name
-  readonly cancel?: Name
   entered?(navigator: Navigator<Name>): unknown
 }
 
