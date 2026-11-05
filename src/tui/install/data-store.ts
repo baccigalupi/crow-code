@@ -1,5 +1,5 @@
 import { computed } from '@preact/signals-core'
-import type { StepName, DataStoreArguments, TextStepName } from './types.ts'
+import type { DataStoreArguments, TextStepName } from './types.ts'
 import { Navigator } from './navigator.ts'
 import { ConfirmStore } from './interactions/data-stores/confirm-store.ts'
 import { DirectoriesStore } from './interactions/data-stores/directories-store.ts'
@@ -9,11 +9,10 @@ import { ProviderEditFormStore } from './interactions/data-stores/provider-edit-
 import { ProviderStore } from './interactions/data-stores/provider-store.ts'
 import { SetupProgressStore } from './interactions/data-stores/setup-progress-store.ts'
 import type { ApplicationData } from '../../application-data/application-data.ts'
-import { RunSetup } from './interactions/run-setup.ts'
 
 // The whole installer: the steps' stores, whether to quit, the answers they
 // add up to, the setup progress, and the navigator that says which step is
-// showing. Arriving at completeSetup starts setup.
+// showing.
 export class DataStore {
   readonly confirm = new ConfirmStore()
   readonly directories = new DirectoriesStore()
@@ -21,10 +20,7 @@ export class DataStore {
   readonly permissions = new PermissionsStore()
   readonly providerEditForm = new ProviderEditFormStore()
   readonly providers = new ProviderStore()
-  readonly navigator = new Navigator<StepName>({
-    initial: 'repoDirectory',
-    entered: (name) => this.entered(name),
-  })
+  readonly navigator = new Navigator(this)
   readonly progress = new SetupProgressStore()
   readonly applicationData: ApplicationData
   readonly inputs = computed(() => this.answers())
@@ -39,10 +35,6 @@ export class DataStore {
 
   constructor({ applicationData }: DataStoreArguments) {
     this.applicationData = applicationData
-  }
-
-  private entered(name: StepName) {
-    if (name === 'completeSetup') new RunSetup(this).start()
   }
 
   // What each one-line question stands for until something is typed.

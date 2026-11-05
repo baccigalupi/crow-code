@@ -3,11 +3,6 @@ import type { ApplicationData } from '../../application-data/application-data.ts
 import type { CrowConfigInputs } from './crow-config/types.ts'
 import type { DataStore } from './data-store.ts'
 
-export type NavigatorArguments<Name extends string> = {
-  readonly initial: Name
-  entered(name: Name): unknown
-}
-
 export type KeyFlags = {
   readonly ctrl?: boolean
   readonly shift?: boolean
@@ -43,19 +38,6 @@ export type ProviderStepName =
 // Every step of the installer.
 export type StepName =
   TextStepName | ProviderStepName | 'confirm' | 'completeSetup' | 'done'
-
-export type TextStep = {
-  readonly label: string
-  readonly next: StepName
-  readonly bare: boolean
-}
-
-export type ProviderStep = {
-  readonly next: StepName
-  readonly back: StepName | undefined
-  readonly forward: StepName | undefined
-  readonly masked: boolean
-}
 
 export type InstallProvider = {
   readonly name: string

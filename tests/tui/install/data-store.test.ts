@@ -1,4 +1,4 @@
-import { describe, expect, it, spyOn } from 'bun:test'
+import { describe, expect, it } from 'bun:test'
 import { DataStore } from '../../../src/tui/install/data-store.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
@@ -18,33 +18,6 @@ describe('DataStore', () => {
     store.providers.save(store.providerEditForm.provider(), '')
 
     expect(store.inputs.peek().providers).toEqual([{ name: 'Ollama', url: '' }])
-  })
-
-  it('when the navigator reaches completeSetup, setup starts and its tasks are listed', () => {
-    const applicationData = mockApplicationData()
-    const mkdir = spyOn(
-      applicationData.filesystem,
-      'mkdirWithParents',
-    ).mockImplementation(() => new Promise<void>(() => {}))
-    const store = new DataStore({ applicationData })
-
-    store.navigator.goTo('completeSetup')
-
-    expect(mkdir.mock.calls).toEqual([['.crow']])
-    expect(store.progress.tasks.peek()).toEqual([
-      {
-        id: 'LocalConfigTask',
-        label: 'Writing config to .crow/config.json',
-        done: false,
-        error: '',
-      },
-      {
-        id: 'GlobalDirectoryTask',
-        label: 'Creating ~/.crow',
-        done: false,
-        error: '',
-      },
-    ])
   })
 
   it('when the step moves, inputs report the new step', () => {

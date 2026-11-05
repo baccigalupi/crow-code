@@ -6,12 +6,13 @@ import type {
   StepName,
 } from '../../types.ts'
 import { keypressFromEvent } from '../listeners/keypress-from-event.ts'
-import { providerSteps } from '../../provider/steps.ts'
+import { ProviderSteps } from '../../steps/provider-steps.ts'
 
 // What a provider field does. Each input types into its own field; return
 // moves on, and on the key it saves the provider and clears the form. Tab
 // walks the fields and escape clears the form and finishes at confirm.
 export class ProviderActions {
+  private readonly steps = new ProviderSteps()
   private actionArguments: PromptArguments<ProviderStepName>
 
   constructor(actionArguments: PromptArguments<ProviderStepName>) {
@@ -52,9 +53,11 @@ export class ProviderActions {
   }
 
   private tab(backward: boolean) {
-    const { back, forward } = this.flow()
-    if (backward) this.go(back)
-    else this.go(forward)
+    if (backward) {
+      this.go(this.flow().back)
+    } else {
+      this.go(this.flow().forward)
+    }
   }
 
   private go(target: StepName | undefined) {
@@ -76,7 +79,7 @@ export class ProviderActions {
   }
 
   private flow() {
-    return providerSteps[this.actionArguments.step]
+    return this.steps.named(this.actionArguments.step)
   }
 
   private field() {

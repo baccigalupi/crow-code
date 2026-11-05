@@ -28,7 +28,7 @@ describe('TextPromptViewModel', () => {
     expect(placeholder).toBe('(.crow)')
   })
 
-  it('when the step is bare, its placeholder is the default alone', () => {
+  it('when the default is a JSON list, its placeholder is the list alone', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const viewModel = new TextPromptViewModel(
       'ignore',

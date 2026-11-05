@@ -1,9 +1,10 @@
 import type { TextStepName } from '../types.ts'
-import { textSteps } from './steps.ts'
+import { TextSteps } from '../steps/text-steps.ts'
 
 // A question's label, and the default its input shows until something is
-// typed, bare or in parentheses.
+// typed.
 export class TextPromptViewModel {
+  private readonly steps = new TextSteps()
   private step: TextStepName
   private defaults: Readonly<Record<TextStepName, string>>
 
@@ -16,13 +17,15 @@ export class TextPromptViewModel {
   }
 
   label() {
-    return textSteps[this.step].label
+    return this.textStep().label
   }
 
   placeholder() {
-    if (textSteps[this.step].bare) return this.defaults[this.step]
+    return this.textStep().placeholder(this.defaults[this.step])
+  }
 
-    return `(${this.defaults[this.step]})`
+  private textStep() {
+    return this.steps.named(this.step)
   }
 }
 
