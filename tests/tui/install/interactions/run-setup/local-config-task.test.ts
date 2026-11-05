@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { LocalConfigTask } from '../../../../../src/tui/install/interactions/run-all/local-config-task.ts'
+import { LocalConfigTask } from '../../../../../src/tui/install/interactions/run-setup/local-config-task.ts'
 import { DataStore } from '../../../../../src/tui/install/data-store.ts'
 import {
   clearDirectory,

@@ -9,7 +9,7 @@ import { ProviderEditFormStore } from './data-stores/provider-edit-form-store.ts
 import { ProviderStore } from './data-stores/provider-store.ts'
 import { SetupProgressStore } from './data-stores/setup-progress-store.ts'
 import type { ApplicationData } from '../../application-data/application-data.ts'
-import { SetupRun } from './complete-setup/setup-run.ts'
+import { RunSetup } from './interactions/run-setup.ts'
 
 // The whole installer: the steps' stores, whether to quit, the answers they
 // add up to, the setup progress, and the navigator that says which step is
@@ -42,7 +42,7 @@ export class DataStore {
   }
 
   private entered(name: StepName) {
-    if (name === 'completeSetup') new SetupRun(this).start()
+    if (name === 'completeSetup') new RunSetup(this).start()
   }
 
   // What each one-line question stands for until something is typed.

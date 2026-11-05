@@ -12,3 +12,7 @@ export class ProviderPromptViewModel {
     return `Provider ${this.providers.length + 1}`
   }
 }
+
+export const providerPromptViewModel = (
+  providers: readonly InstallProvider[],
+) => new ProviderPromptViewModel(providers)

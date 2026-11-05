@@ -1,7 +1,7 @@
 import type { ProviderRow } from '../../types.ts'
 import { ConfigLine } from './config-line.tsx'
 import { Indented } from './indented.tsx'
-import { ProviderEntryViewModel } from './provider-entry-view-model.ts'
+import { providerEntryViewModel } from './provider-entry-view-model.ts'
 
 type ProviderEntryProps = { selectedStep: string; row: ProviderRow }
 
@@ -18,7 +18,7 @@ const Closing = ({ last }: ClosingProps) => {
 
 // { "name": "...", "baseUrl": "..." }
 const ProviderEntry = ({ selectedStep, row }: ProviderEntryProps) => {
-  const viewModel = new ProviderEntryViewModel(row)
+  const viewModel = providerEntryViewModel(row)
   return (
     <box flexDirection="column">
       <text>{'{'}</text>

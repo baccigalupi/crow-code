@@ -84,3 +84,8 @@ export class ConfigJsonViewModel {
     return crowConfigFromInputs(this.inputs).crowConfig()
   }
 }
+
+export const configJsonViewModel = (
+  inputs: CrowConfigInputs,
+  selectedStep: string,
+) => new ConfigJsonViewModel(inputs, selectedStep)

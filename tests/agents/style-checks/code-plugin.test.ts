@@ -53,6 +53,29 @@ describe('codePlugin', () => {
       expect(diagnostics).toHaveLength(0)
     })
 
+    it('when a ts module calls a view model factory, reports it', () => {
+      const source =
+        'class ListViewModel { item() { return itemViewModel(1) } }\nexport { ListViewModel }'
+
+      const diagnostics = checkSource(codePlugin, 'src/tui/list.ts', source)
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain('component that renders it')
+    })
+
+    it('when a view model module builds its own view model in its factory, ignores it', () => {
+      const source =
+        'class ItemViewModel { label() { return 1 } }\nexport const itemViewModel = (count: number) => new ItemViewModel()\nexport { ItemViewModel }'
+
+      const diagnostics = checkSource(
+        codePlugin,
+        'src/tui/item-view-model.ts',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(0)
+    })
+
     it('when a ts module builds another class, ignores it', () => {
       const source = 'const store = new DataStore(1)\nexport { store }'
 

@@ -1,6 +1,6 @@
 import type { DataStore } from '../../data-store.ts'
 import { useSignalValue } from '../../interactions/use-signal-value.ts'
-import { ConfigJsonViewModel } from './config-json-view-model.ts'
+import { configJsonViewModel } from './config-json-view-model.ts'
 import { ConfigLine } from './config-line.tsx'
 import { watchHighlight } from './highlight-reveal.ts'
 import { Indented } from './indented.tsx'
@@ -14,7 +14,7 @@ type ConfigJsonProps = { store: DataStore }
 export const ConfigJson = ({ store }: ConfigJsonProps) => {
   const inputs = useSignalValue(store.inputs)
   const selectedStep = useSignalValue(store.navigator.current)
-  const viewModel = new ConfigJsonViewModel(inputs, selectedStep)
+  const viewModel = configJsonViewModel(inputs, selectedStep)
   return (
     <scrollbox
       key={viewModel.key()}

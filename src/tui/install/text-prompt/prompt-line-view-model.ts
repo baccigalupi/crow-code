@@ -32,3 +32,6 @@ export class PromptLineViewModel {
     return this.input.text
   }
 }
+
+export const promptLineViewModel = (input: InputText, masked: boolean) =>
+  new PromptLineViewModel(input, masked)

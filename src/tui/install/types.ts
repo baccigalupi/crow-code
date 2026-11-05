@@ -49,7 +49,7 @@ export type CrowProviderConfig = {
 
 export type ConfigLineArguments = {
   readonly step: string
-  readonly editable: boolean
+  readonly editable?: boolean
   readonly selectedStep: string
 }
 

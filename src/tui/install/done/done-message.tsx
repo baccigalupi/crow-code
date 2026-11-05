@@ -3,7 +3,7 @@ import type { DataStore } from '../data-store.ts'
 import { useSignalValue } from '../interactions/use-signal-value.ts'
 import { ProgressList } from '../complete-setup/setup-progress.tsx'
 import { DoneActions } from './actions.ts'
-import { DoneMessageViewModel } from './done-message-view-model.ts'
+import { doneMessageViewModel } from './done-message-view-model.ts'
 
 type DoneMessageProps = { store: DataStore }
 
@@ -11,7 +11,7 @@ type DoneMessageProps = { store: DataStore }
 // holds focus, and any key quits.
 export const DoneMessage = ({ store }: DoneMessageProps) => {
   const rows = useSignalValue(store.progress.rows)
-  const viewModel = new DoneMessageViewModel(rows)
+  const viewModel = doneMessageViewModel(rows)
   const actions = new DoneActions(store)
   return (
     <box flexDirection="column" focusable focused onKeyDown={actions.keyDown()}>

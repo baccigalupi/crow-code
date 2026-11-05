@@ -1,8 +1,8 @@
-import type { RunAllArguments, SetupTask } from '../types.ts'
-import { memoize } from '../../../decorators.ts'
-import { Operation } from '../../../operation.ts'
-import { GlobalDirectoryTask } from './run-all/global-directory-task.ts'
-import { LocalConfigTask } from './run-all/local-config-task.ts'
+import type { RunAllArguments, SetupTask } from '../../types.ts'
+import { memoize } from '../../../../decorators.ts'
+import { Operation } from '../../../../operation.ts'
+import { GlobalDirectoryTask } from './global-directory-task.ts'
+import { LocalConfigTask } from './local-config-task.ts'
 
 // Runs the setup tasks one after another, reporting each as it finishes. A
 // failed task is reported too, and the tasks after it are skipped.

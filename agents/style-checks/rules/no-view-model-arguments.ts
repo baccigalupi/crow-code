@@ -2,10 +2,12 @@ import ts from 'typescript'
 import { isTsxFile } from '../engine/gates.ts'
 import type { Rule } from '../engine/types.ts'
 
+// Bound to `new ThingViewModel(...)` or its factory, `thingViewModel(...)`.
 const buildsViewModel = (node: ts.VariableDeclaration) =>
   ts.isIdentifier(node.name) &&
   node.initializer !== undefined &&
-  ts.isNewExpression(node.initializer) &&
+  (ts.isNewExpression(node.initializer) ||
+    ts.isCallExpression(node.initializer)) &&
   ts.isIdentifier(node.initializer.expression) &&
   node.initializer.expression.text.endsWith('ViewModel')
 

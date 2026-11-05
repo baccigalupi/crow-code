@@ -25,3 +25,8 @@ export class TextPromptViewModel {
     return `(${this.defaults[this.step]})`
   }
 }
+
+export const textPromptViewModel = (
+  step: TextStepName,
+  defaults: Readonly<Record<TextStepName, string>>,
+) => new TextPromptViewModel(step, defaults)

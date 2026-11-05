@@ -1,9 +1,9 @@
 import { describe, expect, it, spyOn } from 'bun:test'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
-import { SetupRun } from '../../../../src/tui/install/complete-setup/setup-run.ts'
+import { RunSetup } from '../../../../src/tui/install/interactions/run-setup.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
-describe('SetupRun', () => {
+describe('RunSetup', () => {
   it('when started, lists both tasks as pending', () => {
     const applicationData = mockApplicationData()
     spyOn(applicationData.filesystem, 'mkdirWithParents').mockImplementation(
@@ -11,7 +11,7 @@ describe('SetupRun', () => {
     )
     const store = new DataStore({ applicationData })
 
-    new SetupRun(store).start()
+    new RunSetup(store).start()
 
     expect(store.progress.tasks.peek()).toEqual([
       {
@@ -35,7 +35,7 @@ describe('SetupRun', () => {
     spyOn(applicationData.filesystem, 'writeTextFile').mockResolvedValue()
     const store = new DataStore({ applicationData })
 
-    await new SetupRun(store).start()
+    await new RunSetup(store).start()
 
     expect(store.progress.tasks.peek()).toEqual([
       {
@@ -61,7 +61,7 @@ describe('SetupRun', () => {
     )
     const store = new DataStore({ applicationData })
 
-    await new SetupRun(store).start()
+    await new RunSetup(store).start()
 
     expect(store.progress.tasks.peek()).toEqual([
       {
@@ -89,7 +89,7 @@ describe('SetupRun', () => {
     const store = new DataStore({ applicationData })
     store.directories.repoDirectory.insert('/repo/x')
 
-    new SetupRun(store).start()
+    new RunSetup(store).start()
 
     expect(mkdir.mock.calls).toEqual([['/repo/x']])
   })

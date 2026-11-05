@@ -10,7 +10,8 @@ export class ConfigLineViewModel {
   private editable: boolean
   private selectedStep: string
 
-  constructor({ step, editable, selectedStep }: ConfigLineArguments) {
+  // A line is editable unless it says otherwise.
+  constructor({ step, editable = true, selectedStep }: ConfigLineArguments) {
     this.step = step
     this.editable = editable
     this.selectedStep = selectedStep
@@ -20,3 +21,6 @@ export class ConfigLineViewModel {
     return this.editable && this.selectedStep === this.step
   }
 }
+
+export const configLineViewModel = (configLineArguments: ConfigLineArguments) =>
+  new ConfigLineViewModel(configLineArguments)

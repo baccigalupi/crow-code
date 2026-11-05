@@ -25,3 +25,6 @@ export class ProviderEntryViewModel {
     return this.row.last
   }
 }
+
+export const providerEntryViewModel = (row: ProviderRow) =>
+  new ProviderEntryViewModel(row)

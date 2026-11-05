@@ -5,8 +5,8 @@ import type { InputText } from '../../types.ts'
 import { PromptNavigation } from '../interactions/prompt-navigation.ts'
 import { useSignalValue } from '../interactions/use-signal-value.ts'
 import { TextPromptActions } from './actions.ts'
-import { PromptLineViewModel } from './prompt-line-view-model.ts'
-import { TextPromptViewModel } from './text-prompt-view-model.ts'
+import { promptLineViewModel } from './prompt-line-view-model.ts'
+import { textPromptViewModel } from './text-prompt-view-model.ts'
 
 type PromptLineProps = {
   label: string
@@ -22,7 +22,7 @@ export const PromptLine = ({
   placeholder,
   masked,
 }: PromptLineProps) => {
-  const viewModel = new PromptLineViewModel(input, masked)
+  const viewModel = promptLineViewModel(input, masked)
   return (
     <box paddingX={1}>
       <text>
@@ -44,7 +44,7 @@ type TextPromptProps = {
 export const TextPrompt = ({ store, step }: TextPromptProps) => {
   const defaults = useSignalValue(store.textDefaults)
   const input = useSignalValue(store.textFields[step].text)
-  const viewModel = new TextPromptViewModel(step, defaults)
+  const viewModel = textPromptViewModel(step, defaults)
   const actions = new TextPromptActions({
     step,
     store,

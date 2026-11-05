@@ -3,7 +3,7 @@ import type { DataStore } from '../data-store.ts'
 import { PromptNavigation } from '../interactions/prompt-navigation.ts'
 import { useSignalValue } from '../interactions/use-signal-value.ts'
 import { ConfirmActions } from './actions.ts'
-import { ConfirmPromptViewModel } from './prompt-view-model.ts'
+import { confirmPromptViewModel } from './prompt-view-model.ts'
 
 const options = [
   { name: 'Yes', description: '' },
@@ -24,7 +24,7 @@ type ConfirmPromptProps = { store: DataStore }
 // "Complete setup?" over a focused Yes/No select; return picks.
 export const ConfirmPrompt = ({ store }: ConfirmPromptProps) => {
   const confirmed = useSignalValue(store.confirm.confirmed)
-  const viewModel = new ConfirmPromptViewModel(confirmed)
+  const viewModel = confirmPromptViewModel(confirmed)
   const actions = new ConfirmActions({
     store,
     navigation: new PromptNavigation(store),

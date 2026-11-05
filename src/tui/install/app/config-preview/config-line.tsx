@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { ConfigLineViewModel } from './config-line-view-model.ts'
+import { configLineViewModel } from './config-line-view-model.ts'
 
 type ConfigLineProps = {
   selectedStep: string
@@ -7,12 +7,6 @@ type ConfigLineProps = {
   editable?: boolean
   children?: ReactNode
 }
-
-const configLineViewModel = ({
-  selectedStep,
-  step,
-  editable = true,
-}: ConfigLineProps) => new ConfigLineViewModel({ step, editable, selectedStep })
 
 // The one line the scroll looks for.
 const HighlightedLine = (props: ConfigLineProps) => {

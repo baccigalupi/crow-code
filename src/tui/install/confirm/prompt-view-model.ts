@@ -12,3 +12,6 @@ export class ConfirmPromptViewModel {
     return 1
   }
 }
+
+export const confirmPromptViewModel = (confirmed: boolean) =>
+  new ConfirmPromptViewModel(confirmed)

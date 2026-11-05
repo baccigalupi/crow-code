@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
-import { HeaderViewModel } from './header-view-model.ts'
+import { headerViewModel } from './header-view-model.ts'
 
-const viewModel = new HeaderViewModel()
+const viewModel = headerViewModel()
 
 const Bar = ({ children }: { children?: ReactNode }) => (
   <box

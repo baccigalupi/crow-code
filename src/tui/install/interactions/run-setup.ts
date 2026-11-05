@@ -1,10 +1,10 @@
 import type { DataStore } from '../data-store.ts'
 import type { StatefulTask } from '../types.ts'
-import { RunAll } from '../interactions/run-all.ts'
+import { RunAll } from './run-setup/run-all.ts'
 
 // Setup from the answers as they are now: lists every task as pending, runs
 // them, and moves on to done when it is over, successfully or not.
-export class SetupRun {
+export class RunSetup {
   private store: DataStore
 
   constructor(store: DataStore) {

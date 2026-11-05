@@ -37,6 +37,22 @@ describe('tsxPlugin', () => {
       )
     })
 
+    it('when a view model from a factory has a method called with an argument, reports it', () => {
+      const source =
+        "const App = () => { const viewModel = thingViewModel(1); return <text>{viewModel.value('name')}</text> }\nexport { App }"
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain(
+        'view model methods take no arguments',
+      )
+    })
+
     it('when a view model method is called without arguments, ignores it', () => {
       const source =
         'const App = () => { const viewModel = new ThingViewModel(1); return <text>{viewModel.name()}</text> }\nexport { App }'

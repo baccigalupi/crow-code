@@ -5,7 +5,7 @@ import { createRoot, flushSync } from '@opentui/react'
 import { createElement } from 'react'
 import { memoize } from '../../decorators.ts'
 import { createOpenTuiRunner } from '../runner.ts'
-import { InstallApp } from './app.tsx'
+import { Layout } from './layout.tsx'
 import { DataStore } from './data-store.ts'
 import { KeyboardListener } from './interactions/listeners/keyboard-listener.ts'
 
@@ -33,10 +33,10 @@ export class InstallTuiRunner {
   // Mounts synchronously so the first frame is already drawn when keys
   // start. Destroying the renderer unmounts the app and ends key input.
   view(renderer: CliRenderer) {
-    const app = createElement(InstallApp, {
+    const layout = createElement(Layout, {
       store: this.store(),
     })
-    flushSync(() => createRoot(renderer).render(app))
+    flushSync(() => createRoot(renderer).render(layout))
     new KeyboardListener(renderer, this.store()).listen()
   }
 

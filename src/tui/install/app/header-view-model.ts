@@ -5,3 +5,5 @@ export class HeaderViewModel {
   readonly background = theme.chrome.background
   readonly textColor = theme.chrome.textColor
 }
+
+export const headerViewModel = () => new HeaderViewModel()

@@ -16,3 +16,6 @@ export class DoneMessageViewModel {
     return 'Done! Press any key to exit'
   }
 }
+
+export const doneMessageViewModel = (rows: readonly SetupTaskRow[]) =>
+  new DoneMessageViewModel(rows)

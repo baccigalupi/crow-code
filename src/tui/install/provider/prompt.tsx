@@ -5,14 +5,14 @@ import { PromptNavigation } from '../interactions/prompt-navigation.ts'
 import { useSignalValue } from '../interactions/use-signal-value.ts'
 import { ProviderActions } from './actions.ts'
 import { Field } from './field.tsx'
-import { ProviderPromptViewModel } from './prompt-view-model.ts'
+import { providerPromptViewModel } from './prompt-view-model.ts'
 
 type ProviderPromptProps = { store: DataStore; step: ProviderStepName }
 
 // The three provider steps as one "Provider N" block over an escape hint.
 export const ProviderPrompt = ({ store, step }: ProviderPromptProps) => {
   const providers = useSignalValue(store.providers.providers)
-  const viewModel = new ProviderPromptViewModel(providers)
+  const viewModel = providerPromptViewModel(providers)
   const actions = new ProviderActions({
     step,
     store,
