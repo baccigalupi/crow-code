@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { Keypress } from '../../../src/tui/install/keypress.ts'
+import { Keypress } from '../../../../src/tui/install/interactions/keypress.ts'
 
 describe('Keypress', () => {
   it('when c arrives with ctrl, is quit', () => {

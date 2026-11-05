@@ -1,7 +1,10 @@
 import { describe, expect, it, mock } from 'bun:test'
-import { Keypress } from '../../../../../src/tui/install/keypress.ts'
+import { Keypress } from '../../../../../src/tui/install/interactions/keypress.ts'
 import { DataStore } from '../../../../../src/tui/install/data-store.ts'
 import { ProviderActions } from '../../../../../src/tui/install/interactions/handlers/provider-actions.ts'
+import { ProviderCredentialsStep } from '../../../../../src/tui/install/steps/provider/provider-credentials-step.ts'
+import { ProviderNameStep } from '../../../../../src/tui/install/steps/provider/provider-name-step.ts'
+import { ProviderUrlStep } from '../../../../../src/tui/install/steps/provider/provider-url-step.ts'
 import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 
 describe('ProviderActions', () => {
@@ -10,7 +13,7 @@ describe('ProviderActions', () => {
       const store = new DataStore({ applicationData: mockApplicationData() })
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        step: 'providerUrl',
+        step: new ProviderUrlStep(),
         store,
         navigation,
       })
@@ -25,7 +28,7 @@ describe('ProviderActions', () => {
       const store = new DataStore({ applicationData: mockApplicationData() })
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        step: 'providerName',
+        step: new ProviderNameStep(),
         store,
         navigation,
       })
@@ -40,7 +43,7 @@ describe('ProviderActions', () => {
       const store = new DataStore({ applicationData: mockApplicationData() })
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        step: 'providerName',
+        step: new ProviderNameStep(),
         store,
         navigation,
       })
@@ -57,7 +60,7 @@ describe('ProviderActions', () => {
       const store = new DataStore({ applicationData: mockApplicationData() })
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        step: 'providerUrl',
+        step: new ProviderUrlStep(),
         store,
         navigation,
       })
@@ -72,7 +75,7 @@ describe('ProviderActions', () => {
       const store = new DataStore({ applicationData: mockApplicationData() })
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        step: 'providerUrl',
+        step: new ProviderUrlStep(),
         store,
         navigation,
       })
@@ -86,7 +89,7 @@ describe('ProviderActions', () => {
       const store = new DataStore({ applicationData: mockApplicationData() })
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        step: 'providerCredentials',
+        step: new ProviderCredentialsStep(),
         store,
         navigation,
       })
@@ -103,7 +106,7 @@ describe('ProviderActions', () => {
       store.providerEditForm.providerName.replace('or')
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        step: 'providerName',
+        step: new ProviderNameStep(),
         store,
         navigation,
       })
@@ -120,7 +123,7 @@ describe('ProviderActions', () => {
       store.providers.save({ name: 'nous', url: 'https://n' }, '')
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        step: 'providerName',
+        step: new ProviderNameStep(),
         store,
         navigation,
       })
@@ -136,7 +139,7 @@ describe('ProviderActions', () => {
       const store = new DataStore({ applicationData: mockApplicationData() })
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        step: 'providerName',
+        step: new ProviderNameStep(),
         store,
         navigation,
       })
@@ -154,7 +157,7 @@ describe('ProviderActions', () => {
     store.providerEditForm.providerCredentials.replace('sk-1')
     const navigation = { goTo: mock(), exit: mock() }
     const actions = new ProviderActions({
-      step: 'providerCredentials',
+      step: new ProviderCredentialsStep(),
       store,
       navigation,
     })

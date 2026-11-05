@@ -28,9 +28,8 @@ describe('Navigator', () => {
       () => new Promise<void>(() => {}),
     )
     const store = new DataStore({ applicationData })
-    const navigator = new Navigator(store)
 
-    navigator.goTo('completeSetup')
+    store.navigator.goTo('completeSetup')
 
     expect(store.progress.tasks.peek()).toHaveLength(2)
   })

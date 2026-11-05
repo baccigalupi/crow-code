@@ -1,6 +1,7 @@
 import { computed } from '@preact/signals-core'
 import type { DataStoreArguments } from './types.ts'
 import { Navigator } from './navigator.ts'
+import { Steps } from './steps/steps.ts'
 import { ConfirmStore } from './interactions/data-stores/confirm-store.ts'
 import { DirectoriesStore } from './interactions/data-stores/directories-store.ts'
 import { QuitStore } from './interactions/data-stores/quit-store.ts'
@@ -21,6 +22,10 @@ export class DataStore {
   readonly providerEditForm = new ProviderEditFormStore()
   readonly providers = new ProviderStore()
   readonly navigator = new Navigator(this)
+  private readonly steps = new Steps()
+  readonly currentStep = computed(() =>
+    this.steps.named(this.navigator.current.value),
+  )
   readonly progress = new SetupProgressStore()
   readonly applicationData: ApplicationData
   readonly inputs = computed(() => this.answers())

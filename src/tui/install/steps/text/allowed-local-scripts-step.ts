@@ -1,12 +1,8 @@
-import { defaultCrowConfig } from '../../../../domain/config.ts'
-import { TextStep } from '../text-step.ts'
+import { PathsTextStep } from '../paths-text-step.ts'
 
-export class AllowedLocalScriptsStep extends TextStep {
+export class AllowedLocalScriptsStep extends PathsTextStep {
   readonly name = 'allowedLocalScripts'
   readonly label = 'Allowed local scripts'
   readonly next = 'providerName'
-
-  defaultValue() {
-    return defaultCrowConfig().permissions.allowedLocalScripts.join(', ')
-  }
+  readonly defaultPaths = ['./dev/*', './agent/*']
 }

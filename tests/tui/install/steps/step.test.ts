@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
-import { ConfirmStep } from '../../../../src/tui/install/steps/confirm-step.ts'
+import { ConfirmStep } from '../../../../src/tui/install/steps/confirm-step.tsx'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('Step', () => {

@@ -1,31 +1,25 @@
 import type { DataStore } from '../data-store.ts'
-import type { TextStepName } from '../types.ts'
-import { TextSteps } from '../steps/text-steps.ts'
+import type { TextStep } from '../steps/text-step.tsx'
 
 // A question's label, and the default its input shows until something is
 // typed.
 export class TextPromptViewModel {
-  private readonly steps = new TextSteps()
-  private step: TextStepName
+  private step: TextStep
   private store: DataStore
 
-  constructor(step: TextStepName, store: DataStore) {
+  constructor(step: TextStep, store: DataStore) {
     this.step = step
     this.store = store
   }
 
   label() {
-    return this.textStep().label
+    return this.step.label
   }
 
   placeholder() {
-    return this.textStep().placeholder(this.store)
-  }
-
-  private textStep() {
-    return this.steps.named(this.step)
+    return this.step.placeholder(this.store)
   }
 }
 
-export const textPromptViewModel = (step: TextStepName, store: DataStore) =>
+export const textPromptViewModel = (step: TextStep, store: DataStore) =>
   new TextPromptViewModel(step, store)

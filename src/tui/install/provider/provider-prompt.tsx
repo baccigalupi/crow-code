@@ -1,13 +1,13 @@
 import { TextAttributes } from '@opentui/core'
 import type { DataStore } from '../data-store.ts'
-import type { ProviderStepName } from '../types.ts'
+import type { ProviderStep } from '../steps/provider-step.tsx'
 import { PromptNavigation } from '../interactions/prompt-navigation.ts'
 import { useSignalValue } from '../interactions/use-signal-value.ts'
 import { ProviderActions } from '../interactions/handlers/provider-actions.ts'
 import { Field } from './field.tsx'
 import { providerPromptViewModel } from './provider-prompt-view-model.ts'
 
-type ProviderPromptProps = { store: DataStore; step: ProviderStepName }
+type ProviderPromptProps = { store: DataStore; step: ProviderStep }
 
 // The three provider steps as one "Provider N" block over an escape hint.
 export const ProviderPrompt = ({ store, step }: ProviderPromptProps) => {

@@ -26,11 +26,11 @@ describe('EscalateWriteStep', () => {
     expect(next).toBe('allowedLocalScripts')
   })
 
-  it('when asked for its default, is the config array joined', () => {
+  it('when asked for its default paths, is the dev and agent directories', () => {
     const step = new EscalateWriteStep()
 
-    const defaultValue = step.defaultValue()
+    const defaultPaths = step.defaultPaths
 
-    expect(defaultValue).toBe('./dev, ./agent')
+    expect(defaultPaths).toEqual(['./dev', './agent'])
   })
 })

@@ -1,4 +1,4 @@
-import { ProviderStep } from '../provider-step.ts'
+import { ProviderStep } from '../provider-step.tsx'
 
 // The last field loops back to the name for the next provider.
 export class ProviderCredentialsStep extends ProviderStep {

@@ -5,6 +5,8 @@ import { act } from 'react'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { ProviderActions } from '../../../../src/tui/install/interactions/handlers/provider-actions.ts'
 import { Field } from '../../../../src/tui/install/provider/field.tsx'
+import { ProviderCredentialsStep } from '../../../../src/tui/install/steps/provider/provider-credentials-step.ts'
+import { ProviderUrlStep } from '../../../../src/tui/install/steps/provider/provider-url-step.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('Field', () => {
@@ -13,7 +15,7 @@ describe('Field', () => {
     store.providerEditForm.providerName.replace('nous')
     store.navigator.goTo('providerUrl')
     const actions = new ProviderActions({
-      step: 'providerUrl',
+      step: new ProviderUrlStep(),
       store,
       navigation: { goTo: mock(), exit: mock() },
     })
@@ -32,7 +34,7 @@ describe('Field', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.navigator.goTo('providerUrl')
     const actions = new ProviderActions({
-      step: 'providerUrl',
+      step: new ProviderUrlStep(),
       store,
       navigation: { goTo: mock(), exit: mock() },
     })
@@ -52,7 +54,7 @@ describe('Field', () => {
     store.providerEditForm.providerCredentials.replace('sk-1')
     store.navigator.goTo('providerCredentials')
     const actions = new ProviderActions({
-      step: 'providerUrl',
+      step: new ProviderUrlStep(),
       store,
       navigation: { goTo: mock(), exit: mock() },
     })
@@ -72,7 +74,7 @@ describe('Field', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.navigator.goTo('providerCredentials')
     const actions = new ProviderActions({
-      step: 'providerCredentials',
+      step: new ProviderCredentialsStep(),
       store,
       navigation: { goTo: mock(), exit: mock() },
     })
@@ -91,7 +93,7 @@ describe('Field', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.navigator.goTo('providerCredentials')
     const actions = new ProviderActions({
-      step: 'providerCredentials',
+      step: new ProviderCredentialsStep(),
       store,
       navigation: { goTo: mock(), exit: mock() },
     })
@@ -113,7 +115,7 @@ describe('Field', () => {
     store.navigator.goTo('providerUrl')
     const navigation = { goTo: mock(), exit: mock() }
     const actions = new ProviderActions({
-      step: 'providerUrl',
+      step: new ProviderUrlStep(),
       store,
       navigation,
     })
@@ -133,7 +135,7 @@ describe('Field', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.navigator.goTo('providerName')
     const actions = new ProviderActions({
-      step: 'providerUrl',
+      step: new ProviderUrlStep(),
       store,
       navigation: { goTo: mock(), exit: mock() },
     })

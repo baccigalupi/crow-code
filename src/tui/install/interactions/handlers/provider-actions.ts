@@ -1,21 +1,16 @@
 import type { KeyEvent } from '@opentui/core'
-import { Keypress } from '../../keypress.ts'
-import type {
-  PromptArguments,
-  ProviderStepName,
-  StepName,
-} from '../../types.ts'
+import { Keypress } from '../keypress.ts'
+import type { PromptArguments, StepName } from '../../types.ts'
+import type { ProviderStep } from '../../steps/provider-step.tsx'
 import { keypressFromEvent } from '../listeners/keypress-from-event.ts'
-import { ProviderSteps } from '../../steps/provider-steps.ts'
 
 // What a provider field does. Each input types into its own field; return
 // moves on, and on the key it saves the provider and clears the form. Tab
 // walks the fields and escape clears the form and finishes at confirm.
 export class ProviderActions {
-  private readonly steps = new ProviderSteps()
-  private actionArguments: PromptArguments<ProviderStepName>
+  private actionArguments: PromptArguments<ProviderStep>
 
-  constructor(actionArguments: PromptArguments<ProviderStepName>) {
+  constructor(actionArguments: PromptArguments<ProviderStep>) {
     this.actionArguments = actionArguments
   }
 
@@ -79,11 +74,11 @@ export class ProviderActions {
   }
 
   private flow() {
-    return this.steps.named(this.actionArguments.step)
+    return this.actionArguments.step
   }
 
   private field() {
     const { store, step } = this.actionArguments
-    return store.providerEditForm[step]
+    return store.providerEditForm[step.name]
   }
 }

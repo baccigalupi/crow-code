@@ -20,6 +20,14 @@ describe('DataStore', () => {
     expect(store.inputs.peek().providers).toEqual([{ name: 'Ollama', url: '' }])
   })
 
+  it('when the step moves, the current step is the step with that name', () => {
+    const store = new DataStore({ applicationData: mockApplicationData() })
+
+    store.navigator.goTo('ignore')
+
+    expect(store.currentStep.peek().name).toBe('ignore')
+  })
+
   it('when the step moves, inputs report the new step', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
 

@@ -1,12 +1,14 @@
 import { computed } from '@preact/signals-core'
 import { join } from 'node:path'
+import { CrowGlobalDirectoryStep } from '../../steps/text/crow-global-directory-step.ts'
+import { RepoDirectoryStep } from '../../steps/text/repo-directory-step.ts'
 import { TextFieldStore } from './text-field-store.ts'
 
 // Where crow keeps its repo config, its global data and its .env file. An
-// empty field stands for its default.
+// empty field stands for its step's default path.
 export class DirectoriesStore {
-  readonly defaultRepoDirectory = '.crow'
-  readonly defaultGlobalDirectory = '~/.crow'
+  readonly defaultRepoDirectory = new RepoDirectoryStep().defaultPath
+  readonly defaultGlobalDirectory = new CrowGlobalDirectoryStep().defaultPath
   readonly repoDirectory = new TextFieldStore()
   readonly globalDirectory = new TextFieldStore()
   readonly envFile = new TextFieldStore()

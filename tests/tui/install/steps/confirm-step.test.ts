@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { ConfirmStep } from '../../../../src/tui/install/steps/confirm-step.ts'
+import { ConfirmStep } from '../../../../src/tui/install/steps/confirm-step.tsx'
 
 describe('ConfirmStep', () => {
   it('when asked for its name, is confirm', () => {

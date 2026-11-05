@@ -28,13 +28,13 @@ describe('EnvFileStep', () => {
     expect(next).toBe('ignore')
   })
 
-  it('when the global directory is typed, its default is the .env file inside it', () => {
+  it('when the global directory is typed, its placeholder is the .env file inside it', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.directories.globalDirectory.replace('/opt/crow')
     const step = new EnvFileStep()
 
-    const defaultValue = step.defaultValue(store)
+    const placeholder = step.placeholder(store)
 
-    expect(defaultValue).toBe('/opt/crow/.env')
+    expect(placeholder).toBe('(/opt/crow/.env)')
   })
 })

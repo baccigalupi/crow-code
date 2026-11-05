@@ -26,11 +26,11 @@ describe('AllowedLocalScriptsStep', () => {
     expect(next).toBe('providerName')
   })
 
-  it('when asked for its default, is the config array joined', () => {
+  it('when asked for its default paths, is the dev and agent scripts', () => {
     const step = new AllowedLocalScriptsStep()
 
-    const defaultValue = step.defaultValue()
+    const defaultPaths = step.defaultPaths
 
-    expect(defaultValue).toBe('./dev/*, ./agent/*')
+    expect(defaultPaths).toEqual(['./dev/*', './agent/*'])
   })
 })

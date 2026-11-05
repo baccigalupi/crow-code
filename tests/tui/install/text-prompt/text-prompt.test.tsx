@@ -3,13 +3,14 @@ import { testRender } from '@opentui/react/test-utils'
 import { act } from 'react'
 import { TextPrompt } from '../../../../src/tui/install/text-prompt/text-prompt.tsx'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
+import { RepoDirectoryStep } from '../../../../src/tui/install/steps/text/repo-directory-step.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('TextPrompt', () => {
   it('when the panel field changes, shows the typed answer', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <TextPrompt step="repoDirectory" store={store} />,
+      <TextPrompt step={new RepoDirectoryStep()} store={store} />,
       { width: 70, height: 3 },
     )
 
@@ -25,7 +26,7 @@ describe('TextPrompt', () => {
   it('when a key is typed, types it into the panel field', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, mockInput } = await testRender(
-      <TextPrompt step="repoDirectory" store={store} />,
+      <TextPrompt step={new RepoDirectoryStep()} store={store} />,
       { width: 70, height: 3 },
     )
 
@@ -38,7 +39,7 @@ describe('TextPrompt', () => {
   it('when the field is empty, shows the default as the placeholder', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <TextPrompt step="repoDirectory" store={store} />,
+      <TextPrompt step={new RepoDirectoryStep()} store={store} />,
       { width: 70, height: 3 },
     )
 
@@ -53,7 +54,7 @@ describe('TextPrompt', () => {
   it('when return arrives, moves to the panel that comes next', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, mockInput } = await testRender(
-      <TextPrompt step="repoDirectory" store={store} />,
+      <TextPrompt step={new RepoDirectoryStep()} store={store} />,
       { width: 70, height: 3 },
     )
 

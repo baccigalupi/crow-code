@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { DoneStep } from '../../../../src/tui/install/steps/done-step.ts'
+import { DoneStep } from '../../../../src/tui/install/steps/done-step.tsx'
 
 describe('DoneStep', () => {
   it('when asked for its name, is done', () => {

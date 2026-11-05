@@ -1,12 +1,8 @@
-import { defaultCrowConfig } from '../../../../domain/config.ts'
-import { TextStep } from '../text-step.ts'
+import { PathsTextStep } from '../paths-text-step.ts'
 
-export class EscalateWriteStep extends TextStep {
+export class EscalateWriteStep extends PathsTextStep {
   readonly name = 'escalateWrite'
   readonly label = 'Escalate write directories'
   readonly next = 'allowedLocalScripts'
-
-  defaultValue() {
-    return defaultCrowConfig().permissions.escalateWrite.join(', ')
-  }
+  readonly defaultPaths = ['./dev', './agent']
 }

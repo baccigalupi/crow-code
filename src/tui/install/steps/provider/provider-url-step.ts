@@ -1,4 +1,4 @@
-import { ProviderStep } from '../provider-step.ts'
+import { ProviderStep } from '../provider-step.tsx'
 
 export class ProviderUrlStep extends ProviderStep {
   readonly name = 'providerUrl'

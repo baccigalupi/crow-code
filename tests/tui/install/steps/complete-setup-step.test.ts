@@ -1,6 +1,6 @@
 import { describe, expect, it, spyOn } from 'bun:test'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
-import { CompleteSetupStep } from '../../../../src/tui/install/steps/complete-setup-step.ts'
+import { CompleteSetupStep } from '../../../../src/tui/install/steps/complete-setup-step.tsx'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('CompleteSetupStep', () => {

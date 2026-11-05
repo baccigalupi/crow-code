@@ -1,4 +1,4 @@
-import type { KeyFlags } from './types.ts'
+import type { KeyFlags } from '../types.ts'
 
 export class Keypress {
   readonly input: string

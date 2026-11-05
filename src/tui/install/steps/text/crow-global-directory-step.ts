@@ -1,12 +1,8 @@
-import type { DataStore } from '../../data-store.ts'
-import { TextStep } from '../text-step.ts'
+import { PathTextStep } from '../path-text-step.ts'
 
-export class CrowGlobalDirectoryStep extends TextStep {
+export class CrowGlobalDirectoryStep extends PathTextStep {
   readonly name = 'crowGlobalDirectory'
   readonly label = 'User crow directory'
   readonly next = 'envFile'
-
-  defaultValue(store: DataStore) {
-    return store.directories.defaultGlobalDirectory
-  }
+  readonly defaultPath = '~/.crow'
 }
