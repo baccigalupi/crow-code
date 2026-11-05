@@ -36,6 +36,16 @@ describe('ConfigJsonViewModel', () => {
     ])
   })
 
+  it('when asked for the json, gives the whole config as json', () => {
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.directories.globalDirectory.insert('/g')
+    const viewModel = new ConfigJsonViewModel(store.inputs.peek())
+
+    const json = viewModel.json()
+
+    expect(json).toContain('"crowGlobalDirectory": "/g"')
+  })
+
   it('when asked for its background, gives the config panel color', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const viewModel = new ConfigJsonViewModel(store.inputs.peek())

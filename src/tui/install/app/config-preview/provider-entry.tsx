@@ -1,33 +1,26 @@
 import type { DataStore } from '../../data-store.ts'
 import type { ProviderRow } from '../../types.ts'
+import { Field } from './field.tsx'
 import { Indented } from './indented.tsx'
-import { StringField } from './string-field.tsx'
 import { ProviderEntryViewModel } from './provider-entry-view-model.ts'
 
 type ProviderEntryProps = { model: DataStore; row: ProviderRow }
 
 type ProvidersProps = { model: DataStore; rows: readonly ProviderRow[] }
 
-// { "name": "...", "baseUrl": "..." },
+// { "name": "...", "baseUrl": "..." }, with a comma between providers.
 const ProviderEntry = ({ model, row }: ProviderEntryProps) => {
   const view = new ProviderEntryViewModel(row)
   return (
     <box flexDirection="column">
       <text>{'{'}</text>
       <Indented>
-        <StringField
-          model={model}
-          name="name"
-          value={view.name()}
-          editable={view.editable()}
-        />
-        <StringField
-          model={model}
-          name="baseUrl"
-          value={view.baseUrl()}
-          editable={view.editable()}
-          last
-        />
+        <Field model={model} name="name" editable={view.editable()}>
+          "name": "{view.name()}",
+        </Field>
+        <Field model={model} name="baseUrl" editable={view.editable()}>
+          "baseUrl": "{view.baseUrl()}"
+        </Field>
       </Indented>
       <text>
         {'}'}

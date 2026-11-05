@@ -1,16 +1,17 @@
 import type { DataStore } from '../../data-store.ts'
 import { useSignalValue } from '../../../use-signal-value.ts'
 import { ConfigJsonViewModel } from './config-json-view-model.ts'
+import { Field } from './field.tsx'
 import { watchHighlight } from './highlight-reveal.ts'
 import { Indented } from './indented.tsx'
-import { ListField } from './list-field.tsx'
-import { StringField } from './string-field.tsx'
+import { JsonArray } from './json-array.tsx'
 import { Providers } from './provider-entry.tsx'
 
 type ConfigJsonProps = { model: DataStore }
 
-// The config json, laid out in its own shape, with the key the current panel
-// edits highlighted and scrolled into view each time its value changes.
+// The config json, written out in its own shape, with the key the current
+// panel edits highlighted. A new json remounts it, so the highlight scrolls
+// into view again.
 export const ConfigJson = ({ model }: ConfigJsonProps) => {
   const inputs = useSignalValue(model.inputs)
   const viewModel = new ConfigJsonViewModel(inputs)
@@ -23,6 +24,7 @@ export const ConfigJson = ({ model }: ConfigJsonProps) => {
       minHeight={0}
     >
       <box
+        key={viewModel.json()}
         flexDirection="column"
         alignSelf="flex-start"
         flexShrink={0}
@@ -33,49 +35,37 @@ export const ConfigJson = ({ model }: ConfigJsonProps) => {
       >
         <text>{'{'}</text>
         <Indented>
-          <StringField
-            model={model}
-            name="crowGlobalDirectory"
-            value={viewModel.value('crowGlobalDirectory')}
-          />
-          <StringField
-            model={model}
-            name="envFile"
-            value={viewModel.value('envFile')}
-          />
+          <Field model={model} name="crowGlobalDirectory">
+            "crowGlobalDirectory": "{viewModel.value('crowGlobalDirectory')}",
+          </Field>
+          <Field model={model} name="envFile">
+            "envFile": "{viewModel.value('envFile')}",
+          </Field>
           <text>"permissions": {'{'}</text>
           <Indented>
-            <ListField
-              model={model}
-              name="ignore"
-              value={viewModel.permission('ignore')}
-            />
-            <ListField
-              model={model}
-              name="additionalRead"
-              value={viewModel.permission('additionalRead')}
-            />
-            <ListField
-              model={model}
-              name="additionalWrite"
-              value={viewModel.permission('additionalWrite')}
-            />
-            <ListField
-              model={model}
-              name="escalateRead"
-              value={viewModel.permission('escalateRead')}
-            />
-            <ListField
-              model={model}
-              name="escalateWrite"
-              value={viewModel.permission('escalateWrite')}
-            />
-            <ListField
-              model={model}
-              name="allowedLocalScripts"
-              value={viewModel.permission('allowedLocalScripts')}
-              last
-            />
+            <Field model={model} name="ignore">
+              "ignore": <JsonArray items={viewModel.permission('ignore')} />,
+            </Field>
+            <Field model={model} name="additionalRead">
+              "additionalRead":{' '}
+              <JsonArray items={viewModel.permission('additionalRead')} />,
+            </Field>
+            <Field model={model} name="additionalWrite">
+              "additionalWrite":{' '}
+              <JsonArray items={viewModel.permission('additionalWrite')} />,
+            </Field>
+            <Field model={model} name="escalateRead">
+              "escalateRead":{' '}
+              <JsonArray items={viewModel.permission('escalateRead')} />,
+            </Field>
+            <Field model={model} name="escalateWrite">
+              "escalateWrite":{' '}
+              <JsonArray items={viewModel.permission('escalateWrite')} />,
+            </Field>
+            <Field model={model} name="allowedLocalScripts">
+              "allowedLocalScripts":{' '}
+              <JsonArray items={viewModel.permission('allowedLocalScripts')} />
+            </Field>
           </Indented>
           <text>{'},'}</text>
           <text>"providers": [</text>

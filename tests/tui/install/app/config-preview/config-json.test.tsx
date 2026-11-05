@@ -37,10 +37,10 @@ describe('ConfigJson', () => {
     await renderOnce()
 
     const lines = captureSpans().lines
-    expect(lines[25].spans[0].text).toContain('"name": "nous",')
-    expect(rgbToHex(lines[25].spans[0].bg)).toBe('#0a0f1e')
-    expect(lines[29].spans[1].text).toBe('"name": "local",')
-    expect(rgbToHex(lines[29].spans[1].bg)).toBe('#e6ca6c')
+    expect(lines[21].spans[0].text).toContain('"name": "nous",')
+    expect(rgbToHex(lines[21].spans[0].bg)).toBe('#0a0f1e')
+    expect(lines[25].spans[1].text).toBe('"name": "local",')
+    expect(rgbToHex(lines[25].spans[1].bg)).toBe('#e6ca6c')
     act(() => renderer.destroy())
   })
 

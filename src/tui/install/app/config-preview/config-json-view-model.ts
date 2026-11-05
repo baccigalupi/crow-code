@@ -37,6 +37,10 @@ export class ConfigJsonViewModel {
     return { index, name, baseUrl, last }
   }
 
+  json() {
+    return crowConfigFromInputs(this.inputs).crowConfigJson()
+  }
+
   private config() {
     return crowConfigFromInputs(this.inputs).crowConfig()
   }
