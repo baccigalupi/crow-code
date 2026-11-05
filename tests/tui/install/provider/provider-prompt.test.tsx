@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import { TextAttributes } from '@opentui/core'
 import { testRender } from '@opentui/react/test-utils'
 import { act } from 'react'
-import { ProviderPrompt } from '../../../../src/tui/install/provider/prompt.tsx'
+import { ProviderPrompt } from '../../../../src/tui/install/provider/provider-prompt.tsx'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 

@@ -2,27 +2,19 @@ import { describe, expect, it } from 'bun:test'
 import { PermissionsStore } from '../../../../../src/tui/install/interactions/data-stores/permissions-store.ts'
 
 describe('PermissionsStore', () => {
-  it('when built, shows an empty list default as JSON', () => {
+  it('when a list is typed, values hold the typed text', () => {
     const permissions = new PermissionsStore()
+    permissions.ignore.replace('.env')
 
-    const defaultText = permissions.defaults.ignore
+    const values = permissions.values.peek()
 
-    expect(defaultText).toBe('[]')
-  })
-
-  it('when built, shows the escalate write default joined', () => {
-    const permissions = new PermissionsStore()
-
-    const defaultText = permissions.defaults.escalateWrite
-
-    expect(defaultText).toBe('./dev, ./agent')
-  })
-
-  it('when built, shows the allowed local scripts default joined', () => {
-    const permissions = new PermissionsStore()
-
-    const defaultText = permissions.defaults.allowedLocalScripts
-
-    expect(defaultText).toBe('./dev/*, ./agent/*')
+    expect(values).toEqual({
+      ignore: '.env',
+      additionalRead: '',
+      escalateRead: '',
+      additionalWrite: '',
+      escalateWrite: '',
+      allowedLocalScripts: '',
+    })
   })
 })

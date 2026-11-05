@@ -1,3 +1,4 @@
+import type { DataStore } from '../data-store.ts'
 import type { TextStepName } from '../types.ts'
 import { TextSteps } from '../steps/text-steps.ts'
 
@@ -6,14 +7,11 @@ import { TextSteps } from '../steps/text-steps.ts'
 export class TextPromptViewModel {
   private readonly steps = new TextSteps()
   private step: TextStepName
-  private defaults: Readonly<Record<TextStepName, string>>
+  private store: DataStore
 
-  constructor(
-    step: TextStepName,
-    defaults: Readonly<Record<TextStepName, string>>,
-  ) {
+  constructor(step: TextStepName, store: DataStore) {
     this.step = step
-    this.defaults = defaults
+    this.store = store
   }
 
   label() {
@@ -21,7 +19,7 @@ export class TextPromptViewModel {
   }
 
   placeholder() {
-    return this.textStep().placeholder(this.defaults[this.step])
+    return this.textStep().placeholder(this.store)
   }
 
   private textStep() {
@@ -29,7 +27,5 @@ export class TextPromptViewModel {
   }
 }
 
-export const textPromptViewModel = (
-  step: TextStepName,
-  defaults: Readonly<Record<TextStepName, string>>,
-) => new TextPromptViewModel(step, defaults)
+export const textPromptViewModel = (step: TextStepName, store: DataStore) =>
+  new TextPromptViewModel(step, store)

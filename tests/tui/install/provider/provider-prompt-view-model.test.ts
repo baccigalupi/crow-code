@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { ProviderPromptViewModel } from '../../../../src/tui/install/provider/prompt-view-model.ts'
+import { ProviderPromptViewModel } from '../../../../src/tui/install/provider/provider-prompt-view-model.ts'
 
 describe('ProviderPromptViewModel', () => {
   it('when one provider is saved, the title counts the next one', () => {

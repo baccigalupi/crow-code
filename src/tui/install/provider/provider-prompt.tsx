@@ -5,7 +5,7 @@ import { PromptNavigation } from '../interactions/prompt-navigation.ts'
 import { useSignalValue } from '../interactions/use-signal-value.ts'
 import { ProviderActions } from '../interactions/handlers/provider-actions.ts'
 import { Field } from './field.tsx'
-import { providerPromptViewModel } from './prompt-view-model.ts'
+import { providerPromptViewModel } from './provider-prompt-view-model.ts'
 
 type ProviderPromptProps = { store: DataStore; step: ProviderStepName }
 

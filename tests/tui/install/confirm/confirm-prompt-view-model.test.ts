@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { ConfirmPromptViewModel } from '../../../../src/tui/install/confirm/prompt-view-model.ts'
+import { ConfirmPromptViewModel } from '../../../../src/tui/install/confirm/confirm-prompt-view-model.ts'
 
 describe('ConfirmPromptViewModel', () => {
   it('when the answer is yes, selects the first option', () => {

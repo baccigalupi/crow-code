@@ -1,5 +1,5 @@
 import { computed } from '@preact/signals-core'
-import type { DataStoreArguments, TextStepName } from './types.ts'
+import type { DataStoreArguments } from './types.ts'
 import { Navigator } from './navigator.ts'
 import { ConfirmStore } from './interactions/data-stores/confirm-store.ts'
 import { DirectoriesStore } from './interactions/data-stores/directories-store.ts'
@@ -31,21 +31,9 @@ export class DataStore {
     ...this.directories.fields,
     ...this.permissions.fields,
   }
-  readonly textDefaults = computed(() => this.defaults())
 
   constructor({ applicationData }: DataStoreArguments) {
     this.applicationData = applicationData
-  }
-
-  // What each one-line question stands for until something is typed.
-  private defaults(): Record<TextStepName, string> {
-    const { directories, permissions } = this
-    return {
-      repoDirectory: directories.defaultRepoDirectory,
-      crowGlobalDirectory: directories.defaultGlobalDirectory,
-      envFile: directories.defaultEnvFile.value,
-      ...permissions.defaults,
-    }
   }
 
   // Every answer typed so far, as one value for the config builder.

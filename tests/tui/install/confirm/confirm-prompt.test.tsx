@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { testRender } from '@opentui/react/test-utils'
 import { act } from 'react'
-import { ConfirmPrompt } from '../../../../src/tui/install/confirm/prompt.tsx'
+import { ConfirmPrompt } from '../../../../src/tui/install/confirm/confirm-prompt.tsx'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 

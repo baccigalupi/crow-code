@@ -1,10 +1,10 @@
 import type { DataStore } from '../data-store.ts'
 import { useSignalValue } from '../interactions/use-signal-value.ts'
 import { SetupProgress } from '../complete-setup/setup-progress.tsx'
-import { ConfirmPrompt } from '../confirm/prompt.tsx'
+import { ConfirmPrompt } from '../confirm/confirm-prompt.tsx'
 import { DoneMessage } from '../done/done-message.tsx'
-import { ProviderPrompt } from '../provider/prompt.tsx'
-import { TextPrompt } from '../text-prompt/prompt.tsx'
+import { ProviderPrompt } from '../provider/provider-prompt.tsx'
+import { TextPrompt } from '../text-prompt/text-prompt.tsx'
 
 type CurrentPromptProps = { store: DataStore }
 

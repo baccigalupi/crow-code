@@ -25,4 +25,12 @@ describe('EscalateWriteStep', () => {
 
     expect(next).toBe('allowedLocalScripts')
   })
+
+  it('when asked for its default, is the config list joined', () => {
+    const step = new EscalateWriteStep()
+
+    const defaultValue = step.defaultValue()
+
+    expect(defaultValue).toBe('./dev, ./agent')
+  })
 })

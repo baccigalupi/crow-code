@@ -25,4 +25,12 @@ describe('AllowedLocalScriptsStep', () => {
 
     expect(next).toBe('providerName')
   })
+
+  it('when asked for its default, is the config list joined', () => {
+    const step = new AllowedLocalScriptsStep()
+
+    const defaultValue = step.defaultValue()
+
+    expect(defaultValue).toBe('./dev/*, ./agent/*')
+  })
 })

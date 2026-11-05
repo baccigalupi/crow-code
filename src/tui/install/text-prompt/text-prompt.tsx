@@ -12,9 +12,8 @@ type TextPromptProps = {
 
 // A one-line question beside a focused input holding its answer.
 export const TextPrompt = ({ store, step }: TextPromptProps) => {
-  const defaults = useSignalValue(store.textDefaults)
   const input = useSignalValue(store.textFields[step].text)
-  const viewModel = textPromptViewModel(step, defaults)
+  const viewModel = textPromptViewModel(step, store)
   const actions = new TextPromptActions({
     step,
     store,
