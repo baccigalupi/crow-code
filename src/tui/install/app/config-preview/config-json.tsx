@@ -4,16 +4,15 @@ import { ConfigJsonViewModel } from './config-json-view-model.ts'
 import { Field } from './field.tsx'
 import { watchHighlight } from './highlight-reveal.ts'
 import { Indented } from './indented.tsx'
-import { JsonArray } from './json-array.tsx'
 import { Providers } from './provider-entry.tsx'
 
-type ConfigJsonProps = { model: DataStore }
+type ConfigJsonProps = { store: DataStore }
 
 // The config json, written out in its own shape, with the key the current
 // panel edits highlighted. A new json remounts it, so the highlight scrolls
 // into view again.
-export const ConfigJson = ({ model }: ConfigJsonProps) => {
-  const inputs = useSignalValue(model.inputs)
+export const ConfigJson = ({ store }: ConfigJsonProps) => {
+  const inputs = useSignalValue(store.inputs)
   const viewModel = new ConfigJsonViewModel(inputs)
   return (
     <scrollbox
@@ -35,40 +34,37 @@ export const ConfigJson = ({ model }: ConfigJsonProps) => {
       >
         <text>{'{'}</text>
         <Indented>
-          <Field model={model} name="crowGlobalDirectory">
+          <Field store={store} name="crowGlobalDirectory">
             "crowGlobalDirectory": "{viewModel.crowGlobalDirectory()}",
           </Field>
-          <Field model={model} name="envFile">
+          <Field store={store} name="envFile">
             "envFile": "{viewModel.envFile()}",
           </Field>
           <text>"permissions": {'{'}</text>
           <Indented>
-            <Field model={model} name="ignore">
-              "ignore": <JsonArray items={viewModel.ignore()} />,
+            <Field store={store} name="ignore">
+              "ignore": {viewModel.ignore()},
             </Field>
-            <Field model={model} name="additionalRead">
-              "additionalRead": <JsonArray items={viewModel.additionalRead()} />
-              ,
+            <Field store={store} name="additionalRead">
+              "additionalRead": {viewModel.additionalRead()},
             </Field>
-            <Field model={model} name="additionalWrite">
-              "additionalWrite":{' '}
-              <JsonArray items={viewModel.additionalWrite()} />,
+            <Field store={store} name="additionalWrite">
+              "additionalWrite": {viewModel.additionalWrite()},
             </Field>
-            <Field model={model} name="escalateRead">
-              "escalateRead": <JsonArray items={viewModel.escalateRead()} />,
+            <Field store={store} name="escalateRead">
+              "escalateRead": {viewModel.escalateRead()},
             </Field>
-            <Field model={model} name="escalateWrite">
-              "escalateWrite": <JsonArray items={viewModel.escalateWrite()} />,
+            <Field store={store} name="escalateWrite">
+              "escalateWrite": {viewModel.escalateWrite()},
             </Field>
-            <Field model={model} name="allowedLocalScripts">
-              "allowedLocalScripts":{' '}
-              <JsonArray items={viewModel.allowedLocalScripts()} />
+            <Field store={store} name="allowedLocalScripts">
+              "allowedLocalScripts": {viewModel.allowedLocalScripts()}
             </Field>
           </Indented>
           <text>{'},'}</text>
           <text>"providers": [</text>
           <Indented>
-            <Providers model={model} rows={viewModel.providers()} />
+            <Providers store={store} rows={viewModel.providers()} />
           </Indented>
           <text>]</text>
         </Indented>

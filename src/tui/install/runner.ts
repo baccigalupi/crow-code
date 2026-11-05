@@ -35,15 +35,15 @@ export class InstallTuiRunner {
   // start. Destroying the renderer unmounts the app and ends key input.
   view(renderer: CliRenderer) {
     const app = createElement(InstallApp, {
-      model: this.model(),
+      store: this.store(),
       router: new Router(),
     })
     flushSync(() => createRoot(renderer).render(app))
-    new KeyboardListener(renderer, this.model()).listen()
+    new KeyboardListener(renderer, this.store()).listen()
   }
 
   @memoize
-  model() {
+  store() {
     return new DataStore({ applicationData: this.applicationData })
   }
 }

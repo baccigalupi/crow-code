@@ -13,7 +13,7 @@ describe('ConfigJsonViewModel', () => {
     expect(directories).toEqual(['~/.crow', '~/.crow/.env'])
   })
 
-  it('when asked for the permissions, gives each list from the config', () => {
+  it('when asked for the permissions, writes each list as json', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.permissions.ignore.insert('a')
     store.permissions.additionalRead.insert('b')
@@ -31,13 +31,22 @@ describe('ConfigJsonViewModel', () => {
     ]
 
     expect(lists).toEqual([
-      ['a'],
-      ['b'],
-      ['c'],
-      ['d'],
-      ['./dev', './agent'],
-      ['./dev/*', './agent/*'],
+      '[\n  "a"\n]',
+      '[\n  "b"\n]',
+      '[\n  "c"\n]',
+      '[\n  "d"\n]',
+      '[\n  "./dev",\n  "./agent"\n]',
+      '[\n  "./dev/*",\n  "./agent/*"\n]',
     ])
+  })
+
+  it('when a permission list is empty, writes empty brackets', () => {
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    const viewModel = new ConfigJsonViewModel(store.inputs.peek())
+
+    const json = viewModel.ignore()
+
+    expect(json).toBe('[]')
   })
 
   it('when providers are saved, gives one row each, the last one last', () => {

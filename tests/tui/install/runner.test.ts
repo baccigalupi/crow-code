@@ -8,7 +8,7 @@ import { mockApplicationData } from '../../support/mock-application-data.ts'
 import { mockStdin } from '../../support/mock-streams.ts'
 
 describe('runner', () => {
-  it('when run, starts setup from the model once the step reaches completeSetup', () => {
+  it('when run, starts setup from the store once the step reaches completeSetup', () => {
     const applicationData = mockApplicationData()
     const mkdir = spyOn(
       applicationData.filesystem,
@@ -16,9 +16,9 @@ describe('runner', () => {
     ).mockImplementation(() => new Promise<void>(() => {}))
     const runner = new InstallTuiRunner(applicationData, {})
     runner.run()
-    runner.model().directories.repoDirectory.insert('/repo/injected')
+    runner.store().directories.repoDirectory.insert('/repo/injected')
 
-    runner.model().navigator.goTo('completeSetup')
+    runner.store().navigator.goTo('completeSetup')
 
     expect(mkdir.mock.calls).toEqual([['/repo/injected']])
   })
@@ -56,7 +56,7 @@ describe('runner', () => {
 
     it('when the step is past repo, shows the config preview', async () => {
       const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.model().navigator.goTo('crowGlobalDirectory')
+      runner.store().navigator.goTo('crowGlobalDirectory')
       const { renderer, renderOnce, captureCharFrame } =
         await createTestRenderer({ width: 70, height: 24 })
       runner.view(renderer)
@@ -79,7 +79,7 @@ describe('runner', () => {
       await mockInput.typeText('./crow2')
       await renderOnce()
 
-      expect(runner.model().directories.repoDirectory.text.peek().text).toBe(
+      expect(runner.store().directories.repoDirectory.text.peek().text).toBe(
         './crow2',
       )
       expect(captureCharFrame()).toContain('./crow2')
@@ -95,7 +95,7 @@ describe('runner', () => {
       mockInput.pressEnter()
       await renderOnce()
 
-      expect(runner.model().navigator.current.peek()).toBe(
+      expect(runner.store().navigator.current.peek()).toBe(
         'crowGlobalDirectory',
       )
       expect(captureCharFrame()).toContain('User crow directory: (~/.crow)')
@@ -104,7 +104,7 @@ describe('runner', () => {
 
     it('when return arrives on the env file step, asks for ignored paths', async () => {
       const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.model().navigator.goTo('envFile')
+      runner.store().navigator.goTo('envFile')
       const { renderer, renderOnce, captureCharFrame, mockInput } =
         await createTestRenderer({ width: 70, height: 24 })
       runner.view(renderer)
@@ -112,14 +112,14 @@ describe('runner', () => {
       mockInput.pressEnter()
       await renderOnce()
 
-      expect(runner.model().navigator.current.peek()).toBe('ignore')
+      expect(runner.store().navigator.current.peek()).toBe('ignore')
       expect(captureCharFrame()).toContain('Ignored paths: []')
       renderer.destroy()
     })
 
     it('when text is typed on the ignore step, it shows in the frame', async () => {
       const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.model().navigator.goTo('ignore')
+      runner.store().navigator.goTo('ignore')
       const { renderer, renderOnce, captureCharFrame, mockInput } =
         await createTestRenderer({ width: 70, height: 24 })
       runner.view(renderer)
@@ -127,14 +127,14 @@ describe('runner', () => {
       await mockInput.typeText('.env')
       await renderOnce()
 
-      expect(runner.model().permissions.ignore.text.peek().text).toBe('.env')
+      expect(runner.store().permissions.ignore.text.peek().text).toBe('.env')
       expect(captureCharFrame()).toContain('Ignored paths: .env')
       renderer.destroy()
     })
 
     it('when return arrives on the additional read step, asks for additional write directories', async () => {
       const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.model().navigator.goTo('additionalRead')
+      runner.store().navigator.goTo('additionalRead')
       const { renderer, renderOnce, captureCharFrame, mockInput } =
         await createTestRenderer({ width: 70, height: 24 })
       runner.view(renderer)
@@ -142,14 +142,14 @@ describe('runner', () => {
       mockInput.pressEnter()
       await renderOnce()
 
-      expect(runner.model().navigator.current.peek()).toBe('additionalWrite')
+      expect(runner.store().navigator.current.peek()).toBe('additionalWrite')
       expect(captureCharFrame()).toContain('Additional write directories: []')
       renderer.destroy()
     })
 
     it('when text is typed on the additional write step, it shows in the frame', async () => {
       const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.model().navigator.goTo('additionalWrite')
+      runner.store().navigator.goTo('additionalWrite')
       const { renderer, renderOnce, captureCharFrame, mockInput } =
         await createTestRenderer({ width: 70, height: 24 })
       runner.view(renderer)
@@ -157,7 +157,7 @@ describe('runner', () => {
       await mockInput.typeText('/work')
       await renderOnce()
 
-      expect(runner.model().permissions.additionalWrite.text.peek().text).toBe(
+      expect(runner.store().permissions.additionalWrite.text.peek().text).toBe(
         '/work',
       )
       expect(captureCharFrame()).toContain(
@@ -168,7 +168,7 @@ describe('runner', () => {
 
     it('when backspace arrives, the previous char is deleted', async () => {
       const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.model().directories.repoDirectory.insert('~/x')
+      runner.store().directories.repoDirectory.insert('~/x')
       const { renderer, mockInput } = await createTestRenderer({
         width: 70,
         height: 8,
@@ -177,7 +177,7 @@ describe('runner', () => {
 
       mockInput.pressBackspace()
 
-      expect(runner.model().directories.repoDirectory.text.peek().text).toBe(
+      expect(runner.store().directories.repoDirectory.text.peek().text).toBe(
         '~/',
       )
       renderer.destroy()
@@ -185,7 +185,7 @@ describe('runner', () => {
 
     it('when home then delete arrive, the first char is removed', async () => {
       const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.model().directories.repoDirectory.insert('~/x')
+      runner.store().directories.repoDirectory.insert('~/x')
       const { renderer, mockInput } = await createTestRenderer({
         width: 70,
         height: 8,
@@ -195,7 +195,7 @@ describe('runner', () => {
       mockInput.pressKey(KeyCodes.HOME)
       mockInput.pressKey(KeyCodes.DELETE)
 
-      expect(runner.model().directories.repoDirectory.text.peek().text).toBe(
+      expect(runner.store().directories.repoDirectory.text.peek().text).toBe(
         '/x',
       )
       renderer.destroy()
@@ -203,7 +203,7 @@ describe('runner', () => {
 
     it('when left arrows arrive, typing inserts at the cursor', async () => {
       const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.model().directories.repoDirectory.insert('~/x')
+      runner.store().directories.repoDirectory.insert('~/x')
       const { renderer, mockInput } = await createTestRenderer({
         width: 70,
         height: 8,
@@ -214,7 +214,7 @@ describe('runner', () => {
       mockInput.pressArrow('left')
       await mockInput.typeText('X')
 
-      expect(runner.model().directories.repoDirectory.text.peek().text).toBe(
+      expect(runner.store().directories.repoDirectory.text.peek().text).toBe(
         '~X/x',
       )
       renderer.destroy()
@@ -222,7 +222,7 @@ describe('runner', () => {
 
     it('when home, end and right arrive, the cursor stays at the end', async () => {
       const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.model().directories.repoDirectory.insert('~/x')
+      runner.store().directories.repoDirectory.insert('~/x')
       const { renderer, mockInput } = await createTestRenderer({
         width: 70,
         height: 8,
@@ -233,7 +233,7 @@ describe('runner', () => {
       mockInput.pressKey(KeyCodes.END)
       mockInput.pressArrow('right')
 
-      expect(runner.model().directories.repoDirectory.text.peek().cursor).toBe(
+      expect(runner.store().directories.repoDirectory.text.peek().cursor).toBe(
         3,
       )
       renderer.destroy()
@@ -241,7 +241,7 @@ describe('runner', () => {
 
     it('when right arrives on the confirm step, confirmation becomes false', async () => {
       const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.model().navigator.goTo('confirm')
+      runner.store().navigator.goTo('confirm')
       const { renderer, mockInput } = await createTestRenderer({
         width: 70,
         height: 8,
@@ -250,14 +250,14 @@ describe('runner', () => {
 
       mockInput.pressArrow('right')
 
-      expect(runner.model().confirm.confirmed.peek()).toBe(false)
+      expect(runner.store().confirm.confirmed.peek()).toBe(false)
       renderer.destroy()
     })
 
     it('when left arrives on the confirm step, confirmation becomes true', async () => {
       const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.model().navigator.goTo('confirm')
-      runner.model().confirm.choose(false)
+      runner.store().navigator.goTo('confirm')
+      runner.store().confirm.choose(false)
       const { renderer, mockInput } = await createTestRenderer({
         width: 70,
         height: 8,
@@ -266,7 +266,7 @@ describe('runner', () => {
 
       mockInput.pressArrow('left')
 
-      expect(runner.model().confirm.confirmed.peek()).toBe(true)
+      expect(runner.store().confirm.confirmed.peek()).toBe(true)
       renderer.destroy()
     })
 
@@ -276,7 +276,7 @@ describe('runner', () => {
         () => new Promise<void>(() => {}),
       )
       const runner = new InstallTuiRunner(applicationData, {})
-      runner.model().navigator.goTo('confirm')
+      runner.store().navigator.goTo('confirm')
       const { renderer, renderOnce, captureCharFrame, mockInput } =
         await createTestRenderer({ width: 70, height: 10 })
       runner.view(renderer)
@@ -284,7 +284,7 @@ describe('runner', () => {
       mockInput.pressEnter()
       await renderOnce()
 
-      expect(runner.model().navigator.current.peek()).toBe('completeSetup')
+      expect(runner.store().navigator.current.peek()).toBe('completeSetup')
       expect(captureCharFrame()).toContain(
         '› Writing config to .crow/config.json',
       )
@@ -294,8 +294,8 @@ describe('runner', () => {
 
     it('when return arrives on the confirm step with no, exits without writing', async () => {
       const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.model().navigator.goTo('confirm')
-      runner.model().confirm.choose(false)
+      runner.store().navigator.goTo('confirm')
+      runner.store().confirm.choose(false)
       const onDestroy = mock(() => {})
       const { renderer, mockInput } = await createTestRenderer({
         width: 70,
@@ -306,13 +306,13 @@ describe('runner', () => {
 
       mockInput.pressEnter()
 
-      expect(runner.model().navigator.current.peek()).toBe('confirm')
+      expect(runner.store().navigator.current.peek()).toBe('confirm')
       expect(onDestroy).toHaveBeenCalledTimes(1)
     })
 
     it('when any key arrives on the done step, exits', async () => {
       const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.model().navigator.goTo('done')
+      runner.store().navigator.goTo('done')
       const onDestroy = mock(() => {})
       const { renderer, mockInput } = await createTestRenderer({
         width: 70,
@@ -343,7 +343,7 @@ describe('runner', () => {
 
     it('when a provider is added and escape finishes the loop, previews it and asks to confirm', async () => {
       const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.model().navigator.goTo('allowedLocalScripts')
+      runner.store().navigator.goTo('allowedLocalScripts')
       const { renderer, renderOnce, captureCharFrame, mockInput } =
         await createTestRenderer({ width: 70, height: 40, kittyKeyboard: true })
       runner.view(renderer)
@@ -359,7 +359,7 @@ describe('runner', () => {
       await renderOnce()
 
       const frame = captureCharFrame()
-      expect(runner.model().navigator.current.peek()).toBe('confirm')
+      expect(runner.store().navigator.current.peek()).toBe('confirm')
       expect(frame).toContain('"providers": [')
       expect(frame).toContain('"name": "nous",')
       expect(frame).toContain('Complete setup?')
@@ -381,7 +381,7 @@ describe('runner', () => {
       mockInput.pressEscape()
 
       expect(onDestroy).not.toHaveBeenCalled()
-      expect(runner.model().navigator.current.peek()).toBe('repo')
+      expect(runner.store().navigator.current.peek()).toBe('repo')
     })
 
     it('when the terminal is taller than the content, the question sits on the last row', async () => {
@@ -399,7 +399,7 @@ describe('runner', () => {
 
     it('when the panel is tall, the question still sits on the last row', async () => {
       const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.model().navigator.goTo('crowGlobalDirectory')
+      runner.store().navigator.goTo('crowGlobalDirectory')
       const { renderer, renderOnce, captureCharFrame } =
         await createTestRenderer({ width: 70, height: 24 })
       runner.view(renderer)
@@ -413,7 +413,7 @@ describe('runner', () => {
 
     it('when down arrives on the confirm step, the select shows No', async () => {
       const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.model().navigator.goTo('confirm')
+      runner.store().navigator.goTo('confirm')
       const { renderer, renderOnce, captureCharFrame, mockInput } =
         await createTestRenderer({ width: 70, height: 30 })
       runner.view(renderer)
@@ -421,7 +421,7 @@ describe('runner', () => {
       mockInput.pressArrow('down')
       await renderOnce()
 
-      expect(runner.model().confirm.confirmed.peek()).toBe(false)
+      expect(runner.store().confirm.confirmed.peek()).toBe(false)
       expect(captureCharFrame()).toContain('▶ No')
       renderer.destroy()
     })

@@ -8,14 +8,14 @@ import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('ProviderPrompt', () => {
   it('when a provider is saved, the title counts the next one', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.navigator.goTo('providerName')
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.navigator.goTo('providerName')
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <ProviderPrompt model={model} />,
+      <ProviderPrompt store={store} />,
       { width: 70, height: 10 },
     )
 
-    act(() => model.providers.save({ name: 'a', url: 'u' }, ''))
+    act(() => store.providers.save({ name: 'a', url: 'u' }, ''))
     await renderOnce()
 
     expect(captureCharFrame()).toContain('Provider 2')
@@ -23,10 +23,10 @@ describe('ProviderPrompt', () => {
   })
 
   it('when on the name, the name is live and the later fields are dim labels', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.navigator.goTo('providerName')
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.navigator.goTo('providerName')
     const { renderer, renderOnce, captureCharFrame, captureSpans } =
-      await testRender(<ProviderPrompt model={model} />, {
+      await testRender(<ProviderPrompt store={store} />, {
         width: 70,
         height: 10,
       })
@@ -48,13 +48,13 @@ describe('ProviderPrompt', () => {
   })
 
   it('when on the API key, earlier fields show their values and the key is masked', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.providerEditForm.providerName.insert('nous')
-    model.providerEditForm.providerUrl.insert('https://n')
-    model.providerEditForm.providerCredentials.insert('sk-1')
-    model.navigator.goTo('providerCredentials')
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.providerEditForm.providerName.insert('nous')
+    store.providerEditForm.providerUrl.insert('https://n')
+    store.providerEditForm.providerCredentials.insert('sk-1')
+    store.navigator.goTo('providerCredentials')
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <ProviderPrompt model={model} />,
+      <ProviderPrompt store={store} />,
       { width: 70, height: 10 },
     )
 

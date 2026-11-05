@@ -15,8 +15,8 @@ export class CompleteSetupPanel {
     return new IdleController('stay')
   }
 
-  prompt(model: DataStore) {
-    return <SetupProgress model={model} />
+  prompt(store: DataStore) {
+    return <SetupProgress store={store} />
   }
 
   // Arriving here starts setup from the answers as they are now; when it is

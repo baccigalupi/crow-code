@@ -24,7 +24,7 @@ export abstract class ProviderPanel {
     return new ProviderFormController({ field, form, providers, back, forward })
   }
 
-  prompt(model: DataStore) {
-    return <ProviderPrompt model={model} />
+  prompt(store: DataStore) {
+    return <ProviderPrompt store={store} />
   }
 }

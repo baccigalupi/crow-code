@@ -7,9 +7,9 @@ import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('ConfirmPrompt', () => {
   it('when drawn, asks to complete setup with Yes selected', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
+    const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <ConfirmPrompt model={model} />,
+      <ConfirmPrompt store={store} />,
       { width: 40, height: 4 },
     )
 
@@ -21,13 +21,13 @@ describe('ConfirmPrompt', () => {
   })
 
   it('when the store says no, selects No', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
+    const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <ConfirmPrompt model={model} />,
+      <ConfirmPrompt store={store} />,
       { width: 40, height: 4 },
     )
 
-    act(() => model.confirm.choose(false))
+    act(() => store.confirm.choose(false))
     await renderOnce()
 
     expect(captureCharFrame()).toContain('▶ No')

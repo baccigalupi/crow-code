@@ -7,12 +7,12 @@ const options = [
   { name: 'No', description: '' },
 ]
 
-type ConfirmPromptProps = { model: DataStore }
+type ConfirmPromptProps = { store: DataStore }
 
 // "Complete setup?" over a focused Yes/No select. The store holds the answer;
 // the select only shows it.
-export const ConfirmPrompt = ({ model }: ConfirmPromptProps) => {
-  const confirmed = useSignalValue(model.confirm.confirmed)
+export const ConfirmPrompt = ({ store }: ConfirmPromptProps) => {
+  const confirmed = useSignalValue(store.confirm.confirmed)
   const viewModel = new ConfirmPromptViewModel(confirmed)
   return (
     <box paddingX={1} flexDirection="column">

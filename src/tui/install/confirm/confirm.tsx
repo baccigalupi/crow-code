@@ -13,7 +13,7 @@ export class ConfirmPanel {
     return new ConfirmController(store.confirm)
   }
 
-  prompt(model: DataStore) {
-    return <ConfirmPrompt model={model} />
+  prompt(store: DataStore) {
+    return <ConfirmPrompt store={store} />
   }
 }

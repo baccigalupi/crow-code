@@ -4,11 +4,11 @@ import { useSignalValue } from '../../use-signal-value.ts'
 import { ProgressList } from '../complete-setup/setup-progress.tsx'
 import { DoneMessageViewModel } from './done-message-view-model.ts'
 
-type DoneMessageProps = { model: DataStore }
+type DoneMessageProps = { store: DataStore }
 
 // The finished setup tasks, then a dimmed hint that says how it ended.
-export const DoneMessage = ({ model }: DoneMessageProps) => {
-  const rows = useSignalValue(model.progress.rows)
+export const DoneMessage = ({ store }: DoneMessageProps) => {
+  const rows = useSignalValue(store.progress.rows)
   const viewModel = new DoneMessageViewModel(rows)
   return (
     <box flexDirection="column">

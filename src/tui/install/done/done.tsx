@@ -13,7 +13,7 @@ export class DonePanel {
     return new IdleController('exit')
   }
 
-  prompt(model: DataStore) {
-    return <DoneMessage model={model} />
+  prompt(store: DataStore) {
+    return <DoneMessage store={store} />
   }
 }

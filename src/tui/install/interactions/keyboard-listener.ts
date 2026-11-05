@@ -13,11 +13,11 @@ import { keypressFromEvent } from './keypress-from-event.ts'
 // what the current panel does with it.
 export class KeyboardListener {
   private renderer: CliRenderer
-  private model: DataStore
+  private store: DataStore
 
-  constructor(renderer: CliRenderer, model: DataStore) {
+  constructor(renderer: CliRenderer, store: DataStore) {
     this.renderer = renderer
-    this.model = model
+    this.store = store
   }
 
   listen() {
@@ -30,7 +30,7 @@ export class KeyboardListener {
   }
 
   private press(keypress: Keypress) {
-    this.model.navigator.press(keypress, () => this.renderer.destroy())
+    this.store.navigator.press(keypress, () => this.renderer.destroy())
   }
 
   // The key stops here so a focused select never moves on its own; the store

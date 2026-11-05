@@ -34,18 +34,18 @@ export const PromptLine = ({
 
 type TextPromptProps = {
   panel: TextPromptPanel
-  model: DataStore
+  store: DataStore
 }
 
 // A text prompt panel's question over the answer typed into its field.
-export const TextPrompt = ({ panel, model }: TextPromptProps) => {
-  const inputs = useSignalValue(model.inputs)
-  const input = useSignalValue(panel.field(model).text)
+export const TextPrompt = ({ panel, store }: TextPromptProps) => {
+  const inputs = useSignalValue(store.inputs)
+  const input = useSignalValue(panel.field(store).text)
   return (
     <PromptLine
       label={panel.label}
       input={input}
-      placeholder={panel.placeholder(model, inputs)}
+      placeholder={panel.placeholder(store, inputs)}
       masked={false}
     />
   )

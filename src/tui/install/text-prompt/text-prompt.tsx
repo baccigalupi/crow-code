@@ -38,7 +38,7 @@ export abstract class TextPromptPanel {
     return new TextPromptController(this.field(store))
   }
 
-  prompt(model: DataStore) {
-    return <TextPrompt panel={this} model={model} />
+  prompt(store: DataStore) {
+    return <TextPrompt panel={this} store={store} />
   }
 }

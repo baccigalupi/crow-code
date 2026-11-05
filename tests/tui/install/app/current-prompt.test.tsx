@@ -8,13 +8,13 @@ import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('CurrentPrompt', () => {
   it('when the navigator moves, swaps to the new panel prompt', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
+    const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <CurrentPrompt model={model} router={new Router()} />,
+      <CurrentPrompt store={store} router={new Router()} />,
       { width: 70, height: 3 },
     )
 
-    act(() => model.navigator.goTo('crowGlobalDirectory'))
+    act(() => store.navigator.goTo('crowGlobalDirectory'))
     await renderOnce()
 
     expect(captureCharFrame()).toContain('User crow directory: (~/.crow)')

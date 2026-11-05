@@ -21,27 +21,27 @@ export class ConfigJsonViewModel {
   }
 
   ignore() {
-    return this.permissions().ignore
+    return this.listJson(this.permissions().ignore)
   }
 
   additionalRead() {
-    return this.permissions().additionalRead
+    return this.listJson(this.permissions().additionalRead)
   }
 
   additionalWrite() {
-    return this.permissions().additionalWrite
+    return this.listJson(this.permissions().additionalWrite)
   }
 
   escalateRead() {
-    return this.permissions().escalateRead
+    return this.listJson(this.permissions().escalateRead)
   }
 
   escalateWrite() {
-    return this.permissions().escalateWrite
+    return this.listJson(this.permissions().escalateWrite)
   }
 
   allowedLocalScripts() {
-    return this.permissions().allowedLocalScripts
+    return this.listJson(this.permissions().allowedLocalScripts)
   }
 
   providers() {
@@ -62,6 +62,10 @@ export class ConfigJsonViewModel {
 
   json() {
     return crowConfigFromInputs(this.inputs).crowConfigJson()
+  }
+
+  private listJson(list: readonly string[]) {
+    return JSON.stringify(list, null, 2)
   }
 
   private permissions() {

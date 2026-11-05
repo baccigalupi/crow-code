@@ -8,9 +8,9 @@ import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('InstallApp', () => {
   it('when drawn in a short terminal, shows the header and the question on the last row', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
+    const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <InstallApp model={model} router={new Router()} />,
+      <InstallApp store={store} router={new Router()} />,
       { width: 70, height: 8 },
     )
 
@@ -23,10 +23,10 @@ describe('InstallApp', () => {
   })
 
   it('when drawn in a tall terminal, keeps the question on the last row', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.navigator.goTo('crowGlobalDirectory')
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.navigator.goTo('crowGlobalDirectory')
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <InstallApp model={model} router={new Router()} />,
+      <InstallApp store={store} router={new Router()} />,
       { width: 70, height: 24 },
     )
 
@@ -38,9 +38,9 @@ describe('InstallApp', () => {
   })
 
   it('when the terminal is resized, the question follows the last row', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
+    const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, renderOnce, captureCharFrame, resize } = await testRender(
-      <InstallApp model={model} router={new Router()} />,
+      <InstallApp store={store} router={new Router()} />,
       {
         width: 70,
         height: 8,
@@ -57,13 +57,13 @@ describe('InstallApp', () => {
   })
 
   it('when the config preview is tall, keeps the provider prompt visible', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.providers.save({ name: 'a', url: 'https://a' }, '')
-    model.providers.save({ name: 'b', url: 'https://b' }, '')
-    model.providers.save({ name: 'c', url: 'https://c' }, '')
-    model.navigator.goTo('providerName')
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.providers.save({ name: 'a', url: 'https://a' }, '')
+    store.providers.save({ name: 'b', url: 'https://b' }, '')
+    store.providers.save({ name: 'c', url: 'https://c' }, '')
+    store.navigator.goTo('providerName')
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <InstallApp model={model} router={new Router()} />,
+      <InstallApp store={store} router={new Router()} />,
       { width: 70, height: 20 },
     )
 

@@ -38,28 +38,28 @@ const fieldViews = {
   upcoming: UpcomingField,
 }
 
-type FieldProps = { model: DataStore; name: ProviderFieldName }
+type FieldProps = { store: DataStore; name: ProviderFieldName }
 
 // A field drawn in the state the form gives it on the current step.
-const Field = ({ model, name }: FieldProps) => {
-  const current = useSignalValue(model.navigator.current)
-  const input = useSignalValue(model.providerEditForm[name].text)
-  const View = fieldViews[model.providerEditForm.fieldState(name, current)]
+const Field = ({ store, name }: FieldProps) => {
+  const current = useSignalValue(store.navigator.current)
+  const input = useSignalValue(store.providerEditForm[name].text)
+  const View = fieldViews[store.providerEditForm.fieldState(name, current)]
   return <View {...fields[name]} input={input} />
 }
 
-type ProviderPromptProps = { model: DataStore }
+type ProviderPromptProps = { store: DataStore }
 
 // The three provider steps as one "Provider N" block over an escape hint.
-export const ProviderPrompt = ({ model }: ProviderPromptProps) => {
-  const providers = useSignalValue(model.providers.providers)
+export const ProviderPrompt = ({ store }: ProviderPromptProps) => {
+  const providers = useSignalValue(store.providers.providers)
   const viewModel = new ProviderPromptViewModel(providers)
   return (
     <box flexDirection="column">
       <box border title={viewModel.title()} flexDirection="column">
-        <Field model={model} name="providerName" />
-        <Field model={model} name="providerUrl" />
-        <Field model={model} name="providerCredentials" />
+        <Field store={store} name="providerName" />
+        <Field store={store} name="providerUrl" />
+        <Field store={store} name="providerCredentials" />
       </box>
       <box paddingX={1}>
         <text attributes={TextAttributes.DIM}>

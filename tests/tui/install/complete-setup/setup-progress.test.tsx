@@ -8,8 +8,8 @@ import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('SetupProgress', () => {
   it('when nothing has finished, marks the first task as running', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.progress.list([
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.progress.list([
       {
         id: 'LocalConfigTask',
         label: 'Writing config to .crow/config.json',
@@ -24,7 +24,7 @@ describe('SetupProgress', () => {
       },
     ])
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <SetupProgress model={model} />,
+      <SetupProgress store={store} />,
       { width: 50, height: 4 },
     )
 
@@ -38,8 +38,8 @@ describe('SetupProgress', () => {
   })
 
   it('when a task is done, marks it with a green tick and dims its label', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.progress.list([
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.progress.list([
       {
         id: 'LocalConfigTask',
         label: 'Writing config to .crow/config.json',
@@ -48,11 +48,11 @@ describe('SetupProgress', () => {
       },
     ])
     const { renderer, renderOnce, captureSpans } = await testRender(
-      <SetupProgress model={model} />,
+      <SetupProgress store={store} />,
       { width: 50, height: 2 },
     )
 
-    act(() => model.progress.finish('LocalConfigTask', ''))
+    act(() => store.progress.finish('LocalConfigTask', ''))
     await renderOnce()
 
     const { spans } = captureSpans().lines[0]
@@ -64,8 +64,8 @@ describe('SetupProgress', () => {
   })
 
   it('when a task fails, marks it red, shows its error and runs nothing else', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.progress.list([
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.progress.list([
       {
         id: 'LocalConfigTask',
         label: 'Writing config to .crow/config.json',
@@ -80,12 +80,12 @@ describe('SetupProgress', () => {
       },
     ])
     const { renderer, renderOnce, captureCharFrame, captureSpans } =
-      await testRender(<SetupProgress model={model} />, {
+      await testRender(<SetupProgress store={store} />, {
         width: 50,
         height: 4,
       })
 
-    act(() => model.progress.finish('LocalConfigTask', 'EACCES'))
+    act(() => store.progress.finish('LocalConfigTask', 'EACCES'))
     await renderOnce()
 
     const rows = captureCharFrame().split('\n')

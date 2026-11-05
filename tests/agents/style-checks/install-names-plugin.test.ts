@@ -3,14 +3,70 @@ import { checkSource } from '../../../agents/style-checks/engine/check-source.ts
 import { installNamesPlugin } from '../../../agents/style-checks/install-names-plugin.ts'
 
 describe('installNamesPlugin', () => {
-  it('when the plugin is built, lists the one rule', () => {
+  it('when the plugin is built, lists the two rules', () => {
     const plugin = installNamesPlugin
 
     const rules = plugin.rules
 
     expect(plugin.name).toBe('crow-style-install')
-    expect(rules).toHaveLength(1)
+    expect(rules).toHaveLength(2)
     expect(rules[0].name).toBe('full-input-names')
+    expect(rules[1].name).toBe('data-store-name')
+  })
+
+  describe('data-store-name', () => {
+    it('when tui code names something model, reports it', () => {
+      const source =
+        'const Panel = ({ model }: PanelProps) => <text>{model.name}</text>\nexport { Panel }'
+
+      const diagnostics = checkSource(
+        installNamesPlugin,
+        'src/tui/install/panel.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(2)
+      expect(diagnostics[0].message).toBe(
+        'the DataStore is a store; name it store, not model',
+      )
+    })
+
+    it('when a tui test names something model, reports it', () => {
+      const source = 'const model = new DataStore(1)\nexport { model }'
+
+      const diagnostics = checkSource(
+        installNamesPlugin,
+        'tests/tui/install/panel.test.ts',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(2)
+    })
+
+    it('when tui code names a view model or a store, ignores it', () => {
+      const source =
+        'const store = new DataStore(1)\nconst viewModel = new PanelViewModel(store)\nexport { viewModel }'
+
+      const diagnostics = checkSource(
+        installNamesPlugin,
+        'src/tui/install/panel.ts',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(0)
+    })
+
+    it('when code outside tui names something model, ignores it', () => {
+      const source = 'const model = 1\nexport { model }'
+
+      const diagnostics = checkSource(
+        installNamesPlugin,
+        'src/model-requests/a.ts',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(0)
+    })
   })
 
   it('when install code declares a variable named repo, reports it', () => {

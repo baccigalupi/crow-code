@@ -50,7 +50,7 @@ const Row = ({ task }: { task: SetupTaskRow }) => {
 
 type ProgressRowsProps = { rows: readonly SetupTaskRow[] }
 
-type SetupProgressProps = { model: DataStore }
+type SetupProgressProps = { store: DataStore }
 
 const ProgressRows = ({ rows }: ProgressRowsProps) => (
   <>
@@ -67,7 +67,7 @@ export const ProgressList = ({ rows }: ProgressRowsProps) => (
   </box>
 )
 
-export const SetupProgress = ({ model }: SetupProgressProps) => {
-  const rows = useSignalValue(model.progress.rows)
+export const SetupProgress = ({ store }: SetupProgressProps) => {
+  const rows = useSignalValue(store.progress.rows)
   return <ProgressList rows={rows} />
 }

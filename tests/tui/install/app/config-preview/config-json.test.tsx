@@ -8,10 +8,10 @@ import { mockApplicationData } from '../../../../support/mock-application-data.t
 
 describe('ConfigJson', () => {
   it('when a line is highlighted, draws it dark on gold', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.navigator.goTo('envFile')
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.navigator.goTo('envFile')
     const { renderer, renderOnce, captureSpans } = await testRender(
-      <ConfigJson model={model} />,
+      <ConfigJson store={store} />,
       { width: 70, height: 24 },
     )
 
@@ -25,12 +25,12 @@ describe('ConfigJson', () => {
   })
 
   it('when a provider name is being typed, highlights it in the last provider', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.providers.save({ name: 'nous', url: 'https://n' }, '')
-    model.providerEditForm.providerName.insert('local')
-    model.navigator.goTo('providerName')
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.providers.save({ name: 'nous', url: 'https://n' }, '')
+    store.providerEditForm.providerName.insert('local')
+    store.navigator.goTo('providerName')
     const { renderer, renderOnce, captureSpans } = await testRender(
-      <ConfigJson model={model} />,
+      <ConfigJson store={store} />,
       { width: 70, height: 60 },
     )
 
@@ -45,10 +45,10 @@ describe('ConfigJson', () => {
   })
 
   it('when the json is taller than its rows, scrolls the highlighted line into view', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.navigator.goTo('escalateWrite')
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.navigator.goTo('escalateWrite')
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <ConfigJson model={model} />,
+      <ConfigJson store={store} />,
       { width: 70, height: 6 },
     )
 
@@ -60,10 +60,10 @@ describe('ConfigJson', () => {
   })
 
   it('when scrolled away from the highlight, keeps the scroll across renders', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.navigator.goTo('escalateWrite')
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.navigator.goTo('escalateWrite')
     const { renderer, renderOnce } = await testRender(
-      <ConfigJson model={model} />,
+      <ConfigJson store={store} />,
       { width: 70, height: 6 },
     )
     await renderOnce()

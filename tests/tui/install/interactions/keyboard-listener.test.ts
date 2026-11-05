@@ -6,64 +6,64 @@ import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('KeyboardListener', () => {
   it('when a char arrives, edits the active directory input', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
+    const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, mockInput } = await createTestRenderer({
       width: 20,
       height: 3,
     })
-    new KeyboardListener(renderer, model).listen()
+    new KeyboardListener(renderer, store).listen()
 
     await mockInput.typeText('x')
 
-    expect(model.directories.repoDirectory.text.peek().text).toBe('x')
+    expect(store.directories.repoDirectory.text.peek().text).toBe('x')
     renderer.destroy()
   })
 
   it('when pasted text has newlines, inserts it without them and without advancing', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.navigator.goTo('providerCredentials')
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.navigator.goTo('providerCredentials')
     const { renderer, mockInput } = await createTestRenderer({
       width: 20,
       height: 3,
     })
-    new KeyboardListener(renderer, model).listen()
+    new KeyboardListener(renderer, store).listen()
 
     await mockInput.pasteBracketedText('sk-123\r\n')
     await renderer.idle()
 
-    expect(model.providerEditForm.providerCredentials.text.peek().text).toBe(
+    expect(store.providerEditForm.providerCredentials.text.peek().text).toBe(
       'sk-123',
     )
-    expect(model.navigator.current.peek()).toBe('providerCredentials')
+    expect(store.navigator.current.peek()).toBe('providerCredentials')
     renderer.destroy()
   })
 
   it('when text is pasted on confirm, leaves the env file alone', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.navigator.goTo('confirm')
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.navigator.goTo('confirm')
     const { renderer, mockInput } = await createTestRenderer({
       width: 20,
       height: 3,
     })
-    new KeyboardListener(renderer, model).listen()
+    new KeyboardListener(renderer, store).listen()
 
     await mockInput.pasteBracketedText('xyz')
     await renderer.idle()
 
-    expect(model.directories.envFile.text.peek().text).toBe('')
+    expect(store.directories.envFile.text.peek().text).toBe('')
     renderer.destroy()
   })
 
   it('when text is pasted on the done step, destroys the renderer', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.navigator.goTo('done')
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.navigator.goTo('done')
     const onDestroy = mock(() => {})
     const { renderer, mockInput } = await createTestRenderer({
       width: 20,
       height: 3,
       onDestroy,
     })
-    new KeyboardListener(renderer, model).listen()
+    new KeyboardListener(renderer, store).listen()
 
     await mockInput.pasteBracketedText('x')
     await renderer.idle()
@@ -72,29 +72,29 @@ describe('KeyboardListener', () => {
   })
 
   it('when return arrives, advances the step', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
+    const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, mockInput } = await createTestRenderer({
       width: 20,
       height: 3,
     })
-    new KeyboardListener(renderer, model).listen()
+    new KeyboardListener(renderer, store).listen()
 
     mockInput.pressEnter()
     await renderer.idle()
 
-    expect(model.navigator.current.peek()).toBe('crowGlobalDirectory')
+    expect(store.navigator.current.peek()).toBe('crowGlobalDirectory')
     renderer.destroy()
   })
 
   it('when ctrl-c arrives, destroys the renderer', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
+    const store = new DataStore({ applicationData: mockApplicationData() })
     const onDestroy = mock(() => {})
     const { renderer, mockInput } = await createTestRenderer({
       width: 20,
       height: 3,
       onDestroy,
     })
-    new KeyboardListener(renderer, model).listen()
+    new KeyboardListener(renderer, store).listen()
 
     mockInput.pressCtrlC()
 
@@ -102,7 +102,7 @@ describe('KeyboardListener', () => {
   })
 
   it('when escape arrives, keeps the renderer', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
+    const store = new DataStore({ applicationData: mockApplicationData() })
     const onDestroy = mock(() => {})
     const { renderer, mockInput } = await createTestRenderer({
       width: 20,
@@ -110,7 +110,7 @@ describe('KeyboardListener', () => {
       onDestroy,
       kittyKeyboard: true,
     })
-    new KeyboardListener(renderer, model).listen()
+    new KeyboardListener(renderer, store).listen()
 
     mockInput.pressEscape()
 
@@ -119,21 +119,21 @@ describe('KeyboardListener', () => {
   })
 
   it('when n then return arrive on the confirm step, declines and exits', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.navigator.goTo('confirm')
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.navigator.goTo('confirm')
     const onDestroy = mock(() => {})
     const { renderer, mockInput } = await createTestRenderer({
       width: 20,
       height: 3,
       onDestroy,
     })
-    new KeyboardListener(renderer, model).listen()
+    new KeyboardListener(renderer, store).listen()
 
     await mockInput.typeText('n')
     mockInput.pressEnter()
 
-    expect(model.confirm.confirmed.peek()).toBe(false)
-    expect(model.navigator.current.peek()).toBe('confirm')
+    expect(store.confirm.confirmed.peek()).toBe(false)
+    expect(store.navigator.current.peek()).toBe('confirm')
     expect(onDestroy).toHaveBeenCalledTimes(1)
   })
 })

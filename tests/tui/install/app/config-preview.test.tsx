@@ -8,9 +8,9 @@ import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('ConfigPreview', () => {
   it('when on the repo panel, renders nothing', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
+    const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <ConfigPreview model={model} />,
+      <ConfigPreview store={store} />,
       { width: 70, height: 24 },
     )
 
@@ -21,10 +21,10 @@ describe('ConfigPreview', () => {
   })
 
   it('when past the repo panel, shows the config path and the json with the current line highlighted', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.navigator.goTo('envFile')
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.navigator.goTo('envFile')
     const { renderer, renderOnce, captureCharFrame, captureSpans } =
-      await testRender(<ConfigPreview model={model} />, {
+      await testRender(<ConfigPreview store={store} />, {
         width: 70,
         height: 24,
       })

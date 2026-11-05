@@ -6,30 +6,30 @@ import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('DataStore', () => {
   it('when a directory is typed, inputs include the typed directory', () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
+    const store = new DataStore({ applicationData: mockApplicationData() })
 
-    model.directories.repoDirectory.insert('/r')
+    store.directories.repoDirectory.insert('/r')
 
-    expect(model.inputs.peek().repoDirectory).toEqual({ text: '/r', cursor: 2 })
+    expect(store.inputs.peek().repoDirectory).toEqual({ text: '/r', cursor: 2 })
   })
 
   it('when a provider is committed, inputs list the provider', () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.providerEditForm.providerName.insert('Ollama')
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.providerEditForm.providerName.insert('Ollama')
 
-    model.providers.save(model.providerEditForm.provider(), '')
+    store.providers.save(store.providerEditForm.provider(), '')
 
-    expect(model.inputs.peek().providers).toEqual([{ name: 'Ollama', url: '' }])
+    expect(store.inputs.peek().providers).toEqual([{ name: 'Ollama', url: '' }])
   })
 
   it('when return commits a provider, the step changes once', () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.providerEditForm.providerName.insert('nous')
-    model.navigator.goTo('providerCredentials')
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.providerEditForm.providerName.insert('nous')
+    store.navigator.goTo('providerCredentials')
     const watcher = mock()
-    effect(() => watcher(model.navigator.current.value))
+    effect(() => watcher(store.navigator.current.value))
 
-    model.navigator.press(new Keypress('', { return: true }), mock())
+    store.navigator.press(new Keypress('', { return: true }), mock())
 
     expect(watcher.mock.calls).toEqual([
       ['providerCredentials'],
@@ -43,12 +43,12 @@ describe('DataStore', () => {
       applicationData.filesystem,
       'mkdirWithParents',
     ).mockImplementation(() => new Promise<void>(() => {}))
-    const model = new DataStore({ applicationData })
+    const store = new DataStore({ applicationData })
 
-    model.navigator.goTo('completeSetup')
+    store.navigator.goTo('completeSetup')
 
     expect(mkdir.mock.calls).toEqual([['.crow']])
-    expect(model.progress.tasks.peek()).toEqual([
+    expect(store.progress.tasks.peek()).toEqual([
       {
         id: 'LocalConfigTask',
         label: 'Writing config to .crow/config.json',
@@ -65,34 +65,34 @@ describe('DataStore', () => {
   })
 
   it('when the step moves, inputs report the new step', () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
+    const store = new DataStore({ applicationData: mockApplicationData() })
 
-    model.navigator.goTo('ignore')
+    store.navigator.goTo('ignore')
 
-    expect(model.inputs.peek().step).toBe('ignore')
+    expect(store.inputs.peek().step).toBe('ignore')
   })
 
   it('when on the repo step, does not show the config', () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
+    const store = new DataStore({ applicationData: mockApplicationData() })
 
-    const showsConfig = model.showsConfig.peek()
+    const showsConfig = store.showsConfig.peek()
 
     expect(showsConfig).toBe(false)
   })
 
   it('when on a step, highlights the config key that step edits', () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
+    const store = new DataStore({ applicationData: mockApplicationData() })
 
-    model.navigator.goTo('envFile')
+    store.navigator.goTo('envFile')
 
-    expect(model.highlightKey.peek()).toBe('envFile')
+    expect(store.highlightKey.peek()).toBe('envFile')
   })
 
   it('when past the repo step, shows the config', () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
+    const store = new DataStore({ applicationData: mockApplicationData() })
 
-    model.navigator.goTo('envFile')
+    store.navigator.goTo('envFile')
 
-    expect(model.showsConfig.peek()).toBe(true)
+    expect(store.showsConfig.peek()).toBe(true)
   })
 })

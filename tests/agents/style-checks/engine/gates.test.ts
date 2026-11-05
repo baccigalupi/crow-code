@@ -6,6 +6,7 @@ import {
   isProductionOrTestFile,
   isTestFile,
   isTestSupportFile,
+  isTuiFile,
 } from '../../../../agents/style-checks/engine/gates.ts'
 
 describe('gates', () => {
@@ -111,5 +112,29 @@ describe('gates', () => {
     const result = isInstallFile(fileName)
 
     expect(result).toBe(true)
+  })
+
+  it('when isTuiFile gets a src tui tsx path, returns true', () => {
+    const fileName = 'src/tui/a.tsx'
+
+    const result = isTuiFile(fileName)
+
+    expect(result).toBe(true)
+  })
+
+  it('when isTuiFile gets a tests tui path, returns true', () => {
+    const fileName = 'tests/tui/install/a.test.ts'
+
+    const result = isTuiFile(fileName)
+
+    expect(result).toBe(true)
+  })
+
+  it('when isTuiFile gets a path outside tui, returns false', () => {
+    const fileName = 'src/tools/a.ts'
+
+    const result = isTuiFile(fileName)
+
+    expect(result).toBe(false)
   })
 })

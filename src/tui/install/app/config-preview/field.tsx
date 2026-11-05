@@ -4,7 +4,7 @@ import { useSignalValue } from '../../../use-signal-value.ts'
 import { FieldViewModel } from './field-view-model.ts'
 
 type FieldProps = {
-  model: DataStore
+  store: DataStore
   name: string
   editable?: boolean
   children?: ReactNode
@@ -13,12 +13,12 @@ type FieldProps = {
 // One config key's json, highlighted when it is the key the current panel
 // edits.
 export const Field = ({
-  model,
+  store,
   name,
   editable = true,
   children,
 }: FieldProps) => {
-  const highlightKey = useSignalValue(model.highlightKey)
+  const highlightKey = useSignalValue(store.highlightKey)
   const view = new FieldViewModel({ name, editable, highlightKey })
   return (
     <text id={view.id()}>

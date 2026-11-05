@@ -8,8 +8,8 @@ import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('DoneMessage', () => {
   it('when every task finished, shows the rows and a dim done hint', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.progress.list([
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.progress.list([
       {
         id: 'LocalConfigTask',
         label: 'Writing config to .crow/config.json',
@@ -18,7 +18,7 @@ describe('DoneMessage', () => {
       },
     ])
     const { renderer, renderOnce, captureCharFrame, captureSpans } =
-      await testRender(<DoneMessage model={model} />, {
+      await testRender(<DoneMessage store={store} />, {
         width: 50,
         height: 3,
       })
@@ -34,8 +34,8 @@ describe('DoneMessage', () => {
   })
 
   it('when a task failed, says setup failed', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
-    model.progress.list([
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.progress.list([
       {
         id: 'LocalConfigTask',
         label: 'Writing config to .crow/config.json',
@@ -44,7 +44,7 @@ describe('DoneMessage', () => {
       },
     ])
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <DoneMessage model={model} />,
+      <DoneMessage store={store} />,
       { width: 50, height: 4 },
     )
 

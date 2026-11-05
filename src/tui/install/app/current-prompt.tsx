@@ -3,14 +3,14 @@ import type { Router } from '../router.ts'
 import { useSignalValue } from '../../use-signal-value.ts'
 
 type CurrentPromptProps = {
-  model: DataStore
+  store: DataStore
   router: Router
 }
 
 // The current panel's prompt, sitting on the bottom rows. A panel change is a
 // plain re-render with the new panel's prompt.
-export const CurrentPrompt = ({ model, router }: CurrentPromptProps) => {
-  const panel = router.get(useSignalValue(model.navigator.current))
+export const CurrentPrompt = ({ store, router }: CurrentPromptProps) => {
+  const panel = router.get(useSignalValue(store.navigator.current))
   return (
     <box
       flexDirection="column"
@@ -18,7 +18,7 @@ export const CurrentPrompt = ({ model, router }: CurrentPromptProps) => {
       flexShrink={0}
       justifyContent="flex-end"
     >
-      {panel.prompt(model)}
+      {panel.prompt(store)}
     </box>
   )
 }

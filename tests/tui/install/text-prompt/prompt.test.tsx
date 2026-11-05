@@ -111,13 +111,13 @@ describe('text-prompt', () => {
   })
 
   it('when the panel field changes, TextPrompt shows the typed answer', async () => {
-    const model = new DataStore({ applicationData: mockApplicationData() })
+    const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <TextPrompt panel={new RepoPanel()} model={model} />,
+      <TextPrompt panel={new RepoPanel()} store={store} />,
       { width: 70, height: 3 },
     )
 
-    act(() => model.directories.repoDirectory.insert('x'))
+    act(() => store.directories.repoDirectory.insert('x'))
     await renderOnce()
 
     expect(captureCharFrame()).toContain(
