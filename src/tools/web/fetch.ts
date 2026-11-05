@@ -1,6 +1,7 @@
 import type { ApplicationOperationArguments } from '../../types.ts'
 import type { FetchedResponse, WebFetchResult } from '../types.ts'
 import { OperationWithResult } from '../../operation.ts'
+import { ContentTypeCheck } from './fetch/content-type-check.ts'
 import { FetchResponse } from './fetch/fetch-response.ts'
 import { ReadBody } from './fetch/read-body.ts'
 import { RequestClock } from './fetch/request-clock.ts'
@@ -30,6 +31,7 @@ export class WebFetch extends OperationWithResult<
   async run() {
     this.clock.start(this.operationArguments.url)
     await this.fetchResponse()
+    await this.checkContentType()
     await this.readPage()
     this.reportError()
     this.clock.stop()
@@ -56,6 +58,15 @@ export class WebFetch extends OperationWithResult<
     const response = new FetchResponse({ applicationData, operationArguments })
     await this.runSubOperation(response)
     this.fetched = response.result()
+  }
+
+  private async checkContentType() {
+    if (!this.succeeded || !this.fetched.response.ok) return
+
+    const { applicationData } = this
+    const operationArguments = this.fetched
+    const check = new ContentTypeCheck({ applicationData, operationArguments })
+    await this.runSubOperation(check)
   }
 
   private async readPage() {

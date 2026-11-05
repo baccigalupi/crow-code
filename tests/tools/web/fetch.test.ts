@@ -73,7 +73,7 @@ describe('webFetch', () => {
     expect(operation.result().text).toBe('{"a":1}')
   })
 
-  it('when the page has no content type, returns the body unchanged', async () => {
+  it('when the page has no content type, fails', async () => {
     const fetch = mockFetchResponse(
       () => new Response(new TextEncoder().encode('plain')),
     )
@@ -83,8 +83,26 @@ describe('webFetch', () => {
     const operation = webFetch({ applicationData, operationArguments })
     await operation.run()
 
-    expect(operation.result().contentType).toBe('')
-    expect(operation.result().text).toBe('plain')
+    expect(operation.success()).toBe(false)
+    expect(operation.reason).toBe(
+      'web fetch content type not allowed: none: https://192.0.2.1/a',
+    )
+  })
+
+  it('when the page is image/png, fails', async () => {
+    const fetch = mockFetchResponse(
+      () => new Response('x', { headers: { 'content-type': 'image/png' } }),
+    )
+    const applicationData = mockApplicationData({ fetch })
+    const operationArguments = { url: 'https://192.0.2.1/a' }
+
+    const operation = webFetch({ applicationData, operationArguments })
+    await operation.run()
+
+    expect(operation.success()).toBe(false)
+    expect(operation.reason).toBe(
+      'web fetch content type not allowed: image/png: https://192.0.2.1/a',
+    )
   })
 
   it('when the url is loopback, fails without fetching', async () => {
