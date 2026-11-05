@@ -1,5 +1,5 @@
 import type { KeyEvent, PasteEvent } from '@opentui/core'
-import { Keypress } from '../../../keypress.ts'
+import { Keypress } from '../../keypress.ts'
 import type {
   PromptArguments,
   ProviderStepName,

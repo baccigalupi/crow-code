@@ -1,7 +1,7 @@
 import { TextAttributes } from '@opentui/core'
 import type { DataStore } from '../data-store.ts'
 import type { SetupTaskRow } from '../types.ts'
-import { theme } from '../../theme.ts'
+import { theme } from '../theme.ts'
 import { useSignalValue } from '../interactions/use-signal-value.ts'
 
 const colors = theme.setupProgress

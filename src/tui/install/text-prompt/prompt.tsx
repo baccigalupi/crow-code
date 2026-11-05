@@ -1,7 +1,6 @@
 import { TextAttributes } from '@opentui/core'
 import type { DataStore } from '../data-store.ts'
-import type { TextStepName } from '../types.ts'
-import type { InputText } from '../../types.ts'
+import type { InputText, TextStepName } from '../types.ts'
 import { PromptNavigation } from '../interactions/prompt-navigation.ts'
 import { useSignalValue } from '../interactions/use-signal-value.ts'
 import { TextPromptActions } from '../interactions/handlers/text-prompt-actions.ts'

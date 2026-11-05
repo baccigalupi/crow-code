@@ -3,7 +3,7 @@ import {
   stripAnsiSequences,
   type PasteEvent,
 } from '@opentui/core'
-import { Keypress } from '../../../keypress.ts'
+import { Keypress } from '../../keypress.ts'
 
 // A paste is typed input that arrives all at once, with newlines dropped.
 export const keypressFromPaste = (event: PasteEvent) => {

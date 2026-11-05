@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'bun:test'
 import { crowConfigFromInputs } from '../../../../src/tui/install/crow-config/from-inputs.ts'
-import { emptyText, insertText } from '../../../../src/tui/input-text.ts'
+import {
+  emptyText,
+  insertText,
+} from '../../../../src/tui/install/input-text.ts'
 
 describe('from-inputs', () => {
   it('includes finished providers', () => {

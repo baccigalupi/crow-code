@@ -5,8 +5,8 @@ import {
   emptyText,
   insertText,
   moveCursor,
-} from '../../../input-text.ts'
-import type { CursorMove, InputText } from '../../../types.ts'
+} from '../../input-text.ts'
+import type { CursorMove, InputText } from '../../types.ts'
 
 // One text input. Every edit is a single write of the whole InputText.
 export class TextFieldStore {

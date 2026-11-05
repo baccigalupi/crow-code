@@ -1,5 +1,4 @@
-import type { InputText } from '../../types.ts'
-import type { InstallProvider, StepName } from '../types.ts'
+import type { InputText, InstallProvider, StepName } from '../types.ts'
 
 export type PermissionInputs = {
   readonly ignore: InputText

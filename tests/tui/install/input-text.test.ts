@@ -4,7 +4,7 @@ import {
   deleteForward,
   insertText,
   moveCursor,
-} from '../../src/tui/input-text.ts'
+} from '../../../src/tui/install/input-text.ts'
 
 describe('input text', () => {
   it('when inserting in the middle, inserts at the cursor', () => {

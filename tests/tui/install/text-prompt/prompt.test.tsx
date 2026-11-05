@@ -7,7 +7,10 @@ import {
   TextPrompt,
 } from '../../../../src/tui/install/text-prompt/prompt.tsx'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
-import { emptyText, insertText } from '../../../../src/tui/input-text.ts'
+import {
+  emptyText,
+  insertText,
+} from '../../../../src/tui/install/input-text.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('text-prompt', () => {

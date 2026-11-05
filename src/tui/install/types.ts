@@ -1,9 +1,38 @@
-import type { Keypress } from '../keypress.ts'
+import type { Keypress } from './keypress.ts'
 import type { AsyncOperation, CrowPermissionsConfig } from '../../types.ts'
 import type { ApplicationData } from '../../application-data/application-data.ts'
 import type { CrowConfigInputs } from './crow-config/types.ts'
 import type { DataStore } from './data-store.ts'
 import type { TextFieldStore } from './interactions/data-stores/text-field-store.ts'
+
+export interface InputText {
+  readonly text: string
+  readonly cursor: number
+}
+
+export type CursorMove = 'left' | 'right' | 'home' | 'end'
+
+export type NavigatorArguments<Name extends string> = {
+  readonly initial: Name
+  entered(name: Name): unknown
+}
+
+export type KeyFlags = {
+  readonly ctrl?: boolean
+  readonly shift?: boolean
+  readonly meta?: boolean
+  readonly return?: boolean
+  readonly tab?: boolean
+  readonly backspace?: boolean
+  readonly delete?: boolean
+  readonly escape?: boolean
+  readonly leftArrow?: boolean
+  readonly rightArrow?: boolean
+  readonly upArrow?: boolean
+  readonly downArrow?: boolean
+  readonly home?: boolean
+  readonly end?: boolean
+}
 
 // The one-line questions, in the order they are asked.
 export type TextStepName =

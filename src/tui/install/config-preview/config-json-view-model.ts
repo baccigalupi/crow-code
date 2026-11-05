@@ -1,6 +1,6 @@
 import type { CrowProviderConfig } from '../types.ts'
 import type { CrowConfigInputs } from '../crow-config/types.ts'
-import { theme } from '../../theme.ts'
+import { theme } from '../theme.ts'
 import { crowConfigFromInputs } from '../crow-config/from-inputs.ts'
 
 // The crow config's values, as plain data for the lines that draw them.

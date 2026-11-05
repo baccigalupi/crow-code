@@ -1,4 +1,4 @@
-import type { Keypress } from '../../keypress.ts'
+import type { Keypress } from '../keypress.ts'
 import type { TextEditorArguments } from '../types.ts'
 import type { TextFieldStore } from '../interactions/data-stores/text-field-store.ts'
 

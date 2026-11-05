@@ -1,5 +1,5 @@
 import { describe, expect, it, mock } from 'bun:test'
-import { Navigator } from '../../src/tui/navigator.ts'
+import { Navigator } from '../../../src/tui/install/navigator.ts'
 
 describe('Navigator', () => {
   it('when built, current is the initial step', () => {

@@ -1,6 +1,6 @@
 import { computed } from '@preact/signals-core'
 import type { StepName, DataStoreArguments, TextStepName } from './types.ts'
-import { Navigator } from '../navigator.ts'
+import { Navigator } from './navigator.ts'
 import { ConfirmStore } from './interactions/data-stores/confirm-store.ts'
 import { DirectoriesStore } from './interactions/data-stores/directories-store.ts'
 import { QuitStore } from './interactions/data-stores/quit-store.ts'

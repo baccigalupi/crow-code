@@ -1,4 +1,4 @@
-import { theme } from '../../theme.ts'
+import { theme } from '../theme.ts'
 
 // The chrome colors the header rows are drawn in.
 export class HeaderViewModel {

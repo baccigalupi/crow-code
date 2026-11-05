@@ -1,4 +1,4 @@
-import type { InputText } from '../../types.ts'
+import type { InputText } from '../types.ts'
 
 // The typed text split around the block cursor. Masked inputs show only
 // bullets.
