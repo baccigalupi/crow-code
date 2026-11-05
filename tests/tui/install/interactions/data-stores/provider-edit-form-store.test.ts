@@ -4,39 +4,36 @@ import { ProviderEditFormStore } from '../../../../../src/tui/install/interactio
 describe('ProviderEditFormStore', () => {
   it('when cleared, empties name, url and credentials', () => {
     const form = new ProviderEditFormStore()
-    form.providerName.insert('a')
-    form.providerUrl.insert('b')
-    form.providerCredentials.insert('c')
+    form.providerName.replace('a')
+    form.providerUrl.replace('b')
+    form.providerCredentials.replace('c')
 
     form.clear()
 
-    expect(form.providerName.text.peek()).toEqual({ text: '', cursor: 0 })
-    expect(form.providerUrl.text.peek()).toEqual({ text: '', cursor: 0 })
-    expect(form.providerCredentials.text.peek()).toEqual({
-      text: '',
-      cursor: 0,
-    })
+    expect(form.providerName.text.peek()).toBe('')
+    expect(form.providerUrl.text.peek()).toBe('')
+    expect(form.providerCredentials.text.peek()).toBe('')
   })
 
   it('values lists the three typed texts', () => {
     const form = new ProviderEditFormStore()
-    form.providerName.insert('n')
-    form.providerUrl.insert('u')
+    form.providerName.replace('n')
+    form.providerUrl.replace('u')
 
     const values = form.values.peek()
 
     expect(values).toEqual({
-      providerName: { text: 'n', cursor: 1 },
-      providerUrl: { text: 'u', cursor: 1 },
-      providerCredentials: { text: '', cursor: 0 },
+      providerName: 'n',
+      providerUrl: 'u',
+      providerCredentials: '',
     })
   })
 
   it('provider() is the typed name and url, credential() the typed key', () => {
     const form = new ProviderEditFormStore()
-    form.providerName.insert('Open Router')
-    form.providerUrl.insert('https://o')
-    form.providerCredentials.insert('sk-1')
+    form.providerName.replace('Open Router')
+    form.providerUrl.replace('https://o')
+    form.providerCredentials.replace('sk-1')
 
     const provider = form.provider()
     const credential = form.credential()

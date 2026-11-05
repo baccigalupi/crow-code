@@ -1,20 +1,20 @@
 import { TextAttributes } from '@opentui/core'
 import type { DataStore } from '../data-store.ts'
-import type { InputText, ProviderStepName } from '../types.ts'
+import type { ProviderStepName } from '../types.ts'
 import type { ProviderActions } from '../interactions/handlers/provider-actions.ts'
 import { useSignalValue } from '../interactions/use-signal-value.ts'
-import { PromptLine } from '../text-prompt/prompt.tsx'
+import { maskedFieldViewModel } from './masked-field-view-model.ts'
 
 type FieldViewProps = {
   label: string
-  input: InputText
+  input: string
   actions: ProviderActions
 }
 
 const AnsweredField = ({ label, input }: FieldViewProps) => (
   <box paddingX={1}>
     <text>
-      {label}: {input.text}
+      {label}: {input}
     </text>
   </box>
 )
@@ -25,7 +25,7 @@ const InputField = ({ label, input, actions }: FieldViewProps) => (
     <input
       focused
       flexGrow={1}
-      value={input.text}
+      value={input}
       onInput={actions.input()}
       onSubmit={actions.submit()}
       onKeyDown={actions.keyDown()}
@@ -33,18 +33,29 @@ const InputField = ({ label, input, actions }: FieldViewProps) => (
   </box>
 )
 
-// The input has no masking, so the key is a focused box that takes the typing
-// itself and draws it as dots.
-const MaskedField = ({ label, input, actions }: FieldViewProps) => (
-  <box
-    focusable
-    focused
-    onKeyDown={actions.keyDown()}
-    onPaste={actions.paste()}
-  >
-    <PromptLine label={label} input={input} placeholder="" masked />
-  </box>
-)
+// The input has no masking, so its text is transparent over a row of dots;
+// the input still does all the editing and draws the cursor.
+const MaskedField = ({ label, input, actions }: FieldViewProps) => {
+  const viewModel = maskedFieldViewModel(input)
+  return (
+    <box paddingX={1} flexDirection="row">
+      <text>{label}: </text>
+      <box flexGrow={1}>
+        <text position="absolute">{viewModel.dots()}</text>
+        <input
+          focused
+          flexGrow={1}
+          value={input}
+          textColor="transparent"
+          focusedTextColor="transparent"
+          onInput={actions.input()}
+          onSubmit={actions.submit()}
+          onKeyDown={actions.keyDown()}
+        />
+      </box>
+    </box>
+  )
+}
 
 const UpcomingField = ({ label }: FieldViewProps) => (
   <box paddingX={1}>

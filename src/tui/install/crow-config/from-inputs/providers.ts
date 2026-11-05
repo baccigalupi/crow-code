@@ -19,7 +19,7 @@ const editedProviders = ({
   step,
 }: ProviderInputs) => {
   if (!providerSteps.includes(step)) return []
-  return [{ name: providerName.text, url: providerUrl.text }]
+  return [{ name: providerName, url: providerUrl }]
 }
 
 // Finished providers plus the one being typed, shaped for config.json.

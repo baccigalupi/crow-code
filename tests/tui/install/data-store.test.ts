@@ -6,14 +6,14 @@ describe('DataStore', () => {
   it('when a directory is typed, inputs include the typed directory', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
 
-    store.directories.repoDirectory.insert('/r')
+    store.directories.repoDirectory.replace('/r')
 
-    expect(store.inputs.peek().repoDirectory).toEqual({ text: '/r', cursor: 2 })
+    expect(store.inputs.peek().repoDirectory).toBe('/r')
   })
 
   it('when a provider is committed, inputs list the provider', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    store.providerEditForm.providerName.insert('Ollama')
+    store.providerEditForm.providerName.replace('Ollama')
 
     store.providers.save(store.providerEditForm.provider(), '')
 

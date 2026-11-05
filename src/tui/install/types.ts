@@ -1,16 +1,7 @@
-import type { Keypress } from './keypress.ts'
 import type { AsyncOperation, CrowPermissionsConfig } from '../../types.ts'
 import type { ApplicationData } from '../../application-data/application-data.ts'
 import type { CrowConfigInputs } from './crow-config/types.ts'
 import type { DataStore } from './data-store.ts'
-import type { TextFieldStore } from './interactions/data-stores/text-field-store.ts'
-
-export interface InputText {
-  readonly text: string
-  readonly cursor: number
-}
-
-export type CursorMove = 'left' | 'right' | 'home' | 'end'
 
 export type NavigatorArguments<Name extends string> = {
   readonly initial: Name
@@ -134,11 +125,6 @@ export type RunAllArguments = SetupTaskArguments &
   GlobalDirectoryTaskArguments & {
     readonly finished: (task: StatefulTask) => void
   }
-
-export type TextEditorArguments = {
-  readonly field: TextFieldStore
-  readonly keypress: Keypress
-}
 
 // How a prompt moves the installer: to another step, or out.
 export type Navigation = {

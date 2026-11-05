@@ -1,25 +1,25 @@
-import type { InputText, InstallProvider, StepName } from '../types.ts'
+import type { InstallProvider, StepName } from '../types.ts'
 
 export type PermissionInputs = {
-  readonly ignore: InputText
-  readonly additionalRead: InputText
-  readonly additionalWrite: InputText
-  readonly escalateRead: InputText
-  readonly escalateWrite: InputText
-  readonly allowedLocalScripts: InputText
+  readonly ignore: string
+  readonly additionalRead: string
+  readonly additionalWrite: string
+  readonly escalateRead: string
+  readonly escalateWrite: string
+  readonly allowedLocalScripts: string
 }
 
 export type ProviderInputs = {
-  readonly providerName: InputText
-  readonly providerUrl: InputText
-  readonly providerCredentials: InputText
+  readonly providerName: string
+  readonly providerUrl: string
+  readonly providerCredentials: string
   readonly providers: readonly InstallProvider[]
   readonly step?: StepName
 }
 
 export type CrowConfigInputs = PermissionInputs &
   ProviderInputs & {
-    readonly globalDirectory: InputText
-    readonly repoDirectory: InputText
-    readonly envFile: InputText
+    readonly globalDirectory: string
+    readonly repoDirectory: string
+    readonly envFile: string
   }

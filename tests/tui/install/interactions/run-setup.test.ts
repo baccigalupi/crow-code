@@ -87,7 +87,7 @@ describe('RunSetup', () => {
       'mkdirWithParents',
     ).mockImplementation(() => new Promise<void>(() => {}))
     const store = new DataStore({ applicationData })
-    store.directories.repoDirectory.insert('/repo/x')
+    store.directories.repoDirectory.replace('/repo/x')
 
     new RunSetup(store).start()
 

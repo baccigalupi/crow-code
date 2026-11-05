@@ -28,9 +28,9 @@ export class DirectoriesStore {
   }
 
   private typedOr(field: TextFieldStore, defaultValue: string) {
-    if (field.text.value.text === '') return defaultValue
+    if (field.text.value === '') return defaultValue
 
-    return field.text.value.text
+    return field.text.value
   }
 
   private texts() {

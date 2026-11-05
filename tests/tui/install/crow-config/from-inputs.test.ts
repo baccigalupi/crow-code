@@ -1,25 +1,21 @@
 import { describe, expect, it } from 'bun:test'
 import { crowConfigFromInputs } from '../../../../src/tui/install/crow-config/from-inputs.ts'
-import {
-  emptyText,
-  insertText,
-} from '../../../../src/tui/install/input-text.ts'
 
 describe('from-inputs', () => {
   it('includes finished providers', () => {
     const inputs = {
-      repoDirectory: emptyText(),
-      globalDirectory: emptyText(),
-      envFile: emptyText(),
-      escalateRead: emptyText(),
-      ignore: emptyText(),
-      additionalRead: emptyText(),
-      additionalWrite: emptyText(),
-      escalateWrite: emptyText(),
-      allowedLocalScripts: emptyText(),
-      providerName: emptyText(),
-      providerUrl: emptyText(),
-      providerCredentials: emptyText(),
+      repoDirectory: '',
+      globalDirectory: '',
+      envFile: '',
+      escalateRead: '',
+      ignore: '',
+      additionalRead: '',
+      additionalWrite: '',
+      escalateWrite: '',
+      allowedLocalScripts: '',
+      providerName: '',
+      providerUrl: '',
+      providerCredentials: '',
       providers: [{ name: 'nous', url: 'https://n' }],
     }
 
@@ -30,18 +26,18 @@ describe('from-inputs', () => {
 
   it('previews the draft provider', () => {
     const inputs = {
-      repoDirectory: emptyText(),
-      globalDirectory: emptyText(),
-      envFile: emptyText(),
-      escalateRead: emptyText(),
-      ignore: emptyText(),
-      additionalRead: emptyText(),
-      additionalWrite: emptyText(),
-      escalateWrite: emptyText(),
-      allowedLocalScripts: emptyText(),
-      providerName: insertText(emptyText(), 'or'),
-      providerUrl: emptyText(),
-      providerCredentials: emptyText(),
+      repoDirectory: '',
+      globalDirectory: '',
+      envFile: '',
+      escalateRead: '',
+      ignore: '',
+      additionalRead: '',
+      additionalWrite: '',
+      escalateWrite: '',
+      allowedLocalScripts: '',
+      providerName: 'or',
+      providerUrl: '',
+      providerCredentials: '',
       providers: [],
       step: 'providerUrl' as const,
     }
@@ -53,18 +49,18 @@ describe('from-inputs', () => {
 
   it('opens a blank record after a finished provider on a provider step', () => {
     const inputs = {
-      repoDirectory: emptyText(),
-      globalDirectory: emptyText(),
-      envFile: emptyText(),
-      escalateRead: emptyText(),
-      ignore: emptyText(),
-      additionalRead: emptyText(),
-      additionalWrite: emptyText(),
-      escalateWrite: emptyText(),
-      allowedLocalScripts: emptyText(),
-      providerName: emptyText(),
-      providerUrl: emptyText(),
-      providerCredentials: emptyText(),
+      repoDirectory: '',
+      globalDirectory: '',
+      envFile: '',
+      escalateRead: '',
+      ignore: '',
+      additionalRead: '',
+      additionalWrite: '',
+      escalateWrite: '',
+      allowedLocalScripts: '',
+      providerName: '',
+      providerUrl: '',
+      providerCredentials: '',
       providers: [{ name: 'nous', url: 'https://n' }],
       step: 'providerName' as const,
     }
@@ -78,22 +74,22 @@ describe('from-inputs', () => {
   })
 
   it('when no directories are given, resolves the defaults', () => {
-    const repoDirectory = emptyText()
-    const globalDirectory = emptyText()
+    const repoDirectory = ''
+    const globalDirectory = ''
 
     const builder = crowConfigFromInputs({
       repoDirectory,
       globalDirectory,
-      envFile: emptyText(),
-      escalateRead: emptyText(),
-      ignore: emptyText(),
-      additionalRead: emptyText(),
-      additionalWrite: emptyText(),
-      escalateWrite: emptyText(),
-      allowedLocalScripts: emptyText(),
-      providerName: emptyText(),
-      providerUrl: emptyText(),
-      providerCredentials: emptyText(),
+      envFile: '',
+      escalateRead: '',
+      ignore: '',
+      additionalRead: '',
+      additionalWrite: '',
+      escalateWrite: '',
+      allowedLocalScripts: '',
+      providerName: '',
+      providerUrl: '',
+      providerCredentials: '',
       providers: [],
     })
 
@@ -103,22 +99,22 @@ describe('from-inputs', () => {
   })
 
   it('when directories are given, resolves the given directories', () => {
-    const repoDirectory = insertText(emptyText(), './lib')
-    const globalDirectory = insertText(emptyText(), '/opt/crow')
+    const repoDirectory = './lib'
+    const globalDirectory = '/opt/crow'
 
     const builder = crowConfigFromInputs({
       repoDirectory,
       globalDirectory,
-      envFile: emptyText(),
-      escalateRead: emptyText(),
-      ignore: emptyText(),
-      additionalRead: emptyText(),
-      additionalWrite: emptyText(),
-      escalateWrite: emptyText(),
-      allowedLocalScripts: emptyText(),
-      providerName: emptyText(),
-      providerUrl: emptyText(),
-      providerCredentials: emptyText(),
+      envFile: '',
+      escalateRead: '',
+      ignore: '',
+      additionalRead: '',
+      additionalWrite: '',
+      escalateWrite: '',
+      allowedLocalScripts: '',
+      providerName: '',
+      providerUrl: '',
+      providerCredentials: '',
       providers: [],
     })
 
@@ -128,23 +124,23 @@ describe('from-inputs', () => {
   })
 
   it('when no env file is given and the global directory is the default, resolves ~/.crow/.env', () => {
-    const repoDirectory = emptyText()
-    const globalDirectory = emptyText()
-    const envFile = emptyText()
+    const repoDirectory = ''
+    const globalDirectory = ''
+    const envFile = ''
 
     const config = crowConfigFromInputs({
       repoDirectory,
       globalDirectory,
       envFile,
-      escalateRead: emptyText(),
-      ignore: emptyText(),
-      additionalRead: emptyText(),
-      additionalWrite: emptyText(),
-      escalateWrite: emptyText(),
-      allowedLocalScripts: emptyText(),
-      providerName: emptyText(),
-      providerUrl: emptyText(),
-      providerCredentials: emptyText(),
+      escalateRead: '',
+      ignore: '',
+      additionalRead: '',
+      additionalWrite: '',
+      escalateWrite: '',
+      allowedLocalScripts: '',
+      providerName: '',
+      providerUrl: '',
+      providerCredentials: '',
       providers: [],
     }).crowConfig()
 
@@ -152,23 +148,23 @@ describe('from-inputs', () => {
   })
 
   it('when no env file is given and the global directory is custom, resolves .env inside it', () => {
-    const repoDirectory = emptyText()
-    const globalDirectory = insertText(emptyText(), '/opt/crow')
-    const envFile = emptyText()
+    const repoDirectory = ''
+    const globalDirectory = '/opt/crow'
+    const envFile = ''
 
     const config = crowConfigFromInputs({
       repoDirectory,
       globalDirectory,
       envFile,
-      escalateRead: emptyText(),
-      ignore: emptyText(),
-      additionalRead: emptyText(),
-      additionalWrite: emptyText(),
-      escalateWrite: emptyText(),
-      allowedLocalScripts: emptyText(),
-      providerName: emptyText(),
-      providerUrl: emptyText(),
-      providerCredentials: emptyText(),
+      escalateRead: '',
+      ignore: '',
+      additionalRead: '',
+      additionalWrite: '',
+      escalateWrite: '',
+      allowedLocalScripts: '',
+      providerName: '',
+      providerUrl: '',
+      providerCredentials: '',
       providers: [],
     }).crowConfig()
 
@@ -176,23 +172,23 @@ describe('from-inputs', () => {
   })
 
   it('when an env file is given, it wins over the derived default', () => {
-    const repoDirectory = emptyText()
-    const globalDirectory = insertText(emptyText(), '/opt/crow')
-    const envFile = insertText(emptyText(), '/secrets/crow.env')
+    const repoDirectory = ''
+    const globalDirectory = '/opt/crow'
+    const envFile = '/secrets/crow.env'
 
     const config = crowConfigFromInputs({
       repoDirectory,
       globalDirectory,
       envFile,
-      escalateRead: emptyText(),
-      ignore: emptyText(),
-      additionalRead: emptyText(),
-      additionalWrite: emptyText(),
-      escalateWrite: emptyText(),
-      allowedLocalScripts: emptyText(),
-      providerName: emptyText(),
-      providerUrl: emptyText(),
-      providerCredentials: emptyText(),
+      escalateRead: '',
+      ignore: '',
+      additionalRead: '',
+      additionalWrite: '',
+      escalateWrite: '',
+      allowedLocalScripts: '',
+      providerName: '',
+      providerUrl: '',
+      providerCredentials: '',
       providers: [],
     }).crowConfig()
 
@@ -200,22 +196,22 @@ describe('from-inputs', () => {
   })
 
   it('includes the default permissions block', () => {
-    const repoDirectory = emptyText()
-    const globalDirectory = emptyText()
+    const repoDirectory = ''
+    const globalDirectory = ''
 
     const config = crowConfigFromInputs({
       repoDirectory,
       globalDirectory,
-      envFile: emptyText(),
-      escalateRead: emptyText(),
-      ignore: emptyText(),
-      additionalRead: emptyText(),
-      additionalWrite: emptyText(),
-      escalateWrite: emptyText(),
-      allowedLocalScripts: emptyText(),
-      providerName: emptyText(),
-      providerUrl: emptyText(),
-      providerCredentials: emptyText(),
+      envFile: '',
+      escalateRead: '',
+      ignore: '',
+      additionalRead: '',
+      additionalWrite: '',
+      escalateWrite: '',
+      allowedLocalScripts: '',
+      providerName: '',
+      providerUrl: '',
+      providerCredentials: '',
       providers: [],
     }).crowConfig()
 
@@ -225,21 +221,21 @@ describe('from-inputs', () => {
   })
 
   it('when additional read directories are given, splits them on commas', () => {
-    const additionalRead = insertText(emptyText(), '/docs, ~/notes')
+    const additionalRead = '/docs, ~/notes'
 
     const config = crowConfigFromInputs({
-      repoDirectory: emptyText(),
-      globalDirectory: emptyText(),
-      envFile: emptyText(),
-      ignore: emptyText(),
+      repoDirectory: '',
+      globalDirectory: '',
+      envFile: '',
+      ignore: '',
       additionalRead,
-      additionalWrite: emptyText(),
-      escalateRead: emptyText(),
-      escalateWrite: emptyText(),
-      allowedLocalScripts: emptyText(),
-      providerName: emptyText(),
-      providerUrl: emptyText(),
-      providerCredentials: emptyText(),
+      additionalWrite: '',
+      escalateRead: '',
+      escalateWrite: '',
+      allowedLocalScripts: '',
+      providerName: '',
+      providerUrl: '',
+      providerCredentials: '',
       providers: [],
     }).crowConfig()
 
@@ -247,21 +243,21 @@ describe('from-inputs', () => {
   })
 
   it('when ignore paths are given, includes them in the config and the json', () => {
-    const ignore = insertText(emptyText(), '.env')
+    const ignore = '.env'
 
     const builder = crowConfigFromInputs({
-      repoDirectory: emptyText(),
-      globalDirectory: emptyText(),
-      envFile: emptyText(),
+      repoDirectory: '',
+      globalDirectory: '',
+      envFile: '',
       ignore,
-      additionalRead: emptyText(),
-      additionalWrite: emptyText(),
-      escalateRead: emptyText(),
-      escalateWrite: emptyText(),
-      allowedLocalScripts: emptyText(),
-      providerName: emptyText(),
-      providerUrl: emptyText(),
-      providerCredentials: emptyText(),
+      additionalRead: '',
+      additionalWrite: '',
+      escalateRead: '',
+      escalateWrite: '',
+      allowedLocalScripts: '',
+      providerName: '',
+      providerUrl: '',
+      providerCredentials: '',
       providers: [],
     })
 
@@ -270,22 +266,22 @@ describe('from-inputs', () => {
   })
 
   it('when no escalate directories are given, resolves the defaults', () => {
-    const escalateRead = emptyText()
-    const escalateWrite = emptyText()
+    const escalateRead = ''
+    const escalateWrite = ''
 
     const config = crowConfigFromInputs({
-      repoDirectory: emptyText(),
-      globalDirectory: emptyText(),
-      envFile: emptyText(),
-      ignore: emptyText(),
-      additionalRead: emptyText(),
-      additionalWrite: emptyText(),
+      repoDirectory: '',
+      globalDirectory: '',
+      envFile: '',
+      ignore: '',
+      additionalRead: '',
+      additionalWrite: '',
       escalateRead,
       escalateWrite,
-      allowedLocalScripts: emptyText(),
-      providerName: emptyText(),
-      providerUrl: emptyText(),
-      providerCredentials: emptyText(),
+      allowedLocalScripts: '',
+      providerName: '',
+      providerUrl: '',
+      providerCredentials: '',
       providers: [],
     }).crowConfig()
 
@@ -294,22 +290,22 @@ describe('from-inputs', () => {
   })
 
   it('when escalate directories are given, splits them on commas', () => {
-    const escalateRead = insertText(emptyText(), '/docs, ~/notes')
-    const escalateWrite = insertText(emptyText(), './scripts')
+    const escalateRead = '/docs, ~/notes'
+    const escalateWrite = './scripts'
 
     const config = crowConfigFromInputs({
-      repoDirectory: emptyText(),
-      globalDirectory: emptyText(),
-      envFile: emptyText(),
-      ignore: emptyText(),
-      additionalRead: emptyText(),
-      additionalWrite: emptyText(),
+      repoDirectory: '',
+      globalDirectory: '',
+      envFile: '',
+      ignore: '',
+      additionalRead: '',
+      additionalWrite: '',
       escalateRead,
       escalateWrite,
-      allowedLocalScripts: emptyText(),
-      providerName: emptyText(),
-      providerUrl: emptyText(),
-      providerCredentials: emptyText(),
+      allowedLocalScripts: '',
+      providerName: '',
+      providerUrl: '',
+      providerCredentials: '',
       providers: [],
     }).crowConfig()
 
@@ -318,21 +314,21 @@ describe('from-inputs', () => {
   })
 
   it('when escalate input has only separators, resolves the defaults', () => {
-    const escalateWrite = insertText(emptyText(), ' , ,')
+    const escalateWrite = ' , ,'
 
     const config = crowConfigFromInputs({
-      repoDirectory: emptyText(),
-      globalDirectory: emptyText(),
-      envFile: emptyText(),
-      ignore: emptyText(),
-      additionalRead: emptyText(),
-      additionalWrite: emptyText(),
-      escalateRead: emptyText(),
+      repoDirectory: '',
+      globalDirectory: '',
+      envFile: '',
+      ignore: '',
+      additionalRead: '',
+      additionalWrite: '',
+      escalateRead: '',
       escalateWrite,
-      allowedLocalScripts: emptyText(),
-      providerName: emptyText(),
-      providerUrl: emptyText(),
-      providerCredentials: emptyText(),
+      allowedLocalScripts: '',
+      providerName: '',
+      providerUrl: '',
+      providerCredentials: '',
       providers: [],
     }).crowConfig()
 
@@ -340,22 +336,22 @@ describe('from-inputs', () => {
   })
 
   it('serializes the config to pretty json', () => {
-    const repoDirectory = emptyText()
-    const globalDirectory = emptyText()
+    const repoDirectory = ''
+    const globalDirectory = ''
 
     const builder = crowConfigFromInputs({
       repoDirectory,
       globalDirectory,
-      envFile: emptyText(),
-      escalateRead: emptyText(),
-      ignore: emptyText(),
-      additionalRead: emptyText(),
-      additionalWrite: emptyText(),
-      escalateWrite: emptyText(),
-      allowedLocalScripts: emptyText(),
-      providerName: emptyText(),
-      providerUrl: emptyText(),
-      providerCredentials: emptyText(),
+      envFile: '',
+      escalateRead: '',
+      ignore: '',
+      additionalRead: '',
+      additionalWrite: '',
+      escalateWrite: '',
+      allowedLocalScripts: '',
+      providerName: '',
+      providerUrl: '',
+      providerCredentials: '',
       providers: [],
     })
 

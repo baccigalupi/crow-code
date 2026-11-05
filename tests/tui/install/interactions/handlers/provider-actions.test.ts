@@ -17,10 +17,8 @@ describe('ProviderActions', () => {
 
       actions.input()('https://n')
 
-      expect(store.providerEditForm.providerUrl.text.peek().text).toBe(
-        'https://n',
-      )
-      expect(store.providerEditForm.providerName.text.peek().text).toBe('')
+      expect(store.providerEditForm.providerUrl.text.peek()).toBe('https://n')
+      expect(store.providerEditForm.providerName.text.peek()).toBe('')
     })
 
     it('when the input is submitted, goes to the next panel and saves nothing', () => {
@@ -50,7 +48,7 @@ describe('ProviderActions', () => {
       const used = actions.press(new Keypress('x', {}))
 
       expect(used).toBe(false)
-      expect(store.providerEditForm.providerName.text.peek().text).toBe('')
+      expect(store.providerEditForm.providerName.text.peek()).toBe('')
     })
   })
 
@@ -102,7 +100,7 @@ describe('ProviderActions', () => {
   describe('escape', () => {
     it('when escape arrives, clears the form and goes to the cancel panel', () => {
       const store = new DataStore({ applicationData: mockApplicationData() })
-      store.providerEditForm.providerName.insert('or')
+      store.providerEditForm.providerName.replace('or')
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
         step: 'providerName',
@@ -114,7 +112,7 @@ describe('ProviderActions', () => {
 
       expect(used).toBe(true)
       expect(navigation.goTo.mock.calls).toEqual([['confirm']])
-      expect(store.providerEditForm.providerName.text.peek().text).toBe('')
+      expect(store.providerEditForm.providerName.text.peek()).toBe('')
     })
 
     it('when escape arrives after a finished provider, keeps the finished one', () => {
@@ -149,65 +147,26 @@ describe('ProviderActions', () => {
     })
   })
 
-  describe('masked key', () => {
-    it('when a character arrives, types it into the key', () => {
-      const store = new DataStore({ applicationData: mockApplicationData() })
-      const navigation = { goTo: mock(), exit: mock() }
-      const actions = new ProviderActions({
-        step: 'providerCredentials',
-        store,
-        navigation,
-      })
-
-      const used = actions.press(new Keypress('x', {}))
-
-      expect(used).toBe(true)
-      expect(store.providerEditForm.providerCredentials.text.peek()).toEqual({
-        text: 'x',
-        cursor: 1,
-      })
+  it('when the key is submitted, saves the provider, clears the form and goes next', () => {
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.providerEditForm.providerName.replace('nous')
+    store.providerEditForm.providerUrl.replace('https://n')
+    store.providerEditForm.providerCredentials.replace('sk-1')
+    const navigation = { goTo: mock(), exit: mock() }
+    const actions = new ProviderActions({
+      step: 'providerCredentials',
+      store,
+      navigation,
     })
 
-    it('when return arrives, saves the provider, clears the form and goes next', () => {
-      const store = new DataStore({ applicationData: mockApplicationData() })
-      store.providerEditForm.providerName.insert('nous')
-      store.providerEditForm.providerUrl.insert('https://n')
-      store.providerEditForm.providerCredentials.insert('sk-1')
-      const navigation = { goTo: mock(), exit: mock() }
-      const actions = new ProviderActions({
-        step: 'providerCredentials',
-        store,
-        navigation,
-      })
+    actions.submit()()
 
-      actions.press(new Keypress('', { return: true }))
-
-      expect(navigation.goTo.mock.calls).toEqual([['providerName']])
-      expect(store.providers.providers.peek()).toEqual([
-        { name: 'nous', url: 'https://n' },
-      ])
-      expect(store.providers.envBuffer.peek()).toEqual({ NOUS_API_KEY: 'sk-1' })
-      expect(store.providerEditForm.providerName.text.peek().text).toBe('')
-      expect(store.providerEditForm.providerCredentials.text.peek().text).toBe(
-        '',
-      )
-    })
-
-    it('when backspace arrives, removes the typed character', () => {
-      const store = new DataStore({ applicationData: mockApplicationData() })
-      store.providerEditForm.providerCredentials.insert('x')
-      const navigation = { goTo: mock(), exit: mock() }
-      const actions = new ProviderActions({
-        step: 'providerCredentials',
-        store,
-        navigation,
-      })
-
-      actions.press(new Keypress('', { backspace: true }))
-
-      expect(store.providerEditForm.providerCredentials.text.peek().text).toBe(
-        '',
-      )
-    })
+    expect(navigation.goTo.mock.calls).toEqual([['providerName']])
+    expect(store.providers.providers.peek()).toEqual([
+      { name: 'nous', url: 'https://n' },
+    ])
+    expect(store.providers.envBuffer.peek()).toEqual({ NOUS_API_KEY: 'sk-1' })
+    expect(store.providerEditForm.providerName.text.peek()).toBe('')
+    expect(store.providerEditForm.providerCredentials.text.peek()).toBe('')
   })
 })

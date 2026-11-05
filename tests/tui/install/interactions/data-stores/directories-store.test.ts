@@ -28,7 +28,7 @@ describe('DirectoriesStore', () => {
 
   it('when a repo directory is typed, puts the config path in it', () => {
     const directories = new DirectoriesStore()
-    directories.repoDirectory.insert('custom')
+    directories.repoDirectory.replace('custom')
 
     const path = directories.configPath.value
 
@@ -45,7 +45,7 @@ describe('DirectoriesStore', () => {
 
   it('when a global directory is typed, the global path is that directory', () => {
     const directories = new DirectoriesStore()
-    directories.globalDirectory.insert('/g')
+    directories.globalDirectory.replace('/g')
 
     const path = directories.globalPath.value
 
@@ -54,7 +54,7 @@ describe('DirectoriesStore', () => {
 
   it('when asked for the default env file, puts .env in the global path', () => {
     const directories = new DirectoriesStore()
-    directories.globalDirectory.insert('/g')
+    directories.globalDirectory.replace('/g')
 
     const path = directories.defaultEnvFile.value
 

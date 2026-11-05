@@ -18,10 +18,10 @@ describe('ConfigJsonViewModel', () => {
 
   it('when asked for the permissions, writes each list as json', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    store.permissions.ignore.insert('a')
-    store.permissions.additionalRead.insert('b')
-    store.permissions.additionalWrite.insert('c')
-    store.permissions.escalateRead.insert('d')
+    store.permissions.ignore.replace('a')
+    store.permissions.additionalRead.replace('b')
+    store.permissions.additionalWrite.replace('c')
+    store.permissions.escalateRead.replace('d')
     const viewModel = new ConfigJsonViewModel(
       store.inputs.peek(),
       'repoDirectory',
@@ -77,7 +77,7 @@ describe('ConfigJsonViewModel', () => {
 
   it('when asked for its key, joins the selected step and the json', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    store.directories.globalDirectory.insert('/g')
+    store.directories.globalDirectory.replace('/g')
     const viewModel = new ConfigJsonViewModel(store.inputs.peek(), 'envFile')
 
     const key = viewModel.key()

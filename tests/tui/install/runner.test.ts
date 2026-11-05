@@ -1,5 +1,5 @@
 import { describe, expect, it, mock, spyOn } from 'bun:test'
-import { KeyCodes, createTestRenderer } from '@opentui/core/testing'
+import { createTestRenderer } from '@opentui/core/testing'
 import {
   InstallTuiRunner,
   runInstallTui,
@@ -16,7 +16,7 @@ describe('runner', () => {
     ).mockImplementation(() => new Promise<void>(() => {}))
     const runner = new InstallTuiRunner(applicationData, {})
     runner.run()
-    runner.store().directories.repoDirectory.insert('/repo/injected')
+    runner.store().directories.repoDirectory.replace('/repo/injected')
 
     runner.store().navigator.goTo('completeSetup')
 
@@ -79,7 +79,7 @@ describe('runner', () => {
       await mockInput.typeText('./crow2')
       await renderOnce()
 
-      expect(runner.store().directories.repoDirectory.text.peek().text).toBe(
+      expect(runner.store().directories.repoDirectory.text.peek()).toBe(
         './crow2',
       )
       expect(captureCharFrame()).toContain('./crow2')
@@ -127,7 +127,7 @@ describe('runner', () => {
       await mockInput.typeText('.env')
       await renderOnce()
 
-      expect(runner.store().permissions.ignore.text.peek().text).toBe('.env')
+      expect(runner.store().permissions.ignore.text.peek()).toBe('.env')
       expect(captureCharFrame()).toContain('Ignored paths: .env')
       renderer.destroy()
     })
@@ -157,84 +157,11 @@ describe('runner', () => {
       await mockInput.typeText('/work')
       await renderOnce()
 
-      expect(runner.store().permissions.additionalWrite.text.peek().text).toBe(
+      expect(runner.store().permissions.additionalWrite.text.peek()).toBe(
         '/work',
       )
       expect(captureCharFrame()).toContain(
         'Additional write directories: /work',
-      )
-      renderer.destroy()
-    })
-
-    it('when backspace arrives, the previous char is deleted', async () => {
-      const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.store().directories.repoDirectory.insert('~/x')
-      const { renderer, mockInput } = await createTestRenderer({
-        width: 70,
-        height: 8,
-      })
-      runner.view(renderer)
-
-      mockInput.pressBackspace()
-
-      expect(runner.store().directories.repoDirectory.text.peek().text).toBe(
-        '~/',
-      )
-      renderer.destroy()
-    })
-
-    it('when home then delete arrive, the first char is removed', async () => {
-      const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.store().directories.repoDirectory.insert('~/x')
-      const { renderer, mockInput } = await createTestRenderer({
-        width: 70,
-        height: 8,
-      })
-      runner.view(renderer)
-
-      mockInput.pressKey(KeyCodes.HOME)
-      mockInput.pressKey(KeyCodes.DELETE)
-
-      expect(runner.store().directories.repoDirectory.text.peek().text).toBe(
-        '/x',
-      )
-      renderer.destroy()
-    })
-
-    it('when left arrows arrive, typing inserts at the cursor', async () => {
-      const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.store().directories.repoDirectory.insert('~/x')
-      const { renderer, mockInput } = await createTestRenderer({
-        width: 70,
-        height: 8,
-      })
-      runner.view(renderer)
-
-      mockInput.pressArrow('left')
-      mockInput.pressArrow('left')
-      await mockInput.typeText('X')
-
-      expect(runner.store().directories.repoDirectory.text.peek().text).toBe(
-        '~X/x',
-      )
-      renderer.destroy()
-    })
-
-    it('when home, end and right arrive, the cursor stays at the end', async () => {
-      const runner = new InstallTuiRunner(mockApplicationData(), {})
-      runner.store().directories.repoDirectory.insert('~/x')
-      const { renderer, mockInput } = await createTestRenderer({
-        width: 70,
-        height: 8,
-      })
-      runner.view(renderer)
-
-      mockInput.pressKey(KeyCodes.HOME)
-      mockInput.pressKey(KeyCodes.END)
-      mockInput.pressArrow('right')
-
-      expect(runner.store().directories.repoDirectory.text.peek().cursor).toBe(
-        3,
       )
       renderer.destroy()
     })

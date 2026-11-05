@@ -2,7 +2,6 @@ import { join } from 'node:path'
 import { buildPermissions } from './from-inputs/permissions.ts'
 import { buildProviders } from './from-inputs/providers.ts'
 import { DirectoriesStore } from '../interactions/data-stores/directories-store.ts'
-import type { InputText } from '../types.ts'
 import type {
   CrowConfigInputs,
   PermissionInputs,
@@ -12,9 +11,9 @@ import type {
 // READ side: builds the config the installer would write from the typed
 // inputs. Pure; touches no files. Writing lives in write.ts.
 export class CrowConfigFromInputs {
-  private globalDirectoryInput: InputText
-  private repoDirectoryInput: InputText
-  private envFileInput: InputText
+  private globalDirectoryInput: string
+  private repoDirectoryInput: string
+  private envFileInput: string
   private sectionInputs: PermissionInputs & ProviderInputs
   private readonly directories = new DirectoriesStore()
 
@@ -68,9 +67,9 @@ export class CrowConfigFromInputs {
     )
   }
 
-  private directory(input: InputText, defaultValue: string) {
-    if (input.text.length === 0) return defaultValue
-    return input.text
+  private directory(input: string, defaultValue: string) {
+    if (input.length === 0) return defaultValue
+    return input
   }
 
   private permissions() {

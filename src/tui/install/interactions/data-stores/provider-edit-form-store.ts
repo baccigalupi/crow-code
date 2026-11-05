@@ -20,13 +20,13 @@ export class ProviderEditFormStore {
 
   provider() {
     return {
-      name: this.providerName.text.peek().text,
-      url: this.providerUrl.text.peek().text,
+      name: this.providerName.text.peek(),
+      url: this.providerUrl.text.peek(),
     }
   }
 
   credential() {
-    return this.providerCredentials.text.peek().text
+    return this.providerCredentials.text.peek()
   }
 
   // Fields before the current step show their answers, the current one is

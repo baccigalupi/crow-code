@@ -1,5 +1,4 @@
 import { defaultCrowConfig } from '../../../../domain/config.ts'
-import type { InputText } from '../../types.ts'
 import type { PermissionInputs } from '../types.ts'
 
 const entries = (text: string) => {
@@ -14,8 +13,8 @@ const orDefault = (list: string[], defaultValue: string[]) => {
   return list
 }
 
-const directoryList = (input: InputText, defaultValue: string[]) => {
-  return orDefault(entries(input.text), defaultValue)
+const directoryList = (input: string, defaultValue: string[]) => {
+  return orDefault(entries(input), defaultValue)
 }
 
 const defaultPermissions = () => defaultCrowConfig().permissions

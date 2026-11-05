@@ -1,21 +1,17 @@
 import { describe, expect, it } from 'bun:test'
 import { buildPermissions } from '../../../../../src/tui/install/crow-config/from-inputs/permissions.ts'
-import {
-  emptyText,
-  insertText,
-} from '../../../../../src/tui/install/input-text.ts'
 
 describe('buildPermissions', () => {
   it('when the inputs are empty, escalate directories default', () => {
-    const additionalRead = emptyText()
-    const escalateRead = emptyText()
-    const escalateWrite = emptyText()
-    const allowedLocalScripts = emptyText()
+    const additionalRead = ''
+    const escalateRead = ''
+    const escalateWrite = ''
+    const allowedLocalScripts = ''
 
     const permissions = buildPermissions({
-      ignore: emptyText(),
+      ignore: '',
       additionalRead,
-      additionalWrite: emptyText(),
+      additionalWrite: '',
       escalateRead,
       escalateWrite,
       allowedLocalScripts,
@@ -26,15 +22,15 @@ describe('buildPermissions', () => {
   })
 
   it('when the inputs are comma separated, escalate directories are trimmed entries', () => {
-    const additionalRead = emptyText()
-    const escalateRead = insertText(emptyText(), ' /docs ,~/notes,')
-    const escalateWrite = insertText(emptyText(), './scripts')
-    const allowedLocalScripts = emptyText()
+    const additionalRead = ''
+    const escalateRead = ' /docs ,~/notes,'
+    const escalateWrite = './scripts'
+    const allowedLocalScripts = ''
 
     const permissions = buildPermissions({
-      ignore: emptyText(),
+      ignore: '',
       additionalRead,
-      additionalWrite: emptyText(),
+      additionalWrite: '',
       escalateRead,
       escalateWrite,
       allowedLocalScripts,
@@ -45,15 +41,15 @@ describe('buildPermissions', () => {
   })
 
   it('when allowedLocalScripts input is empty, it is the default globs', () => {
-    const additionalRead = emptyText()
-    const escalateRead = emptyText()
-    const escalateWrite = emptyText()
-    const allowedLocalScripts = emptyText()
+    const additionalRead = ''
+    const escalateRead = ''
+    const escalateWrite = ''
+    const allowedLocalScripts = ''
 
     const permissions = buildPermissions({
-      ignore: emptyText(),
+      ignore: '',
       additionalRead,
-      additionalWrite: emptyText(),
+      additionalWrite: '',
       escalateRead,
       escalateWrite,
       allowedLocalScripts,
@@ -63,15 +59,15 @@ describe('buildPermissions', () => {
   })
 
   it('when allowedLocalScripts input is comma separated, it is trimmed entries', () => {
-    const additionalRead = emptyText()
-    const escalateRead = emptyText()
-    const escalateWrite = emptyText()
-    const allowedLocalScripts = insertText(emptyText(), './a.sh, ./b.sh')
+    const additionalRead = ''
+    const escalateRead = ''
+    const escalateWrite = ''
+    const allowedLocalScripts = './a.sh, ./b.sh'
 
     const permissions = buildPermissions({
-      ignore: emptyText(),
+      ignore: '',
       additionalRead,
-      additionalWrite: emptyText(),
+      additionalWrite: '',
       escalateRead,
       escalateWrite,
       allowedLocalScripts,
@@ -81,15 +77,15 @@ describe('buildPermissions', () => {
   })
 
   it('when additionalRead input is empty, it is the default empty list', () => {
-    const additionalRead = emptyText()
-    const escalateRead = emptyText()
-    const escalateWrite = emptyText()
-    const allowedLocalScripts = emptyText()
+    const additionalRead = ''
+    const escalateRead = ''
+    const escalateWrite = ''
+    const allowedLocalScripts = ''
 
     const permissions = buildPermissions({
-      ignore: emptyText(),
+      ignore: '',
       additionalRead,
-      additionalWrite: emptyText(),
+      additionalWrite: '',
       escalateRead,
       escalateWrite,
       allowedLocalScripts,
@@ -99,15 +95,15 @@ describe('buildPermissions', () => {
   })
 
   it('when additionalRead input is comma separated, it is trimmed entries', () => {
-    const additionalRead = insertText(emptyText(), ' /docs ,~/notes,')
-    const escalateRead = emptyText()
-    const escalateWrite = emptyText()
-    const allowedLocalScripts = emptyText()
+    const additionalRead = ' /docs ,~/notes,'
+    const escalateRead = ''
+    const escalateWrite = ''
+    const allowedLocalScripts = ''
 
     const permissions = buildPermissions({
-      ignore: emptyText(),
+      ignore: '',
       additionalRead,
-      additionalWrite: emptyText(),
+      additionalWrite: '',
       escalateRead,
       escalateWrite,
       allowedLocalScripts,
@@ -117,60 +113,60 @@ describe('buildPermissions', () => {
   })
 
   it('when additionalWrite input is empty, it is the default empty list', () => {
-    const additionalWrite = emptyText()
+    const additionalWrite = ''
 
     const permissions = buildPermissions({
-      ignore: emptyText(),
-      additionalRead: emptyText(),
+      ignore: '',
+      additionalRead: '',
       additionalWrite,
-      escalateRead: emptyText(),
-      escalateWrite: emptyText(),
-      allowedLocalScripts: emptyText(),
+      escalateRead: '',
+      escalateWrite: '',
+      allowedLocalScripts: '',
     })
 
     expect(permissions.additionalWrite).toEqual([])
   })
 
   it('when additionalWrite input is comma separated, it is trimmed entries', () => {
-    const additionalWrite = insertText(emptyText(), ' /docs ,~/work,')
+    const additionalWrite = ' /docs ,~/work,'
 
     const permissions = buildPermissions({
-      ignore: emptyText(),
-      additionalRead: emptyText(),
+      ignore: '',
+      additionalRead: '',
       additionalWrite,
-      escalateRead: emptyText(),
-      escalateWrite: emptyText(),
-      allowedLocalScripts: emptyText(),
+      escalateRead: '',
+      escalateWrite: '',
+      allowedLocalScripts: '',
     })
 
     expect(permissions.additionalWrite).toEqual(['/docs', '~/work'])
   })
 
   it('when ignore input is empty, it is the default empty list', () => {
-    const ignore = emptyText()
+    const ignore = ''
 
     const permissions = buildPermissions({
       ignore,
-      additionalRead: emptyText(),
-      additionalWrite: emptyText(),
-      escalateRead: emptyText(),
-      escalateWrite: emptyText(),
-      allowedLocalScripts: emptyText(),
+      additionalRead: '',
+      additionalWrite: '',
+      escalateRead: '',
+      escalateWrite: '',
+      allowedLocalScripts: '',
     })
 
     expect(permissions.ignore).toEqual([])
   })
 
   it('when ignore input is comma separated, it is trimmed entries', () => {
-    const ignore = insertText(emptyText(), ' .env ,secrets/,')
+    const ignore = ' .env ,secrets/,'
 
     const permissions = buildPermissions({
       ignore,
-      additionalRead: emptyText(),
-      additionalWrite: emptyText(),
-      escalateRead: emptyText(),
-      escalateWrite: emptyText(),
-      allowedLocalScripts: emptyText(),
+      additionalRead: '',
+      additionalWrite: '',
+      escalateRead: '',
+      escalateWrite: '',
+      allowedLocalScripts: '',
     })
 
     expect(permissions.ignore).toEqual(['.env', 'secrets/'])

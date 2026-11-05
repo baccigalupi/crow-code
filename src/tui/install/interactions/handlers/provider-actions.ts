@@ -1,4 +1,4 @@
-import type { KeyEvent, PasteEvent } from '@opentui/core'
+import type { KeyEvent } from '@opentui/core'
 import { Keypress } from '../../keypress.ts'
 import type {
   PromptArguments,
@@ -6,14 +6,11 @@ import type {
   StepName,
 } from '../../types.ts'
 import { keypressFromEvent } from '../listeners/keypress-from-event.ts'
-import { keypressFromPaste } from '../listeners/keypress-from-paste.ts'
-import { TextEditor } from '../../text-prompt/text-editor.ts'
 import { providerSteps } from '../../provider/steps.ts'
 
-// What a provider field does. The input fields type into their own field and
-// return moves on; tab walks the fields and escape clears the form and
-// finishes at confirm. The masked key has no input, so its typing and paste
-// come through here and its return saves the provider and clears the form.
+// What a provider field does. Each input types into its own field; return
+// moves on, and on the key it saves the provider and clears the form. Tab
+// walks the fields and escape clears the form and finishes at confirm.
 export class ProviderActions {
   private actionArguments: PromptArguments<ProviderStepName>
 
@@ -26,7 +23,7 @@ export class ProviderActions {
   }
 
   submit() {
-    return () => this.go(this.flow().next)
+    return () => this.finishField()
   }
 
   // A key used here skips the field's own handling.
@@ -37,27 +34,21 @@ export class ProviderActions {
     }
   }
 
-  paste() {
-    return (event: PasteEvent) => {
-      this.press(keypressFromPaste(event))
-    }
-  }
-
   // True when the key was used here.
   press(keypress: Keypress) {
     const { key } = keypress
     if (key.tab === true) this.tab(key.shift === true)
     else if (keypress.isEscape()) this.cancel()
-    else return this.typeMasked(keypress)
+    else return false
     return true
   }
 
-  private typeMasked(keypress: Keypress) {
-    if (!this.flow().masked) return false
-
-    if (keypress.key.return === true) this.save()
-    else new TextEditor({ field: this.field(), keypress }).edit()
-    return true
+  private finishField() {
+    if (this.flow().masked) {
+      this.save()
+    } else {
+      this.go(this.flow().next)
+    }
   }
 
   private tab(backward: boolean) {

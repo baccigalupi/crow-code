@@ -28,7 +28,7 @@ describe('LocalConfigTask', () => {
   it('when run, saves the json to the repo config path', async () => {
     const applicationData = mockApplicationData()
     const store = new DataStore({ applicationData })
-    store.directories.repoDirectory.insert(
+    store.directories.repoDirectory.replace(
       join(fixturesDirectory, 'write-crow-config', 'crow'),
     )
 
@@ -69,10 +69,10 @@ describe('LocalConfigTask', () => {
   it('when additional read directories are typed, writes them to the config', async () => {
     const applicationData = mockApplicationData()
     const store = new DataStore({ applicationData })
-    store.directories.repoDirectory.insert(
+    store.directories.repoDirectory.replace(
       join(fixturesDirectory, 'write-crow-config', 'crow'),
     )
-    store.permissions.additionalRead.insert('/docs')
+    store.permissions.additionalRead.replace('/docs')
 
     await new LocalConfigTask({
       applicationData,
@@ -91,10 +91,10 @@ describe('LocalConfigTask', () => {
   it('when additional write directories are typed, writes them to the config', async () => {
     const applicationData = mockApplicationData()
     const store = new DataStore({ applicationData })
-    store.directories.repoDirectory.insert(
+    store.directories.repoDirectory.replace(
       join(fixturesDirectory, 'write-crow-config', 'crow'),
     )
-    store.permissions.additionalWrite.insert('/work')
+    store.permissions.additionalWrite.replace('/work')
 
     await new LocalConfigTask({
       applicationData,
@@ -113,10 +113,10 @@ describe('LocalConfigTask', () => {
   it('when ignore paths are typed, writes them to the config', async () => {
     const applicationData = mockApplicationData()
     const store = new DataStore({ applicationData })
-    store.directories.repoDirectory.insert(
+    store.directories.repoDirectory.replace(
       join(fixturesDirectory, 'write-crow-config', 'crow'),
     )
-    store.permissions.ignore.insert('.env')
+    store.permissions.ignore.replace('.env')
 
     await new LocalConfigTask({
       applicationData,

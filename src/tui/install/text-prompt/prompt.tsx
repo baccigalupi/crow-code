@@ -1,38 +1,9 @@
-import { TextAttributes } from '@opentui/core'
 import type { DataStore } from '../data-store.ts'
-import type { InputText, TextStepName } from '../types.ts'
+import type { TextStepName } from '../types.ts'
 import { PromptNavigation } from '../interactions/prompt-navigation.ts'
 import { useSignalValue } from '../interactions/use-signal-value.ts'
 import { TextPromptActions } from '../interactions/handlers/text-prompt-actions.ts'
-import { promptLineViewModel } from './prompt-line-view-model.ts'
 import { textPromptViewModel } from './text-prompt-view-model.ts'
-
-type PromptLineProps = {
-  label: string
-  input: InputText
-  placeholder: string
-  masked: boolean
-}
-
-// One `label: value` line with a block cursor and the dimmed placeholder.
-export const PromptLine = ({
-  label,
-  input,
-  placeholder,
-  masked,
-}: PromptLineProps) => {
-  const viewModel = promptLineViewModel(input, masked)
-  return (
-    <box paddingX={1}>
-      <text>
-        {label}: {viewModel.beforeCursor()}
-        <span attributes={TextAttributes.DIM}>{placeholder}</span>
-        <span attributes={TextAttributes.INVERSE}>{viewModel.atCursor()}</span>
-        {viewModel.afterCursor()}
-      </text>
-    </box>
-  )
-}
 
 type TextPromptProps = {
   store: DataStore
@@ -55,7 +26,7 @@ export const TextPrompt = ({ store, step }: TextPromptProps) => {
       <input
         focused
         flexGrow={1}
-        value={input.text}
+        value={input}
         placeholder={viewModel.placeholder()}
         onInput={actions.input()}
         onSubmit={actions.submit()}

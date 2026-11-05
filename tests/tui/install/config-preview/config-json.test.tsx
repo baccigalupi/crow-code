@@ -27,7 +27,7 @@ describe('ConfigJson', () => {
   it('when a provider name is being typed, highlights it in the last provider', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.providers.save({ name: 'nous', url: 'https://n' }, '')
-    store.providerEditForm.providerName.insert('local')
+    store.providerEditForm.providerName.replace('local')
     store.navigator.goTo('providerName')
     const { renderer, renderOnce, captureSpans } = await testRender(
       <ConfigJson store={store} />,

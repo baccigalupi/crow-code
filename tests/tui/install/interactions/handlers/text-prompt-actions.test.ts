@@ -15,7 +15,7 @@ describe('TextPromptActions', () => {
 
     actions.input()('./crow')
 
-    expect(store.directories.repoDirectory.text.peek().text).toBe('./crow')
+    expect(store.directories.repoDirectory.text.peek()).toBe('./crow')
   })
 
   it('when the input is submitted, goes to the next panel', () => {

@@ -10,7 +10,7 @@ import { mockApplicationData } from '../../../support/mock-application-data.ts'
 describe('Field', () => {
   it('when its step has passed, shows the answer', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    store.providerEditForm.providerName.insert('nous')
+    store.providerEditForm.providerName.replace('nous')
     store.navigator.goTo('providerUrl')
     const actions = new ProviderActions({
       step: 'providerUrl',
@@ -43,13 +43,13 @@ describe('Field', () => {
 
     await act(() => mockInput.typeText('x'))
 
-    expect(store.providerEditForm.providerUrl.text.peek().text).toBe('x')
+    expect(store.providerEditForm.providerUrl.text.peek()).toBe('x')
     act(() => renderer.destroy())
   })
 
   it('when the API key is live, draws it as dots', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    store.providerEditForm.providerCredentials.insert('sk-1')
+    store.providerEditForm.providerCredentials.replace('sk-1')
     store.navigator.goTo('providerCredentials')
     const actions = new ProviderActions({
       step: 'providerUrl',
@@ -83,9 +83,7 @@ describe('Field', () => {
 
     await act(() => mockInput.typeText('sk'))
 
-    expect(store.providerEditForm.providerCredentials.text.peek().text).toBe(
-      'sk',
-    )
+    expect(store.providerEditForm.providerCredentials.text.peek()).toBe('sk')
     act(() => renderer.destroy())
   })
 
@@ -104,7 +102,7 @@ describe('Field', () => {
 
     await act(() => mockInput.pasteBracketedText('sk-123\r\n'))
 
-    expect(store.providerEditForm.providerCredentials.text.peek().text).toBe(
+    expect(store.providerEditForm.providerCredentials.text.peek()).toBe(
       'sk-123',
     )
     act(() => renderer.destroy())
@@ -127,7 +125,7 @@ describe('Field', () => {
     act(() => mockInput.pressTab())
 
     expect(navigation.goTo.mock.calls).toEqual([['providerCredentials']])
-    expect(store.providerEditForm.providerUrl.text.peek().text).toBe('')
+    expect(store.providerEditForm.providerUrl.text.peek()).toBe('')
     act(() => renderer.destroy())
   })
 
