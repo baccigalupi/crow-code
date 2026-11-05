@@ -114,6 +114,6 @@ describe('ReadBody', () => {
     await body.run()
 
     expect(body.success()).toBe(true)
-    expect(body.result().text.length).toBe(2097152)
+    expect(body.result().text.length).toBe(50011)
   })
 })

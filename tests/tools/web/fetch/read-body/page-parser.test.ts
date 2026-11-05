@@ -37,6 +37,26 @@ describe('PageParser', () => {
     expect(page.text).toBe('Hi & bye')
   })
 
+  it('when the page is text/plain, removes format characters', async () => {
+    const headers = { 'content-type': 'text/plain' }
+    const response = new Response(null, { headers })
+    const fetched = { url: 'https://192.0.2.1/a', response }
+
+    const page = await new PageParser(fetched, 'a​b').page()
+
+    expect(page.text).toBe('ab')
+  })
+
+  it('when the page is text/html, removes format characters', async () => {
+    const headers = { 'content-type': 'text/html' }
+    const response = new Response(null, { headers })
+    const fetched = { url: 'https://192.0.2.1/a', response }
+
+    const page = await new PageParser(fetched, '<p>x​y</p>').page()
+
+    expect(page.text).toBe('xy')
+  })
+
   it('when the page has no content type, returns the body unchanged', async () => {
     const response = new Response(null)
     const fetched = { url: 'https://192.0.2.1/a', response }

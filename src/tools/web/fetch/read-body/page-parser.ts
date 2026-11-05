@@ -1,5 +1,6 @@
 import type { FetchedResponse } from '../../../types.ts'
 import { HtmlText } from './page-parser/html-text.ts'
+import { TextNormalizer } from './page-parser/text-normalizer.ts'
 
 export class PageParser {
   private fetched: FetchedResponse
@@ -21,7 +22,11 @@ export class PageParser {
     return this.fetched.response.headers.get('content-type') || ''
   }
 
-  private text() {
+  private async text() {
+    return new TextNormalizer(await this.extracted()).text()
+  }
+
+  private extracted() {
     if (this.isHtml()) {
       return new HtmlText(this.body).text()
     }

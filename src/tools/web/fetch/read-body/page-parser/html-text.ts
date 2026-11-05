@@ -1,62 +1,70 @@
+import { HiddenElement } from './html-text/hidden-element.ts'
+import { VisibleText } from './html-text/visible-text.ts'
+
 export class HtmlText {
   private html: string
-  private skipDepth = 0
-  private collected = ''
-  private skipped = 'head,script,style'
+  private page = new VisibleText()
+  private removable = [
+    'head',
+    'script',
+    'style',
+    'noscript',
+    'svg',
+    'iframe',
+    'template',
+    'object',
+    'embed',
+    'select',
+    'textarea',
+    'button',
+    'input',
+    'img',
+  ]
   private blocks = 'p,div,br,li,h1,h2,h3,h4,h5,h6,tr'
-  private entities: Record<string, string> = {
-    '&amp;': '&',
-    '&lt;': '<',
-    '&gt;': '>',
-    '&quot;': '"',
-    '&#39;': "'",
-    '&nbsp;': ' ',
-  }
 
   constructor(html: string) {
     this.html = html
   }
 
   async text() {
-    const rewriter = new HTMLRewriter()
-      .on(this.skipped, { element: (element) => this.skip(element) })
-      .on(this.blocks, { element: () => this.newline() })
-      .on('*', { text: (chunk) => this.append(chunk.text) })
-    await rewriter.transform(new Response(this.html)).text()
-    return this.tidy()
+    await this.rewriter().transform(new Response(this.html)).text()
+    return this.page.text()
   }
 
-  private skip(element: HTMLRewriterTypes.Element) {
-    this.skipDepth += 1
-    element.onEndTag(() => this.unskip())
+  private rewriter() {
+    return new HTMLRewriter()
+      .on('*', {
+        element: (element) => this.inspect(element),
+        text: (chunk) => this.page.append(chunk.text),
+      })
+      .on(this.blocks, { element: () => this.page.newline() })
   }
 
-  private unskip() {
-    this.skipDepth -= 1
-  }
-
-  private newline() {
-    this.collected += '\n'
-  }
-
-  private append(text: string) {
-    if (this.skipDepth === 0) {
-      this.collected += text.replace(/[ \t\r\n]+/g, ' ')
+  private inspect(element: HTMLRewriterTypes.Element) {
+    if (this.page.visible()) {
+      this.classify(element)
     }
   }
 
-  private tidy() {
-    return this.decode(this.collected)
-      .replace(/ +/g, ' ')
-      .split('\n')
-      .map((line) => line.trim())
-      .filter((line) => line !== '')
-      .join('\n')
+  private classify(element: HTMLRewriterTypes.Element) {
+    if (this.isDropped(element)) {
+      this.page.skip(element)
+    } else if (element.tagName === 'a') {
+      this.link(element)
+    }
   }
 
-  private decode(text: string) {
-    return text.replace(/&(amp|lt|gt|quot|#39|nbsp);/g, (entity) => {
-      return this.entities[entity]
-    })
+  private isDropped(element: HTMLRewriterTypes.Element) {
+    return (
+      this.removable.includes(element.tagName) ||
+      new HiddenElement(element).hidden()
+    )
+  }
+
+  private link(element: HTMLRewriterTypes.Element) {
+    const href = element.getAttribute('href')
+    if (href !== null) {
+      element.onEndTag(() => this.page.append(` (${href}) `))
+    }
   }
 }
