@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { Keypress } from '../../../../src/tui/keypress.ts'
 import { TextEditor } from '../../../../src/tui/install/text-prompt/text-editor.ts'
-import { TextFieldStore } from '../../../../src/tui/install/data-stores/text-field-store.ts'
+import { TextFieldStore } from '../../../../src/tui/install/interactions/data-stores/text-field-store.ts'
 
 describe('TextEditor', () => {
   it('when text is inserted, appends at the cursor', () => {

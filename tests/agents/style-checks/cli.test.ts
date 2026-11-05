@@ -184,7 +184,7 @@ describe('style-check cli', () => {
   it('when a tui file is named, lints it and exits 0', async () => {
     const command = [
       'agents/style-check',
-      'src/tui/install/data-stores/text-field-store.ts',
+      'src/tui/install/interactions/data-stores/text-field-store.ts',
     ]
 
     const child = Bun.spawn(command, { stdout: 'pipe', stderr: 'pipe' })

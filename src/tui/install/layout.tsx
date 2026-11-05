@@ -1,8 +1,8 @@
 import { useTerminalDimensions } from '@opentui/react'
 import type { DataStore } from './data-store.ts'
-import { ConfigPreview } from './app/config-preview.tsx'
-import { CurrentPrompt } from './app/current-prompt.tsx'
-import { Header } from './app/header.tsx'
+import { ConfigPreview } from './config-preview/config-preview.tsx'
+import { CurrentPrompt } from './layout/current-prompt.tsx'
+import { Header } from './layout/header.tsx'
 
 type LayoutProps = {
   store: DataStore

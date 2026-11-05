@@ -1,6 +1,6 @@
 import type { Keypress } from '../../keypress.ts'
 import type { TextEditorArguments } from '../types.ts'
-import type { TextFieldStore } from '../data-stores/text-field-store.ts'
+import type { TextFieldStore } from '../interactions/data-stores/text-field-store.ts'
 
 export class TextEditor {
   private field: TextFieldStore

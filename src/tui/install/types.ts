@@ -3,7 +3,7 @@ import type { AsyncOperation, CrowPermissionsConfig } from '../../types.ts'
 import type { ApplicationData } from '../../application-data/application-data.ts'
 import type { CrowConfigInputs } from './crow-config/types.ts'
 import type { DataStore } from './data-store.ts'
-import type { TextFieldStore } from './data-stores/text-field-store.ts'
+import type { TextFieldStore } from './interactions/data-stores/text-field-store.ts'
 
 // The one-line questions, in the order they are asked.
 export type TextStepName =

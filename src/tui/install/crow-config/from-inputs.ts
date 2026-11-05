@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import { buildPermissions } from './from-inputs/permissions.ts'
 import { buildProviders } from './from-inputs/providers.ts'
-import { DirectoriesStore } from '../data-stores/directories-store.ts'
+import { DirectoriesStore } from '../interactions/data-stores/directories-store.ts'
 import type { InputText } from '../../types.ts'
 import type {
   CrowConfigInputs,
