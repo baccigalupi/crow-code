@@ -4,22 +4,40 @@ import { DataStore } from '../../../../../src/tui/install/data-store.ts'
 import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 
 describe('ConfigJsonViewModel', () => {
-  it('when asked for a value, gives it from the config', () => {
+  it('when asked for the directories, gives them from the config', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const viewModel = new ConfigJsonViewModel(store.inputs.peek())
 
-    const value = viewModel.value('envFile')
+    const directories = [viewModel.crowGlobalDirectory(), viewModel.envFile()]
 
-    expect(value).toBe('~/.crow/.env')
+    expect(directories).toEqual(['~/.crow', '~/.crow/.env'])
   })
 
-  it('when asked for a permission, gives its list from the config', () => {
+  it('when asked for the permissions, gives each list from the config', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
+    store.permissions.ignore.insert('a')
+    store.permissions.additionalRead.insert('b')
+    store.permissions.additionalWrite.insert('c')
+    store.permissions.escalateRead.insert('d')
     const viewModel = new ConfigJsonViewModel(store.inputs.peek())
 
-    const list = viewModel.permission('escalateWrite')
+    const lists = [
+      viewModel.ignore(),
+      viewModel.additionalRead(),
+      viewModel.additionalWrite(),
+      viewModel.escalateRead(),
+      viewModel.escalateWrite(),
+      viewModel.allowedLocalScripts(),
+    ]
 
-    expect(list).toEqual(['./dev', './agent'])
+    expect(lists).toEqual([
+      ['a'],
+      ['b'],
+      ['c'],
+      ['d'],
+      ['./dev', './agent'],
+      ['./dev/*', './agent/*'],
+    ])
   })
 
   it('when providers are saved, gives one row each, the last one last', () => {

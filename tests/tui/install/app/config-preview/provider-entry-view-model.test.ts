@@ -15,7 +15,7 @@ describe('ProviderEntryViewModel', () => {
     expect(values).toEqual(['nous', 'https://n'])
   })
 
-  it('when the last provider, is editable and ends without a comma', () => {
+  it('when the last provider, is editable and closes the list', () => {
     const entry = new ProviderEntryViewModel({
       index: 1,
       name: 'nous',
@@ -26,10 +26,10 @@ describe('ProviderEntryViewModel', () => {
     const editable = entry.editable()
 
     expect(editable).toBe(true)
-    expect(entry.comma()).toBe('')
+    expect(entry.closing()).toBe('last')
   })
 
-  it('when followed by another provider, is not editable and ends with a comma', () => {
+  it('when followed by another provider, is not editable and closes before more', () => {
     const entry = new ProviderEntryViewModel({
       index: 0,
       name: 'nous',
@@ -40,6 +40,6 @@ describe('ProviderEntryViewModel', () => {
     const editable = entry.editable()
 
     expect(editable).toBe(false)
-    expect(entry.comma()).toBe(',')
+    expect(entry.closing()).toBe('more')
   })
 })

@@ -1,6 +1,5 @@
 import type { CrowProviderConfig } from '../../types.ts'
 import type { CrowConfigInputs } from '../../crow-config/types.ts'
-import type { CrowPermissionsConfig } from '../../../../types.ts'
 import { theme } from '../../../theme.ts'
 import { crowConfigFromInputs } from '../../crow-config/from-inputs.ts'
 
@@ -13,12 +12,36 @@ export class ConfigJsonViewModel {
     this.inputs = inputs
   }
 
-  value(name: 'crowGlobalDirectory' | 'envFile') {
-    return this.config()[name]
+  crowGlobalDirectory() {
+    return this.config().crowGlobalDirectory
   }
 
-  permission(name: keyof CrowPermissionsConfig) {
-    return this.config().permissions[name]
+  envFile() {
+    return this.config().envFile
+  }
+
+  ignore() {
+    return this.permissions().ignore
+  }
+
+  additionalRead() {
+    return this.permissions().additionalRead
+  }
+
+  additionalWrite() {
+    return this.permissions().additionalWrite
+  }
+
+  escalateRead() {
+    return this.permissions().escalateRead
+  }
+
+  escalateWrite() {
+    return this.permissions().escalateWrite
+  }
+
+  allowedLocalScripts() {
+    return this.permissions().allowedLocalScripts
   }
 
   providers() {
@@ -39,6 +62,10 @@ export class ConfigJsonViewModel {
 
   json() {
     return crowConfigFromInputs(this.inputs).crowConfigJson()
+  }
+
+  private permissions() {
+    return this.config().permissions
   }
 
   private config() {

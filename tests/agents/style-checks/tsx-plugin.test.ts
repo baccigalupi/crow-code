@@ -3,13 +3,13 @@ import { checkSource } from '../../../agents/style-checks/engine/check-source.ts
 import { tsxPlugin } from '../../../agents/style-checks/tsx-plugin.ts'
 
 describe('tsxPlugin', () => {
-  it('when the plugin is built, lists the seven rules in order', () => {
+  it('when the plugin is built, lists the eight rules in order', () => {
     const plugin = tsxPlugin
 
     const rules = plugin.rules
 
     expect(plugin.name).toBe('crow-style-tsx')
-    expect(rules).toHaveLength(7)
+    expect(rules).toHaveLength(8)
     expect(rules[0].name).toBe('arrow-function-components')
     expect(rules[1].name).toBe('no-react-state')
     expect(rules[2].name).toBe('no-inline-props-type')
@@ -17,6 +17,51 @@ describe('tsxPlugin', () => {
     expect(rules[4].name).toBe('no-functions-in-components')
     expect(rules[5].name).toBe('jsx-single-expression')
     expect(rules[6].name).toBe('component-names')
+    expect(rules[7].name).toBe('no-view-model-arguments')
+  })
+
+  describe('no-view-model-arguments', () => {
+    it('when a view model method is called with an argument, reports it', () => {
+      const source =
+        "const App = () => { const view = new ThingViewModel(1); return <text>{view.value('name')}</text> }\nexport { App }"
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(1)
+      expect(diagnostics[0].message).toContain(
+        'view model methods take no arguments',
+      )
+    })
+
+    it('when a view model method is called without arguments, ignores it', () => {
+      const source =
+        'const App = () => { const view = new ThingViewModel(1); return <text>{view.name()}</text> }\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(0)
+    })
+
+    it('when another object is called with an argument, ignores it', () => {
+      const source =
+        'const App = () => { const panel = router.get(name); return <text>{panel.label}</text> }\nexport { App }'
+
+      const diagnostics = checkSource(
+        tsxPlugin,
+        'src/tui/install/example.tsx',
+        source,
+      )
+
+      expect(diagnostics).toHaveLength(0)
+    })
   })
 
   describe('component-names', () => {

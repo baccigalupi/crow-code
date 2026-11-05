@@ -8,9 +8,16 @@ type ProviderEntryProps = { model: DataStore; row: ProviderRow }
 
 type ProvidersProps = { model: DataStore; rows: readonly ProviderRow[] }
 
-// { "name": "...", "baseUrl": "..." }, with a comma between providers.
+const LastClosing = () => <text>{'}'}</text>
+
+const MoreClosing = () => <text>{'},'}</text>
+
+const closings = { last: LastClosing, more: MoreClosing }
+
+// { "name": "...", "baseUrl": "..." }
 const ProviderEntry = ({ model, row }: ProviderEntryProps) => {
   const view = new ProviderEntryViewModel(row)
+  const Closing = closings[view.closing()]
   return (
     <box flexDirection="column">
       <text>{'{'}</text>
@@ -22,10 +29,7 @@ const ProviderEntry = ({ model, row }: ProviderEntryProps) => {
           "baseUrl": "{view.baseUrl()}"
         </Field>
       </Indented>
-      <text>
-        {'}'}
-        {view.comma()}
-      </text>
+      <Closing />
     </box>
   )
 }

@@ -21,9 +21,11 @@ export class ProviderEntryViewModel {
     return this.row.last
   }
 
-  comma() {
-    if (this.row.last) return ''
+  // Which closing brace the entry draws: the list's last, or one with more
+  // providers after it.
+  closing() {
+    if (this.row.last) return 'last' as const
 
-    return ','
+    return 'more' as const
   }
 }

@@ -6,6 +6,7 @@ import { noFunctionsInComponents } from './rules/no-functions-in-components.ts'
 import { noIfElseInTsx } from './rules/no-if-else-in-tsx.ts'
 import { noInlinePropsType } from './rules/no-inline-props-type.ts'
 import { noReactState } from './rules/no-react-state.ts'
+import { noViewModelArguments } from './rules/no-view-model-arguments.ts'
 
 export const tsxPlugin: Plugin = {
   name: 'crow-style-tsx',
@@ -17,5 +18,6 @@ export const tsxPlugin: Plugin = {
     noFunctionsInComponents,
     jsxSingleExpression,
     componentNames,
+    noViewModelArguments,
   ],
 }

@@ -36,35 +36,33 @@ export const ConfigJson = ({ model }: ConfigJsonProps) => {
         <text>{'{'}</text>
         <Indented>
           <Field model={model} name="crowGlobalDirectory">
-            "crowGlobalDirectory": "{viewModel.value('crowGlobalDirectory')}",
+            "crowGlobalDirectory": "{viewModel.crowGlobalDirectory()}",
           </Field>
           <Field model={model} name="envFile">
-            "envFile": "{viewModel.value('envFile')}",
+            "envFile": "{viewModel.envFile()}",
           </Field>
           <text>"permissions": {'{'}</text>
           <Indented>
             <Field model={model} name="ignore">
-              "ignore": <JsonArray items={viewModel.permission('ignore')} />,
+              "ignore": <JsonArray items={viewModel.ignore()} />,
             </Field>
             <Field model={model} name="additionalRead">
-              "additionalRead":{' '}
-              <JsonArray items={viewModel.permission('additionalRead')} />,
+              "additionalRead": <JsonArray items={viewModel.additionalRead()} />
+              ,
             </Field>
             <Field model={model} name="additionalWrite">
               "additionalWrite":{' '}
-              <JsonArray items={viewModel.permission('additionalWrite')} />,
+              <JsonArray items={viewModel.additionalWrite()} />,
             </Field>
             <Field model={model} name="escalateRead">
-              "escalateRead":{' '}
-              <JsonArray items={viewModel.permission('escalateRead')} />,
+              "escalateRead": <JsonArray items={viewModel.escalateRead()} />,
             </Field>
             <Field model={model} name="escalateWrite">
-              "escalateWrite":{' '}
-              <JsonArray items={viewModel.permission('escalateWrite')} />,
+              "escalateWrite": <JsonArray items={viewModel.escalateWrite()} />,
             </Field>
             <Field model={model} name="allowedLocalScripts">
               "allowedLocalScripts":{' '}
-              <JsonArray items={viewModel.permission('allowedLocalScripts')} />
+              <JsonArray items={viewModel.allowedLocalScripts()} />
             </Field>
           </Indented>
           <text>{'},'}</text>
