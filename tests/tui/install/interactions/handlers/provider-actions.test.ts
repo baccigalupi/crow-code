@@ -1,8 +1,8 @@
 import { describe, expect, it, mock } from 'bun:test'
-import { Keypress } from '../../../../src/tui/keypress.ts'
-import { DataStore } from '../../../../src/tui/install/data-store.ts'
-import { ProviderActions } from '../../../../src/tui/install/provider/actions.ts'
-import { mockApplicationData } from '../../../support/mock-application-data.ts'
+import { Keypress } from '../../../../../src/tui/keypress.ts'
+import { DataStore } from '../../../../../src/tui/install/data-store.ts'
+import { ProviderActions } from '../../../../../src/tui/install/interactions/handlers/provider-actions.ts'
+import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 
 describe('ProviderActions', () => {
   describe('input', () => {

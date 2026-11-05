@@ -3,7 +3,7 @@ import { TextAttributes } from '@opentui/core'
 import { testRender } from '@opentui/react/test-utils'
 import { act } from 'react'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
-import { ProviderActions } from '../../../../src/tui/install/provider/actions.ts'
+import { ProviderActions } from '../../../../src/tui/install/interactions/handlers/provider-actions.ts'
 import { Field } from '../../../../src/tui/install/provider/field.tsx'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 

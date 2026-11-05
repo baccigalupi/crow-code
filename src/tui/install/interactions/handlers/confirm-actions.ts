@@ -1,4 +1,4 @@
-import type { ActionArguments } from '../types.ts'
+import type { ActionArguments } from '../../types.ts'
 
 // What the Yes/No select does: highlighting an option sets the answer,
 // picking Yes starts setup and picking No quits. Yes is option 0.

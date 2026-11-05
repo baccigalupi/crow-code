@@ -1,7 +1,7 @@
 import { describe, expect, it, mock } from 'bun:test'
-import { DataStore } from '../../../../src/tui/install/data-store.ts'
-import { ConfirmActions } from '../../../../src/tui/install/confirm/actions.ts'
-import { mockApplicationData } from '../../../support/mock-application-data.ts'
+import { DataStore } from '../../../../../src/tui/install/data-store.ts'
+import { ConfirmActions } from '../../../../../src/tui/install/interactions/handlers/confirm-actions.ts'
+import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 
 describe('ConfirmActions', () => {
   describe('change', () => {

@@ -1,7 +1,7 @@
 import { describe, expect, it, mock } from 'bun:test'
-import { DataStore } from '../../../../src/tui/install/data-store.ts'
-import { TextPromptActions } from '../../../../src/tui/install/text-prompt/actions.ts'
-import { mockApplicationData } from '../../../support/mock-application-data.ts'
+import { DataStore } from '../../../../../src/tui/install/data-store.ts'
+import { TextPromptActions } from '../../../../../src/tui/install/interactions/handlers/text-prompt-actions.ts'
+import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 
 describe('TextPromptActions', () => {
   it('when the input changes, the panel field holds the new text', () => {

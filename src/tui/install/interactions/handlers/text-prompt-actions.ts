@@ -1,5 +1,5 @@
-import type { PromptArguments, TextStepName } from '../types.ts'
-import { textSteps } from './steps.ts'
+import type { PromptArguments, TextStepName } from '../../types.ts'
+import { textSteps } from '../../text-prompt/steps.ts'
 
 // What a text question's input does: typing goes into the step's field,
 // return moves on.

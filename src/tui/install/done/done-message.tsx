@@ -2,7 +2,7 @@ import { TextAttributes } from '@opentui/core'
 import type { DataStore } from '../data-store.ts'
 import { useSignalValue } from '../interactions/use-signal-value.ts'
 import { ProgressList } from '../complete-setup/setup-progress.tsx'
-import { DoneActions } from './actions.ts'
+import { DoneActions } from '../interactions/handlers/done-actions.ts'
 import { doneMessageViewModel } from './done-message-view-model.ts'
 
 type DoneMessageProps = { store: DataStore }

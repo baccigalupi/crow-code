@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
-import { DataStore } from '../../../../src/tui/install/data-store.ts'
-import { DoneActions } from '../../../../src/tui/install/done/actions.ts'
-import { mockApplicationData } from '../../../support/mock-application-data.ts'
+import { DataStore } from '../../../../../src/tui/install/data-store.ts'
+import { DoneActions } from '../../../../../src/tui/install/interactions/handlers/done-actions.ts'
+import { mockApplicationData } from '../../../../support/mock-application-data.ts'
 
 describe('DoneActions', () => {
   it('when a key arrives, asks to quit', () => {

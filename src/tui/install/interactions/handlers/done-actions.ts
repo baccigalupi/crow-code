@@ -1,4 +1,4 @@
-import type { DataStore } from '../data-store.ts'
+import type { DataStore } from '../../data-store.ts'
 
 // What the done screen does: any key quits.
 export class DoneActions {

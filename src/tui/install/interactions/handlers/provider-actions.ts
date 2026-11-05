@@ -1,10 +1,14 @@
 import type { KeyEvent, PasteEvent } from '@opentui/core'
-import { Keypress } from '../../keypress.ts'
-import type { PromptArguments, ProviderStepName, StepName } from '../types.ts'
-import { keypressFromEvent } from '../interactions/listeners/keypress-from-event.ts'
-import { keypressFromPaste } from '../interactions/listeners/keypress-from-paste.ts'
-import { TextEditor } from '../text-prompt/text-editor.ts'
-import { providerSteps } from './steps.ts'
+import { Keypress } from '../../../keypress.ts'
+import type {
+  PromptArguments,
+  ProviderStepName,
+  StepName,
+} from '../../types.ts'
+import { keypressFromEvent } from '../listeners/keypress-from-event.ts'
+import { keypressFromPaste } from '../listeners/keypress-from-paste.ts'
+import { TextEditor } from '../../text-prompt/text-editor.ts'
+import { providerSteps } from '../../provider/steps.ts'
 
 // What a provider field does. The input fields type into their own field and
 // return moves on; tab walks the fields and escape clears the form and

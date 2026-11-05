@@ -4,7 +4,7 @@ import type { TextStepName } from '../types.ts'
 import type { InputText } from '../../types.ts'
 import { PromptNavigation } from '../interactions/prompt-navigation.ts'
 import { useSignalValue } from '../interactions/use-signal-value.ts'
-import { TextPromptActions } from './actions.ts'
+import { TextPromptActions } from '../interactions/handlers/text-prompt-actions.ts'
 import { promptLineViewModel } from './prompt-line-view-model.ts'
 import { textPromptViewModel } from './text-prompt-view-model.ts'
 

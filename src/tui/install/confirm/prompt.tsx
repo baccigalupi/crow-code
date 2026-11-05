@@ -2,7 +2,7 @@ import type { SelectKeyBinding } from '@opentui/core'
 import type { DataStore } from '../data-store.ts'
 import { PromptNavigation } from '../interactions/prompt-navigation.ts'
 import { useSignalValue } from '../interactions/use-signal-value.ts'
-import { ConfirmActions } from './actions.ts'
+import { ConfirmActions } from '../interactions/handlers/confirm-actions.ts'
 import { confirmPromptViewModel } from './prompt-view-model.ts'
 
 const options = [
