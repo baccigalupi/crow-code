@@ -3,14 +3,13 @@ import { testRender } from '@opentui/react/test-utils'
 import { act } from 'react'
 import { CurrentPrompt } from '../../../../src/tui/install/app/current-prompt.tsx'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
-import { Router } from '../../../../src/tui/install/router.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('CurrentPrompt', () => {
-  it('when the navigator moves, swaps to the new panel prompt', async () => {
+  it('when the navigator moves, swaps to the new step prompt', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <CurrentPrompt store={store} router={new Router()} />,
+      <CurrentPrompt store={store} />,
       { width: 70, height: 3 },
     )
 
@@ -19,6 +18,20 @@ describe('CurrentPrompt', () => {
 
     expect(captureCharFrame()).toContain('User crow directory: (~/.crow)')
     expect(captureCharFrame()).not.toContain('local repo')
+    act(() => renderer.destroy())
+  })
+
+  it('when on confirm, shows the confirm question', async () => {
+    const store = new DataStore({ applicationData: mockApplicationData() })
+    store.navigator.goTo('confirm')
+    const { renderer, renderOnce, captureCharFrame } = await testRender(
+      <CurrentPrompt store={store} />,
+      { width: 70, height: 4 },
+    )
+
+    await renderOnce()
+
+    expect(captureCharFrame()).toContain('Complete setup?')
     act(() => renderer.destroy())
   })
 })

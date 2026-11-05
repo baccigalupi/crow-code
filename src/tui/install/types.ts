@@ -3,14 +3,39 @@ import type { AsyncOperation, CrowPermissionsConfig } from '../../types.ts'
 import type { ApplicationData } from '../../application-data/application-data.ts'
 import type { CrowConfigInputs } from './crow-config/types.ts'
 import type { DataStore } from './data-store.ts'
-import type { Router } from './router.ts'
 import type { TextFieldStore } from './data-stores/text-field-store.ts'
 
-// The names of the panels that take keys, derived from the registry. The
-// template form keeps the literals from widening to string in object literals.
-export type PanelName = `${Router['prompts'][number]['name']}`
+// The one-line questions, in the order they are asked.
+export type TextStepName =
+  | 'repoDirectory'
+  | 'crowGlobalDirectory'
+  | 'envFile'
+  | 'ignore'
+  | 'additionalRead'
+  | 'additionalWrite'
+  | 'escalateRead'
+  | 'escalateWrite'
+  | 'allowedLocalScripts'
 
-export type PromptPanel = Router['prompts'][number]
+export type ProviderStepName =
+  'providerName' | 'providerUrl' | 'providerCredentials'
+
+// Every step of the installer.
+export type StepName =
+  TextStepName | ProviderStepName | 'confirm' | 'completeSetup' | 'done'
+
+export type TextStep = {
+  readonly label: string
+  readonly next: StepName
+  readonly bare: boolean
+}
+
+export type ProviderStep = {
+  readonly next: StepName
+  readonly back: StepName | undefined
+  readonly forward: StepName | undefined
+  readonly masked: boolean
+}
 
 export type InstallProvider = {
   readonly name: string
@@ -51,9 +76,6 @@ export type SetupTaskStatus = {
   readonly error: string
 }
 
-export type ProviderFieldName =
-  'providerName' | 'providerUrl' | 'providerCredentials'
-
 export type ProviderFieldState = 'answered' | 'live' | 'upcoming'
 
 export type SetupTaskRow = SetupTaskStatus & {
@@ -89,14 +111,19 @@ export type TextEditorArguments = {
   readonly keypress: Keypress
 }
 
-// How a prompt moves the installer: to another panel, or out.
+// How a prompt moves the installer: to another step, or out.
 export type Navigation = {
-  goTo(name: PanelName): void
+  goTo(name: StepName): void
   exit(): void
 }
 
-export type PromptArguments<Panel> = {
-  readonly panel: Panel
+export type PromptArguments<Step> = {
+  readonly step: Step
+  readonly store: DataStore
+  readonly navigation: Navigation
+}
+
+export type ActionArguments = {
   readonly store: DataStore
   readonly navigation: Navigation
 }

@@ -10,6 +10,12 @@ export class DirectoriesStore {
   readonly repoDirectory = new TextFieldStore()
   readonly globalDirectory = new TextFieldStore()
   readonly envFile = new TextFieldStore()
+  // The field each question types into, by step.
+  readonly fields = {
+    repoDirectory: this.repoDirectory,
+    crowGlobalDirectory: this.globalDirectory,
+    envFile: this.envFile,
+  }
   readonly values = computed(() => this.texts())
   readonly configPath = computed(() => `${this.repoPath()}/config.json`)
   readonly globalPath = computed(() =>

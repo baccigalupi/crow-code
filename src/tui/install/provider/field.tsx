@@ -1,6 +1,6 @@
 import { TextAttributes } from '@opentui/core'
 import type { DataStore } from '../data-store.ts'
-import type { ProviderFieldName } from '../types.ts'
+import type { ProviderStepName } from '../types.ts'
 import type { InputText } from '../../types.ts'
 import type { ProviderActions } from './actions.ts'
 import { useSignalValue } from '../interactions/use-signal-value.ts'
@@ -69,7 +69,7 @@ const fields = {
 
 type FieldProps = {
   store: DataStore
-  name: ProviderFieldName
+  name: ProviderStepName
   actions: ProviderActions
 }
 

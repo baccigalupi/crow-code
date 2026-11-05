@@ -1,5 +1,5 @@
 import { batch, computed } from '@preact/signals-core'
-import type { ProviderFieldName, ProviderFieldState } from '../types.ts'
+import type { ProviderStepName, ProviderFieldState } from '../types.ts'
 import { TextFieldStore } from './text-field-store.ts'
 
 // The provider being typed across the name/url/credentials panels.
@@ -31,7 +31,7 @@ export class ProviderEditFormStore {
 
   // Fields before the current step show their answers, the current one is
   // live, later ones are still to come.
-  fieldState(name: ProviderFieldName, current: string) {
+  fieldState(name: ProviderStepName, current: string) {
     return this.stateAt(this.order.indexOf(name), this.order.indexOf(current))
   }
 

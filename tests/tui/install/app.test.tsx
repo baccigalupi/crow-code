@@ -3,14 +3,13 @@ import { testRender } from '@opentui/react/test-utils'
 import { act } from 'react'
 import { InstallApp } from '../../../src/tui/install/app.tsx'
 import { DataStore } from '../../../src/tui/install/data-store.ts'
-import { Router } from '../../../src/tui/install/router.ts'
 import { mockApplicationData } from '../../support/mock-application-data.ts'
 
 describe('InstallApp', () => {
   it('when drawn in a short terminal, shows the header and the question on the last row', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <InstallApp store={store} router={new Router()} />,
+      <InstallApp store={store} />,
       { width: 70, height: 8 },
     )
 
@@ -26,7 +25,7 @@ describe('InstallApp', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.navigator.goTo('crowGlobalDirectory')
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <InstallApp store={store} router={new Router()} />,
+      <InstallApp store={store} />,
       { width: 70, height: 24 },
     )
 
@@ -40,7 +39,7 @@ describe('InstallApp', () => {
   it('when the terminal is resized, the question follows the last row', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, renderOnce, captureCharFrame, resize } = await testRender(
-      <InstallApp store={store} router={new Router()} />,
+      <InstallApp store={store} />,
       {
         width: 70,
         height: 8,
@@ -63,7 +62,7 @@ describe('InstallApp', () => {
     store.providers.save({ name: 'c', url: 'https://c' }, '')
     store.navigator.goTo('providerName')
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <InstallApp store={store} router={new Router()} />,
+      <InstallApp store={store} />,
       { width: 70, height: 20 },
     )
 

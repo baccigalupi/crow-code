@@ -5,7 +5,7 @@ describe('PermissionsStore', () => {
   it('when built, shows an empty list default as JSON', () => {
     const permissions = new PermissionsStore()
 
-    const defaultText = permissions.defaultIgnore
+    const defaultText = permissions.defaults.ignore
 
     expect(defaultText).toBe('[]')
   })
@@ -13,7 +13,7 @@ describe('PermissionsStore', () => {
   it('when built, shows the escalate write default joined', () => {
     const permissions = new PermissionsStore()
 
-    const defaultText = permissions.defaultEscalateWrite
+    const defaultText = permissions.defaults.escalateWrite
 
     expect(defaultText).toBe('./dev, ./agent')
   })
@@ -21,7 +21,7 @@ describe('PermissionsStore', () => {
   it('when built, shows the allowed local scripts default joined', () => {
     const permissions = new PermissionsStore()
 
-    const defaultText = permissions.defaultAllowedLocalScripts
+    const defaultText = permissions.defaults.allowedLocalScripts
 
     expect(defaultText).toBe('./dev/*, ./agent/*')
   })

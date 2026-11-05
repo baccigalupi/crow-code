@@ -2,9 +2,6 @@ import { describe, expect, it, mock } from 'bun:test'
 import { Keypress } from '../../../../src/tui/keypress.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { ProviderActions } from '../../../../src/tui/install/provider/actions.ts'
-import { ProviderCredentialsPanel } from '../../../../src/tui/install/provider/provider-credentials.ts'
-import { ProviderNamePanel } from '../../../../src/tui/install/provider/provider-name.ts'
-import { ProviderUrlPanel } from '../../../../src/tui/install/provider/provider-url.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('ProviderActions', () => {
@@ -13,7 +10,7 @@ describe('ProviderActions', () => {
       const store = new DataStore({ applicationData: mockApplicationData() })
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        panel: new ProviderUrlPanel(),
+        step: 'providerUrl',
         store,
         navigation,
       })
@@ -30,7 +27,7 @@ describe('ProviderActions', () => {
       const store = new DataStore({ applicationData: mockApplicationData() })
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        panel: new ProviderNamePanel(),
+        step: 'providerName',
         store,
         navigation,
       })
@@ -45,7 +42,7 @@ describe('ProviderActions', () => {
       const store = new DataStore({ applicationData: mockApplicationData() })
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        panel: new ProviderNamePanel(),
+        step: 'providerName',
         store,
         navigation,
       })
@@ -62,7 +59,7 @@ describe('ProviderActions', () => {
       const store = new DataStore({ applicationData: mockApplicationData() })
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        panel: new ProviderUrlPanel(),
+        step: 'providerUrl',
         store,
         navigation,
       })
@@ -77,7 +74,7 @@ describe('ProviderActions', () => {
       const store = new DataStore({ applicationData: mockApplicationData() })
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        panel: new ProviderUrlPanel(),
+        step: 'providerUrl',
         store,
         navigation,
       })
@@ -91,7 +88,7 @@ describe('ProviderActions', () => {
       const store = new DataStore({ applicationData: mockApplicationData() })
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        panel: new ProviderCredentialsPanel(),
+        step: 'providerCredentials',
         store,
         navigation,
       })
@@ -108,7 +105,7 @@ describe('ProviderActions', () => {
       store.providerEditForm.providerName.insert('or')
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        panel: new ProviderNamePanel(),
+        step: 'providerName',
         store,
         navigation,
       })
@@ -125,7 +122,7 @@ describe('ProviderActions', () => {
       store.providers.save({ name: 'nous', url: 'https://n' }, '')
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        panel: new ProviderNamePanel(),
+        step: 'providerName',
         store,
         navigation,
       })
@@ -141,7 +138,7 @@ describe('ProviderActions', () => {
       const store = new DataStore({ applicationData: mockApplicationData() })
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        panel: new ProviderNamePanel(),
+        step: 'providerName',
         store,
         navigation,
       })
@@ -157,7 +154,7 @@ describe('ProviderActions', () => {
       const store = new DataStore({ applicationData: mockApplicationData() })
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        panel: new ProviderCredentialsPanel(),
+        step: 'providerCredentials',
         store,
         navigation,
       })
@@ -178,7 +175,7 @@ describe('ProviderActions', () => {
       store.providerEditForm.providerCredentials.insert('sk-1')
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        panel: new ProviderCredentialsPanel(),
+        step: 'providerCredentials',
         store,
         navigation,
       })
@@ -201,7 +198,7 @@ describe('ProviderActions', () => {
       store.providerEditForm.providerCredentials.insert('x')
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ProviderActions({
-        panel: new ProviderCredentialsPanel(),
+        step: 'providerCredentials',
         store,
         navigation,
       })

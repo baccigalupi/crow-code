@@ -65,3 +65,45 @@ Tests:
   - [tests/tui/install/text-prompt/prompt.test.tsx](/tests/tui/install/text-prompt/prompt.test.tsx#L128)
   - [tests/tui/install/text-prompt/text-prompt.test.ts](/tests/tui/install/text-prompt/text-prompt.test.ts#L8)
   - [tests/tui/navigator.test.ts](/tests/tui/navigator.test.ts#L1)
+
+Panels removed:
+
+The panel classes and the router are gone. Step data is two plain tables:
+text questions (label, next, bare default) and provider fields (next, back,
+forward, masked). `CurrentPrompt` picks the component for the current step
+from one table of elements. The store starts setup through `SetupRun` when
+the navigator arrives at completeSetup; the navigator only tracks the
+current step and reports arrivals. The `repo` step is now `repoDirectory`.
+
+- new files
+  - [src/tui/install/text-prompt/steps.ts](/src/tui/install/text-prompt/steps.ts#L1)
+  - [src/tui/install/provider/steps.ts](/src/tui/install/provider/steps.ts#L1)
+  - [src/tui/install/text-prompt/text-prompt-view-model.ts](/src/tui/install/text-prompt/text-prompt-view-model.ts#L1)
+  - [src/tui/install/complete-setup/setup-run.ts](/src/tui/install/complete-setup/setup-run.ts#L1)
+  - [tests/tui/install/text-prompt/text-prompt-view-model.test.ts](/tests/tui/install/text-prompt/text-prompt-view-model.test.ts#L1)
+  - [tests/tui/install/complete-setup/setup-run.test.ts](/tests/tui/install/complete-setup/setup-run.test.ts#L1)
+- updates
+  - [src/tui/install/app/current-prompt.tsx](/src/tui/install/app/current-prompt.tsx#L1)
+  - [src/tui/install/app.tsx](/src/tui/install/app.tsx#L1)
+  - [src/tui/install/data-store.ts](/src/tui/install/data-store.ts#L1)
+  - [src/tui/install/data-stores/directories-store.ts](/src/tui/install/data-stores/directories-store.ts#L1)
+  - [src/tui/install/data-stores/permissions-store.ts](/src/tui/install/data-stores/permissions-store.ts#L1)
+  - [src/tui/install/text-prompt/prompt.tsx](/src/tui/install/text-prompt/prompt.tsx#L1)
+  - [src/tui/install/text-prompt/actions.ts](/src/tui/install/text-prompt/actions.ts#L1)
+  - [src/tui/install/provider/actions.ts](/src/tui/install/provider/actions.ts#L1)
+  - [src/tui/install/provider/prompt.tsx](/src/tui/install/provider/prompt.tsx#L1)
+  - [src/tui/install/confirm/actions.ts](/src/tui/install/confirm/actions.ts#L1)
+  - [src/tui/install/confirm/prompt.tsx](/src/tui/install/confirm/prompt.tsx#L1)
+  - [src/tui/install/runner.ts](/src/tui/install/runner.ts#L1)
+  - [src/tui/install/types.ts](/src/tui/install/types.ts#L1)
+  - [src/tui/navigator.ts](/src/tui/navigator.ts#L1)
+  - [src/tui/types.ts](/src/tui/types.ts#L1)
+- removed
+  - src/tui/install/router.ts
+  - src/tui/install/text-prompt/text-prompt.tsx
+  - src/tui/install/directories/\*.ts
+  - src/tui/install/permissions/\*.ts
+  - src/tui/install/provider/provider\*.ts(x)
+  - src/tui/install/confirm/confirm.tsx
+  - src/tui/install/done/done.tsx
+  - src/tui/install/complete-setup/complete-setup.tsx (now setup-run.ts)

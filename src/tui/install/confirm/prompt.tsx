@@ -1,6 +1,5 @@
 import type { SelectKeyBinding } from '@opentui/core'
 import type { DataStore } from '../data-store.ts'
-import type { ConfirmPanel } from './confirm.tsx'
 import { PromptNavigation } from '../interactions/prompt-navigation.ts'
 import { useSignalValue } from '../interactions/use-signal-value.ts'
 import { ConfirmActions } from './actions.ts'
@@ -20,14 +19,13 @@ const keyBindings: SelectKeyBinding[] = [
   { name: 'n', action: 'move-down' },
 ]
 
-type ConfirmPromptProps = { panel: ConfirmPanel; store: DataStore }
+type ConfirmPromptProps = { store: DataStore }
 
 // "Complete setup?" over a focused Yes/No select; return picks.
-export const ConfirmPrompt = ({ panel, store }: ConfirmPromptProps) => {
+export const ConfirmPrompt = ({ store }: ConfirmPromptProps) => {
   const confirmed = useSignalValue(store.confirm.confirmed)
   const viewModel = new ConfirmPromptViewModel(confirmed)
   const actions = new ConfirmActions({
-    panel,
     store,
     navigation: new PromptNavigation(store),
   })

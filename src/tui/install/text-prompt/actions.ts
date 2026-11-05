@@ -1,22 +1,22 @@
-import type { PromptArguments } from '../types.ts'
-import type { TextPromptPanel } from './text-prompt.tsx'
+import type { PromptArguments, TextStepName } from '../types.ts'
+import { textSteps } from './steps.ts'
 
-// What a text prompt's input does: typing goes into the panel's field,
+// What a text question's input does: typing goes into the step's field,
 // return moves on.
 export class TextPromptActions {
-  private actionArguments: PromptArguments<TextPromptPanel>
+  private actionArguments: PromptArguments<TextStepName>
 
-  constructor(actionArguments: PromptArguments<TextPromptPanel>) {
+  constructor(actionArguments: PromptArguments<TextStepName>) {
     this.actionArguments = actionArguments
   }
 
   input() {
-    const { panel, store } = this.actionArguments
-    return (value: string) => panel.field(store).replace(value)
+    const { step, store } = this.actionArguments
+    return (value: string) => store.textFields[step].replace(value)
   }
 
   submit() {
-    const { panel, navigation } = this.actionArguments
-    return () => navigation.goTo(panel.next)
+    const { step, navigation } = this.actionArguments
+    return () => navigation.goTo(textSteps[step].next)
   }
 }

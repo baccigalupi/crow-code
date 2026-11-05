@@ -1,6 +1,6 @@
 import { flushSync } from '@opentui/react'
 import type { DataStore } from '../data-store.ts'
-import type { PanelName } from '../types.ts'
+import type { StepName } from '../types.ts'
 
 // How a prompt moves the installer. A move renders the new panel at once, so
 // a key right behind it already reaches that panel.
@@ -11,7 +11,7 @@ export class PromptNavigation {
     this.store = store
   }
 
-  goTo(name: PanelName) {
+  goTo(name: StepName) {
     flushSync(() => this.store.navigator.goTo(name))
   }
 

@@ -381,7 +381,7 @@ describe('runner', () => {
       mockInput.pressEscape()
 
       expect(onDestroy).not.toHaveBeenCalled()
-      expect(runner.store().navigator.current.peek()).toBe('repo')
+      expect(runner.store().navigator.current.peek()).toBe('repoDirectory')
     })
 
     it('when the terminal is taller than the content, the question sits on the last row', async () => {

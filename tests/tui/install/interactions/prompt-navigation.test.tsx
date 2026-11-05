@@ -21,7 +21,7 @@ describe('PromptNavigation', () => {
 
     act(() => new PromptNavigation(store).goTo('envFile'))
 
-    expect(rendered).toEqual(['repo', 'envFile'])
+    expect(rendered).toEqual(['repoDirectory', 'envFile'])
     act(() => renderer.destroy())
   })
 

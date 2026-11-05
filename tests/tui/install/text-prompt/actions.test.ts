@@ -1,6 +1,5 @@
 import { describe, expect, it, mock } from 'bun:test'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
-import { RepoPanel } from '../../../../src/tui/install/directories/repo.ts'
 import { TextPromptActions } from '../../../../src/tui/install/text-prompt/actions.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
@@ -9,7 +8,7 @@ describe('TextPromptActions', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const navigation = { goTo: mock(), exit: mock() }
     const actions = new TextPromptActions({
-      panel: new RepoPanel(),
+      step: 'repoDirectory',
       store,
       navigation,
     })
@@ -23,7 +22,7 @@ describe('TextPromptActions', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const navigation = { goTo: mock(), exit: mock() }
     const actions = new TextPromptActions({
-      panel: new RepoPanel(),
+      step: 'repoDirectory',
       store,
       navigation,
     })

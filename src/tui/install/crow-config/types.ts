@@ -1,5 +1,5 @@
 import type { InputText } from '../../types.ts'
-import type { InstallProvider, PanelName } from '../types.ts'
+import type { InstallProvider, StepName } from '../types.ts'
 
 export type PermissionInputs = {
   readonly ignore: InputText
@@ -15,7 +15,7 @@ export type ProviderInputs = {
   readonly providerUrl: InputText
   readonly providerCredentials: InputText
   readonly providers: readonly InstallProvider[]
-  readonly step?: PanelName
+  readonly step?: StepName
 }
 
 export type CrowConfigInputs = PermissionInputs &

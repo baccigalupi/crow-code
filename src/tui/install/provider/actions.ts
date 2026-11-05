@@ -1,30 +1,28 @@
 import type { KeyEvent, PasteEvent } from '@opentui/core'
 import { Keypress } from '../../keypress.ts'
-import type { PromptArguments, PanelName } from '../types.ts'
-import type { ProviderPanel } from './provider.tsx'
+import type { PromptArguments, ProviderStepName, StepName } from '../types.ts'
 import { keypressFromEvent } from '../interactions/listeners/keypress-from-event.ts'
 import { keypressFromPaste } from '../interactions/listeners/keypress-from-paste.ts'
 import { TextEditor } from '../text-prompt/text-editor.ts'
+import { providerSteps } from './steps.ts'
 
 // What a provider field does. The input fields type into their own field and
 // return moves on; tab walks the fields and escape clears the form and
-// finishes. The masked key has no input, so its typing and paste come
-// through here and its return saves the provider and clears the form.
+// finishes at confirm. The masked key has no input, so its typing and paste
+// come through here and its return saves the provider and clears the form.
 export class ProviderActions {
-  private actionArguments: PromptArguments<ProviderPanel>
+  private actionArguments: PromptArguments<ProviderStepName>
 
-  constructor(actionArguments: PromptArguments<ProviderPanel>) {
+  constructor(actionArguments: PromptArguments<ProviderStepName>) {
     this.actionArguments = actionArguments
   }
 
   input() {
-    const { panel, store } = this.actionArguments
-    return (value: string) => panel.field(store).replace(value)
+    return (value: string) => this.field().replace(value)
   }
 
   submit() {
-    const { panel, navigation } = this.actionArguments
-    return () => navigation.goTo(panel.next)
+    return () => this.go(this.flow().next)
   }
 
   // A key used here skips the field's own handling.
@@ -51,41 +49,43 @@ export class ProviderActions {
   }
 
   private typeMasked(keypress: Keypress) {
-    if (!this.actionArguments.panel.masked) return false
+    if (!this.flow().masked) return false
 
     if (keypress.key.return === true) this.save()
-    else this.edit(keypress)
+    else new TextEditor({ field: this.field(), keypress }).edit()
     return true
   }
 
   private tab(backward: boolean) {
-    const { back, forward } = this.actionArguments.panel
+    const { back, forward } = this.flow()
     if (backward) this.go(back)
     else this.go(forward)
   }
 
-  private go(target: PanelName | undefined) {
+  private go(target: StepName | undefined) {
     if (target === undefined) return
 
     this.actionArguments.navigation.goTo(target)
   }
 
   private save() {
-    const { panel, store, navigation } = this.actionArguments
-    const { providers, providerEditForm: form } = store
+    const { providers, providerEditForm: form } = this.actionArguments.store
     providers.save(form.provider(), form.credential())
     form.clear()
-    navigation.goTo(panel.next)
+    this.go(this.flow().next)
   }
 
   private cancel() {
-    const { panel, store, navigation } = this.actionArguments
-    store.providerEditForm.clear()
-    navigation.goTo(panel.cancel)
+    this.actionArguments.store.providerEditForm.clear()
+    this.go('confirm')
   }
 
-  private edit(keypress: Keypress) {
-    const { panel, store } = this.actionArguments
-    new TextEditor({ field: panel.field(store), keypress }).edit()
+  private flow() {
+    return providerSteps[this.actionArguments.step]
+  }
+
+  private field() {
+    const { store, step } = this.actionArguments
+    return store.providerEditForm[step]
   }
 }

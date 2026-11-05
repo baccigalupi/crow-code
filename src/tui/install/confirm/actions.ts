@@ -1,12 +1,11 @@
-import type { PromptArguments } from '../types.ts'
-import type { ConfirmPanel } from './confirm.tsx'
+import type { ActionArguments } from '../types.ts'
 
 // What the Yes/No select does: highlighting an option sets the answer,
-// picking Yes moves on and picking No quits. Yes is option 0.
+// picking Yes starts setup and picking No quits. Yes is option 0.
 export class ConfirmActions {
-  private actionArguments: PromptArguments<ConfirmPanel>
+  private actionArguments: ActionArguments
 
-  constructor(actionArguments: PromptArguments<ConfirmPanel>) {
+  constructor(actionArguments: ActionArguments) {
     this.actionArguments = actionArguments
   }
 
@@ -20,8 +19,8 @@ export class ConfirmActions {
   }
 
   private decide(yes: boolean) {
-    const { panel, navigation } = this.actionArguments
-    if (yes) navigation.goTo(panel.next)
+    const { navigation } = this.actionArguments
+    if (yes) navigation.goTo('completeSetup')
     else navigation.exit()
   }
 }

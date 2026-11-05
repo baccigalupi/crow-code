@@ -6,7 +6,10 @@ import { mockApplicationData } from '../../../../support/mock-application-data.t
 describe('ConfigJsonViewModel', () => {
   it('when asked for the directories, gives them from the config', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), 'repo')
+    const viewModel = new ConfigJsonViewModel(
+      store.inputs.peek(),
+      'repoDirectory',
+    )
 
     const directories = [viewModel.crowGlobalDirectory(), viewModel.envFile()]
 
@@ -19,7 +22,10 @@ describe('ConfigJsonViewModel', () => {
     store.permissions.additionalRead.insert('b')
     store.permissions.additionalWrite.insert('c')
     store.permissions.escalateRead.insert('d')
-    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), 'repo')
+    const viewModel = new ConfigJsonViewModel(
+      store.inputs.peek(),
+      'repoDirectory',
+    )
 
     const lists = [
       viewModel.ignore(),
@@ -42,7 +48,10 @@ describe('ConfigJsonViewModel', () => {
 
   it('when a permission list is empty, writes empty brackets', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), 'repo')
+    const viewModel = new ConfigJsonViewModel(
+      store.inputs.peek(),
+      'repoDirectory',
+    )
 
     const json = viewModel.ignore()
 
@@ -53,7 +62,10 @@ describe('ConfigJsonViewModel', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.providers.save({ name: 'nous', url: 'https://n' }, '')
     store.providers.save({ name: 'local', url: 'http://l' }, '')
-    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), 'repo')
+    const viewModel = new ConfigJsonViewModel(
+      store.inputs.peek(),
+      'repoDirectory',
+    )
 
     const providers = viewModel.providers()
 
@@ -76,7 +88,10 @@ describe('ConfigJsonViewModel', () => {
 
   it('when asked for its background, gives the config panel color', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
-    const viewModel = new ConfigJsonViewModel(store.inputs.peek(), 'repo')
+    const viewModel = new ConfigJsonViewModel(
+      store.inputs.peek(),
+      'repoDirectory',
+    )
 
     const background = viewModel.background
 

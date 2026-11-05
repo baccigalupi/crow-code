@@ -1,11 +1,12 @@
 import { TextAttributes } from '@opentui/core'
 import type { DataStore } from '../data-store.ts'
-import type { TextPromptPanel } from './text-prompt.tsx'
+import type { TextStepName } from '../types.ts'
 import type { InputText } from '../../types.ts'
 import { PromptNavigation } from '../interactions/prompt-navigation.ts'
 import { useSignalValue } from '../interactions/use-signal-value.ts'
 import { TextPromptActions } from './actions.ts'
 import { PromptLineViewModel } from './prompt-line-view-model.ts'
+import { TextPromptViewModel } from './text-prompt-view-model.ts'
 
 type PromptLineProps = {
   label: string
@@ -35,27 +36,28 @@ export const PromptLine = ({
 }
 
 type TextPromptProps = {
-  panel: TextPromptPanel
   store: DataStore
+  step: TextStepName
 }
 
-// A text prompt panel's question beside a focused input holding its answer.
-export const TextPrompt = ({ panel, store }: TextPromptProps) => {
-  const inputs = useSignalValue(store.inputs)
-  const input = useSignalValue(panel.field(store).text)
+// A one-line question beside a focused input holding its answer.
+export const TextPrompt = ({ store, step }: TextPromptProps) => {
+  const defaults = useSignalValue(store.textDefaults)
+  const input = useSignalValue(store.textFields[step].text)
+  const viewModel = new TextPromptViewModel(step, defaults)
   const actions = new TextPromptActions({
-    panel,
+    step,
     store,
     navigation: new PromptNavigation(store),
   })
   return (
     <box paddingX={1} flexDirection="row">
-      <text>{panel.label}: </text>
+      <text>{viewModel.label()}: </text>
       <input
         focused
         flexGrow={1}
         value={input.text}
-        placeholder={panel.placeholder(store, inputs)}
+        placeholder={viewModel.placeholder()}
         onInput={actions.input()}
         onSubmit={actions.submit()}
       />

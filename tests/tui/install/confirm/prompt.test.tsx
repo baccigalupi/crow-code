@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { testRender } from '@opentui/react/test-utils'
 import { act } from 'react'
-import { ConfirmPanel } from '../../../../src/tui/install/confirm/confirm.tsx'
 import { ConfirmPrompt } from '../../../../src/tui/install/confirm/prompt.tsx'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
@@ -10,7 +9,7 @@ describe('ConfirmPrompt', () => {
   it('when drawn, asks to complete setup with Yes selected', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <ConfirmPrompt panel={new ConfirmPanel()} store={store} />,
+      <ConfirmPrompt store={store} />,
       { width: 40, height: 4 },
     )
 
@@ -24,7 +23,7 @@ describe('ConfirmPrompt', () => {
   it('when the store says no, selects No', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <ConfirmPrompt panel={new ConfirmPanel()} store={store} />,
+      <ConfirmPrompt store={store} />,
       { width: 40, height: 4 },
     )
 
@@ -38,7 +37,7 @@ describe('ConfirmPrompt', () => {
   it('when n then return arrive, declines and exits', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, mockInput } = await testRender(
-      <ConfirmPrompt panel={new ConfirmPanel()} store={store} />,
+      <ConfirmPrompt store={store} />,
       { width: 40, height: 4 },
     )
 
@@ -54,7 +53,7 @@ describe('ConfirmPrompt', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.confirm.choose(false)
     const { renderer, mockInput } = await testRender(
-      <ConfirmPrompt panel={new ConfirmPanel()} store={store} />,
+      <ConfirmPrompt store={store} />,
       { width: 40, height: 4 },
     )
 

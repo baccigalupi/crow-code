@@ -7,7 +7,6 @@ import {
   TextPrompt,
 } from '../../../../src/tui/install/text-prompt/prompt.tsx'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
-import { RepoPanel } from '../../../../src/tui/install/directories/repo.ts'
 import { emptyText, insertText } from '../../../../src/tui/input-text.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
@@ -113,7 +112,7 @@ describe('text-prompt', () => {
   it('when the panel field changes, TextPrompt shows the typed answer', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <TextPrompt panel={new RepoPanel()} store={store} />,
+      <TextPrompt step="repoDirectory" store={store} />,
       { width: 70, height: 3 },
     )
 
@@ -129,7 +128,7 @@ describe('text-prompt', () => {
   it('when a key is typed, TextPrompt types it into the panel field', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, mockInput } = await testRender(
-      <TextPrompt panel={new RepoPanel()} store={store} />,
+      <TextPrompt step="repoDirectory" store={store} />,
       { width: 70, height: 3 },
     )
 
@@ -142,7 +141,7 @@ describe('text-prompt', () => {
   it('when the field is empty, TextPrompt shows the default as the placeholder', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <TextPrompt panel={new RepoPanel()} store={store} />,
+      <TextPrompt step="repoDirectory" store={store} />,
       { width: 70, height: 3 },
     )
 
@@ -157,7 +156,7 @@ describe('text-prompt', () => {
   it('when return arrives, TextPrompt moves to the panel that comes next', async () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const { renderer, mockInput } = await testRender(
-      <TextPrompt panel={new RepoPanel()} store={store} />,
+      <TextPrompt step="repoDirectory" store={store} />,
       { width: 70, height: 3 },
     )
 

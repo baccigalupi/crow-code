@@ -1,7 +1,6 @@
 import { describe, expect, it, mock } from 'bun:test'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { ConfirmActions } from '../../../../src/tui/install/confirm/actions.ts'
-import { ConfirmPanel } from '../../../../src/tui/install/confirm/confirm.tsx'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
 describe('ConfirmActions', () => {
@@ -10,7 +9,6 @@ describe('ConfirmActions', () => {
       const store = new DataStore({ applicationData: mockApplicationData() })
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ConfirmActions({
-        panel: new ConfirmPanel(),
         store,
         navigation,
       })
@@ -25,7 +23,6 @@ describe('ConfirmActions', () => {
       store.confirm.choose(false)
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ConfirmActions({
-        panel: new ConfirmPanel(),
         store,
         navigation,
       })
@@ -39,7 +36,6 @@ describe('ConfirmActions', () => {
       const store = new DataStore({ applicationData: mockApplicationData() })
       const navigation = { goTo: mock(), exit: mock() }
       const actions = new ConfirmActions({
-        panel: new ConfirmPanel(),
         store,
         navigation,
       })
@@ -55,7 +51,6 @@ describe('ConfirmActions', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const navigation = { goTo: mock(), exit: mock() }
     const actions = new ConfirmActions({
-      panel: new ConfirmPanel(),
       store,
       navigation,
     })
@@ -70,7 +65,6 @@ describe('ConfirmActions', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     const navigation = { goTo: mock(), exit: mock() }
     const actions = new ConfirmActions({
-      panel: new ConfirmPanel(),
       store,
       navigation,
     })

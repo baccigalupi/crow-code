@@ -3,7 +3,6 @@ import { TextAttributes } from '@opentui/core'
 import { testRender } from '@opentui/react/test-utils'
 import { act } from 'react'
 import { ProviderPrompt } from '../../../../src/tui/install/provider/prompt.tsx'
-import { ProviderNamePanel } from '../../../../src/tui/install/provider/provider-name.ts'
 import { DataStore } from '../../../../src/tui/install/data-store.ts'
 import { mockApplicationData } from '../../../support/mock-application-data.ts'
 
@@ -12,7 +11,7 @@ describe('ProviderPrompt', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.navigator.goTo('providerName')
     const { renderer, renderOnce, captureCharFrame } = await testRender(
-      <ProviderPrompt panel={new ProviderNamePanel()} store={store} />,
+      <ProviderPrompt step="providerName" store={store} />,
       { width: 70, height: 10 },
     )
 
@@ -27,13 +26,10 @@ describe('ProviderPrompt', () => {
     const store = new DataStore({ applicationData: mockApplicationData() })
     store.navigator.goTo('providerName')
     const { renderer, renderOnce, captureCharFrame, captureSpans } =
-      await testRender(
-        <ProviderPrompt panel={new ProviderNamePanel()} store={store} />,
-        {
-          width: 70,
-          height: 10,
-        },
-      )
+      await testRender(<ProviderPrompt step="providerName" store={store} />, {
+        width: 70,
+        height: 10,
+      })
 
     await renderOnce()
 

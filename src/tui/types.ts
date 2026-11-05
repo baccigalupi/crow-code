@@ -1,5 +1,3 @@
-import type { Navigator } from './navigator.ts'
-
 export interface InputText {
   readonly text: string
   readonly cursor: number
@@ -7,13 +5,9 @@ export interface InputText {
 
 export type CursorMove = 'left' | 'right' | 'home' | 'end'
 
-export type PanelFlow<Name extends string> = {
-  entered?(navigator: Navigator<Name>): unknown
-}
-
 export type NavigatorArguments<Name extends string> = {
   readonly initial: Name
-  readonly panels: Readonly<Record<string, PanelFlow<Name>>>
+  entered(name: Name): unknown
 }
 
 export type KeyFlags = {
