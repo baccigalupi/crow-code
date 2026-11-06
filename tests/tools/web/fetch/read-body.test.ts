@@ -17,7 +17,7 @@ describe('ReadBody', () => {
       url: 'https://192.0.2.1/a',
       status: 200,
       contentType: 'text/plain',
-      text: 'hello',
+      text: '<external_content source="https://192.0.2.1/a">\nhello\n</external_content>',
     })
   })
 
@@ -90,7 +90,9 @@ describe('ReadBody', () => {
     const body = new ReadBody({ applicationData, operationArguments })
     await body.run()
 
-    expect(body.result().text).toBe('é')
+    expect(body.result().text).toBe(
+      '<external_content source="https://192.0.2.1/a">\né\n</external_content>',
+    )
   })
 
   it('when the response has no body, returns empty text', async () => {
@@ -102,7 +104,9 @@ describe('ReadBody', () => {
     await body.run()
 
     expect(body.success()).toBe(true)
-    expect(body.result().text).toBe('')
+    expect(body.result().text).toBe(
+      '<external_content source="https://192.0.2.1/a">\n\n</external_content>',
+    )
   })
 
   it('when the body is exactly the cap, returns it', async () => {
@@ -114,6 +118,6 @@ describe('ReadBody', () => {
     await body.run()
 
     expect(body.success()).toBe(true)
-    expect(body.result().text.length).toBe(50011)
+    expect(body.result().text.length).toBe(50079)
   })
 })

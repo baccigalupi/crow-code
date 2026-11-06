@@ -25,7 +25,7 @@ describe('webFetch', () => {
       url: 'https://192.0.2.1/a',
       status: 200,
       contentType: 'text/plain',
-      text: 'hello',
+      text: '<external_content source="https://192.0.2.1/a">\nhello\n</external_content>',
     })
     expect(fetch.calls[0]).toBe('https://192.0.2.1/a')
   })
@@ -70,7 +70,9 @@ describe('webFetch', () => {
     const operation = webFetch({ applicationData, operationArguments })
     await operation.run()
 
-    expect(operation.result().text).toBe('{"a":1}')
+    expect(operation.result().text).toBe(
+      '<external_content source="https://192.0.2.1/a.json">\n{"a":1}\n</external_content>',
+    )
   })
 
   it('when the page has no content type, fails', async () => {
@@ -135,7 +137,7 @@ describe('webFetch', () => {
       url: 'https://192.0.2.1/b',
       status: 200,
       contentType: 'text/plain',
-      text: 'b',
+      text: '<external_content source="https://192.0.2.1/b">\nb\n</external_content>',
     })
   })
 
@@ -153,11 +155,13 @@ describe('webFetch', () => {
     const operation = webFetch({ applicationData, operationArguments })
     await operation.run()
 
-    expect(operation.result().text).toBe('Hi & bye')
+    expect(operation.result().text).toBe(
+      '<external_content source="https://192.0.2.1/a">\nHi & bye\n</external_content>',
+    )
     expect(operation.result().contentType).toBe('text/html; charset=utf-8')
   })
 
-  it('when the body is over 2 MB, fails with the body size reason', async () => {
+  it('when the body is over 2 MB,fails with the body size reason', async () => {
     const fetch = mockFetchResponse(
       () =>
         new Response('a'.repeat(2097153), {

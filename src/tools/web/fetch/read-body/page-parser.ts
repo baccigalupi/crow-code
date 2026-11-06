@@ -1,4 +1,5 @@
 import type { FetchedResponse } from '../../../types.ts'
+import { ExternalContent } from './page-parser/external-content.ts'
 import { HtmlText } from './page-parser/html-text.ts'
 import { TextNormalizer } from './page-parser/text-normalizer.ts'
 
@@ -23,7 +24,8 @@ export class PageParser {
   }
 
   private async text() {
-    return new TextNormalizer(await this.extracted()).text()
+    const normalized = new TextNormalizer(await this.extracted()).text()
+    return new ExternalContent(this.fetched.url, normalized).text()
   }
 
   private extracted() {
